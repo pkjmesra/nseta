@@ -76,6 +76,8 @@ docs/_build/
 # PyBuilder
 target/
 *.csv
+*.html
+*.HTML
 zip.zip
 
 # vim
