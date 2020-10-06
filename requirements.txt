@@ -1,0 +1,11 @@
+beautifulsoup4
+requests
+numpy
+pandas
+Click
+six
+lxml
+Sphinx
+pystan
+fbprophet
+# fastquant
