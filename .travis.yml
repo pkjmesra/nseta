@@ -1,15 +1,23 @@
-language: sh
-os: windows
+language: python
+os: linux
 python:
   - "3.8"
-before_install: 
-  - choco install python3
-  - export PATH="/c/Python39:/c/Python39/Scripts:$PATH"
-  - python -m pip install --upgrade pip wheel
-  - python -m pip install fastquant
-  - python -m pip install -r requirements.txt
+before_install:
+  - pip install fastquant
+  - pip install -r requirements.txt
 install:
-  - python -m setup.py clean build install 
+  - python setup.py clean build install 
 script:
-  - python nsetacli --help
-  - python nsetacli live-quote -S bandhanbnk
+  - nsetacli --help
+
+# before_install: 
+#   - choco install python3
+#   - export PATH="/c/Python39:/c/Python39/Scripts:$PATH"
+#   - python -m pip install --upgrade pip wheel
+#   - python -m pip install fastquant
+#   - python -m pip install -r requirements.txt
+# install:
+#   - python -m setup.py clean build install 
+# script:
+#   - python nsetacli --help
+#   - python nsetacli live-quote -S bandhanbnk
