@@ -6,10 +6,10 @@ before_install:
   - choco install python3
   - export PATH="/c/Python38:/c/Python38/Scripts:$PATH"
   - python -m pip install --upgrade pip wheel
-  - pip install fastquant
-  - pip install -r requirements.txt
+  - python -m pip install fastquant
+  - python -m pip install -r requirements.txt
 install:
-  - python setup.py clean build install 
+  - python -m setup.py clean build install 
 script:
-  - nsetacli --help
-  - nsetacli live-quote -S bandhanbnk
+  - python nsetacli --help
+  - python nsetacli live-quote -S bandhanbnk
