@@ -1,7 +1,7 @@
 # nseta :nerd_face:
 
 [![Build Status](https://travis-ci.com/pkjmesra/nseta.svg?branch=master)](https://travis-ci.com/pkjmesra/nseta)
-[![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](https://raw.githubusercontent.com/pkjmesra/nseta/master/LICENSE)
+[![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/pkjmesra/nseta/blob/main/LICENSE)
 [![Downloads](https://pepy.tech/badge/nseta/month)](https://pepy.tech/project/nseta/month)
 
 Python Library to 
