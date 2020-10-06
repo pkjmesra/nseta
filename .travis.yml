@@ -4,7 +4,7 @@ python:
   - "3.8"
 before_install: 
   - choco install python3
-  - export PATH="/c/Python39:/c/Python38/Scripts:$PATH"
+  - export PATH="/c/Python39:/c/Python39/Scripts:$PATH"
   - python -m pip install --upgrade pip wheel
   - python -m pip install fastquant
   - python -m pip install -r requirements.txt
