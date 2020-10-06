@@ -14,6 +14,9 @@ def live_quote(symbol, series):
         print_help_msg(live_quote)
         return
     result = get_quote(symbol)
+    if len(result['data']) == 0:
+        click.secho("Please check the inputs. Could not fetch the data.", fg='red', nl=True)
+        return
     data = result['data'][0]
     time = result['lastUpdateTime']
     company_name = data['companyName']
