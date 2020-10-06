@@ -1,6 +1,7 @@
 language: python
+os: osx
 python:
-  - 3.8.5
+  - 3.8.0
 before_install: 
   - pip install fastquant
   - pip install -r requirements.txt
@@ -8,3 +9,5 @@ install:
   - python3 setup.py clean build install 
 script:
   - nsetacli --help
+  - nsetacli live-quote -S bandhanbnk
+  
