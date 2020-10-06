@@ -260,6 +260,30 @@ Optimal metrics: {'rtot': 0.3164216915602497, 'ravg': 0.0007307660313169739, 'rn
 ![](./docs/assets/forecast-closing.png)
 ![](./docs/assets/forecast.png)
 
+- Get live quotes for a security
+```
+$ nsetacli live-quote -S bandhanbnk
+As of 06-OCT-2020 10:16:17
+
+                     Last Trade Price Price Change    Open    High     Low Close Prev Close 52 wk High 52 wk Low
+Name                                                                                                            
+Bandhan Bank Limited           302.90         3.61  295.00  304.50  294.55  0.00     292.35     650.00    152.20
+
+
+                Total Traded Volume Total Traded Value
+Quantity Traded                                       
+29,70,467                 42,65,994          12,771.53
+
+
+             Bid Price Offer Quantity Offer Price
+Bid Quantity                                     
+2,981           302.80            472      302.90
+200             302.70          1,739      302.95
+391             302.65         13,936      303.00
+4,368           302.60          3,471      303.05
+5,469           302.55            767      303.10
+```
+
 ### Submit patches
 
 If you have fixed an issue or added a new feature, please fork this repository, make your changes and submit a pull request. [Here's good article on how to do this.](https://code.tutsplus.com/tutorials/how-to-collaborate-on-github--net-34267) 
