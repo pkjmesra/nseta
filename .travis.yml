@@ -1,5 +1,5 @@
 language: python
-os: osx
+os: windows
 python:
   - 3.8.0
 before_install: 
@@ -10,4 +10,3 @@ install:
 script:
   - nsetacli --help
   - nsetacli live-quote -S bandhanbnk
-  
