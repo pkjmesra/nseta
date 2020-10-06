@@ -1,5 +1,7 @@
 from fastquant import backtest
 from fbprophet import Prophet
+from fbprophet.plot import add_changepoints_to_plot
+
 from matplotlib import pyplot as plt
 
 import click
@@ -35,6 +37,10 @@ def backtest_multi_strategy(df, key_variable="smac", fast_period=10, slow_period
 	# print(result[[key_variable +'.fast_period', key_variable+'.slow_period', 'rsi.rsi_lower', 'rsi.rsi_upper', 'init_cash', 'final_value', 'pnl']].head())
 	return result
 
+# def backtest_custom_strategy(df, symbol, strategy, upper_limit, lower_limit):
+# 	plt, result = daily_forecast(df, symbol, strategy, upper_limit, lower_limit, 0)
+# 	return result
+
 '''
 This powerful strategy allows to backtest our own trading strategies 
 using any type of model after the forecast!
@@ -50,31 +56,56 @@ We are going to use the custom strategy to backtest a custom indicator based
 on in-sample time series forecasts. The forecasts are generated using 
 Facebook's Prophet package.
 '''
-def daily_forecast(df, symbol, upper_limit=1.5, lower_limit=1.5):
+def daily_forecast(df, symbol, strategy, upper_limit=1.5, lower_limit=1.5, periods=0):
 	# Fit model on closing prices
 	ts = df.reset_index()[["dt", "close"]]
 	ts.columns = ['ds', 'y']
 	if not ts['y'].count() >= 2:
 		click.secho("Dataframe has less than 2 non-NaN rows. Cannot fit the model.", fg='red', nl=True)
 		return
-	m = Prophet(daily_seasonality=True, yearly_seasonality=True).fit(ts)
-	forecast = m.make_future_dataframe(periods=0, freq='D')
+	# m = Prophet(daily_seasonality=True, yearly_seasonality=True).fit(ts)
+	m = Prophet(growth="linear",
+            seasonality_mode='additive',
+            daily_seasonality=False,
+            weekly_seasonality=True,
+            yearly_seasonality=True,
+            interval_width=0.95, #uncertainty
+            holidays=None,
+            n_changepoints=20,
+           ) 
+	m.add_country_holidays(country_name='IN')
+	m.fit(ts)
+
+	future = m.make_future_dataframe(periods=periods, freq='D')
+	future.tail()
 
 	# Predict and plot
-	pred = m.predict(forecast)
-	fig1 = m.plot(pred)
-	plt.subplot()
-	plt.title(symbol+' Forecasted Daily Closing Price', fontsize=20)
-	plt.subplots_adjust(top=0.92, bottom=0.08, left=0.10, right=0.90, hspace=0.25,
-	                    wspace=0.5)
+	forecast = m.predict(future)
+	forecast[['ds', 'yhat', 'yhat_lower', 'yhat_upper']].tail()
+
+	if periods > 0:
+		fig1 = m.plot(forecast, uncertainty=True)
+		# fig2 = m.plot_components(forecast)
+		a = add_changepoints_to_plot(fig1.gca(), m, forecast)
+		# fig1.axes[0].set_xlim(datestring_to_datetime("2020-02-01"),
+		#                       datestring_to_datetime("2020-04-30")
+		#                      )
+		fig1.axes[0].set_xlabel('Date')
+		fig1.axes[0].set_ylabel('Price')
+		plt.subplot()
+		plt.title(symbol.upper()+' Forecasted Closing Price, trend and strategic points - Strategy:' + strategy.upper(), fontsize=15)
+		plt.subplots_adjust(top=0.92, bottom=0.08, left=0.10, right=0.90, hspace=0.25,
+		                    wspace=0.5)
 
 	# Convert predictions to expected 1 day returns
-	expected_1day_return = pred.set_index("ds").yhat.pct_change().shift(-1).multiply(100)
+	expected_1day_return = forecast.set_index("ds").yhat.pct_change().shift(-1).multiply(100)
 
 	# Backtest the predictions, given that we buy the given symbol when the predicted 
 	# next day return is > +1.5%, and sell when it's < -1.5%.
-	df["custom"] = expected_1day_return.multiply(-1)
-	
-	result = backtest("custom", df.dropna(),upper_limit=upper_limit, lower_limit=-lower_limit)
+	df[strategy] = expected_1day_return.multiply(-1)
+	if strategy == 'custom':
+		result = backtest(strategy, df.dropna(),upper_limit=upper_limit, lower_limit=-lower_limit)
+	else:
+		result = backtest(strategy, df.dropna())
 	print(result[['init_cash', 'final_value', 'pnl']].head())
-	return plt
+	return plt, result

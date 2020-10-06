@@ -61,16 +61,28 @@ STRATEGY_MAPPING = {
     "multi": multi_strategy
 }
 
-STRATEGY_MAPPING_KEYS = list(STRATEGY_MAPPING.keys())
+KEY_MAPPING = {
+    'dt': 'Date',
+    'open': 'Open',
+    'high': 'High',
+    'low': 'Low',
+    'close': 'Close',
+    'volume': 'Volume',
+}
+
+STRATEGY_MAPPING_KEYS = list(STRATEGY_MAPPING.keys()) + ['custom']
 
 @click.command(help='Measure the performance of your trading strategy')
 @click.option('--symbol', '-S',  help='Security code')
 @click.option('--start', '-s', help='Start date in yyyy-mm-dd format')
 @click.option('--end', '-e', help='End date in yyyy-mm-dd format')
-@click.option('--strategy', default='rsi', help=', '.join(STRATEGY_MAPPING_KEYS) + ". Choose one.")
+@click.option('--strategy', default='rsi', type=click.Choice(STRATEGY_MAPPING_KEYS), 
+	help=', '.join(STRATEGY_MAPPING_KEYS) + ". Choose one.")
+@click.option('--upper', '-u', default=1.5, help='Only when strategy is "custom". We buy the security when the predicted next day return is > +{upper} %')
+@click.option('--lower', '-l', default=1.5, help='Only when strategy is "custom". We sell the security when the predicted next day return is < -{lower} %')
 @click.option('--autosearch/--no-autosearch', default=False, 
 	help='--auto for allowing to automatically measure the performance of your trading strategy on multiple combinations of parameters.')
-def test_trading_strategy(symbol, start, end, autosearch, strategy):
+def test_trading_strategy(symbol, start, end, autosearch, strategy, upper, lower):
 	if not validate_inputs(start, end, symbol):
 		print_help_msg(test_trading_strategy)
 		return
@@ -82,6 +94,10 @@ def test_trading_strategy(symbol, start, end, autosearch, strategy):
 	strategy = strategy.lower()
 	if strategy in STRATEGY_MAPPING:
 		STRATEGY_MAPPING[strategy](df, autosearch)
+	elif strategy == 'custom':
+		for key in KEY_MAPPING.keys():
+			df[key] = df[KEY_MAPPING[key]]
+		backtest_custom_strategy(df, strategy, upper, lower)
 	else:
 		STRATEGY_MAPPING['rsi'](df, autosearch)
 
@@ -89,9 +105,11 @@ def test_trading_strategy(symbol, start, end, autosearch, strategy):
 @click.option('--symbol', '-S',  help='Security code')
 @click.option('--start', '-s', help='Start date in yyyy-mm-dd format')
 @click.option('--end', '-e', help='End date in yyyy-mm-dd format')
-@click.option('--upper', '-u', default=1.5, help='We buy the security when the predicted next day return is > +{upper} %')
-@click.option('--lower', '-l', default=1.5, help='We sell the security when the predicted next day return is < -{lower} %')
-def forecast_strategy(symbol, start, end, upper, lower):
+@click.option('--strategy', default='rsi', type=click.Choice(STRATEGY_MAPPING_KEYS), 
+	help=', '.join(STRATEGY_MAPPING_KEYS) + ". Choose one.")
+@click.option('--upper', '-u', default=1.5, help='Only when strategy is "custom". We buy the security when the predicted next day return is > +{upper} %')
+@click.option('--lower', '-l', default=1.5, help='Only when strategy is "custom". We sell the security when the predicted next day return is < -{lower} %')
+def forecast_strategy(symbol, start, end, strategy, upper, lower):
 	if not validate_inputs(start, end, symbol):
 		print_help_msg(forecast_strategy)
 		return
@@ -99,14 +117,10 @@ def forecast_strategy(symbol, start, end, upper, lower):
 	ed = datetime.strptime(end, "%Y-%m-%d").date()
 
 	df = get_history(symbol, sd, ed)
-	df['dt'] = df['Date']
-	df['open'] = df['Open']
-	df['high'] = df['High']
-	df['low'] = df['Low']
-	df['close'] = df['Close']
-	df['volume'] = df['Volume']
+	for key in KEY_MAPPING.keys():
+		df[key] = df[KEY_MAPPING[key]]
 	df.set_index('dt', inplace=True)
 	df.drop(EQUITY_HEADERS, axis = 1, inplace = True)
-	plt = daily_forecast(df, symbol, upper_limit=float(upper), lower_limit=float(lower))
+	plt, result = daily_forecast(df, symbol, strategy, upper_limit=float(upper), lower_limit=float(lower), periods=28)
 	if plt is not None:
 		plt.show()
