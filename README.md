@@ -1,4 +1,9 @@
 # nseta :nerd_face:
+
+[![Build Status](https://travis-ci.com/pkjmesra/nseta.svg?branch=master)](https://travis-ci.com/pkjmesra/nseta)
+[![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](https://raw.githubusercontent.com/pkjmesra/nseta/master/LICENSE)
+[![Downloads](https://pepy.tech/badge/nseta/month)](https://pepy.tech/project/nseta/month)
+
 Python Library to 
 - get publicly available data on [NSE India website](https://www1.nseindia.com/) ie. stock live quotes, historical data, live indices.
 - plot various technical indicators
