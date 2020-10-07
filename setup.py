@@ -25,6 +25,7 @@ setup(
   entry_points='''
     [console_scripts]
     nsetacli=nseta.cli.nsetacli:nsetacli
+    nseta=nseta.cli.nsetacli:nsetacli
   ''',
   download_url = 'https://github.com/pkjmesra/nseta/archive/v0.1.zip', 
   classifiers=[

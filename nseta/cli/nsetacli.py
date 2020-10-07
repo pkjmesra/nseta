@@ -1,3 +1,5 @@
+__VERSION__ = 0.1
+
 import click
 from nseta.cli.historycli import *
 from nseta.cli.modelcli import *
@@ -5,11 +7,14 @@ from nseta.cli.plotscli import *
 from nseta.cli.strategycli import *
 from nseta.cli.livecli import *
 
-@click.group()
+@click.group(invoke_without_command=True, no_args_is_help=True)
 @click.option('--debug/--no-debug', default=False, help='--debug to turn debugging on. Default is off')
-def nsetacli(debug):
+@click.option('--version', is_flag=True, help='Shows the version of this library')
+def nsetacli(debug, version):
     if debug:
         click.echo('Debug mode is %s' % ('on' if debug else 'off'))
+    if version:
+        click.echo('nseta ' + str(__VERSION__))
 
 nsetacli.add_command(history)
 nsetacli.add_command(pe_history)
