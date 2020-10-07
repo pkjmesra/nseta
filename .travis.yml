@@ -1,11 +1,8 @@
-language: python
-os: linux
-python:
-  - "3.8"
+language: sh
+os: osx
 before_install:
-  - sudo apt-get install python3-dev
-  - export TA_LIBRARY_PATH=$PREFIX/lib
-  - export TA_INCLUDE_PATH=$PREFIX/include
+  - /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install.sh)"
+  - brew install python@3.8
   - pip install TA-Lib
   - pip install fastquant
   - pip install -r requirements.txt
