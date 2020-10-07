@@ -12,7 +12,10 @@ before_install:
 install:
   - python3 setup.py clean build install 
 script:
-  - nsetacli --help
+  - nseta --help
+  - nseta --version
+  - nseta live-quote -S bandhanbnk
+  - nseta history -S bandhanbnk -s 2020-10-01 -e 2020-10-07
 
 # before_install: 
 #   - choco install python3
