@@ -1,4 +1,4 @@
-__VERSION__ = 0.1
+__VERSION__ = 0.2
 
 import click
 from nseta.cli.historycli import *

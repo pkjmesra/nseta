@@ -15,7 +15,7 @@ with open("requirements.txt", "r") as fh:
 setup(
   name = 'nseta',
   packages=setuptools.find_packages(where="./", exclude=["docs", "tests"]),
-  version = '0.1',
+  version = '0.2',
   description = 'Library to analyse and predict financial data from National Stock Exchange (NSE - India) in pandas dataframe ',
   long_description = long_description,
   long_description_content_type="text/markdown",
@@ -27,7 +27,7 @@ setup(
     nsetacli=nseta.cli.nsetacli:nsetacli
     nseta=nseta.cli.nsetacli:nsetacli
   ''',
-  download_url = 'https://github.com/pkjmesra/nseta/archive/v0.1.zip', 
+  download_url = 'https://github.com/pkjmesra/nseta/archive/v0.2.zip', 
   classifiers=[
     "Programming Language :: Python :: 3",
     "License :: OSI Approved :: MIT License",
