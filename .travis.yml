@@ -3,11 +3,11 @@ os: osx
 before_install:
   - /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install.sh)"
   - brew install python@3.8
-  - pip install TA-Lib
-  - pip install fastquant
-  - pip install -r requirements.txt
+  - pip3 install TA-Lib
+  - pip3 install fastquant
+  - pip3 install -r requirements.txt
 install:
-  - python setup.py clean build install 
+  - python3 setup.py clean build install 
 script:
   - nsetacli --help
 
