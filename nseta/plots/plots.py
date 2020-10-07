@@ -45,41 +45,48 @@ def plot_candlestick(df, symbol_name="", plot_title=""):
 
 def plot_technical_indicators(df):
 	# plot with various axes scales
-	plt.figure(1)
-	# plt.subplot(221)
-	plot_history(df,'Close', 'Turnover')
+	fig, axs = plt.subplots(5,2, sharex=True)
+	axs[0,0].plot(get_rsi_df(df))
+	axs[0,0].set_ylabel('RSI')
+	axs[0,0].axhline(y=30, linestyle='--', color='g', label='30')
+	axs[0,0].axhline(y=70, linestyle='--', color='r', label='70')
+	axs[0,0].legend(['RSI(14)'], loc='upper left', fontsize='x-small')
 
-	plt.figure(2)	
-	# plt.subplot(222)
-	plot_rsi(df)
+	axs[1,0].plot(get_macd_df(df))
+	axs[1,0].bar(df['dt'], df['macdhist'])
+	axs[1,0].legend(['MACD(12,26)', 'EMA(9)', 'Divergence'], loc='upper left', fontsize='x-small')
 
-	plt.figure(3)
-	# plt.subplot(223)
-	plot_sma(df)
+	axs[2,0].plot(get_sma_df(df))
+	axs[2,0].set_ylabel('Price')
+	axs[2,0].legend(['Close','SMA(10)', 'SMA(50)'], loc='upper left', fontsize='x-small')
+
+	axs[3,0].plot(get_ema_df(df))
+	axs[3,0].set_ylabel('Price')
+	axs[3,0].set_xlabel('Date')
+	axs[3,0].legend(['Close','EMA(10)'], loc='upper left', fontsize='x-small')
+
+	axs[4,0].bar(df['dt'],df['Volume'])
+	axs[4,0].set_ylabel('Volume')
+
+	axs[0,1].plot(get_mom_df(df))
+	axs[0,1].legend(['Mom(2)'], loc='upper left', fontsize='x-small')
+
+	axs[1,1].plot(get_dmi_df(df))
+	axs[1,1].plot(get_adx_df(df))
+	axs[1,1].legend(['DMI(14)', 'ADX(14)'], loc='upper left', fontsize='x-small')
+
+	axs[2,1].plot(get_bbands_df(df))
+	axs[2,1].legend(['Close','BBands-U(20,2)','BBands-M(20,2)','BBands-L(20,2)'], loc='upper left', fontsize='x-small')
 	
-	plt.figure(4)
-	# plt.subplot(224)
-	plot_ema(df)
+	axs[3,1].plot(get_obv_df(df))
+	axs[3,1].axhline(linestyle='--', color='r')
+	axs[3,1].legend(['OBV'], loc='upper left', fontsize='x-small')
 
-	# plt.figure()
-	# plt.subplot(225)
-	# plot_adx(df)
+	axs[4,1].bar(df['dt'],df['Volume'])
 
-	# plt.figure()
-	# plt.subplot(226)
-	# plot_bbands(df)
+	fig.suptitle('Technical indicators for ' + df['Symbol'][0])
+	fig.align_labels()
 
-	# plt.figure()
-	# plt.subplot(227)
-	# plot_sstochastic(df)
-
-	# plt.figure()
-	# plt.subplot(228)
-	# plot_fstochastic(df)
-
-	# Adjust the subplot layout
-	# plt.subplots_adjust(top=0.92, bottom=0.08, left=0.10, right=0.95, hspace=0.25,
-	#                     wspace=0.5)
 	return plt
 
 def plot_history(df, plot_points=['Close'], secondary_y="Turnover"):
@@ -88,6 +95,10 @@ def plot_history(df, plot_points=['Close'], secondary_y="Turnover"):
 	plt.grid(True)
 	return plt
 
+def get_rsi_df(df):
+	df['RSI'] = ta.RSI(df['Close'],14)
+	return df['RSI']
+
 '''
 The relative strength index is a technical indicator used in the 
 analysis of financial markets. It is intended to chart the current 
@@ -95,44 +106,59 @@ and historical strength or weakness of a stock or market based on
 the closing prices of a recent trading period.
 '''
 def plot_rsi(df):
-	df['RSI'] = ta.RSI(df['Close'],14)
-	df['RSI'].plot()
+	get_rsi_df(df).plot()
 	plt.title('RSI(14)')
 	plt.grid(True)
 	return plt
 
+def get_mom_df(df):
+	df['MOM'] = ta.MOM(df['Close'],2)
+	return df['MOM']
+
 def plot_mom(df):
-	df['MOM'] = ta.MOM(df['Close'],10)
-	df['MOM'].plot()
+	get_mom_df(df).plot()
 	plt.title('Momentum - MOM(10)')
 	plt.grid(True)
 	return plt
 
-def plot_dmi(df):
+def get_dmi_df(df):
 	df['DMI'] = ta.DX(df['High'],df['Low'],df['Close'],timeperiod=14)
-	df['DMI'].plot()
+	return df['DMI']
+
+def plot_dmi(df):
+	get_dmi_df(df).plot()
 	plt.title('Directional Movement Index - DMI(14)')
 	plt.grid(True)
 	return plt
 
-def plot_macd(df):
+def get_macd_df(df):
 	df['macd'], df['macdsignal'], df['macdhist'] = ta.MACDEXT(df['Close'], fastperiod=12, fastmatype=0, slowperiod=26, slowmatype=0, signalperiod=9, signalmatype=0)
-	df[['macd','macdsignal', 'macdhist']].plot()
+	return df[['macd','macdsignal', 'macdhist']]
+
+def plot_macd(df):
+	get_macd_df(df).plot()
 	plt.title('MACD(12, 26)')
 	plt.grid(True)
 	return plt
+
+def get_sma_df(df):
+	df['SMA(10)'] = ta.SMA(df['Close'],10)
+	df['SMA(50)'] = ta.SMA(df['Close'],50)
+	return df[['Close','SMA(10)', 'SMA(50)']]
 
 '''
 Simple moving average (SMA) calculates the average of a selected 
 range of closing prices, by the number of periods in that range.
 '''
 def plot_sma(df):
-	df['SMA(10)'] = ta.SMA(df['Close'],10)
-	df['SMA(50)'] = ta.SMA(df['Close'],50)
-	df[['Close','SMA(10)', 'SMA(50)']].plot()
+	get_sma_df(df).plot()
 	plt.title('SMA(10) & SMA(50)')
 	plt.grid(True)
 	return plt
+
+def get_ema_df(df):
+	df['EMA(10)'] = ta.EMA(df['Close'], timeperiod = 10)
+	return df[['Close','EMA(10)']]
 
 '''
 (EMA) is a type of moving average (MA) that places a greater weight 
@@ -140,11 +166,14 @@ and significance on the most recent data points. That is it is
 generally known as Exponentially Weighted Moving Average.
 '''
 def plot_ema(df):
-	df['EMA(10)'] = ta.EMA(df['Close'], timeperiod = 10)
-	df[['Close','EMA(10)']].plot()
+	get_ema_df(df).plot()
 	plt.title('EMA(10)')
 	plt.grid(True)
 	return plt
+
+def get_adx_df(df):
+	df['ADX'] = ta.ADX(df['High'],df['Low'], df['Close'], timeperiod=14)
+	return df[['ADX']]
 
 '''
 Average Directional Movement Index(Momentum Indicator) - ADX can be 
@@ -152,11 +181,14 @@ used to help measure the overall strength of a trend. The ADX
 indicator is an average of expanding price range values.
 '''
 def plot_adx(df):
-	df['ADX'] = ta.ADX(df['High'],df['Low'], df['Close'], timeperiod=20)
-	df[['ADX']].plot()
-	plt.title('ADX(20)')
+	get_adx_df(df).plot()
+	plt.title('ADX(14)')
 	plt.grid(True)
 	return plt
+
+def get_bbands_df(df):
+	df['BBands-U'], df['BBands-M'], df['BBands-L'] = ta.BBANDS(df['Close'], timeperiod =20)
+	return df[['Close','BBands-U','BBands-M','BBands-L']]
 
 '''
 Bollinger Bands are a type of statistical chart characterizing the 
@@ -164,9 +196,18 @@ prices and volatility over time of a financial instrument or commodity,
 using a formulaic method propounded by John Bollinger.
 '''
 def plot_bbands(df):
-	df['BBands-U'], df['BBands-M'], df['BBands-L'] = ta.BBANDS(df['Close'], timeperiod =20)
-	df[['Close','BBands-U','BBands-M','BBands-L']].plot()
+	get_bbands_df(df).plot()
 	plt.title('Bollinger Bands(20)')
+	plt.grid(True)
+	return plt
+
+def get_obv_df(df):
+	df['OBV'] = ta.OBV(df['Close'], df['Volume'])
+	return df[['OBV']]
+
+def plot_obv(df):
+	get_obv_df(df).plot()
+	plt.title('OBV')
 	plt.grid(True)
 	return plt
 

@@ -33,6 +33,7 @@ def plot_ta(symbol, start, end, plot_type="ALL"):
 	ed = datetime.strptime(end, "%Y-%m-%d").date()
 
 	df = get_history(symbol, sd, ed)
+	df['dt'] = df['Date']
 	df.set_index('Date', inplace=True)
 	plot_type = plot_type.upper()
 	if plot_type in PLOT_KEY_TO_FUNC:
