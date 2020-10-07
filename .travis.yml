@@ -2,7 +2,7 @@ language: sh
 os: osx
 before_install:
   - /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install.sh)"
-  - brew install python@3.8
+  # - brew install python@3.8
   - pip3 install TA-Lib
   - pip3 install fastquant
   - pip3 install -r requirements.txt
