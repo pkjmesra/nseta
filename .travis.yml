@@ -2,9 +2,10 @@ language: sh
 os: osx
 before_install:
   - /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install.sh)"
-  - brew install python3-dev
-  - export TA_LIBRARY_PATH=$PREFIX/lib
-  - export TA_INCLUDE_PATH=$PREFIX/include
+  - brew list | grep python
+  - brew info python
+  - brew update && brew upgrade python
+  - brew install ta-lib
   - pip3 install TA-Lib
   - pip3 install fastquant
   - pip3 install -r requirements.txt
