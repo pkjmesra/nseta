@@ -8,34 +8,50 @@ import click
 
 
 def backtest_smac_strategy(df, fast_period=10, slow_period=50):
-	result = backtest('smac', df, fast_period=fast_period, slow_period=slow_period, verbose=False)
+	result = backtest('smac', df.dropna(), fast_period=fast_period, slow_period=slow_period, verbose=False)
 	print(result[['fast_period', 'slow_period', 'init_cash', 'final_value', 'pnl']].head())
+	return result
 
 def backtest_emac_strategy(df, fast_period=10, slow_period=50):
-	result = backtest('emac', df, fast_period=fast_period, slow_period=slow_period, verbose=False)
+	result = backtest('emac', df.dropna(), fast_period=fast_period, slow_period=slow_period, verbose=False)
 	print(result[['fast_period', 'slow_period', 'init_cash', 'final_value', 'pnl']].head())
+	return result
 
 def backtest_rsi_strategy(df, rsi_period=14, rsi_lower=30):
-	result = backtest('rsi', df, rsi_period=rsi_period, rsi_upper=70, rsi_lower=rsi_lower, verbose=False)
+	result = backtest('rsi', df.dropna(), rsi_period=rsi_period, rsi_upper=70, rsi_lower=rsi_lower, verbose=False)
 	print(result[['rsi_period', 'rsi_upper', 'rsi_lower', 'init_cash', 'final_value', 'pnl']].head())
+	return result
 
 def backtest_macd_strategy(df, fast_period=12, slow_period=26):
-	result = backtest('macd', df, fast_period=fast_period, slow_period=slow_period, signal_period=9, 
+	result = backtest('macd', df.dropna(), fast_period=fast_period, slow_period=slow_period, signal_period=9, 
 		sma_period=30, dir_period=10, verbose=False)
 	print(result[['fast_period', 'slow_period', 'signal_period', 'init_cash', 'final_value', 'pnl']].head())
+	return result
 
 def backtest_bbands_strategy(df, period=20, devfactor=2.0):
-	result = backtest('bbands', df, period=period, devfactor=devfactor, verbose=False)
+	result = backtest('bbands', df.dropna(), period=period, devfactor=devfactor, verbose=False)
 	print(result[['period', 'devfactor', 'init_cash', 'final_value', 'pnl']].head())
+	return result
 
 def backtest_multi_strategy(df, key_variable="smac", fast_period=10, slow_period=50, rsi_lower=30, rsi_upper=70):
 	strats = { 
 		key_variable: {"fast_period": fast_period, "slow_period": slow_period},
 		"rsi": {"rsi_lower": rsi_lower, "rsi_upper": rsi_upper} 
 	}
-	result = backtest("multi", df, strats=strats, verbose=False)
+	result = backtest("multi", df.dropna(), strats=strats, verbose=False)
 	# print(result[[key_variable +'.fast_period', key_variable+'.slow_period', 'rsi.rsi_lower', 'rsi.rsi_upper', 'init_cash', 'final_value', 'pnl']].head())
 	return result
+
+STRATEGY_FORECAST_MAPPING = {
+    "rsi": backtest_rsi_strategy,
+    "smac": backtest_smac_strategy,
+    "macd": backtest_macd_strategy,
+    "emac": backtest_emac_strategy,
+    "bbands": backtest_bbands_strategy,
+    "multi": backtest_multi_strategy,
+}
+
+STRATEGY_FORECAST_MAPPING_KEYS = list(STRATEGY_FORECAST_MAPPING.keys())
 
 # def backtest_custom_strategy(df, symbol, strategy, upper_limit, lower_limit):
 # 	plt, result = daily_forecast(df, symbol, strategy, upper_limit, lower_limit, 0)
@@ -106,6 +122,8 @@ def daily_forecast(df, symbol, strategy, upper_limit=1.5, lower_limit=1.5, perio
 	if strategy == 'custom':
 		result = backtest(strategy, df.dropna(),upper_limit=upper_limit, lower_limit=-lower_limit)
 	else:
-		result = backtest(strategy, df.dropna())
+		if strategy in STRATEGY_FORECAST_MAPPING_KEYS:
+			result = STRATEGY_FORECAST_MAPPING[strategy](df)
+
 	print(result[['init_cash', 'final_value', 'pnl']].head())
 	return plt, result
