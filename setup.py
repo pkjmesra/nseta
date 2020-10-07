@@ -17,6 +17,8 @@ setup(
   packages=setuptools.find_packages(where="./", exclude=["docs", "tests"]),
   version = '0.1',
   description = 'Library to analyse and predict financial data from National Stock Exchange (NSE - India) in pandas dataframe ',
+  long_description = long_description,
+  long_description_content_type="text/markdown",
   author = 'Praveen K Jha',
   author_email = 'pkjmesra@gmail.com',
   url = 'https://github.com/pkjmesra/nseta', # use the URL to the github repo
@@ -32,4 +34,5 @@ setup(
     ],
   install_requires = install_requires,
   keywords = ['NSE', 'Technical Indicators', 'Backtesting', 'Forecasting'],
-)
+),
+python_requires='>=3.6',
