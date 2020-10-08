@@ -1,6 +1,6 @@
-__VERSION__ = 0.2
 
 import click
+import nseta
 from nseta.cli.historycli import *
 from nseta.cli.modelcli import *
 from nseta.cli.plotscli import *
@@ -14,7 +14,7 @@ def nsetacli(debug, version):
     if debug:
         click.echo('Debug mode is %s' % ('on' if debug else 'off'))
     if version:
-        click.echo('nseta ' + str(__VERSION__))
+        click.echo('nseta ' + nseta.__VERSION__)
 
 nsetacli.add_command(history)
 nsetacli.add_command(pe_history)
