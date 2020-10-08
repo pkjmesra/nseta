@@ -21,10 +21,15 @@ def create_cdl_model(symbol, start, end, file_name, steps, format):
 	sd = datetime.strptime(start, "%Y-%m-%d").date()
 	ed = datetime.strptime(end, "%Y-%m-%d").date()
 
-	df = get_history(symbol, sd, ed)
-	df.set_index('Date', inplace=True)
-	df = model_candlestick(df, steps)
-	click.echo(df.head())
+	try:
+		df = get_history(symbol, sd, ed)
+		df.set_index('Date', inplace=True)
+		df = model_candlestick(df, steps)
+		click.echo(df.head())
+	except:
+		click.secho('Failed to create candlestick model', fg='red', nl=True)
+		return
+
 	if not file_name:
 		file_name = symbol + '.' + format
 	if format == 'csv':
@@ -33,4 +38,8 @@ def create_cdl_model(symbol, start, end, file_name, steps, format):
 		df.to_pickle(file_name)
 	click.secho('Model saved to: {}'.format(file_name), fg='green', nl=True)
 	click.secho('Candlestick pattern model plot saved to: {}'.format(symbol +'_candles.html'), fg='green', nl=True)	
-	plot_candlestick(df, symbol, 'Candlestick Pattern Model Recognition for ' + symbol)
+	try:
+		plot_candlestick(df, symbol, 'Candlestick Pattern Model Recognition for ' + symbol)
+	except:
+		click.secho('Failed to plot candlestick pattern for the model', fg='red', nl=True)
+		return

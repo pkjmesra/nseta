@@ -32,11 +32,15 @@ def plot_ta(symbol, start, end, plot_type="ALL"):
 	sd = datetime.strptime(start, "%Y-%m-%d").date()
 	ed = datetime.strptime(end, "%Y-%m-%d").date()
 
-	df = get_history(symbol, sd, ed)
-	df['dt'] = df['Date']
-	df.set_index('Date', inplace=True)
-	plot_type = plot_type.upper()
-	if plot_type in PLOT_KEY_TO_FUNC:
-		PLOT_KEY_TO_FUNC[plot_type](df).show()
-	else:
-		PLOT_KEY_TO_FUNC['ALL'](df).show()
+	try:
+		df = get_history(symbol, sd, ed)
+		df['dt'] = df['Date']
+		df.set_index('Date', inplace=True)
+		plot_type = plot_type.upper()
+		if plot_type in PLOT_KEY_TO_FUNC:
+			PLOT_KEY_TO_FUNC[plot_type](df).show()
+		else:
+			PLOT_KEY_TO_FUNC['ALL'](df).show()
+	except:
+		click.secho('Failed to plot technical indicators', fg='red', nl=True)
+		return

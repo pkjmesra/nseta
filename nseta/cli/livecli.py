@@ -15,12 +15,18 @@ def live_quote(symbol, series):
     if not validate_symbol(symbol):
         print_help_msg(live_quote)
         return
-    result = get_quote(symbol)
-    if len(result['data']) == 0:
-        click.secho("Please check the inputs. Could not fetch the data.", fg='red', nl=True)
+
+    try:
+        result = get_quote(symbol)
+        if len(result['data']) == 0:
+            click.secho("Please check the inputs. Could not fetch the data.", fg='red', nl=True)
+            return
+        data = result['data'][0]
+        time = result['lastUpdateTime']
+    except:
+        click.secho('Failed to fetch live quote', fg='red', nl=True)
         return
-    data = result['data'][0]
-    time = result['lastUpdateTime']
+
     quote_data = []
     for key in QUOTE_KEYS:
         quote_data.append(data[key])

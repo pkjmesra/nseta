@@ -89,17 +89,21 @@ def test_trading_strategy(symbol, start, end, autosearch, strategy, upper, lower
 	sd = datetime.strptime(start, "%Y-%m-%d").date()
 	ed = datetime.strptime(end, "%Y-%m-%d").date()
 
-	df = get_history(symbol, sd, ed)
-	df['datetime'] = df['Date']
-	strategy = strategy.lower()
-	if strategy in STRATEGY_MAPPING:
-		STRATEGY_MAPPING[strategy](df, autosearch)
-	elif strategy == 'custom':
-		for key in KEY_MAPPING.keys():
-			df[key] = df[KEY_MAPPING[key]]
-		backtest_custom_strategy(df, strategy, upper, lower)
-	else:
-		STRATEGY_MAPPING['rsi'](df, autosearch)
+	try:
+		df = get_history(symbol, sd, ed)
+		df['datetime'] = df['Date']
+		strategy = strategy.lower()
+		if strategy in STRATEGY_MAPPING:
+			STRATEGY_MAPPING[strategy](df, autosearch)
+		elif strategy == 'custom':
+			for key in KEY_MAPPING.keys():
+				df[key] = df[KEY_MAPPING[key]]
+			backtest_custom_strategy(df, strategy, upper, lower)
+		else:
+			STRATEGY_MAPPING['rsi'](df, autosearch)
+	except:
+		click.secho('Failed to test trading strategy', fg='red', nl=True)
+		return
 
 @click.command(help='Forecast & measure performance of a trading model')
 @click.option('--symbol', '-S',  help='Security code')
@@ -116,11 +120,15 @@ def forecast_strategy(symbol, start, end, strategy, upper, lower):
 	sd = datetime.strptime(start, "%Y-%m-%d").date()
 	ed = datetime.strptime(end, "%Y-%m-%d").date()
 
-	df = get_history(symbol, sd, ed)
-	for key in KEY_MAPPING.keys():
-		df[key] = df[KEY_MAPPING[key]]
-	df.set_index('dt', inplace=True)
-	df.drop(EQUITY_HEADERS, axis = 1, inplace = True)
-	plt, result = daily_forecast(df, symbol, strategy, upper_limit=float(upper), lower_limit=float(lower), periods=28)
-	if plt is not None:
-		plt.show()
+	try:
+		df = get_history(symbol, sd, ed)
+		for key in KEY_MAPPING.keys():
+			df[key] = df[KEY_MAPPING[key]]
+		df.set_index('dt', inplace=True)
+		df.drop(EQUITY_HEADERS, axis = 1, inplace = True)
+		plt, result = daily_forecast(df, symbol, strategy, upper_limit=float(upper), lower_limit=float(lower), periods=28)
+		if plt is not None:
+			plt.show()
+	except:
+		click.secho('Failed to forecast trading strategy', fg='red', nl=True)
+		return

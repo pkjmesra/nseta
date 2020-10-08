@@ -19,8 +19,12 @@ def history(symbol, start, end, series, file_name, index, format): #, futures, e
         return
     sd = datetime.strptime(start, "%Y-%m-%d").date()
     ed = datetime.strptime(end, "%Y-%m-%d").date()
-    df = get_history(symbol, sd, ed)
-    click.echo(df.head())
+    try:
+        df = get_history(symbol, sd, ed)
+        click.echo(df.head())
+    except:
+        click.secho('Failed to fetch history', fg='red', nl=True)
+        return
     if not file_name:
         file_name = symbol + '.' + format
     if format == 'csv':
@@ -40,9 +44,13 @@ def pe_history(symbol, start, end, format, file_name):
     if not validate_inputs(start, end, symbol):
         print_help_msg(pe_history)
         return
-    df = get_index_pe_history(symbol, sd, ed)
-    click.echo(df.head())
-    
+    try:
+        df = get_index_pe_history(symbol, sd, ed)
+        click.echo(df.head())
+    except:
+        click.secho('Failed to fetch PE history', fg='red', nl=True)
+        return
+
     if not file_name:
         file_name = symbol + '.' + format
 
