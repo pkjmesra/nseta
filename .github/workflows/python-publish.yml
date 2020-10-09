@@ -63,7 +63,7 @@ jobs:
       run: |
         CURRENT_VERSION=`grep -o "'.*'" nseta/__init__.py | sed "s/'//g"`
         rm -rf nseta/__init__.py
-        echo "__VERSION__='${CURRENT_VERSION}.${{ steps.vars.outputs.sha_short }}'" >> nseta/__init__.py
+        echo "__VERSION__='${CURRENT_VERSION}.${{github.run_number}}'" >> nseta/__init__.py
         python setup.py clean build install sdist bdist_wheel
         twine upload --repository-url https://test.pypi.org/legacy/ dist/*
         rm -rf nseta/__init__.py
