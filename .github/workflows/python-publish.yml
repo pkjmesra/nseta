@@ -29,6 +29,8 @@ jobs:
           ${{ runner.os }}-
     - name: Install dependencies
       run: |
+        # Somehow the brew install fails when running action. Let's try and increment buffer size.
+        git config --global http.postBuffer 524288000
         /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install.sh)"
         brew install ta-lib
         python -m pip install --upgrade pip
