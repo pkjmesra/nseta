@@ -31,6 +31,11 @@ jobs:
       run: |
         # Somehow the brew install fails when running action. Let's try and increment buffer size.
         git config --global http.postBuffer 524288000
+        rm -rf /usr/local
+        cd /usr/local
+        mkdir homebrew && curl -L https://github.com/Homebrew/brew/tarball/master | tar xz --strip 1 -C homebrew
+        echo 'export PATH="/usr/local/sbin:$PATH"' >> ~/.bash_profile
+        which brew
         /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install.sh)"
         brew install ta-lib
         python -m pip install --upgrade pip
