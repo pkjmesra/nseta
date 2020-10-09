@@ -27,21 +27,27 @@ jobs:
         restore-keys: |
           ${{ runner.os }}-pip-
           ${{ runner.os }}-
-    - name: Install dependencies
+    - name: Update git buffer
       run: |
         # Somehow the brew install fails when running action. Let's try and increment buffer size.
         git config --global http.postBuffer 524288000
+    - name: Install Homebrew
+      run: |
         sudo rm -rf /usr/local/homebrew
-        cd /usr/local
-        sudo mkdir homebrew && curl -L https://github.com/Homebrew/brew/tarball/master | tar xz --strip 1 -C homebrew
-        echo 'export PATH="/usr/local/sbin:$PATH"' >> ~/.bash_profile
-        which brew
+        # cd /usr/local
+        # sudo mkdir homebrew && curl -L https://github.com/Homebrew/brew/tarball/master | tar xz --strip 1 -C homebrew
+        # echo 'export PATH="/usr/local/sbin:$PATH"' >> ~/.bash_profile
+        # which brew
         /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install.sh)"
+    - name: Install project dependencies
+      run: |
         brew install ta-lib
         python -m pip install --upgrade pip
         pip3 install TA-Lib
         pip3 install fastquant
         pip3 install -r requirements.txt
+    - name: Install setuptools
+      run: |
         pip install setuptools wheel twine
     - name: Build and publish distribution 📦 to Test PyPI
       env:
