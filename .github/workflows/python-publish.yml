@@ -66,10 +66,15 @@ jobs:
       run: |
         python setup.py clean build install sdist bdist_wheel
         twine upload dist/*
+    - name: Declare some variables
+      id: vars
+      shell: bash
+      run: |
+        echo "##[set-output name=branch;]$(echo ${GITHUB_REF#refs/heads/})"
+        echo "::set-output name=sha_short::$(git rev-parse --short HEAD)"
     - name: Archive artifacts
       uses: actions/upload-artifact@v2
       with:
-        name: dist-without-markdown
+        name: wheel-egg-code-tar-${{ steps.vars.outputs.branch }}-${{ steps.vars.outputs.sha_short }}
         path: |
           dist
-          !dist/**/*.md

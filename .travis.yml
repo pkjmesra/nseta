@@ -2,6 +2,8 @@ language: sh
 cache: pip
 os: osx
 before_install:
+  - git config --global http.postBuffer 524288000
+  - sudo rm -rf /usr/local/homebrew
   - /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install.sh)"
   - brew list | grep python
   - brew info python
