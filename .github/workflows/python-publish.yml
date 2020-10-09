@@ -61,13 +61,13 @@ jobs:
         TWINE_PASSWORD: ${{ secrets.TESTPYPI_PASSWORD }}
         repository_url: https://test.pypi.org/legacy/
       run: |
-        CURRENT_VERSION=`cat nseta/__init__.py`
+        CURRENT_VERSION=`grep -o "'.*'" nseta/__init__.py | sed "s/'//g"`
         rm -rf nseta/__init__.py
-        echo "__VERSION__='${{ steps.vars.outputs.sha_short }}'" >> nseta/__init__.py
+        echo "__VERSION__='${CURRENT_VERSION}.${{ steps.vars.outputs.sha_short }}'" >> nseta/__init__.py
         python setup.py clean build install sdist bdist_wheel
         twine upload --repository-url https://test.pypi.org/legacy/ dist/*
         rm -rf nseta/__init__.py
-        echo "${CURRENT_VERSION}" >> nseta/__init__.py
+        echo "__VERSION__='${CURRENT_VERSION}'" >> nseta/__init__.py
     - name: Publish distribution 📦 to PyPI
       if: startsWith(github.ref, 'refs/tags')
       env:
