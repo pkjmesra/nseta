@@ -8,7 +8,9 @@ import atexit, os, sys
 import setuptools  # noqa
 from distutils.core import setup
 import nseta
-from nseta import __VERSION__, __USERNAME__
+from nseta import __VERSION__
+
+__USERNAME__ = 'pkjmesra'
 
 with open("README.md", "r") as fh:
     long_description = fh.read()

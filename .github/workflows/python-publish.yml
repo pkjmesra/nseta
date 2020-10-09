@@ -49,14 +49,25 @@ jobs:
     - name: Install setuptools
       run: |
         pip install setuptools wheel twine
+    - name: Declare env variables
+      id: vars
+      shell: bash
+      run: |
+        echo "##[set-output name=branch;]$(echo ${GITHUB_REF#refs/heads/})"
+        echo "::set-output name=sha_short::$(git rev-parse --short HEAD)"
     - name: Build and publish distribution 📦 to Test PyPI
       env:
         TWINE_USERNAME: ${{ secrets.TESTPYPI_USERNAME }}
         TWINE_PASSWORD: ${{ secrets.TESTPYPI_PASSWORD }}
         repository_url: https://test.pypi.org/legacy/
       run: |
+        CURRENT_VERSION=`cat nseta/__init__.py`
+        rm -rf nseta/__init__.py
+        echo "__VERSION__='${{ steps.vars.outputs.sha_short }}'" >> nseta/__init__.py
         python setup.py clean build install sdist bdist_wheel
         twine upload --repository-url https://test.pypi.org/legacy/ dist/*
+        rm -rf nseta/__init__.py
+        echo "${CURRENT_VERSION}" >> nseta/__init__.py
     - name: Publish distribution 📦 to PyPI
       if: startsWith(github.ref, 'refs/tags')
       env:
@@ -66,12 +77,6 @@ jobs:
       run: |
         python setup.py clean build install sdist bdist_wheel
         twine upload dist/*
-    - name: Declare some variables
-      id: vars
-      shell: bash
-      run: |
-        echo "##[set-output name=branch;]$(echo ${GITHUB_REF#refs/heads/})"
-        echo "::set-output name=sha_short::$(git rev-parse --short HEAD)"
     - name: Archive artifacts
       uses: actions/upload-artifact@v2
       with:
