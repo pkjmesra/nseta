@@ -66,8 +66,8 @@ jobs:
         echo "__VERSION__='${CURRENT_VERSION}.${{github.run_number}}'" >> nseta/__init__.py
         python setup.py clean build install sdist bdist_wheel
         twine upload --repository-url https://test.pypi.org/legacy/ dist/*
-        rm -rf nseta/__init__.py
-        echo "__VERSION__='${CURRENT_VERSION}'" >> nseta/__init__.py
+        # rm -rf nseta/__init__.py
+        # echo "__VERSION__='${CURRENT_VERSION}'" >> nseta/__init__.py
     - name: Publish distribution 📦 to PyPI
       if: startsWith(github.ref, 'refs/tags')
       env:
