@@ -6,6 +6,7 @@ from matplotlib import pyplot as plt
 
 import click
 
+__all__ = ['backtest_smac_strategy', 'backtest_emac_strategy', 'backtest_rsi_strategy', 'backtest_macd_strategy', 'backtest_bbands_strategy', 'backtest_multi_strategy', 'daily_forecast']
 
 def backtest_smac_strategy(df, fast_period=10, slow_period=50):
 	result = backtest('smac', df.dropna(), fast_period=fast_period, slow_period=slow_period, verbose=False)

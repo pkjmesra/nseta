@@ -6,6 +6,8 @@ from nseta.cli.inputs import *
 import click
 from datetime import datetime
 
+__all__ = ['plot_ta']
+
 PLOT_KEY_TO_FUNC = {"ALL": plot_technical_indicators,
 			   "PRICE": plot_history,
                "RSI": plot_rsi,

@@ -5,6 +5,8 @@ from .inputs import *
 import click
 from datetime import datetime
 
+__all__ = ['test_trading_strategy', 'forecast_strategy']
+
 def smac_strategy(df, autosearch):
 	if not autosearch:
 		backtest_smac_strategy(df, fast_period=10, slow_period=50)

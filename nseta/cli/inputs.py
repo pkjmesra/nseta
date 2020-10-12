@@ -1,6 +1,8 @@
 import click
 from datetime import datetime
 
+__all__ = ['validate_inputs', 'print_help_msg', 'validate_symbol']
+
 def validate_inputs(start, end,symbol):
     try:
         sd = datetime.strptime(start, "%Y-%m-%d").date()

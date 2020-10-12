@@ -3,6 +3,7 @@ from nseta.common.history import get_history, get_index_pe_history
 from nseta.cli.inputs import *
 from datetime import datetime
 
+__all__ = ['history', 'pe_history']
 
 @click.command(help='Get price history of a security for given dates')
 @click.option('--symbol', '-S',  help='Security code')

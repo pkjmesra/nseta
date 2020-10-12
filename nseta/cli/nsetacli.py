@@ -7,6 +7,8 @@ from nseta.cli.plotscli import *
 from nseta.cli.strategycli import *
 from nseta.cli.livecli import *
 
+__all__ = ['nsetacli']
+
 @click.group(invoke_without_command=True, no_args_is_help=True)
 @click.option('--debug/--no-debug', default=False, help='--debug to turn debugging on. Default is off')
 @click.option('--version', is_flag=True, help='Shows the version of this library')
