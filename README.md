@@ -5,6 +5,8 @@
 [![Downloads](https://pepy.tech/badge/nseta/month)](https://pepy.tech/project/nseta/month)
 [![Python](https://img.shields.io/pypi/pyversions/nseta.svg?style=plastic)](https://badge.fury.io/py/nseta)
 [![PyPI](https://badge.fury.io/py/nseta.svg)](https://badge.fury.io/py/nseta)
+[![Codacy Badge](https://api.codacy.com/project/badge/Grade/14cc594e2dfe48519c699caa48136108)](https://app.codacy.com/gh/pkjmesra/nseta?utm_source=github.com&utm_medium=referral&utm_content=pkjmesra/nseta&utm_campaign=Badge_Grade)
+<!-- [![Code Quality: Python](https://img.shields.io/lgtm/grade/python/g/nseta/nseta.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/nseta/nseta/context:python) -->
 
 Python Library to 
 - get publicly available data on [NSE India website](https://www1.nseindia.com/) ie. stock live quotes, historical data, live indices.
