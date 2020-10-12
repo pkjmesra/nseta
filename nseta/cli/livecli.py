@@ -25,9 +25,11 @@ def live_quote(symbol, series):
             return
         data = result['data'][0]
         time = result['lastUpdateTime']
-    except:
+    except Exception as ex:
         click.secho('Failed to fetch live quote', fg='red', nl=True)
         return
+    except BaseException:
+        pass
 
     quote_data = []
     for key in QUOTE_KEYS:

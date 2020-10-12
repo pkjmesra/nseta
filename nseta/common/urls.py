@@ -42,10 +42,12 @@ symbol_count_url = URLFetchSession(
 def get_symbol_count(symbol):
     try:
         return symbol_count[symbol]
-    except:
+    except Exception as ex:
         cnt = symbol_count_url(symbol=symbol).text.lstrip().rstrip()
         symbol_count[symbol] = cnt
         return cnt
+    except BaseException:
+        pass
 
 
 """

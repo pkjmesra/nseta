@@ -7,9 +7,11 @@ def validate_inputs(start, end,symbol):
     try:
         sd = datetime.strptime(start, "%Y-%m-%d").date()
         ed = datetime.strptime(end, "%Y-%m-%d").date()
-    except:
+    except Exception as ex:
         click.secho("Please provide start and end date in format yyyy-mm-dd", fg='red', nl=True)
         return False
+    except BaseException:
+        pass
     return validate_symbol(symbol)
 
 def print_help_msg(command):

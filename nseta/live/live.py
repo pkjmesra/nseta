@@ -69,8 +69,10 @@ def get_quote(symbol, series='EQ', instrument=None, expiry=None, option_type=Non
                 v_ = float(v.strip().replace(',', ''))
             else:
                 v_ = int(v.strip().replace(',', ''))
-        except:
+        except Exception as ex:
             v_ = v
+        except BaseException:
+            pass
         res[k] = v_
     return res
 

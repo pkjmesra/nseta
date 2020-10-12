@@ -94,12 +94,15 @@ class ParseTables:
                     txt = tds[i].text.replace('\n','').replace(' ','').replace(',','')
                     try:
                         val = schema[i](txt)
-                    except:
+                    except Exception as ex:
                         if schema[i]==float or schema[i]==int:
                             val = np.nan
                         else:
                             val = ''
                             #raise ValueError("Error in %d. %s(%s)"%(i, str(schema[i]), txt))
+                    except BaseException:
+                        pass
+
                     lst.append(val)
                 lists.append(lst)
         self.lists = lists
