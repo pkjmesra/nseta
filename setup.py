@@ -8,7 +8,6 @@ import atexit, os, sys
 import setuptools  # noqa
 from distutils.core import setup
 import nseta
-from nseta import __VERSION__
 
 __USERNAME__ = 'pkjmesra'
 
@@ -20,9 +19,9 @@ with open("requirements.txt", "r") as fh:
 SYS_MAJOR_VERSION = str(sys.version_info.major)
 SYS_VERSION = SYS_MAJOR_VERSION + '.' +str(sys.version_info.minor)
 
-WHEEL_NAME = 'nseta-'+__VERSION__+'-py'+SYS_MAJOR_VERSION+'-none-any.whl'
-TAR_FILE = 'nseta-'+__VERSION__+'.tar.gz'
-EGG_FILE = 'nseta-'+__VERSION__+'-py'+SYS_VERSION+'.egg'
+WHEEL_NAME = 'nseta-'+nseta.__VERSION__+'-py'+SYS_MAJOR_VERSION+'-none-any.whl'
+TAR_FILE = 'nseta-'+nseta.__VERSION__+'.tar.gz'
+EGG_FILE = 'nseta-'+nseta.__VERSION__+'-py'+SYS_VERSION+'.egg'
 DIST_FILES = [WHEEL_NAME, TAR_FILE, EGG_FILE]
 DIST_DIR = 'dist/'
 
