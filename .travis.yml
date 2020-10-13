@@ -3,11 +3,11 @@ cache: pip
 os: osx
 before_install:
   - git config --global http.postBuffer 524288000
-  - sudo rm -rf /usr/local/homebrew
-  - /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install.sh)"
+  # - sudo rm -rf /usr/local/homebrew
+  - which brew && brew update || /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install.sh)"
   - brew list | grep python
   - brew info python
-  - brew update && brew upgrade python
+  - brew upgrade python
   - brew install ta-lib
   - pip3 install TA-Lib
   - pip3 install fastquant

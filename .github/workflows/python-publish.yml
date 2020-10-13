@@ -31,14 +31,11 @@ jobs:
       run: |
         # Somehow the brew install fails when running action. Let's try and increment buffer size.
         git config --global http.postBuffer 524288000
-    - name: Install Homebrew
+    - name: Update or Install Homebrew
       run: |
         sudo rm -rf /usr/local/homebrew
-        # cd /usr/local
-        # sudo mkdir homebrew && curl -L https://github.com/Homebrew/brew/tarball/master | tar xz --strip 1 -C homebrew
-        # echo 'export PATH="/usr/local/sbin:$PATH"' >> ~/.bash_profile
-        # which brew
-        /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install.sh)"
+        # Check if brew is already installed. If not, update or install it now
+        which brew && brew update || /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install.sh)"
     - name: Install project dependencies
       run: |
         brew install ta-lib
