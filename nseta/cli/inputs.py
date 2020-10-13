@@ -5,12 +5,12 @@ __all__ = ['validate_inputs', 'print_help_msg', 'validate_symbol']
 
 def validate_inputs(start, end,symbol):
     try:
-        sd = datetime.strptime(start, "%Y-%m-%d").date()
-        ed = datetime.strptime(end, "%Y-%m-%d").date()
+        datetime.strptime(start, "%Y-%m-%d").date()
+        datetime.strptime(end, "%Y-%m-%d").date()
     except Exception:
         click.secho("Please provide start and end date in format yyyy-mm-dd", fg='red', nl=True)
         return False
-    except BaseException:
+    except SystemExit:
         pass
     return validate_symbol(symbol)
 

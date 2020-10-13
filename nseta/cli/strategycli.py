@@ -1,5 +1,5 @@
 from nseta.strategy.strategy import *
-from nseta.common.history import *
+from nseta.common.history import get_history
 from .inputs import *
 
 import click
@@ -106,7 +106,7 @@ def test_trading_strategy(symbol, start, end, autosearch, strategy, upper, lower
 	except Exception:
 		click.secho('Failed to test trading strategy', fg='red', nl=True)
 		return
-	except BaseException:
+	except SystemExit:
 		pass
 
 @click.command(help='Forecast & measure performance of a trading model')
@@ -136,5 +136,5 @@ def forecast_strategy(symbol, start, end, strategy, upper, lower):
 	except Exception:
 		click.secho('Failed to forecast trading strategy', fg='red', nl=True)
 		return
-	except BaseException:
+	except SystemExit:
 		pass

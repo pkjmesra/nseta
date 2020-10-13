@@ -5,7 +5,7 @@ Created on Mon Aug 23 10:10:30 2020.
 @author: SW274998
 """
 import requests
-from nseta.common.constants import NSE_INDICES, INDEX_DERIVATIVES, DERIVATIVE_TO_INDEX
+from nseta.common.constants import NSE_INDICES, INDEX_DERIVATIVES
 import datetime
 from functools import partial
 try:
@@ -18,7 +18,6 @@ import threading
 import six
 import sys
 import numpy as np
-import six
 import re
 import sys
 
@@ -100,7 +99,7 @@ class ParseTables:
                         else:
                             val = ''
                             #raise ValueError("Error in %d. %s(%s)"%(i, str(schema[i]), txt))
-                    except BaseException:
+                    except SystemExit:
                         pass
 
                     lst.append(val)

@@ -46,5 +46,5 @@ def plot_ta(symbol, start, end, plot_type="ALL"):
 	except Exception:
 		click.secho('Failed to plot technical indicators', fg='red', nl=True)
 		return
-	except BaseException:
+	except SystemExit:
 		pass
