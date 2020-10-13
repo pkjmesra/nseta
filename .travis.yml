@@ -18,3 +18,6 @@ install:
 script:
   - nseta --help
   - nseta --version
+cache:
+  directories:
+    - ~/Library/Caches/pip
