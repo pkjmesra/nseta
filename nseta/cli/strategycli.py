@@ -1,6 +1,6 @@
 from nseta.strategy.strategy import *
 from nseta.common.history import get_history
-from .inputs import *
+from nseta.cli.inputs import *
 
 import click
 from datetime import datetime
