@@ -11,24 +11,24 @@
 [![codecov](https://codecov.io/gh/pkjmesra/nseta/branch/main/graph/badge.svg)](https://codecov.io/gh/pkjmesra/nseta)
 
 Python Library to 
-- get publicly available data on [NSE India website](https://www1.nseindia.com/) ie. stock live quotes, historical data, live indices.
-- plot various technical indicators
-- pattern recognition and fitment using candlestick charts
-- backtest trading strategies
-- forecasting with custom strategies
+-  get publicly available data on [NSE India website](https://www1.nseindia.com/) ie. stock live quotes, historical data, live indices.
+-  plot various technical indicators
+-  pattern recognition and fitment using candlestick charts
+-  backtest trading strategies
+-  forecasting with custom strategies
 
 ## Libraries Required
-- beautifulsoup4
-- requests
-- numpy
-- pandas
-- Click
-- six
-- lxml
-- Sphinx
-- pystan
-- fbprophet
-- fastquant
+-  beautifulsoup4
+-  requests
+-  numpy
+-  pandas
+-  Click
+-  six
+-  lxml
+-  Sphinx
+-  pystan
+-  fbprophet
+-  fastquant
 
 For Windows systems you can install Anaconda, this will cover many dependancies (You'll have to install requests and beautifulsoup additionally though)
 
@@ -271,7 +271,7 @@ Optimal metrics: {'rtot': 0.3164216915602497, 'ravg': 0.0007307660313169739, 'rn
 ![](./docs/assets/forecast-closing.png)
 ![](./docs/assets/forecast.png)
 
-- Get live quotes for a security
+-  Get live quotes for a security
 ```
 $ nsetacli live-quote -S bandhanbnk
 As of 06-OCT-2020 10:16:17
@@ -303,9 +303,9 @@ If you have fixed an issue or added a new feature, please fork this repository, 
 [MIT License](https://github.com/pkjmesra/nseta/blob/main/LICENSE)
 
 ## Inspirations (Thank you so much!)
-- [nsepy](https://github.com/swapniljariwala/nsepy)
-- [fastquant](https://github.com/enzoampil/fastquant)
-- [fbprophet](https://github.com/facebook/prophet)
-- [nsetools](https://github.com/vsjha18/nsetools)
-- [ta-lib](https://github.com/mrjbq7/ta-lib)
-- [medium](https://github.com/CanerIrfanoglu/medium)
+-  [nsepy](https://github.com/swapniljariwala/nsepy)
+-  [fastquant](https://github.com/enzoampil/fastquant)
+-  [fbprophet](https://github.com/facebook/prophet)
+-  [nsetools](https://github.com/vsjha18/nsetools)
+-  [ta-lib](https://github.com/mrjbq7/ta-lib)
+-  [medium](https://github.com/CanerIrfanoglu/medium)
