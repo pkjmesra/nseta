@@ -43,7 +43,7 @@ def plot_ta(symbol, start, end, plot_type="ALL"):
 			PLOT_KEY_TO_FUNC[plot_type](df).show()
 		else:
 			PLOT_KEY_TO_FUNC['ALL'](df).show()
-	except Exception as ex:
+	except Exception:
 		click.secho('Failed to plot technical indicators', fg='red', nl=True)
 		return
 	except BaseException:

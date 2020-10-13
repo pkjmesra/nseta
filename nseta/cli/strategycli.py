@@ -103,7 +103,7 @@ def test_trading_strategy(symbol, start, end, autosearch, strategy, upper, lower
 			backtest_custom_strategy(df, strategy, upper, lower)
 		else:
 			STRATEGY_MAPPING['rsi'](df, autosearch)
-	except Exception as ex:
+	except Exception:
 		click.secho('Failed to test trading strategy', fg='red', nl=True)
 		return
 	except BaseException:
@@ -133,7 +133,7 @@ def forecast_strategy(symbol, start, end, strategy, upper, lower):
 		plt, result = daily_forecast(df, symbol, strategy, upper_limit=float(upper), lower_limit=float(lower), periods=28)
 		if plt is not None:
 			plt.show()
-	except Exception as ex:
+	except Exception:
 		click.secho('Failed to forecast trading strategy', fg='red', nl=True)
 		return
 	except BaseException:
