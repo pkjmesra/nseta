@@ -46,7 +46,7 @@ def get_symbol_count(symbol):
         cnt = symbol_count_url(symbol=symbol).text.lstrip().rstrip()
         symbol_count[symbol] = cnt
         return cnt
-    except BaseException:
+    except SystemExit:
         pass
 
 

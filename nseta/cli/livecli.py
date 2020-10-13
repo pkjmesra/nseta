@@ -28,7 +28,7 @@ def live_quote(symbol, series):
     except Exception:
         click.secho('Failed to fetch live quote', fg='red', nl=True)
         return
-    except BaseException:
+    except SystemExit:
         pass
 
     quote_data = []

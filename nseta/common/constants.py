@@ -4,7 +4,6 @@ Created on Mon Aug 23 10:10:30 2020.
 
 @author: SW274998
 """
-import six
 
 NSE_INDICES = ["NIFTY 50",
                "NIFTY NEXT 50",

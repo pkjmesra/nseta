@@ -103,7 +103,7 @@ def daily_forecast(df, symbol, strategy, upper_limit=1.5, lower_limit=1.5, perio
 	if periods > 0:
 		fig1 = m.plot(forecast, uncertainty=True)
 		# fig2 = m.plot_components(forecast)
-		a = add_changepoints_to_plot(fig1.gca(), m, forecast)
+		add_changepoints_to_plot(fig1.gca(), m, forecast) # Returns a = add_changepoints_to_plot...
 		# fig1.axes[0].set_xlim(datestring_to_datetime("2020-02-01"),
 		#                       datestring_to_datetime("2020-04-30")
 		#                      )

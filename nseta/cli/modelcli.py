@@ -31,7 +31,7 @@ def create_cdl_model(symbol, start, end, file_name, steps, format):
 	except Exception:
 		click.secho('Failed to create candlestick model', fg='red', nl=True)
 		return
-	except BaseException:
+	except SystemExit:
 		pass
 
 	if not file_name:
@@ -47,5 +47,5 @@ def create_cdl_model(symbol, start, end, file_name, steps, format):
 	except Exception:
 		click.secho('Failed to plot candlestick pattern for the model', fg='red', nl=True)
 		return
-	except BaseException:
+	except SystemExit:
 		pass

@@ -2,7 +2,6 @@ from plotly.offline import plot
 import plotly.graph_objs as go
 import pandas as pd
 import talib as ta
-from matplotlib.widgets import Cursor
 import matplotlib.pyplot as plt
 
 __all__ = ['plot_candlestick', 'plot_technical_indicators', 'plot_history', 'plot_rsi', 'plot_mom', 'plot_dmi', 'plot_macd', 'plot_sma', 'plot_ema', 'plot_adx', 'plot_bbands', 'plot_obv', 'plot_sstochastic', 'plot_fstochastic']

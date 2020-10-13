@@ -26,7 +26,7 @@ def history(symbol, start, end, series, file_name, index, format): #, futures, e
     except Exception:
         click.secho('Failed to fetch history', fg='red', nl=True)
         return
-    except BaseException:
+    except SystemExit:
         pass
     if not file_name:
         file_name = symbol + '.' + format
@@ -53,7 +53,7 @@ def pe_history(symbol, start, end, format, file_name):
     except Exception:
         click.secho('Failed to fetch PE history', fg='red', nl=True)
         return
-    except BaseException:
+    except SystemExit:
         pass
         
     if not file_name:
