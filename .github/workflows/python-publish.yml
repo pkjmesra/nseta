@@ -33,7 +33,7 @@ jobs:
         git config --global http.postBuffer 524288000
     - name: Update or Install Homebrew
       run: |
-        sudo rm -rf /usr/local/homebrew
+        # sudo rm -rf /usr/local/homebrew
         # Check if brew is already installed. If not, update or install it now
         which brew && brew update || /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install.sh)"
     - name: Install project dependencies
