@@ -1,3 +1,7 @@
+setuptools
+wheel
+TA-Lib==0.4.19
+fastquant
 beautifulsoup4==4.8.2
 requests==2.22.0
 numpy==1.18.0
@@ -6,9 +10,8 @@ Click==7.0
 six==1.13.0
 lxml==4.4.2
 Sphinx==3.2.1
-TA-Lib==0.4.19
 matplotlib==3.1.2
 plotly==4.11.0
 pystan==2.19.1.1
 fbprophet==0.7.1
-# fastquant
+
