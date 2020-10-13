@@ -23,7 +23,7 @@ def history(symbol, start, end, series, file_name, index, format): #, futures, e
     try:
         df = get_history(symbol, sd, ed)
         click.echo(df.head())
-    except Exception as ex:
+    except Exception:
         click.secho('Failed to fetch history', fg='red', nl=True)
         return
     except BaseException:
@@ -50,7 +50,7 @@ def pe_history(symbol, start, end, format, file_name):
     try:
         df = get_index_pe_history(symbol, sd, ed)
         click.echo(df.head())
-    except Exception as ex:
+    except Exception:
         click.secho('Failed to fetch PE history', fg='red', nl=True)
         return
     except BaseException:

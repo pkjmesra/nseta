@@ -94,7 +94,7 @@ class ParseTables:
                     txt = tds[i].text.replace('\n','').replace(' ','').replace(',','')
                     try:
                         val = schema[i](txt)
-                    except Exception as ex:
+                    except Exception:
                         if schema[i]==float or schema[i]==int:
                             val = np.nan
                         else:
