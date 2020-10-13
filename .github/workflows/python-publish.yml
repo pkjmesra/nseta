@@ -36,6 +36,9 @@ jobs:
         # sudo rm -rf /usr/local/homebrew
         # Check if brew is already installed. If not, update or install it now
         which brew && brew update || /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install.sh)"
+    - name: Install setuptools
+      run: |
+        pip install setuptools wheel twine
     - name: Install project dependencies
       run: |
         brew install ta-lib
@@ -43,9 +46,6 @@ jobs:
         pip3 install TA-Lib
         pip3 install fastquant
         pip3 install -r requirements.txt
-    - name: Install setuptools
-      run: |
-        pip install setuptools wheel twine
     - name: Declare env variables
       id: vars
       shell: bash

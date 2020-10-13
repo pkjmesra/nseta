@@ -9,6 +9,7 @@ before_install:
   - brew info python
   # - brew upgrade python
   - brew install ta-lib
+  - pip3 install setuptools wheel
   - pip3 install TA-Lib
   - pip3 install fastquant
   - pip3 install -r requirements.txt
