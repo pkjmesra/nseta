@@ -1,5 +1,8 @@
 language: sh
-cache: pip
+cache:
+  directories:
+    - ~/Library/Caches/pip
+    - ~/Library/Caches/Homebrew
 os: osx
 before_install:
   - git config --global http.postBuffer 524288000
@@ -18,6 +21,3 @@ install:
 script:
   - nseta --help
   - nseta --version
-cache:
-  directories:
-    - ~/Library/Caches/pip
