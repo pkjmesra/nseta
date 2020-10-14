@@ -13,7 +13,6 @@ import six
 from datetime import date, timedelta
 from bs4 import BeautifulSoup
 import pandas as pd
-import six
 import inspect
 import io
 
@@ -336,8 +335,8 @@ Get Trade and Delivery Volume for each stock
 
 
 def get_delivery_position(dt, segment='EQ'):
-    MMM = dt.strftime("%b").upper()
-    yyyy = dt.strftime("%Y")
+    dt.strftime("%b").upper()
+    dt.strftime("%Y")
 
     """
     1. ddmmyyyy
