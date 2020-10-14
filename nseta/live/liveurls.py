@@ -6,10 +6,6 @@ Created on Fri Aug 26 12:00:05 2020
 """
 
 from nseta.common.commons import URLFetch
-from nseta.common.constants import symbol_count, symbol_list
-
-from requests import Session
-from functools import partial
 
 
 headers = {'Accept': '*/*',
