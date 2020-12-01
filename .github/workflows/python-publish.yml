@@ -48,6 +48,7 @@ jobs:
       id: vars
       shell: bash
       run: |
+        GITHUB_REF=${GITHUB_REF#refs/tags/}
         echo "##[set-output name=branch;]$(echo ${GITHUB_REF#refs/heads/})"
         echo "::set-output name=sha_short::$(git rev-parse --short HEAD)"
         CURRENT_VERSION=`grep -o "'.*'" nseta/__init__.py | sed "s/'//g"`
