@@ -1,5 +1,6 @@
 import numpy as np
 from nseta.analytics.candle_rankings import candle_rankings
+from nseta.common.log import *
 import talib
 from itertools import compress
 
@@ -7,10 +8,10 @@ __all__ = ['model_candlestick']
 
 # patterns not found in the patternsite.com
 exclude_items = ('CDLCOUNTERATTACK',
-                 'CDLLONGLINE',
-                 'CDLSHORTLINE',
-                 'CDLSTALLEDPATTERN',
-                 'CDLKICKINGBYLENGTH')
+				 'CDLLONGLINE',
+				 'CDLSHORTLINE',
+				 'CDLSTALLEDPATTERN',
+				 'CDLKICKINGBYLENGTH')
 
 def get_candle_funcs():
 	funcs = talib.get_function_groups()['Pattern Recognition'] 
@@ -23,6 +24,7 @@ TA-Lib creates individual columns for each pattern. While 0 corresponds
 to no pattern, positive values represent bullish patterns and negative 
 values represent bearish patterns.
 '''
+@logdebug
 def create_pattern_data(data_frame):
 	df = data_frame
 	# extract OHLC
@@ -48,6 +50,7 @@ We basically have 3 cases:
 	Single Pattern: Fill the cell with Pattern Name
 	Multiple Patterns: Fill the cell with lowest (best) ranking Pattern Name
 '''
+@logdebug
 def pick_best_rank_from_pattern(data_frame):
 	df = data_frame
 	df['candlestick_pattern'] = np.nan
@@ -95,6 +98,7 @@ We will extract candlestick patterns using TA-Lib (supports 61 patterns as of Se
 We will rank them based on the “Overall performance rank” and select the best performance 
 pattern for each candle.
 '''
+@logdebug
 def recognize_candlestick_pattern(data_frame, steps):
 	"""
 	Recognizes candlestick patterns and appends 2 additional columns to df;
@@ -112,6 +116,7 @@ def recognize_candlestick_pattern(data_frame, steps):
 
 	return df
 
+@logdebug
 def model_candlestick(df, steps):
 	return recognize_candlestick_pattern(df, steps)
 

@@ -1,3 +1,4 @@
+from nseta.common.log import *
 from plotly.offline import plot
 import plotly.graph_objs as go
 import pandas as pd
@@ -6,6 +7,7 @@ import matplotlib.pyplot as plt
 
 __all__ = ['plot_candlestick', 'plot_technical_indicators', 'plot_history', 'plot_rsi', 'plot_mom', 'plot_dmi', 'plot_macd', 'plot_sma', 'plot_ema', 'plot_adx', 'plot_bbands', 'plot_obv', 'plot_sstochastic', 'plot_fstochastic']
 
+@logdebug
 def plot_candlestick_from_csv(csv_file_path):
 	df = pd.read_csv(csv_file_path)
 	plot_candlestick(df)
@@ -20,6 +22,7 @@ using TA-Lib. We should have ranked them based on the
 “Overall performance rank” and selected the best performance pattern 
 for each candle.
 '''
+@logdebug
 def plot_candlestick(df, symbol_name="", plot_title=""):
 	o = df['Open'].astype(float)
 	h = df['High'].astype(float)
@@ -28,22 +31,23 @@ def plot_candlestick(df, symbol_name="", plot_title=""):
 	p = df['candlestick_pattern'].astype(str)
 
 	trace = go.Candlestick(
-	            open=o,
-	            high=h,
-	            low=l,
-	            close=c,
-	            text=p)
+				open=o,
+				high=h,
+				low=l,
+				close=c,
+				text=p)
 	data = [trace]
 
 	layout = {
-	    'title': plot_title,
-	    'yaxis': {'title': 'Price'},
-	    'xaxis': {'title': 'Index Number'},
+		'title': plot_title,
+		'yaxis': {'title': 'Price'},
+		'xaxis': {'title': 'Index Number'},
 
 	}
 	fig = dict(data=data, layout=layout)
 	plot(fig, filename= symbol_name +'_candles.html')
 
+@logdebug
 def plot_technical_indicators(df):
 	# plot with various axes scales
 	fig, axs = plt.subplots(5,2, sharex=True)
@@ -90,12 +94,14 @@ def plot_technical_indicators(df):
 
 	return plt
 
+@logdebug
 def plot_history(df, plot_points=['Close'], secondary_y="Turnover"):
 	df[plot_points].plot(secondary_y=secondary_y)
 	plt.title('Price History')
 	plt.grid(True)
 	return plt
 
+@logdebug
 def get_rsi_df(df):
 	df['RSI'] = ta.RSI(df['Close'],14)
 	return df['RSI']
@@ -106,42 +112,50 @@ analysis of financial markets. It is intended to chart the current
 and historical strength or weakness of a stock or market based on 
 the closing prices of a recent trading period.
 '''
+@logdebug
 def plot_rsi(df):
 	get_rsi_df(df).plot()
 	plt.title('RSI(14)')
 	plt.grid(True)
 	return plt
 
+@logdebug
 def get_mom_df(df):
 	df['MOM'] = ta.MOM(df['Close'],2)
 	return df['MOM']
 
+@logdebug
 def plot_mom(df):
 	get_mom_df(df).plot()
 	plt.title('Momentum - MOM(10)')
 	plt.grid(True)
 	return plt
 
+@logdebug
 def get_dmi_df(df):
 	df['DMI'] = ta.DX(df['High'],df['Low'],df['Close'],timeperiod=14)
 	return df['DMI']
 
+@logdebug
 def plot_dmi(df):
 	get_dmi_df(df).plot()
 	plt.title('Directional Movement Index - DMI(14)')
 	plt.grid(True)
 	return plt
 
+@logdebug
 def get_macd_df(df):
 	df['macd'], df['macdsignal'], df['macdhist'] = ta.MACDEXT(df['Close'], fastperiod=12, fastmatype=0, slowperiod=26, slowmatype=0, signalperiod=9, signalmatype=0)
 	return df[['macd','macdsignal', 'macdhist']]
 
+@logdebug
 def plot_macd(df):
 	get_macd_df(df).plot()
 	plt.title('MACD(12, 26)')
 	plt.grid(True)
 	return plt
 
+@logdebug
 def get_sma_df(df):
 	df['SMA(10)'] = ta.SMA(df['Close'],10)
 	df['SMA(50)'] = ta.SMA(df['Close'],50)
@@ -151,12 +165,14 @@ def get_sma_df(df):
 Simple moving average (SMA) calculates the average of a selected 
 range of closing prices, by the number of periods in that range.
 '''
+@logdebug
 def plot_sma(df):
 	get_sma_df(df).plot()
 	plt.title('SMA(10) & SMA(50)')
 	plt.grid(True)
 	return plt
 
+@logdebug
 def get_ema_df(df):
 	df['EMA(10)'] = ta.EMA(df['Close'], timeperiod = 10)
 	return df[['Close','EMA(10)']]
@@ -166,12 +182,14 @@ def get_ema_df(df):
 and significance on the most recent data points. That is it is 
 generally known as Exponentially Weighted Moving Average.
 '''
+@logdebug
 def plot_ema(df):
 	get_ema_df(df).plot()
 	plt.title('EMA(10)')
 	plt.grid(True)
 	return plt
 
+@logdebug
 def get_adx_df(df):
 	df['ADX'] = ta.ADX(df['High'],df['Low'], df['Close'], timeperiod=14)
 	return df[['ADX']]
@@ -181,12 +199,14 @@ Average Directional Movement Index(Momentum Indicator) - ADX can be
 used to help measure the overall strength of a trend. The ADX 
 indicator is an average of expanding price range values.
 '''
+@logdebug
 def plot_adx(df):
 	get_adx_df(df).plot()
 	plt.title('ADX(14)')
 	plt.grid(True)
 	return plt
 
+@logdebug
 def get_bbands_df(df):
 	df['BBands-U'], df['BBands-M'], df['BBands-L'] = ta.BBANDS(df['Close'], timeperiod =20)
 	return df[['Close','BBands-U','BBands-M','BBands-L']]
@@ -196,22 +216,26 @@ Bollinger Bands are a type of statistical chart characterizing the
 prices and volatility over time of a financial instrument or commodity, 
 using a formulaic method propounded by John Bollinger.
 '''
+@logdebug
 def plot_bbands(df):
 	get_bbands_df(df).plot()
 	plt.title('Bollinger Bands(20)')
 	plt.grid(True)
 	return plt
 
+@logdebug
 def get_obv_df(df):
 	df['OBV'] = ta.OBV(df['Close'], df['Volume'])
 	return df[['OBV']]
 
+@logdebug
 def plot_obv(df):
 	get_obv_df(df).plot()
 	plt.title('OBV')
 	plt.grid(True)
 	return plt
 
+@logdebug
 def plot_sstochastic(df):
 	df['SStochastic(14)'], df['SStochastic(3)'] = ta.STOCH(df['High'], df['Low'], df['Close'], fastk_period=14, slowk_period=3, slowk_matype=0, slowd_period=3, slowd_matype=0)
 	df[['SStochastic(14)','SStochastic(3)']].plot()
@@ -219,6 +243,7 @@ def plot_sstochastic(df):
 	plt.grid(True)
 	return plt
 
+@logdebug
 def plot_fstochastic(df):
 	df['FStochastic(14)'], df['FStochastic(3)'] = ta.STOCHF(df['High'], df['Low'], df['Close'], fastk_period=14, fastd_period=3, fastd_matype=0)
 	df[['FStochastic(14)','FStochastic(3)']].plot()

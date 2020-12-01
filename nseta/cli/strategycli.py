@@ -1,5 +1,6 @@
 from nseta.strategy.strategy import *
-from nseta.common.history import get_history
+from nseta.common.history import *
+from nseta.common.log import *
 from nseta.cli.inputs import *
 
 import click
@@ -7,33 +8,39 @@ from datetime import datetime
 
 __all__ = ['test_trading_strategy', 'forecast_strategy']
 
+@logdebug
 def smac_strategy(df, autosearch):
 	if not autosearch:
 		backtest_smac_strategy(df, fast_period=10, slow_period=50)
 	else:
 		backtest_smac_strategy(df, fast_period=range(10, 30, 3), slow_period=range(40, 60, 3))
 
+@logdebug
 def emac_strategy(df, autosearch):
 	if not autosearch:
 		backtest_smac_strategy(df, fast_period=10, slow_period=50)
 	else:
 		backtest_smac_strategy(df, fast_period=range(10, 30, 3), slow_period=range(40, 50, 3))
 
+@logdebug
 def bbands_strategy(df, autosearch):
 	backtest_bbands_strategy(df, period=20, devfactor=2.0)
 
+@logdebug
 def rsi_strategy(df, autosearch):
 	if not autosearch:
 		backtest_rsi_strategy(df, rsi_period=14)
 	else:
 		backtest_rsi_strategy(df, rsi_period=[5,7,11,14], rsi_lower=[15,30])
 
+@logdebug
 def macd_strategy(df, autosearch):
 	if not autosearch:
 		backtest_macd_strategy(df, fast_period=12, slow_period=26)
 	else:
 		backtest_macd_strategy(df, fast_period=range(4, 12, 2), slow_period=range(14, 26, 2))
 
+@logdebug
 def multi_strategy(df, autosearch):
 	if not autosearch:
 		backtest_multi_strategy(df, key_variable= "smac", fast_period=10, slow_period=50)
@@ -50,26 +57,26 @@ def multi_strategy(df, autosearch):
 		print('\n')
 
 STRATEGY_MAPPING = {
-    "rsi": rsi_strategy,
-    "smac": smac_strategy,
-    # "base": BaseStrategy,
-    "macd": macd_strategy,
-    "emac": emac_strategy,
-    "bbands": bbands_strategy,
-    # "buynhold": BuyAndHoldStrategy,
-    # "sentiment": SentimentStrategy,
-    # "custom": CustomStrategy,
-    # "ternary": TernaryStrategy,
-    "multi": multi_strategy
+	"rsi": rsi_strategy,
+	"smac": smac_strategy,
+	# "base": BaseStrategy,
+	"macd": macd_strategy,
+	"emac": emac_strategy,
+	"bbands": bbands_strategy,
+	# "buynhold": BuyAndHoldStrategy,
+	# "sentiment": SentimentStrategy,
+	# "custom": CustomStrategy,
+	# "ternary": TernaryStrategy,
+	"multi": multi_strategy
 }
 
 KEY_MAPPING = {
-    'dt': 'Date',
-    'open': 'Open',
-    'high': 'High',
-    'low': 'Low',
-    'close': 'Close',
-    'volume': 'Volume',
+	'dt': 'Date',
+	'open': 'Open',
+	'high': 'High',
+	'low': 'Low',
+	'close': 'Close',
+	'volume': 'Volume',
 }
 
 STRATEGY_MAPPING_KEYS = list(STRATEGY_MAPPING.keys()) + ['custom']
@@ -84,6 +91,7 @@ STRATEGY_MAPPING_KEYS = list(STRATEGY_MAPPING.keys()) + ['custom']
 @click.option('--lower', '-l', default=1.5, help='Only when strategy is "custom". We sell the security when the predicted next day return is < -{lower} %')
 @click.option('--autosearch/--no-autosearch', default=False, 
 	help='--auto for allowing to automatically measure the performance of your trading strategy on multiple combinations of parameters.')
+@logdebug
 def test_trading_strategy(symbol, start, end, autosearch, strategy, upper, lower):
 	if not validate_inputs(start, end, symbol):
 		print_help_msg(test_trading_strategy)
@@ -103,8 +111,9 @@ def test_trading_strategy(symbol, start, end, autosearch, strategy, upper, lower
 			backtest_custom_strategy(df, strategy, upper, lower)
 		else:
 			STRATEGY_MAPPING['rsi'](df, autosearch)
-	except Exception:
-		click.secho('Failed to test trading strategy', fg='red', nl=True)
+	except Exception as e:
+		default_logger().error(e, exc_info=True)
+		click.secho('Failed to test trading strategy. Please check the inputs.', fg='red', nl=True)
 		return
 	except SystemExit:
 		pass
@@ -117,6 +126,7 @@ def test_trading_strategy(symbol, start, end, autosearch, strategy, upper, lower
 	help=', '.join(STRATEGY_MAPPING_KEYS) + ". Choose one.")
 @click.option('--upper', '-u', default=1.5, help='Only when strategy is "custom". We buy the security when the predicted next day return is > +{upper} %')
 @click.option('--lower', '-l', default=1.5, help='Only when strategy is "custom". We sell the security when the predicted next day return is < -{lower} %')
+@logdebug
 def forecast_strategy(symbol, start, end, strategy, upper, lower):
 	if not validate_inputs(start, end, symbol):
 		print_help_msg(forecast_strategy)
@@ -133,8 +143,9 @@ def forecast_strategy(symbol, start, end, strategy, upper, lower):
 		plt, result = daily_forecast(df, symbol, strategy, upper_limit=float(upper), lower_limit=float(lower), periods=28)
 		if plt is not None:
 			plt.show()
-	except Exception:
-		click.secho('Failed to forecast trading strategy', fg='red', nl=True)
+	except Exception as e:
+		default_logger().error(e, exc_info=True)
+		click.secho('Failed to forecast trading strategy. Please check the inputs.', fg='red', nl=True)
 		return
 	except SystemExit:
 		pass

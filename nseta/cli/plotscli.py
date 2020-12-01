@@ -1,5 +1,6 @@
 
 from nseta.common.history import get_history
+from nseta.common.log import *
 from nseta.plots.plots import *
 from nseta.cli.inputs import *
 
@@ -10,16 +11,16 @@ __all__ = ['plot_ta']
 
 PLOT_KEY_TO_FUNC = {"ALL": plot_technical_indicators,
 			   "PRICE": plot_history,
-               "RSI": plot_rsi,
-               "EMA": plot_ema,
-               "SMA": plot_sma,
-               "SSTO": plot_sstochastic,
-               "FSTO": plot_fstochastic,
-               "ADX": plot_adx,
-               "MACD": plot_macd,
-               "MOM": plot_mom,
-               "DMI": plot_dmi,
-               "BBANDS": plot_bbands}
+			   "RSI": plot_rsi,
+			   "EMA": plot_ema,
+			   "SMA": plot_sma,
+			   "SSTO": plot_sstochastic,
+			   "FSTO": plot_fstochastic,
+			   "ADX": plot_adx,
+			   "MACD": plot_macd,
+			   "MOM": plot_mom,
+			   "DMI": plot_dmi,
+			   "BBANDS": plot_bbands}
 PLOT_TI_KEYS = list(PLOT_KEY_TO_FUNC.keys())
 
 @click.command(help='Plot various technical analysis indicators')
@@ -27,6 +28,7 @@ PLOT_TI_KEYS = list(PLOT_KEY_TO_FUNC.keys())
 @click.option('--start', '-s', help='Start date in yyyy-mm-dd format')
 @click.option('--end', '-e', help='End date in yyyy-mm-dd format')
 @click.option('--plot-type', '-p','plot_type', default='ALL', help=', '.join(PLOT_TI_KEYS) + ". Choose one.")
+@logdebug
 def plot_ta(symbol, start, end, plot_type="ALL"):
 	if not validate_inputs(start, end, symbol):
 		print_help_msg(plot_ta)
@@ -43,7 +45,8 @@ def plot_ta(symbol, start, end, plot_type="ALL"):
 			PLOT_KEY_TO_FUNC[plot_type](df).show()
 		else:
 			PLOT_KEY_TO_FUNC['ALL'](df).show()
-	except Exception:
+	except Exception as e:
+		default_logger().error(e, exc_info=True)
 		click.secho('Failed to plot technical indicators', fg='red', nl=True)
 		return
 	except SystemExit:
