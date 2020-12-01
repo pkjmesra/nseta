@@ -35,6 +35,8 @@ For Windows systems you can install Anaconda, this will cover many dependancies 
 ## Installation
 
 ```python setup.py clean build install```
+or
+```pip install nseta```
 
 ## Usage
 
