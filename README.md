@@ -61,7 +61,7 @@ Commands:
   test-trading-strategy  Measure the performance of your trading strategy
 
   Example:
-  nseta --debug create-cdl-model -S  -s 2020-07-30 -e 2020-11-20 --steps
+  nseta --debug create-cdl-model -S bandhanbnk -s 2020-07-30 -e 2020-11-20 --steps
   nseta --debug forecast-strategy -S bandhanbnk -s 2020-07-30 -e 2020-11-20 --strategy rsi
   nseta --debug history -S bandhanbnk -s 2020-07-30 -e 2020-11-20
   nseta --debug live-quote -S bandhanbnk
