@@ -8,7 +8,7 @@ Created on Tue Aug 24 11:23:30 2020.
 from nseta.common.urls import *
 from nseta.common.commons import *
 from nseta.common.constants import *
-from nseta.common.log import *
+from nseta.common.log import logdebug
 
 import six
 from datetime import date, timedelta

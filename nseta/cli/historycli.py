@@ -1,6 +1,6 @@
 import click
 from nseta.common.history import get_history, get_index_pe_history
-from nseta.common.log import *
+from nseta.common.log import logdebug, default_logger
 from nseta.cli.inputs import *
 from datetime import datetime
 

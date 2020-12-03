@@ -1,6 +1,6 @@
 import click
 from datetime import datetime
-from nseta.common.log import *
+from nseta.common.log import logdebug
 
 __all__ = ['validate_inputs', 'print_help_msg', 'validate_symbol']
 

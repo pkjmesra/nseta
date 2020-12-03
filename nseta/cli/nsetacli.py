@@ -7,7 +7,7 @@ from nseta.cli.strategycli import *
 from nseta.cli.livecli import *
 from nseta.common import log
 
-__all__ = ['nsetacli', 'logger']
+__all__ = ['nsetacli']
 
 @click.group(invoke_without_command=True, no_args_is_help=True)
 @click.option('--debug/--no-debug', default=False, help='--debug to turn debugging on. Default is off')

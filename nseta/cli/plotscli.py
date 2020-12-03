@@ -1,6 +1,6 @@
 
 from nseta.common.history import get_history
-from nseta.common.log import *
+from nseta.common.log import logdebug, default_logger
 from nseta.plots.plots import *
 from nseta.cli.inputs import *
 

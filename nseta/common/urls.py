@@ -7,7 +7,7 @@ Created on Thu Nov 19 20:35:13 2015
 
 from nseta.common.commons import URLFetch
 from nseta.common.constants import symbol_count
-from nseta.common.log import *
+from nseta.common.log import logdebug
 
 from requests import Session
 from functools import partial

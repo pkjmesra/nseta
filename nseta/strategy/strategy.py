@@ -1,4 +1,4 @@
-from nseta.common.log import *
+from nseta.common.log import logdebug
 from fastquant import backtest
 from fbprophet import Prophet
 from fbprophet.plot import add_changepoints_to_plot

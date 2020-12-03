@@ -1,4 +1,4 @@
-from nseta.common.log import *
+from nseta.common.log import logdebug
 from plotly.offline import plot
 import plotly.graph_objs as go
 import pandas as pd

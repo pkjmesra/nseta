@@ -1,6 +1,6 @@
 from nseta.strategy.strategy import *
 from nseta.common.history import *
-from nseta.common.log import *
+from nseta.common.log import logdebug, default_logger
 from nseta.cli.inputs import *
 
 import click

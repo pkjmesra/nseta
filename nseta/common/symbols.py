@@ -1,7 +1,7 @@
 import pandas as pd
 import io
 from nseta.common.urls import equity_symbol_list_url, index_constituents_url
-from nseta.common.log import *
+from nseta.common.log import logdebug
 
 def get_symbol_list():
 	res = equity_symbol_list_url()

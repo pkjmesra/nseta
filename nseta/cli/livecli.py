@@ -3,7 +3,7 @@ import pandas as pd
 
 from nseta.live.live import get_quote
 from nseta.cli.inputs import *
-from nseta.common.log import *
+from nseta.common.log import logdebug, default_logger
 from datetime import datetime
 
 __all__ = ['live_quote']
