@@ -1,11 +1,14 @@
-from nseta.common.log import logdebug
+from nseta.common.log import logdebug, default_logger, suppress_stdout_stderr
 from fastquant import backtest
 from fbprophet import Prophet
 from fbprophet.plot import add_changepoints_to_plot
 
+from pylab import rcParams
+
 from matplotlib import pyplot as plt
 
-import click
+import matplotlib
+import click, logging
 
 __all__ = ['backtest_smac_strategy', 'backtest_emac_strategy', 'backtest_rsi_strategy', 'backtest_macd_strategy', 'backtest_bbands_strategy', 'backtest_multi_strategy', 'daily_forecast']
 
@@ -82,8 +85,14 @@ Facebook's Prophet package.
 '''
 @logdebug
 def daily_forecast(df, symbol, strategy, upper_limit=1.5, lower_limit=1.5, periods=0):
+	train_size = int(0.75 * len(df)) - periods              # Use 3 years of data as train set. Note there are about 252 trading days in a year
+	val_size = int(0.25 * len(df))                  # Use 1 year of data as validation set
+	changepoint_prior_scale_list = [0.05, 0.5, 1, 1.5, 2.5]     # for hyperparameter tuning
+	train_val_size = train_size + val_size # Size of train+validation set
+
 	# Fit model on closing prices
 	ts = df.reset_index()[["dt", "close"]]
+	# ts = df[['dt', 'close']].rename(columns={'date':'ds', 'close':'y'})
 	ts.columns = ['ds', 'y']
 	if not ts['y'].count() >= 2:
 		click.secho("Dataframe has less than 2 non-NaN rows. Cannot fit the model.", fg='red', nl=True)
@@ -91,21 +100,28 @@ def daily_forecast(df, symbol, strategy, upper_limit=1.5, lower_limit=1.5, perio
 	# m = Prophet(daily_seasonality=True, yearly_seasonality=True).fit(ts)
 	m = Prophet(growth="linear",
 			seasonality_mode='additive',
-			daily_seasonality=False,
-			weekly_seasonality=True,
-			yearly_seasonality=True,
+			daily_seasonality=True,
+			weekly_seasonality=False,
+			yearly_seasonality=False,
 			interval_width=0.95, #uncertainty
 			holidays=None,
 			n_changepoints=20,
-		   ) 
+			changepoint_prior_scale=0.05,
+		   )
+	# Turn off fbprophet stdout logger
+	logging.getLogger('fbprophet').setLevel(default_logger().level)
 	m.add_country_holidays(country_name='IN')
-	m.fit(ts)
 
-	future = m.make_future_dataframe(periods=periods, freq='D')
-	future.tail()
-
-	# Predict and plot
-	forecast = m.predict(future)
+	with suppress_stdout_stderr():
+		m.fit(ts[0:train_val_size])
+		ts.head(10)
+		future = m.make_future_dataframe(periods=3*periods, freq='D')
+		# Eliminate weekend from future dataframe
+		future['day'] = future['ds'].dt.weekday
+		future = future[future['day']<=4]
+		future.tail()
+		# Predict and plot
+		forecast = m.predict(future)
 	forecast[['ds', 'yhat', 'yhat_lower', 'yhat_upper']].tail()
 
 	if periods > 0:
@@ -122,14 +138,27 @@ def daily_forecast(df, symbol, strategy, upper_limit=1.5, lower_limit=1.5, perio
 		plt.subplots_adjust(top=0.92, bottom=0.08, left=0.10, right=0.90, hspace=0.25,
 							wspace=0.5)
 
+		# Plot the predictions
+		rcParams['figure.figsize'] = 10, 8 # width 10, height 8
+		matplotlib.rcParams.update({'font.size': 14})
+
+		ax = df.plot(x='datetime', y='close', style='bx-', grid=True)
+
+		# Plot the predictions
+		preds_list = forecast['yhat'][train_val_size:train_val_size+periods]
+		ax.plot(df['datetime'][train_val_size:train_val_size+periods], preds_list, marker='x')
+		    
+		ax.set_xlabel("Date")
+		ax.set_ylabel("INR")
+		ax.legend(['Close', 'Predictions'])
 	# Convert predictions to expected 1 day returns
 	expected_1day_return = forecast.set_index("ds").yhat.pct_change().shift(-1).multiply(100)
 
 	# Backtest the predictions, given that we buy the given symbol when the predicted 
 	# next day return is > +1.5%, and sell when it's < -1.5%.
-	df[strategy] = expected_1day_return.multiply(-1)
+	forecast[strategy] = expected_1day_return.multiply(-1)
 	if strategy == 'custom':
-		result = backtest(strategy, df.dropna(),upper_limit=upper_limit, lower_limit=-lower_limit)
+		result = backtest(strategy, forecast.dropna(),upper_limit=upper_limit, lower_limit=-lower_limit)
 	else:
 		if strategy in STRATEGY_FORECAST_MAPPING_KEYS:
 			result = STRATEGY_FORECAST_MAPPING[strategy](df)

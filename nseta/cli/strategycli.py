@@ -136,11 +136,12 @@ def forecast_strategy(symbol, start, end, strategy, upper, lower):
 
 	try:
 		df = get_history(symbol, sd, ed)
+		df['datetime'] = df['Date']
 		for key in KEY_MAPPING.keys():
 			df[key] = df[KEY_MAPPING[key]]
 		df.set_index('dt', inplace=True)
 		df.drop(EQUITY_HEADERS, axis = 1, inplace = True)
-		plt, result = daily_forecast(df, symbol, strategy, upper_limit=float(upper), lower_limit=float(lower), periods=28)
+		plt, result = daily_forecast(df, symbol, strategy, upper_limit=float(upper), lower_limit=float(lower), periods=7)
 		if plt is not None:
 			plt.show()
 	except Exception as e:
