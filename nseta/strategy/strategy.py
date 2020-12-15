@@ -88,7 +88,10 @@ def daily_forecast(df, symbol, strategy, upper_limit=1.5, lower_limit=1.5, perio
 	train_size = int(0.75 * len(df)) - periods              # Use 3 years of data as train set. Note there are about 252 trading days in a year
 	val_size = int(0.25 * len(df))                  # Use 1 year of data as validation set
 	changepoint_prior_scale_list = [0.05, 0.5, 1, 1.5, 2.5]     # for hyperparameter tuning
+	H = 21											# Forecasting horizon
 	train_val_size = train_size + val_size # Size of train+validation set
+	fourier_order_list = [None, 2, 4, 6, 8, 10]                 # for hyperparameter tuning
+	window_list = [None, 0, 1, 2]                               # for hyperparameter tuning
 
 	# Fit model on closing prices
 	ts = df.reset_index()[["dt", "close"]]
@@ -97,7 +100,44 @@ def daily_forecast(df, symbol, strategy, upper_limit=1.5, lower_limit=1.5, perio
 	if not ts['y'].count() >= 2:
 		click.secho("Dataframe has less than 2 non-NaN rows. Cannot fit the model.", fg='red', nl=True)
 		return
+
+	# print(hyperparam_tune_cp_fo_wd(ts, H, train_size, val_size, changepoint_prior_scale_list, fourier_order_list, window_list, None))
+
+	m = init_modeler()
+
+	forecast = fit_model(m, ts, train_val_size, periods)
+
+	forecast[['ds', 'yhat', 'yhat_lower', 'yhat_upper']].tail()
+
+	plt = plot_forecast(m,forecast, symbol, strategy, df, train_val_size, periods)
+
+	result = predict_buy_sell_1day_returns(df, forecast, strategy, upper_limit, lower_limit)
+
+	# get_error_metrics(ts, periods, train_size, val_size, 2.5, 10, None)
+
+	return plt, result
+
+'''
+We are going to use Facebook's Prophet to fit the model and forecast stock prices. 
+Prophet uses a decomposable time series model with three main model components: 
+growth, seasonality and holidays. 
+They are combined using the equation y(t) = g(t) + s(t) + h(t) + e(t),
+	where 
+	g(t) represents the growth function which models non-periodic changes, 
+	s(t) represents periodic changes due to weekly or yearly seasonality, 
+	h(t) represents the effects of holidays, and 
+	e(t) represents the error term. 
+Such decomposable time series are very common in forecasting.
+'''
+def init_modeler():
 	# m = Prophet(daily_seasonality=True, yearly_seasonality=True).fit(ts)
+	# Time series usually have abrupt changes in their trajectories. Prophet 
+	# by default employs automatic changepoint detection. However, the strength 
+	# of this changepoint detection can be adjusted by using the parameter 
+	# changepoint_prior_scale. Increasing changepoint_prior_scale will make the 
+	# trend more flexible and result in overfitting. Decreasing the 
+	# changepoint_prior_scale will make the trend less flexible and result in 
+	# underfitting. By default, this parameter is set to 0.05.	
 	m = Prophet(growth="linear",
 			seasonality_mode='additive',
 			daily_seasonality=True,
@@ -106,12 +146,28 @@ def daily_forecast(df, symbol, strategy, upper_limit=1.5, lower_limit=1.5, perio
 			interval_width=0.95, #uncertainty
 			holidays=None,
 			n_changepoints=20,
-			changepoint_prior_scale=0.05,
+			changepoint_prior_scale=2.5
 		   )
+	m.add_seasonality(name='monthly', period=21, fourier_order=10)
 	# Turn off fbprophet stdout logger
 	logging.getLogger('fbprophet').setLevel(default_logger().level)
 	m.add_country_holidays(country_name='IN')
+	return m
 
+'''
+We should be performing various forecasts at different dates in this dataset, 
+and average the results. For all forecasts, we should be comparing the Prophet 
+method with the Last Value method. To evaluate the effectiveness of our methods, 
+we should be using the root mean square error (RMSE), mean absolute percentage 
+error (MAPE), and mean absolute error (MAE) metrics. For all metrics, the lower 
+the value, the better the prediction.
+In the Last Value method, we can simply set the prediction as the last observed 
+value. In our context, this means we set current closing price as the previous 
+day’s closing price. This may be the most cost-effective forecasting model and is 
+commonly used as a benchmark against which more sophisticated models can be compared.
+'''
+@logdebug
+def fit_model(m, ts, train_val_size, periods):
 	with suppress_stdout_stderr():
 		m.fit(ts[0:train_val_size])
 		ts.head(10)
@@ -122,8 +178,10 @@ def daily_forecast(df, symbol, strategy, upper_limit=1.5, lower_limit=1.5, perio
 		future.tail()
 		# Predict and plot
 		forecast = m.predict(future)
-	forecast[['ds', 'yhat', 'yhat_lower', 'yhat_upper']].tail()
+	return forecast
 
+@logdebug
+def plot_forecast(m, forecast, symbol, strategy, df, train_val_size, periods):
 	if periods > 0:
 		fig1 = m.plot(forecast, uncertainty=True)
 		# fig2 = m.plot_components(forecast)
@@ -147,10 +205,14 @@ def daily_forecast(df, symbol, strategy, upper_limit=1.5, lower_limit=1.5, perio
 		# Plot the predictions
 		preds_list = forecast['yhat'][train_val_size:train_val_size+periods]
 		ax.plot(df['datetime'][train_val_size:train_val_size+periods], preds_list, marker='x')
-		    
+			
 		ax.set_xlabel("Date")
 		ax.set_ylabel("INR")
 		ax.legend(['Close', 'Predictions'])
+	return plt
+
+@logdebug
+def predict_buy_sell_1day_returns(df, forecast, strategy, upper_limit, lower_limit):
 	# Convert predictions to expected 1 day returns
 	expected_1day_return = forecast.set_index("ds").yhat.pct_change().shift(-1).multiply(100)
 
@@ -164,4 +226,5 @@ def daily_forecast(df, symbol, strategy, upper_limit=1.5, lower_limit=1.5, perio
 			result = STRATEGY_FORECAST_MAPPING[strategy](df)
 
 	print(result[['init_cash', 'final_value', 'pnl']].head())
-	return plt, result
+	return result
+
