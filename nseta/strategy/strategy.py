@@ -19,7 +19,7 @@ import seaborn as sns
 import time
 import click, logging
 
-__all__ = ['backtest_smac_strategy', 'backtest_emac_strategy', 'backtest_rsi_strategy', 'backtest_macd_strategy', 'backtest_bbands_strategy', 'backtest_multi_strategy', 'daily_forecast']
+__all__ = ['backtest_smac_strategy', 'backtest_emac_strategy', 'backtest_rsi_strategy', 'backtest_macd_strategy', 'backtest_bbands_strategy', 'backtest_multi_strategy', 'daily_forecast', 'tune_fourier_order', 'tune_hyperparameters']
 
 @logdebug
 def backtest_smac_strategy(df, fast_period=10, slow_period=50):
@@ -76,6 +76,51 @@ STRATEGY_FORECAST_MAPPING_KEYS = list(STRATEGY_FORECAST_MAPPING.keys())
 # def backtest_custom_strategy(df, symbol, strategy, upper_limit, lower_limit):
 # 	plt, result = daily_forecast(df, symbol, strategy, upper_limit, lower_limit, 0)
 # 	return result
+def tune_fourier_order(df):
+	train_size = int(0.75 * len(df))             					# Use 3 years of data as train set. Note there are about 252 trading days in a year
+	val_size = int(0.25 * len(df))                  				# Use 1 year of data as validation set
+	H = 21															# Forecasting horizon
+	fourier_order_list = [None, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10]      # for hyperparameter tuning
+	train_val_size = train_size + val_size 							# Size of train+validation set
+
+	tic = time.time()
+	df_prophet = get_prophet_data_frame(df)
+	with suppress_stdout_stderr():
+		fourier_order_opt, results = hyperparam_tune_fo(df_prophet[0:train_val_size], 
+														H, 
+														train_size, 
+														val_size, 
+														fourier_order_list)
+	toc = time.time()
+	print("Time taken for Fourier Order Hyperparameter tuning= " + str((toc-tic)/60.0) + " mins")
+
+	print("fourier_order_opt = " + str(fourier_order_opt))
+	return results
+
+def tune_hyperparameters(df, holidays=None):
+	changepoint_prior_scale_list = [0.05, 0.5, 1, 1.5, 2.5]    	# for hyperparameter tuning
+	fourier_order_list = [None, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10]  # for hyperparameter tuning
+	window_list = [None, 0, 1, 2]                               # for hyperparameter tuning
+	
+	train_size = int(0.75 * len(df))              				# Use 3 years of data as train set. Note there are about 252 trading days in a year
+	val_size = int(0.25 * len(df))                  			# Use 1 year of data as validation set
+	H = 21														# Forecasting horizon
+	train_val_size = train_size + val_size 						# Size of train+validation set
+	ts = get_prophet_data_frame(df)
+	
+	toc = time.time()
+	changepoint_prior_scale_opt, fourier_order_opt, window_opt, results = hyperparam_tune_cp_fo_wd(ts, H, train_size, val_size, changepoint_prior_scale_list, fourier_order_list, window_list, holidays)
+	toc = time.time()
+	print("Time taken for Hyperparameter tuning= " + str((toc-tic)/60.0) + " mins")
+	return changepoint_prior_scale_opt, fourier_order_opt, window_opt, results
+
+@logdebug
+def get_prophet_data_frame(df):
+	# Fit model on closing prices
+	ts = df.reset_index()[["dt", "close"]]
+	# ts = df[['dt', 'close']].rename(columns={'date':'ds', 'close':'y'})
+	ts.columns = ['ds', 'y']
+	return ts
 
 '''
 This powerful strategy allows to backtest our own trading strategies 
@@ -94,27 +139,20 @@ Facebook's Prophet package.
 '''
 @logdebug
 def daily_forecast(df, symbol, strategy, upper_limit=1.5, lower_limit=1.5, periods=0):
-	train_size = int(0.75 * len(df)) - periods              # Use 3 years of data as train set. Note there are about 252 trading days in a year
-	val_size = int(0.25 * len(df))                  # Use 1 year of data as validation set
-	changepoint_prior_scale_list = [0.05, 0.5, 1, 1.5, 2.5]     # for hyperparameter tuning
-	H = 21											# Forecasting horizon
-	train_val_size = train_size + val_size # Size of train+validation set
-	fourier_order_list = [None, 2, 4, 6, 8, 10]                 # for hyperparameter tuning
-	window_list = [None, 0, 1, 2]                               # for hyperparameter tuning
+	train_size = int(0.75 * len(df)) - periods              	# Use 3 years of data as train set. Note there are about 252 trading days in a year
+	val_size = int(0.25 * len(df))                  			# Use 1 year of data as validation set
+	H = 21														# Forecasting horizon
+	train_val_size = train_size + val_size 						# Size of train+validation set
 
-	# Fit model on closing prices
-	ts = df.reset_index()[["dt", "close"]]
-	# ts = df[['dt', 'close']].rename(columns={'date':'ds', 'close':'y'})
-	ts.columns = ['ds', 'y']
+	ts = get_prophet_data_frame(df)
 	if not ts['y'].count() >= 2:
 		click.secho("Dataframe has less than 2 non-NaN rows. Cannot fit the model.", fg='red', nl=True)
 		return
 
-	# print(hyperparam_tune_cp_fo_wd(ts, H, train_size, val_size, changepoint_prior_scale_list, fourier_order_list, window_list, None))
-
-	m = init_modeler()
+	m = init_modeler(changepoint_prior_scale=0.05, fourier_order=None, holidays=None)
 
 	forecast = fit_model(m, ts, train_val_size, periods)
+	# forecast = get_preds_prophet(df, H, changepoint_prior_scale=0.05, fourier_order=None, holidays=None)
 
 	forecast[['ds', 'yhat', 'yhat_lower', 'yhat_upper']].tail()
 
@@ -138,7 +176,7 @@ They are combined using the equation y(t) = g(t) + s(t) + h(t) + e(t),
 	e(t) represents the error term. 
 Such decomposable time series are very common in forecasting.
 '''
-def init_modeler():
+def init_modeler(changepoint_prior_scale=0.05, fourier_order=None, holidays=None):
 	# m = Prophet(daily_seasonality=True, yearly_seasonality=True).fit(ts)
 	# Time series usually have abrupt changes in their trajectories. Prophet 
 	# by default employs automatic changepoint detection. However, the strength 
@@ -155,12 +193,17 @@ def init_modeler():
 			interval_width=0.95, #uncertainty
 			holidays=None,
 			n_changepoints=20,
-			changepoint_prior_scale=2.5
+			changepoint_prior_scale=.05
 		   )
-	m.add_seasonality(name='monthly', period=21, fourier_order=10)
+	if holidays is not None:
+		m = Prophet(changepoint_prior_scale=changepoint_prior_scale, holidays=holidays)
+	else:
+		m = Prophet(changepoint_prior_scale=changepoint_prior_scale)
+		m.add_country_holidays(country_name='IN')
+	if (fourier_order is not None) and (~np.isnan(fourier_order)): # add monthly seasonality
+		m.add_seasonality(name='monthly', period=21, fourier_order=int(fourier_order))
 	# Turn off fbprophet stdout logger
 	logging.getLogger('fbprophet').setLevel(default_logger().level)
-	m.add_country_holidays(country_name='IN')
 	return m
 
 '''
@@ -176,14 +219,16 @@ day’s closing price. This may be the most cost-effective forecasting model and
 commonly used as a benchmark against which more sophisticated models can be compared.
 '''
 @logdebug
-def fit_model(m, ts, train_val_size, periods):
+def fit_model(m, ts, train_val_size, periods, exclude_weekends=False):
 	with suppress_stdout_stderr():
 		m.fit(ts[0:train_val_size])
 		ts.head(10)
 		future = m.make_future_dataframe(periods=3*periods, freq='D')
+		
 		# Eliminate weekend from future dataframe
-		future['day'] = future['ds'].dt.weekday
-		future = future[future['day']<=4]
+		if exclude_weekends:
+			future['day'] = future['ds'].dt.weekday
+			future = future[future['day']<=4]
 		future.tail()
 		# Predict and plot
 		forecast = m.predict(future)
@@ -273,31 +318,31 @@ def get_preds_prophet(df, H, train_size, changepoint_prior_scale=0.05, fourier_o
 		A list of predictions
 	"""
 	# Fit prophet model
-	if holidays is not None:
-		m = Prophet(changepoint_prior_scale=changepoint_prior_scale, holidays=holidays)
-	else:
-		m = Prophet(changepoint_prior_scale=2.5) # TODO: Fix this change_scale hardcoding
-	if (fourier_order is not None) and (~np.isnan(fourier_order)): # add monthly seasonality
-		m.add_seasonality(name='monthly', period=21, fourier_order=int(fourier_order))
+	with suppress_stdout_stderr():
+		if holidays is not None:
+			m = Prophet(changepoint_prior_scale=changepoint_prior_scale, holidays=holidays)
+		else:
+			m = Prophet(changepoint_prior_scale=2.5) # TODO: Fix this change_scale hardcoding
+		if (fourier_order is not None) and (~np.isnan(fourier_order)): # add monthly seasonality
+			m.add_seasonality(name='monthly', period=21, fourier_order=int(fourier_order))
 
-	m.fit(df)
-	
-	# Make future dataframe
-	future = m.make_future_dataframe(periods=2*H)
-	
-	# Eliminate weekend from future dataframe
-	future['day'] = future['ds'].dt.weekday
-	future = future[future['day']<=4]
-	
-	# Predict
-	forecast = m.predict(future) # Note this prediction includes the original dates
+		m.fit(df)
+		
+		# Make future dataframe
+		future = m.make_future_dataframe(periods=2*H, freq='D')
+		
+		# Eliminate weekend from future dataframe
+		future['day'] = future['ds'].dt.weekday
+		future = future[future['day']<=4]
+		
+		# Predict
+		forecast = m.predict(future) # Note this prediction includes the original dates
 	forecast[['ds', 'yhat', 'yhat_lower', 'yhat_upper']]
 
 	return forecast['yhat'][len(df):len(df)+H]
 
 def processInput(i, df, H, train_size, changepoint_prior_scale=0.05, fourier_order=10, holidays=None):
 	preds_list = get_preds_prophet(df[i-train_size:i], H, changepoint_prior_scale, fourier_order, holidays)
-	
 	# Compute error metrics
 	rmse = get_rmse(df[i:i+H]['y'], preds_list)
 	mape = get_mape(df[i:i+H]['y'], preds_list)

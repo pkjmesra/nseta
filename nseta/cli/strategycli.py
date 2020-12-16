@@ -6,7 +6,7 @@ from nseta.cli.inputs import *
 import click
 from datetime import datetime
 
-__all__ = ['test_trading_strategy', 'forecast_strategy']
+__all__ = ['test_trading_strategy', 'forecast_strategy', 'tune']
 
 @logdebug
 def smac_strategy(df, autosearch):
@@ -141,12 +141,44 @@ def forecast_strategy(symbol, start, end, strategy, upper, lower):
 			df[key] = df[KEY_MAPPING[key]]
 		df.set_index('dt', inplace=True)
 		df.drop(EQUITY_HEADERS, axis = 1, inplace = True)
-		plt, result = daily_forecast(df, symbol, strategy, upper_limit=float(upper), lower_limit=float(lower), periods=7)
+		plt, result = daily_forecast(df, symbol, strategy, upper_limit=float(upper), lower_limit=float(lower), periods=21)
 		if plt is not None:
 			plt.show()
 	except Exception as e:
 		default_logger().error(e, exc_info=True)
 		click.secho('Failed to forecast trading strategy. Please check the inputs.', fg='red', nl=True)
+		return
+	except SystemExit:
+		pass
+
+@click.command(help='Try to tune before running the actual forecast (forecast-strategy)). Use the tuned outputs in forecasting.')
+@click.option('--symbol', '-S',  help='Security code')
+@click.option('--start', '-s', help='Start date in yyyy-mm-dd format')
+@click.option('--end', '-e', help='End date in yyyy-mm-dd format')
+@logdebug
+def tune(symbol, start, end):
+	if not validate_inputs(start, end, symbol):
+		print_help_msg(tune)
+		return
+	sd = datetime.strptime(start, "%Y-%m-%d").date()
+	ed = datetime.strptime(end, "%Y-%m-%d").date()
+
+	try:
+		df = get_history(symbol, sd, ed)
+		df['datetime'] = df['Date']
+		for key in KEY_MAPPING.keys():
+			df[key] = df[KEY_MAPPING[key]]
+		df.set_index('dt', inplace=True)
+		df.drop(EQUITY_HEADERS, axis = 1, inplace = True)
+		changepoint_prior_scale_opt, fourier_order_opt, window_opt, results = tune_hyperparameters(df)
+		click.echo('Changepoint Opt:'+ str(changepoint_prior_scale_opt))
+		click.echo('Fourier order Opt:'+ str(fourier_order_opt))
+		click.echo('Window Opt:'+ str(window_opt))
+		if results is not None:
+			click.echo(results)
+	except Exception as e:
+		default_logger().error(e, exc_info=True)
+		click.secho('Failed to tune. Please check the inputs.', fg='red', nl=True)
 		return
 	except SystemExit:
 		pass

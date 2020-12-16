@@ -1,5 +1,5 @@
-setuptools
-wheel
+setuptools==50.3.0
+wheel==0.35.1
 TA-Lib==0.4.19
 # fastquant
 beautifulsoup4==4.8.2

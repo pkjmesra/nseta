@@ -21,14 +21,14 @@ def nsetacli(debug, version):
 	if version:
 		click.echo('nseta ' + nseta.__VERSION__)
 
+nsetacli.add_command(create_cdl_model)
+nsetacli.add_command(forecast_strategy)
 nsetacli.add_command(history)
+nsetacli.add_command(live_quote)
 nsetacli.add_command(pe_history)
 nsetacli.add_command(plot_ta)
-nsetacli.add_command(create_cdl_model)
 nsetacli.add_command(test_trading_strategy)
-nsetacli.add_command(forecast_strategy)
-nsetacli.add_command(live_quote)
-
+nsetacli.add_command(tune)
 
 if __name__ == '__main__':
 	nsetacli()
