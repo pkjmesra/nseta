@@ -87,11 +87,7 @@ Facebook's Prophet package.
 def daily_forecast(df, symbol, strategy, upper_limit=1.5, lower_limit=1.5, periods=0):
 	train_size = int(0.75 * len(df)) - periods              # Use 3 years of data as train set. Note there are about 252 trading days in a year
 	val_size = int(0.25 * len(df))                  # Use 1 year of data as validation set
-	changepoint_prior_scale_list = [0.05, 0.5, 1, 1.5, 2.5]     # for hyperparameter tuning
-	H = 21											# Forecasting horizon
 	train_val_size = train_size + val_size # Size of train+validation set
-	fourier_order_list = [None, 2, 4, 6, 8, 10]                 # for hyperparameter tuning
-	window_list = [None, 0, 1, 2]                               # for hyperparameter tuning
 
 	# Fit model on closing prices
 	ts = df.reset_index()[["dt", "close"]]
@@ -101,6 +97,10 @@ def daily_forecast(df, symbol, strategy, upper_limit=1.5, lower_limit=1.5, perio
 		click.secho("Dataframe has less than 2 non-NaN rows. Cannot fit the model.", fg='red', nl=True)
 		return
 
+	# changepoint_prior_scale_list = [0.05, 0.5, 1, 1.5, 2.5]     # for hyperparameter tuning
+	# fourier_order_list = [None, 2, 4, 6, 8, 10]                 # for hyperparameter tuning
+	# window_list = [None, 0, 1, 2]                               # for hyperparameter tuning
+	# H = 21													  # Forecasting horizon
 	# print(hyperparam_tune_cp_fo_wd(ts, H, train_size, val_size, changepoint_prior_scale_list, fourier_order_list, window_list, None))
 
 	m = init_modeler()
