@@ -25,13 +25,13 @@ EGG_FILE = 'nseta-'+nseta.__VERSION__+'-py'+SYS_VERSION+'.egg'
 DIST_FILES = [WHEEL_NAME, TAR_FILE, EGG_FILE]
 DIST_DIR = 'dist/'
 
-def _post_build():
-	if "bdist_wheel" in sys.argv:
-		for count, filename in enumerate(os.listdir(DIST_DIR)):
-			if filename in DIST_FILES:
-				os.rename(DIST_DIR + filename, DIST_DIR + filename.replace('nseta-', 'nseta_'+__USERNAME__+'-'))
+# def _post_build():
+# 	if "bdist_wheel" in sys.argv:
+# 		for count, filename in enumerate(os.listdir(DIST_DIR)):
+# 			if filename in DIST_FILES:
+# 				os.rename(DIST_DIR + filename, DIST_DIR + filename.replace('nseta-', 'nseta_'+__USERNAME__+'-'))
 
-atexit.register(_post_build)
+# atexit.register(_post_build)
 
 setup(
 	name = 'nseta',

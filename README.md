@@ -29,14 +29,22 @@ Python Library to
 -  pystan
 -  fbprophet
 -  fastquant
+- (See requirements.txt file for more)
 
 For Windows systems you can install Anaconda, this will cover many dependancies (You'll have to install requests and beautifulsoup additionally though)
 
 ## Installation
 
-```python setup.py clean build install```
+```python3 setup.py clean build install```
 or
-```pip install nseta```
+```pip3 install nseta```
+
+If you experience problems installing from pypi, you can also try the following:
+``` python3 -m pip install --upgrade nseta ```
+
+or just go ahead and download the ```.whl``` file from ```https://pypi.org/project/nseta/#files``` and install from the downloaded directory:
+
+```pip3 install ./nseta-0.6-py3-none-any.whl``` where 0.6 is the version of the library.
 
 ## Usage
 
