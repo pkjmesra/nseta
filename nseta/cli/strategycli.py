@@ -85,7 +85,7 @@ STRATEGY_MAPPING_KEYS = list(STRATEGY_MAPPING.keys()) + ['custom']
 @click.option('--symbol', '-S',  help='Security code')
 @click.option('--start', '-s', help='Start date in yyyy-mm-dd format')
 @click.option('--end', '-e', help='End date in yyyy-mm-dd format')
-@click.option('--strategy', default='rsi', type=click.Choice(STRATEGY_MAPPING_KEYS), 
+@click.option('--strategy', default='rsi', type=click.Choice(STRATEGY_MAPPING_KEYS),
 	help=', '.join(STRATEGY_MAPPING_KEYS) + ". Choose one.")
 @click.option('--upper', '-u', default=1.5, help='Only when strategy is "custom". We buy the security when the predicted next day return is > +{upper} %')
 @click.option('--lower', '-l', default=1.5, help='Only when strategy is "custom". We sell the security when the predicted next day return is < -{lower} %')

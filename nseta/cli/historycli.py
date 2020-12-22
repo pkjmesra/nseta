@@ -62,7 +62,7 @@ def pe_history(symbol, start, end, format, file_name):
 		return
 	except SystemExit:
 		pass
-		
+
 	if not file_name:
 		file_name = symbol + '.' + format
 

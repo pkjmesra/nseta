@@ -14,7 +14,7 @@ exclude_items = ('CDLCOUNTERATTACK',
 				 'CDLKICKINGBYLENGTH')
 
 def get_candle_funcs():
-	funcs = talib.get_function_groups()['Pattern Recognition'] 
+	funcs = talib.get_function_groups()['Pattern Recognition']
 	candle_names = [candle for candle in funcs if candle not in exclude_items]
 
 	return candle_names

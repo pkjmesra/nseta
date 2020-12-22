@@ -1,5 +1,5 @@
 import click
-import pandas as pd 
+import pandas as pd
 
 from nseta.live.live import get_quote
 from nseta.cli.inputs import *
