@@ -61,7 +61,7 @@ jobs:
         repository_url: https://test.pypi.org/legacy/
       run: |
         rm -rf nseta/__init__.py
-        echo "__VERSION__='${{ steps.vars.outputs.THIS_VERSION }}'" >> nseta/__init__.py
+        echo "__version__='${{ steps.vars.outputs.THIS_VERSION }}'" >> nseta/__init__.py
         python setup.py clean build install sdist bdist_wheel
         twine upload --repository-url https://test.pypi.org/legacy/ dist/*
     - name: Publish distribution 📦 to PyPI

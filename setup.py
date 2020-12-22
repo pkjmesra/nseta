@@ -19,9 +19,9 @@ with open("requirements.txt", "r") as fh:
 SYS_MAJOR_VERSION = str(sys.version_info.major)
 SYS_VERSION = SYS_MAJOR_VERSION + '.' +str(sys.version_info.minor)
 
-WHEEL_NAME = 'nseta-'+nseta.__VERSION__+'-py'+SYS_MAJOR_VERSION+'-none-any.whl'
-TAR_FILE = 'nseta-'+nseta.__VERSION__+'.tar.gz'
-EGG_FILE = 'nseta-'+nseta.__VERSION__+'-py'+SYS_VERSION+'.egg'
+WHEEL_NAME = 'nseta-'+nseta.__version__+'-py'+SYS_MAJOR_VERSION+'-none-any.whl'
+TAR_FILE = 'nseta-'+nseta.__version__+'.tar.gz'
+EGG_FILE = 'nseta-'+nseta.__version__+'-py'+SYS_VERSION+'.egg'
 DIST_FILES = [WHEEL_NAME, TAR_FILE, EGG_FILE]
 DIST_DIR = 'dist/'
 
@@ -36,7 +36,7 @@ DIST_DIR = 'dist/'
 setup(
 	name = 'nseta',
 	packages=setuptools.find_packages(where="./", exclude=["docs", "tests"]),
-	version = nseta.__VERSION__,
+	version = nseta.__version__,
 	description = 'Library to analyse and predict financial data from National Stock Exchange (NSE - India) in pandas dataframe ',
 	long_description = long_description,
 	long_description_content_type="text/markdown",
@@ -49,7 +49,7 @@ setup(
 	nsetacli=nseta.cli.nsetacli:nsetacli
 	nseta=nseta.cli.nsetacli:nsetacli
 	''',
-	download_url = 'https://github.com/'+__USERNAME__+'/nseta/archive/v' + nseta.__VERSION__ + '.zip', 
+	download_url = 'https://github.com/'+__USERNAME__+'/nseta/archive/v' + nseta.__version__ + '.zip', 
 	classifiers=[
 	"Programming Language :: Python :: 3",
 	"License :: OSI Approved :: MIT License",

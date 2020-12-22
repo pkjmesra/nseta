@@ -46,7 +46,19 @@ or just go ahead and download the ```.whl``` file from ```https://pypi.org/proje
 
 ```pip3 install ./nseta-0.6-py3-none-any.whl``` where 0.6 is the version of the library.
 
+You can also directly install specific versions from pypi.org:
+```pip install --index-url https://pypi.org/simple/ --extra-index-url https://pypi.org/simple nseta==<Specific_Version>
+```
+
+Specific test versions can be installed from test.pypi.org
+```pip install --index-url https://test.pypi.org/simple/ --extra-index-url https://pypi.org/simple nseta==<Specific_Version>
+```
+
+After installation you can check what version you got installed
+```python3 -c "import nseta; print(nseta.__version__)"```
+
 ## Usage
+
 
 Get the price history of stocks and NSE indices directly in pandas dataframe-
 ```python

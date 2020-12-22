@@ -19,7 +19,7 @@ def nsetacli(debug, version):
 	else:
 		log.setup_custom_logger('nseta', logging.ERROR)
 	if version:
-		click.echo('nseta ' + nseta.__VERSION__)
+		click.echo('nseta ' + nseta.__version__)
 
 nsetacli.add_command(history)
 nsetacli.add_command(pe_history)
