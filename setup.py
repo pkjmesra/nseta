@@ -4,7 +4,8 @@ Spyder Editor
 
 This is a temporary script file.
 """
-import atexit, os, sys
+# import atexit, os
+import sys
 import setuptools  # noqa
 from distutils.core import setup
 import nseta

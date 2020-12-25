@@ -1,10 +1,10 @@
 import click, logging
 import nseta
-from nseta.cli.historycli import *
-from nseta.cli.modelcli import *
-from nseta.cli.plotscli import *
-from nseta.cli.strategycli import *
-from nseta.cli.livecli import *
+from nseta.cli.historycli import history, pe_history
+from nseta.cli.modelcli import create_cdl_model
+from nseta.cli.plotscli import plot_ta
+from nseta.cli.strategycli import test_trading_strategy, forecast_strategy
+from nseta.cli.livecli import live_quote
 from nseta.common import log
 
 __all__ = ['nsetacli']
