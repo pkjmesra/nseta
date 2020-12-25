@@ -34,26 +34,44 @@ Python Library to
 For Windows systems you can install Anaconda, this will cover many dependancies (You'll have to install requests and beautifulsoup additionally though)
 
 ## Installation
+-  From code
+```
+python3 setup.py clean build install
+```
+-  Python pip
+```
+pip3 install nseta
+```
+-  Installing specific version
+```
+pip3 install nseta==0.6.68
+```
+  You can also directly install specific versions from pypi.org:
+```
+pip install --index-url https://pypi.org/simple/ --extra-index-url https://pypi.org/simple nseta==<Specific_Version>
+```
 
-```python3 setup.py clean build install```
-or
-```pip3 install nseta```
+-  Python shell
+``` 
+python3 -m pip install --upgrade nseta
+```
+-  Wheel (.whl) file from PyPi.org
+  Just go ahead and download the ```.whl``` file from ```https://pypi.org/project/nseta/#files``` and install from the downloaded directory:
 
-If you experience problems installing from pypi, you can also try the following:
-``` python3 -m pip install --upgrade nseta ```
+```
+pip3 install ./nseta-0.6.68-py3-none-any.whl
+```
+  where 0.6.68 is the version of the library.
 
-or just go ahead and download the ```.whl``` file from ```https://pypi.org/project/nseta/#files``` and install from the downloaded directory:
-
-```pip3 install ./nseta-0.6-py3-none-any.whl``` where 0.6 is the version of the library.
-
-You can also directly install specific versions from pypi.org:
-```pip install --index-url https://pypi.org/simple/ --extra-index-url https://pypi.org/simple nseta==<Specific_Version>```
-
-Specific test versions can be installed from test.pypi.org
-```pip install --index-url https://test.pypi.org/simple/ --extra-index-url https://pypi.org/simple nseta==<Specific_Version>```
+- Specific test versions(under development) can be installed from test.pypi.org
+```
+pip install --index-url https://test.pypi.org/simple/ --extra-index-url https://pypi.org/simple nseta==<Specific_Version>
+```
 
 After installation you can check what version you got installed
-```python3 -c "import nseta; print(nseta.__version__)"```
+```
+python3 -c "import nseta; print(nseta.__version__)"
+```
 
 ## Usage
 
@@ -61,7 +79,7 @@ After installation you can check what version you got installed
 Get the price history of stocks and NSE indices directly in pandas dataframe-
 ```python
 
-#Usage Commands
+#Usage Commands (You can use nsetacli or nseta - either is good.)
 $ nsetacli
 Usage: nsetacli [OPTIONS] COMMAND [ARGS]...
 
