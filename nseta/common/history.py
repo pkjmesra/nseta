@@ -21,6 +21,8 @@ __all__ = ['get_history', 'get_index_pe_history', 'EQUITY_HEADERS']
 
 dd_mmm_yyyy = StrDate.default_format(format="%d-%b-%Y")
 dd_mm_yyyy = StrDate.default_format(format="%d-%m-%Y")
+dd_mm_yyyy_H_M_S = StrDate.default_format(format="%d-%m-%Y %H:%M:%S")
+
 EQUITY_SCHEMA = [str, str,
 				 dd_mmm_yyyy,
 				 float, float, float, float,
@@ -32,6 +34,10 @@ EQUITY_HEADERS = ["Symbol", "Series", "Date", "Prev Close",
 				  "%Deliverable"]
 EQUITY_SCALING = {"Turnover": 100000,
 				  "%Deliverable": 0.01}
+
+INTRADAY_EQUITY_SCHEMA = [dd_mm_yyyy_H_M_S,float, str, float, float]
+INTRADAY_EQUITY_HEADERS = ["date", "pltp", "nltp", "previousclose","allltp"]
+INTRADAY_EQUITY_SCALING = {}
 
 FUTURES_SCHEMA = [str, dd_mmm_yyyy, dd_mmm_yyyy,
 				  float, float, float, float,
@@ -94,7 +100,7 @@ RBI_REF_RATE_HEADERS = ['Date', '1 USD', '1 GBP', '1 EURO', '100 YEN']
 
 @logdebug
 def get_history(symbol, start, end, index=False, futures=False, option_type="",
-				expiry_date=None, strike_price="", series='EQ'):
+				expiry_date=None, strike_price="", series='EQ', intraday=False):
 	"""This is the function to get the historical prices of any security (index,
 		stocks, derviatives, VIX) etc.
 
@@ -123,7 +129,7 @@ def get_history(symbol, start, end, index=False, futures=False, option_type="",
 	del(kwargs['frame'])
 	start = kwargs['start']
 	end = kwargs['end']
-	if (end - start) > timedelta(130):
+	if (not intraday) and ((end - start) > timedelta(130)):
 		kwargs1 = dict(kwargs)
 		kwargs2 = dict(kwargs)
 		kwargs1['end'] = start + timedelta(130)
@@ -142,21 +148,23 @@ def get_history(symbol, start, end, index=False, futures=False, option_type="",
 
 @logdebug
 def get_history_quanta(**kwargs):
-	url, params, schema, headers, scaling = validate_params(**kwargs)
+	url, params, schema, headers, scaling, csvnode = validate_params(**kwargs)
 	df = url_to_df(url=url,
 				   params=params,
 				   schema=schema,
-				   headers=headers, scaling=scaling)
+				   headers=headers, scaling=scaling, csvnode=csvnode)
 	return df
 
 
 @logdebug
-def url_to_df(url, params, schema, headers, scaling={}):
+def url_to_df(url, params, schema, headers, scaling={}, csvnode=None):
 	resp = url(**params)
 	bs = BeautifulSoup(resp.text, 'lxml')
 	tp = ParseTables(soup=bs,
 					 schema=schema,
 					 headers=headers) # index="Date"
+	if csvnode is not None:
+		lists = tp.parse_lists(bs.find(csvnode).text)
 	df = tp.get_df()
 	for key, val in six.iteritems(scaling):
 		df[key] = val * df[key]
@@ -165,7 +173,7 @@ def url_to_df(url, params, schema, headers, scaling={}):
 
 @logdebug
 def validate_params(symbol, start, end, index=False, futures=False, option_type="",
-					expiry_date=None, strike_price="", series='EQ'):
+					expiry_date=None, strike_price="", series='EQ', intraday=False):
 	"""
 				symbol = "SBIN" (stock name, index name and VIX)
 				start = date(yyyy,mm,dd)
@@ -179,7 +187,7 @@ def validate_params(symbol, start, end, index=False, futures=False, option_type=
 	"""
 
 	params = {}
-
+	csvnode = None
 	if start > end:
 		raise ValueError('Please check start and end dates')
 
@@ -253,7 +261,7 @@ def validate_params(symbol, start, end, index=False, futures=False, option_type=
 				schema = INDEX_SCHEMA
 				headers = INDEX_HEADERS
 				scaling = INDEX_SCALING
-		else:
+		elif (not intraday):
 			params['symbol'] = symbol
 			params['series'] = series
 			params['symbolCount'] = get_symbol_count(symbol)
@@ -263,8 +271,15 @@ def validate_params(symbol, start, end, index=False, futures=False, option_type=
 			schema = EQUITY_SCHEMA
 			headers = EQUITY_HEADERS
 			scaling = EQUITY_SCALING
+		elif intraday:
+			params['CDSymbol'] = symbol
+			url = nse_intraday_url
+			schema = INTRADAY_EQUITY_SCHEMA
+			headers = INTRADAY_EQUITY_HEADERS
+			scaling = INTRADAY_EQUITY_SCALING
+			csvnode = "data"
 
-	return url, params, schema, headers, scaling
+	return url, params, schema, headers, scaling, csvnode
 
 
 @logdebug

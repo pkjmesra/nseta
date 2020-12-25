@@ -116,6 +116,28 @@ class ParseTables:
 		else:
 			return pd.DataFrame(self.lists, columns=self.headers)
 
+	def parse_lists(self, text):
+		rows = text.split('\n')
+		lists = []
+		schema = self.schema
+		for row in rows:
+			if not row:
+				continue
+			cols = row.split(',')
+			i = 0
+			lst = []
+			for cell in cols:
+				lst.append(schema[i](cell))
+				i += 1
+			lists.append(lst)
+		self.lists = lists
+		"""
+		for i in range(0, len(lists)):
+			for j in range(0, len(lists[i])):
+				lists[i][j] = schema[i](lists[i][j])
+		"""
+		return lists
+
 def unzip_str(zipped_str, file_name = None):
 	if isinstance(zipped_str, six.binary_type):
 		fp = six.BytesIO(zipped_str)

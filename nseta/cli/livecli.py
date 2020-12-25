@@ -2,10 +2,11 @@ import click
 import pandas as pd
 import threading, time
 
+from nseta.common.history import get_history
 from nseta.live.live import get_quote
 from nseta.cli.inputs import *
 from nseta.common.log import logdebug, default_logger
-from datetime import datetime
+from datetime import datetime, date
 
 __all__ = ['live_quote']
 
@@ -24,26 +25,30 @@ RUN_IN_BACKGROUND = True
 @click.option('--wk52', '-W' ,is_flag=True, help='Get the 52 week high/low values also (Optional)')
 @click.option('--volume', '-V', is_flag=True, help='Get the traded volume details also (Optional)')
 @click.option('--orderbook', '-B', is_flag=True, help='Get the current bid/offer details also (Optional)')
+@click.option('--intraday', '-I', is_flag=True, help='Get the current intraday price history (Optional)')
 @click.option('--background', '-R', is_flag=True, help='Keep running the process in the background (Optional)')
 @logdebug
-def live_quote(symbol, series, general, ohlc, wk52, volume, orderbook, background):
+def live_quote(symbol, series, general, ohlc, wk52, volume, orderbook, intraday, background):
 	if not validate_symbol(symbol):
 		print_help_msg(live_quote)
 		return
 
 	try:
-		result = get_quote(symbol)
-		# print(result)
-		if len(result['data']) == 0:
-			default_logger().warn('Wrong or invalid inputs.')
-			click.secho("Please check the inputs. Could not fetch the data.", fg='red', nl=True)
-			return
-		data = result['data'][0]
-		time = result['lastUpdateTime']
-		format_data(data, time, general, ohlc, wk52, volume, orderbook)
-		if background:
-			b = threading.Thread(name='live_quote_background', target=live_quote_background, args=[symbol, general, ohlc, wk52, volume, orderbook])
-			b.start()
+		if (not intraday):
+			result = get_quote(symbol)
+			# print(result)
+			if len(result['data']) == 0:
+				default_logger().warn('Wrong or invalid inputs.')
+				click.secho("Please check the inputs. Could not fetch the data.", fg='red', nl=True)
+				return
+			data = result['data'][0]
+			time = result['lastUpdateTime']
+			format_data(data, time, general, ohlc, wk52, volume, orderbook)
+			if background:
+				b = threading.Thread(name='live_quote_background', target=live_quote_background, args=[symbol, general, ohlc, wk52, volume, orderbook])
+				b.start()
+		else:
+			live_intraday(symbol)
 	except KeyboardInterrupt:
 		RUN_IN_BACKGROUND = False
 	except Exception as e:
@@ -52,7 +57,19 @@ def live_quote(symbol, series, general, ohlc, wk52, volume, orderbook, backgroun
 		return
 	except SystemExit:
 		pass
-	
+
+@logdebug
+def live_intraday(symbol):
+	try:
+		df = get_history(symbol, start=date.today(), end = date.today(), intraday=True)
+		click.echo(df)
+	except Exception as e:
+		default_logger().error(e, exc_info=True)
+		click.secho('Failed to fetch intraday history.', fg='red', nl=True)
+		return
+	except SystemExit:
+		pass
+
 def format_data(data, time, general, ohlc, wk52, volume, orderbook):
 	name_data = []
 	for key in NAME_KEYS:

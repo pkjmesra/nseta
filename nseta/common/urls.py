@@ -32,9 +32,23 @@ URLFetchSession = partial(URLFetch, session=session,
 
 NSE_SYMBOL_COUNT_URL = 'http://www1.nseindia.com/marketinfo/sym_map/symbolCount.jsp'
 
-nse_intraday_url = URLFetchSession(
-	url='https://www1.nseindia.com/charts/webtame/tame_intraday_getQuote_closing_redgreen.jsp?Segment=CM&Series=EQ&CDExpiryMonth=&FOExpiryMonth=&IRFExpiryMonth=&CDDate1=&CDDate2=&Template=tame_intraday_getQuote_closing_redgreen.jsp&CDSymbol=%s&Periodicity=2&PeriodType=2')
-
+# Periodicity= 1 : Every 1 minute
+# Periodicity= 2 : Every 5 minutes
+# Periodicity= 3 : Every 15 minutes
+# Periodicity= 4 : Every 30 minutes
+# Periodicity= 5 : Every 1 hour
+# PeriodType=1: Weekly data from the beginning of the trading years
+# PeriodType=2/3: Daily data for a given periodicity
+nse_intraday_url_full = URLFetchSession(
+	url='http://www1.nseindia.com/charts/webtame/tame_intraday_getQuote_closing_redgreen.jsp')
+"""
+Segment=CM&Series=EQ&CDExpiryMonth=&FOExpiryMonth=&IRFExpiryMonth=&CDDate1=&CDDate2=&Template=tame_intraday_getQuote_closing_redgreen.jsp&CDSymbol=%s&Periodicity=1&PeriodType=2
+"""
+nse_intraday_url = partial(nse_intraday_url_full,
+							 Segment='CM', Series='EQ', CDExpiryMonth="", FOExpiryMonth="",
+							 IRFExpiryMonth="",CDDate1="",CDDate2="",
+							 Template="tame_intraday_getQuote_closing_redgreen.jsp",
+							 Periodicity="1", PeriodType="2")
 """
 ---------------------------------EQUITY--------------------------------------
 """
@@ -54,7 +68,7 @@ def get_symbol_count(symbol):
 
 
 """
-#symbol=SBIN&segmentLink=3&symbolCount=1&series=EQ&dateRange=1month&fromDate=&toDate=&dataType=PRICEVOLUMEDELIVERABLE'
+# http://www1.nseindia.com/products/dynaContent/common/productsSymbolMapping.jsp?symbol=SBIN&segmentLink=3&symbolCount=1&series=EQ&dateRange=1month&fromDate=2020-12-01&toDate=2020-12-25&dataType=PRICEVOLUMEDELIVERABLE'
 """
 equity_history_url_full = URLFetchSession(
 	url='http://www1.nseindia.com/products/dynaContent/common/productsSymbolMapping.jsp')

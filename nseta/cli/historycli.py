@@ -25,7 +25,8 @@ def history(symbol, start, end, series, file_name, index, format): #, futures, e
 	try:
 		df = get_history(symbol, sd, ed)
 		click.echo(df.head())
-	except Exception:
+	except Exception as e:
+		default_logger().error(e, exc_info=True)
 		click.secho('Failed to fetch history', fg='red', nl=True)
 		return
 	except SystemExit:
