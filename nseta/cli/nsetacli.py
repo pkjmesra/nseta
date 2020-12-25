@@ -1,3 +1,7 @@
+import signal
+import sys
+import os
+
 import click, logging
 import nseta
 from nseta.cli.historycli import history, pe_history
@@ -13,6 +17,7 @@ __all__ = ['nsetacli']
 @click.option('--debug/--no-debug', default=False, help='--debug to turn debugging on. Default is off')
 @click.option('--version', is_flag=True, help='Shows the version of this library')
 def nsetacli(debug, version):
+	signal.signal(signal.SIGINT, sigint_handler)
 	if debug:
 		click.echo('Debug mode is %s' % ('on' if debug else 'off'))
 		log.setup_custom_logger('nseta', logging.DEBUG)
@@ -29,6 +34,21 @@ nsetacli.add_command(test_trading_strategy)
 nsetacli.add_command(forecast_strategy)
 nsetacli.add_command(live_quote)
 
+def sigint_handler(signal, frame):
+    click.secho('Keyboard Interrupt received. Exiting.', fg='red', nl=True)
+    sys.exit(1)
+    os._exit(1)
+
+signal.signal(signal.SIGINT, sigint_handler)
 
 if __name__ == '__main__':
-	nsetacli()
+	try:
+		click.secho('Keyboard Interrupt handling', fg='red', nl=True)
+		nsetacli()
+	except KeyboardInterrupt as e:
+		log.default_logger().error(e, exc_info=True)
+		click.secho('Keyboard Interrupt received. Exiting.', fg='red', nl=True)
+		try:
+			sys.exit(e.args[0][0]["code"])
+		except SystemExit as se:
+			os._exit(se.args[0][0]["code"])

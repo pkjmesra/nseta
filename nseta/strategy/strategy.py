@@ -105,7 +105,12 @@ def daily_forecast(df, symbol, strategy, upper_limit=1.5, lower_limit=1.5, perio
 
 	m = init_modeler()
 
-	forecast = fit_model(m, ts, train_val_size, periods)
+	if default_logger().level == logging.DEBUG:
+		print('Running in debug mode')
+		forecast = fit_model(m, ts, train_val_size, periods)
+	else:
+		with suppress_stdout_stderr():
+			forecast = fit_model(m, ts, train_val_size, periods)
 
 	forecast[['ds', 'yhat', 'yhat_lower', 'yhat_upper']].tail()
 
@@ -168,16 +173,15 @@ commonly used as a benchmark against which more sophisticated models can be comp
 '''
 @logdebug
 def fit_model(m, ts, train_val_size, periods):
-	with suppress_stdout_stderr():
-		m.fit(ts[0:train_val_size])
-		ts.head(10)
-		future = m.make_future_dataframe(periods=3*periods, freq='D')
-		# Eliminate weekend from future dataframe
-		future['day'] = future['ds'].dt.weekday
-		future = future[future['day']<=4]
-		future.tail()
-		# Predict and plot
-		forecast = m.predict(future)
+	m.fit(ts[0:train_val_size])
+	ts.head(10)
+	future = m.make_future_dataframe(periods=3*periods, freq='D')
+	# Eliminate weekend from future dataframe
+	future['day'] = future['ds'].dt.weekday
+	future = future[future['day']<=4]
+	future.tail()
+	# Predict and plot
+	forecast = m.predict(future)
 	return forecast
 
 @logdebug
