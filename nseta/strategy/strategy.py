@@ -10,36 +10,37 @@ from matplotlib import pyplot as plt
 import matplotlib
 import click, logging
 
-__all__ = ['backtest_smac_strategy', 'backtest_emac_strategy', 'backtest_rsi_strategy', 'backtest_macd_strategy', 'backtest_bbands_strategy', 'backtest_multi_strategy', 'daily_forecast']
+__VERBOSE__ = default_logger().level == logging.DEBUG
+__all__ = ['backtest_custom_strategy', 'backtest_smac_strategy', 'backtest_emac_strategy', 'backtest_rsi_strategy', 'backtest_macd_strategy', 'backtest_bbands_strategy', 'backtest_multi_strategy', 'daily_forecast']
 
 @logdebug
 def backtest_smac_strategy(df, fast_period=10, slow_period=50):
-	result = backtest('smac', df.dropna(), fast_period=fast_period, slow_period=slow_period, verbose=False)
+	result = backtest('smac', df.dropna(), fast_period=fast_period, slow_period=slow_period, verbose=__VERBOSE__)
 	print(result[['fast_period', 'slow_period', 'init_cash', 'final_value', 'pnl']].head())
 	return result
 
 @logdebug
 def backtest_emac_strategy(df, fast_period=10, slow_period=50):
-	result = backtest('emac', df.dropna(), fast_period=fast_period, slow_period=slow_period, verbose=False)
+	result = backtest('emac', df.dropna(), fast_period=fast_period, slow_period=slow_period, verbose=__VERBOSE__)
 	print(result[['fast_period', 'slow_period', 'init_cash', 'final_value', 'pnl']].head())
 	return result
 
 @logdebug
-def backtest_rsi_strategy(df, rsi_period=14, rsi_lower=30):
-	result = backtest('rsi', df.dropna(), rsi_period=rsi_period, rsi_upper=70, rsi_lower=rsi_lower, verbose=False)
+def backtest_rsi_strategy(df, rsi_period=14, rsi_lower=30, rsi_upper=70):
+	result = backtest('rsi', df.dropna(), rsi_period=rsi_period, rsi_upper=rsi_upper, rsi_lower=rsi_lower, verbose=__VERBOSE__)
 	print(result[['rsi_period', 'rsi_upper', 'rsi_lower', 'init_cash', 'final_value', 'pnl']].head())
 	return result
 
 @logdebug
 def backtest_macd_strategy(df, fast_period=12, slow_period=26):
 	result = backtest('macd', df.dropna(), fast_period=fast_period, slow_period=slow_period, signal_period=9, 
-		sma_period=30, dir_period=10, verbose=False)
+		sma_period=30, dir_period=10, verbose=__VERBOSE__)
 	print(result[['fast_period', 'slow_period', 'signal_period', 'init_cash', 'final_value', 'pnl']].head())
 	return result
 
 @logdebug
 def backtest_bbands_strategy(df, period=20, devfactor=2.0):
-	result = backtest('bbands', df.dropna(), period=period, devfactor=devfactor, verbose=False)
+	result = backtest('bbands', df.dropna(), period=period, devfactor=devfactor, verbose=__VERBOSE__)
 	print(result[['period', 'devfactor', 'init_cash', 'final_value', 'pnl']].head())
 	return result
 
@@ -49,7 +50,7 @@ def backtest_multi_strategy(df, key_variable="smac", fast_period=10, slow_period
 		key_variable: {"fast_period": fast_period, "slow_period": slow_period},
 		"rsi": {"rsi_lower": rsi_lower, "rsi_upper": rsi_upper} 
 	}
-	result = backtest("multi", df.dropna(), strats=strats, verbose=False)
+	result = backtest("multi", df.dropna(), strats=strats, verbose=__VERBOSE__)
 	# print(result[[key_variable +'.fast_period', key_variable+'.slow_period', 'rsi.rsi_lower', 'rsi.rsi_upper', 'init_cash', 'final_value', 'pnl']].head())
 	return result
 
@@ -64,9 +65,9 @@ STRATEGY_FORECAST_MAPPING = {
 
 STRATEGY_FORECAST_MAPPING_KEYS = list(STRATEGY_FORECAST_MAPPING.keys())
 
-# def backtest_custom_strategy(df, symbol, strategy, upper_limit, lower_limit):
-# 	plt, result = daily_forecast(df, symbol, strategy, upper_limit, lower_limit, 0)
-# 	return result
+def backtest_custom_strategy(df, symbol, strategy, lower_limit, upper_limit):
+	plt, result = daily_forecast(df, symbol, strategy, upper_limit=float(upper_limit), lower_limit=float(lower_limit), periods=7)
+	return result
 
 '''
 This powerful strategy allows to backtest our own trading strategies 
@@ -116,8 +117,12 @@ def daily_forecast(df, symbol, strategy, upper_limit=1.5, lower_limit=1.5, perio
 
 	plt = plot_forecast(m,forecast, symbol, strategy, df, train_val_size, periods)
 
-	result = predict_buy_sell_1day_returns(df, forecast, strategy, upper_limit, lower_limit)
-
+	if __VERBOSE__:
+		result = predict_buy_sell_1day_returns(df, forecast, strategy, upper_limit, lower_limit)
+	else:
+		with suppress_stdout_stderr():
+			result = predict_buy_sell_1day_returns(df, forecast, strategy, upper_limit, lower_limit)
+	print(result[['init_cash', 'final_value', 'pnl']].head())
 	# get_error_metrics(ts, periods, train_size, val_size, 2.5, 10, None)
 
 	return plt, result
@@ -222,13 +227,12 @@ def predict_buy_sell_1day_returns(df, forecast, strategy, upper_limit, lower_lim
 
 	# Backtest the predictions, given that we buy the given symbol when the predicted 
 	# next day return is > +1.5%, and sell when it's < -1.5%.
-	forecast[strategy] = expected_1day_return.multiply(-1)
+	df[strategy] = expected_1day_return.multiply(-1)
 	if strategy == 'custom':
-		result = backtest(strategy, forecast.dropna(),upper_limit=upper_limit, lower_limit=-lower_limit)
+		# forecast['datetime'] = forecast['ds']
+		result = backtest(strategy, df, upper_limit=upper_limit, lower_limit=-lower_limit, custom_column=strategy)
 	else:
 		if strategy in STRATEGY_FORECAST_MAPPING_KEYS:
 			result = STRATEGY_FORECAST_MAPPING[strategy](df)
-
-	print(result[['init_cash', 'final_value', 'pnl']].head())
 	return result
 
