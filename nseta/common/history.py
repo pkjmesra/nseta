@@ -149,6 +149,7 @@ def get_history(symbol, start, end, index=False, futures=False, option_type="",
 @logdebug
 def get_history_quanta(**kwargs):
 	url, params, schema, headers, scaling, csvnode = validate_params(**kwargs)
+	print(dd_mm_yyyy_H_M_S)
 	df = url_to_df(url=url,
 				   params=params,
 				   schema=schema,

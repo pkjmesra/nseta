@@ -3,8 +3,10 @@ import pandas as pd
 import threading, time
 
 from nseta.common.history import get_history
+from nseta.common.ti import *
 from nseta.live.live import get_quote
 from nseta.cli.inputs import *
+from nseta.plots.plots import plot_technical_indicators
 from nseta.common.log import logdebug, default_logger
 from datetime import datetime, date
 
@@ -26,9 +28,10 @@ RUN_IN_BACKGROUND = True
 @click.option('--volume', '-V', is_flag=True, help='Get the traded volume details also (Optional)')
 @click.option('--orderbook', '-B', is_flag=True, help='Get the current bid/offer details also (Optional)')
 @click.option('--intraday', '-I', is_flag=True, help='Get the current intraday price history (Optional)')
+@click.option('--plot', '-P', is_flag=True, help='Plot the "Close" values (Optional)')
 @click.option('--background', '-R', is_flag=True, help='Keep running the process in the background (Optional)')
 @logdebug
-def live_quote(symbol, series, general, ohlc, wk52, volume, orderbook, intraday, background):
+def live_quote(symbol, series, general, ohlc, wk52, volume, orderbook, intraday, plot, background):
 	if not validate_symbol(symbol):
 		print_help_msg(live_quote)
 		return
@@ -48,7 +51,16 @@ def live_quote(symbol, series, general, ohlc, wk52, volume, orderbook, intraday,
 				b = threading.Thread(name='live_quote_background', target=live_quote_background, args=[symbol, general, ohlc, wk52, volume, orderbook])
 				b.start()
 		else:
-			live_intraday(symbol)
+			df = live_intraday(symbol)
+			df = update_ti(df)
+			click.echo(df.head())
+			file_name = symbol + '.csv'
+			df.to_csv(file_name)
+			default_logger().info('Saved to: {}'.format(file_name))
+			click.secho('Saved to: {}'.format(file_name), fg='green', nl=True)
+			if plot:
+				df.set_index('date', inplace=True)
+				plot_technical_indicators(df).show()
 	except KeyboardInterrupt:
 		RUN_IN_BACKGROUND = False
 	except Exception as e:
@@ -62,13 +74,21 @@ def live_quote(symbol, series, general, ohlc, wk52, volume, orderbook, intraday,
 def live_intraday(symbol):
 	try:
 		df = get_history(symbol, start=date.today(), end = date.today(), intraday=True)
-		click.echo(df)
+		if len(df) >0:
+			df['dt'] = df['date']
+			df['Open'] = df['pltp']
+			df['High'] = df['pltp']
+			df['Low'] = df['pltp']
+			df['Close'] = df['allltp']
+			df['Symbol'] = symbol
+			df['Volume'] = 0
 	except Exception as e:
 		default_logger().error(e, exc_info=True)
 		click.secho('Failed to fetch intraday history.', fg='red', nl=True)
 		return
 	except SystemExit:
 		pass
+	return df
 
 def format_data(data, time, general, ohlc, wk52, volume, orderbook):
 	name_data = []

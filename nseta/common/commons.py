@@ -58,6 +58,8 @@ class StrDate(datetime.date):
 			return datetime.date.__new__(datetime.date, date.year,
 										 date.month, date.day)
 		dt = datetime.datetime.strptime(date, format)
+		if(isinstance(dt,datetime.datetime)):
+			return dt
 		return datetime.date.__new__(datetime.date, dt.year,
 									 dt.month, dt.day)
 
@@ -72,7 +74,6 @@ class StrDate(datetime.date):
 			pass
 		Date_Formatted.__new__ = partial(cls.__new__, format = format)
 		return Date_Formatted
-
 
 class ParseTables:
 	def __init__(self, *args, **kwargs):

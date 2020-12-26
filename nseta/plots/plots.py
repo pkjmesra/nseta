@@ -1,4 +1,6 @@
 from nseta.common.log import logdebug
+from nseta.common.ti import *
+
 from plotly.offline import plot
 import plotly.graph_objs as go
 import pandas as pd
@@ -101,11 +103,6 @@ def plot_history(df, plot_points=['Close'], secondary_y="Turnover"):
 	plt.grid(True)
 	return plt
 
-@logdebug
-def get_rsi_df(df):
-	df['RSI'] = ta.RSI(df['Close'],14)
-	return df['RSI']
-
 '''
 The relative strength index is a technical indicator used in the 
 analysis of financial markets. It is intended to chart the current 
@@ -120,21 +117,11 @@ def plot_rsi(df):
 	return plt
 
 @logdebug
-def get_mom_df(df):
-	df['MOM'] = ta.MOM(df['Close'],2)
-	return df['MOM']
-
-@logdebug
 def plot_mom(df):
 	get_mom_df(df).plot()
 	plt.title('Momentum - MOM(10)')
 	plt.grid(True)
 	return plt
-
-@logdebug
-def get_dmi_df(df):
-	df['DMI'] = ta.DX(df['High'],df['Low'],df['Close'],timeperiod=14)
-	return df['DMI']
 
 @logdebug
 def plot_dmi(df):
@@ -144,22 +131,11 @@ def plot_dmi(df):
 	return plt
 
 @logdebug
-def get_macd_df(df):
-	df['macd'], df['macdsignal'], df['macdhist'] = ta.MACDEXT(df['Close'], fastperiod=12, fastmatype=0, slowperiod=26, slowmatype=0, signalperiod=9, signalmatype=0)
-	return df[['macd','macdsignal', 'macdhist']]
-
-@logdebug
 def plot_macd(df):
 	get_macd_df(df).plot()
 	plt.title('MACD(12, 26)')
 	plt.grid(True)
 	return plt
-
-@logdebug
-def get_sma_df(df):
-	df['SMA(10)'] = ta.SMA(df['Close'],10)
-	df['SMA(50)'] = ta.SMA(df['Close'],50)
-	return df[['Close','SMA(10)', 'SMA(50)']]
 
 '''
 Simple moving average (SMA) calculates the average of a selected 
@@ -171,11 +147,6 @@ def plot_sma(df):
 	plt.title('SMA(10) & SMA(50)')
 	plt.grid(True)
 	return plt
-
-@logdebug
-def get_ema_df(df):
-	df['EMA(10)'] = ta.EMA(df['Close'], timeperiod = 10)
-	return df[['Close','EMA(10)']]
 
 '''
 (EMA) is a type of moving average (MA) that places a greater weight 
@@ -189,11 +160,6 @@ def plot_ema(df):
 	plt.grid(True)
 	return plt
 
-@logdebug
-def get_adx_df(df):
-	df['ADX'] = ta.ADX(df['High'],df['Low'], df['Close'], timeperiod=14)
-	return df[['ADX']]
-
 '''
 Average Directional Movement Index(Momentum Indicator) - ADX can be 
 used to help measure the overall strength of a trend. The ADX 
@@ -206,11 +172,6 @@ def plot_adx(df):
 	plt.grid(True)
 	return plt
 
-@logdebug
-def get_bbands_df(df):
-	df['BBands-U'], df['BBands-M'], df['BBands-L'] = ta.BBANDS(df['Close'], timeperiod =20)
-	return df[['Close','BBands-U','BBands-M','BBands-L']]
-
 '''
 Bollinger Bands are a type of statistical chart characterizing the 
 prices and volatility over time of a financial instrument or commodity, 
@@ -222,11 +183,6 @@ def plot_bbands(df):
 	plt.title('Bollinger Bands(20)')
 	plt.grid(True)
 	return plt
-
-@logdebug
-def get_obv_df(df):
-	df['OBV'] = ta.OBV(df['Close'], df['Volume'])
-	return df[['OBV']]
 
 @logdebug
 def plot_obv(df):
