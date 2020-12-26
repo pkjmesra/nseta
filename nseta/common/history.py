@@ -17,7 +17,7 @@ import pandas as pd
 import inspect
 import io
 
-__all__ = ['get_history', 'get_index_pe_history', 'EQUITY_HEADERS']
+__all__ = ['get_history', 'get_index_pe_history', 'EQUITY_HEADERS', 'INTRADAY_EQUITY_HEADERS']
 
 dd_mmm_yyyy = StrDate.default_format(format="%d-%b-%Y")
 dd_mm_yyyy = StrDate.default_format(format="%d-%m-%Y")
@@ -36,7 +36,7 @@ EQUITY_SCALING = {"Turnover": 100000,
 				  "%Deliverable": 0.01}
 
 INTRADAY_EQUITY_SCHEMA = [dd_mm_yyyy_H_M_S,float, str, float, float]
-INTRADAY_EQUITY_HEADERS = ["date", "pltp", "nltp", "previousclose","allltp"]
+INTRADAY_EQUITY_HEADERS = ["Date", "pltp", "nltp", "previousclose","allltp"]
 INTRADAY_EQUITY_SCALING = {}
 
 FUTURES_SCHEMA = [str, dd_mmm_yyyy, dd_mmm_yyyy,

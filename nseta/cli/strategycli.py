@@ -2,6 +2,7 @@ from nseta.strategy.strategy import *
 from nseta.common.history import *
 from nseta.common.log import logdebug, default_logger
 from nseta.cli.inputs import *
+from nseta.cli.livecli import live_intraday
 
 import click
 from datetime import datetime
@@ -91,17 +92,25 @@ STRATEGY_MAPPING_KEYS = list(STRATEGY_MAPPING.keys()) + ['custom']
 @click.option('--lower', '-l', default=1.5, help='Used as lower limit, for example, for RSI. Only when strategy is "custom", we sell the security when the predicted next day return is < -{lower} %')
 @click.option('--autosearch/--no-autosearch', default=False, 
 	help='--auto for allowing to automatically measure the performance of your trading strategy on multiple combinations of parameters.')
+@click.option('--intraday', '-i', is_flag=True, help='Get the current intraday price history (Optional)')
 @logdebug
-def test_trading_strategy(symbol, start, end, autosearch, strategy, upper=1.5, lower=1.5):
-	if not validate_inputs(start, end, symbol):
-		print_help_msg(test_trading_strategy)
-		return
-	sd = datetime.strptime(start, "%Y-%m-%d").date()
-	ed = datetime.strptime(end, "%Y-%m-%d").date()
+def test_trading_strategy(symbol, start, end, autosearch, strategy, upper=1.5, lower=1.5, intraday=False):
+	if not intraday:
+		if not validate_inputs(start, end, symbol):
+			print_help_msg(test_trading_strategy)
+			return
+		sd = datetime.strptime(start, "%Y-%m-%d").date()
+		ed = datetime.strptime(end, "%Y-%m-%d").date()
 
 	try:
-		df = get_history(symbol, sd, ed)
-		df['datetime'] = df['Date']
+		if intraday:
+			df = live_intraday(symbol)
+			for key in KEY_MAPPING.keys():
+				df[key] = df[KEY_MAPPING[key]]
+			df.drop(INTRADAY_EQUITY_HEADERS, axis = 1, inplace = True)
+		else:
+			df = get_history(symbol, sd, ed)
+			df['datetime'] = df['Date']
 		strategy = strategy.lower()
 		if strategy in STRATEGY_MAPPING:
 			STRATEGY_MAPPING[strategy](df, autosearch, lower, upper)

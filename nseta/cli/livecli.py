@@ -10,7 +10,7 @@ from nseta.plots.plots import plot_technical_indicators
 from nseta.common.log import logdebug, default_logger
 from datetime import datetime, date
 
-__all__ = ['live_quote']
+__all__ = ['live_quote', 'live_intraday']
 
 NAME_KEYS = ['companyName', 'isinCode']
 QUOTE_KEYS = ['previousClose', 'lastPrice', 'change', 'pChange', 'averagePrice', 'pricebandupper', 'pricebandlower']
@@ -75,7 +75,7 @@ def live_intraday(symbol):
 	try:
 		df = get_history(symbol, start=date.today(), end = date.today(), intraday=True)
 		if len(df) >0:
-			df['dt'] = df['date']
+			df['dt'] = df['Date']
 			df['Open'] = df['pltp']
 			df['High'] = df['pltp']
 			df['Low'] = df['pltp']
