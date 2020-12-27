@@ -1,5 +1,8 @@
 from nseta.strategy.strategy import *
+from nseta.strategy.rsisignal import *
+from nseta.plots.plots import plot_rsi
 from nseta.common.history import *
+from nseta.common.ti import update_ti
 from nseta.common.log import logdebug, default_logger
 from nseta.cli.inputs import *
 from nseta.cli.livecli import live_intraday
@@ -122,6 +125,16 @@ def test_trading_strategy(symbol, start, end, autosearch, strategy, upper=1.5, l
 			backtest_custom_strategy(df, symbol, strategy, upper_limit=upper, lower_limit=lower)
 		else:
 			STRATEGY_MAPPING['rsi'](df, autosearch, upper, lower)
+		df = update_ti(df)
+		signal = rsisignal()
+		df.drop(list(KEY_MAPPING.keys()), axis = 1, inplace = True)
+		# print(df.head())
+		rowindex = 0
+		for rsi in (df['RSI']).values:
+			price =(df.iloc[rowindex])['Close']
+			signal.index(rsi,price)
+			rowindex = rowindex + 1
+		(plot_rsi(df)).show()
 	except Exception as e:
 		default_logger().error(e, exc_info=True)
 		click.secho('Failed to test trading strategy. Please check the inputs.', fg='red', nl=True)

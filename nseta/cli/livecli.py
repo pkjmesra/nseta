@@ -35,7 +35,7 @@ def live_quote(symbol, series, general, ohlc, wk52, volume, orderbook, intraday,
 	if not validate_symbol(symbol):
 		print_help_msg(live_quote)
 		return
-
+	global RUN_IN_BACKGROUND
 	try:
 		if (not intraday):
 			result = get_quote(symbol)
@@ -59,7 +59,7 @@ def live_quote(symbol, series, general, ohlc, wk52, volume, orderbook, intraday,
 			default_logger().info('Saved to: {}'.format(file_name))
 			click.secho('Saved to: {}'.format(file_name), fg='green', nl=True)
 			if plot:
-				df.set_index('date', inplace=True)
+				df.set_index('Date', inplace=True)
 				plot_technical_indicators(df).show()
 	except KeyboardInterrupt:
 		RUN_IN_BACKGROUND = False
@@ -76,10 +76,10 @@ def live_intraday(symbol):
 		df = get_history(symbol, start=date.today(), end = date.today(), intraday=True)
 		if len(df) >0:
 			df['dt'] = df['Date']
+			df['Close'] = df['allltp']
 			df['Open'] = df['pltp']
 			df['High'] = df['pltp']
 			df['Low'] = df['pltp']
-			df['Close'] = df['allltp']
 			df['Symbol'] = symbol
 			df['Volume'] = 0
 	except Exception as e:
@@ -152,6 +152,7 @@ def format_data(data, time, general, ohlc, wk52, volume, orderbook):
 	click.secho('------------------------------------------', fg='red', nl=True)
 
 def live_quote_background(symbol, general, ohlc, wk52, volume, orderbook):
+	global RUN_IN_BACKGROUND
 	while RUN_IN_BACKGROUND:
 		result = get_quote(symbol)
 		data = result['data'][0]
