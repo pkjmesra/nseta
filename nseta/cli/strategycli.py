@@ -31,8 +31,12 @@ def bbands_strategy(df, autosearch, lower, upper):
 	backtest_bbands_strategy(df, period=20, devfactor=2.0)
 
 @logdebug
-def rsi_strategy(df, autosearch, lower, upper):
+def rsi_strategy(df, autosearch, lower=30, upper=70):
 	if not autosearch:
+		if lower is None:
+			lower = 30
+		if upper is None:
+			upper = 70
 		backtest_rsi_strategy(df, rsi_period=14, rsi_lower=lower, rsi_upper=upper)
 	else:
 		backtest_rsi_strategy(df, rsi_period=[5,7,11,14], rsi_lower=[15,30,40], rsi_upper=[60,70,80,90] )
@@ -91,50 +95,24 @@ STRATEGY_MAPPING_KEYS = list(STRATEGY_MAPPING.keys()) + ['custom']
 @click.option('--end', '-e', help='End date in yyyy-mm-dd format')
 @click.option('--strategy', default='rsi', type=click.Choice(STRATEGY_MAPPING_KEYS),
 	help=', '.join(STRATEGY_MAPPING_KEYS) + ". Choose one.")
-@click.option('--upper', '-u', default=1.5, help='Used as upper limit, for example, for RSI. Only when strategy is "custom", we buy the security when the predicted next day return is > +{upper} %')
-@click.option('--lower', '-l', default=1.5, help='Used as lower limit, for example, for RSI. Only when strategy is "custom", we sell the security when the predicted next day return is < -{lower} %')
+@click.option('--upper', '-u', help='Used as upper limit, for example, for RSI. Only when strategy is "custom", we buy the security when the predicted next day return is > +{upper} %')
+@click.option('--lower', '-l', help='Used as lower limit, for example, for RSI. Only when strategy is "custom", we sell the security when the predicted next day return is < -{lower} %')
 @click.option('--autosearch/--no-autosearch', default=False, 
 	help='--auto for allowing to automatically measure the performance of your trading strategy on multiple combinations of parameters.')
-@click.option('--intraday', '-i', is_flag=True, help='Get the current intraday price history (Optional)')
+@click.option('--intraday', '-i', is_flag=True, help='Test trading strategy for the current intraday price history (Optional)')
 @logdebug
-def test_trading_strategy(symbol, start, end, autosearch, strategy, upper=1.5, lower=1.5, intraday=False):
+def test_trading_strategy(symbol, start, end, autosearch, strategy, upper, lower, intraday=False):
 	if not intraday:
 		if not validate_inputs(start, end, symbol):
 			print_help_msg(test_trading_strategy)
 			return
 		sd = datetime.strptime(start, "%Y-%m-%d").date()
 		ed = datetime.strptime(end, "%Y-%m-%d").date()
-
 	try:
 		if intraday:
-			df = live_intraday(symbol)
-			for key in KEY_MAPPING.keys():
-				df[key] = df[KEY_MAPPING[key]]
-			df.drop(INTRADAY_EQUITY_HEADERS, axis = 1, inplace = True)
+			test_intraday_trading_strategy(symbol, strategy, autosearch, float(lower), float(upper))
 		else:
-			df = get_history(symbol, sd, ed)
-			df['datetime'] = df['Date']
-		strategy = strategy.lower()
-		if strategy in STRATEGY_MAPPING:
-			STRATEGY_MAPPING[strategy](df, autosearch, lower, upper)
-		elif strategy == 'custom':
-			for key in KEY_MAPPING.keys():
-				df[key] = df[KEY_MAPPING[key]]
-			df.set_index('dt', inplace=True)
-			df.drop(EQUITY_HEADERS, axis = 1, inplace = True)
-			backtest_custom_strategy(df, symbol, strategy, upper_limit=upper, lower_limit=lower)
-		else:
-			STRATEGY_MAPPING['rsi'](df, autosearch, upper, lower)
-		df = update_ti(df)
-		signal = rsisignal()
-		df.drop(list(KEY_MAPPING.keys()), axis = 1, inplace = True)
-		# print(df.head())
-		rowindex = 0
-		for rsi in (df['RSI']).values:
-			price =(df.iloc[rowindex])['Close']
-			signal.index(rsi,price)
-			rowindex = rowindex + 1
-		(plot_rsi(df)).show()
+			test_historical_trading_strategy(symbol, sd, ed, strategy, autosearch, float(lower), float(upper))
 	except Exception as e:
 		default_logger().error(e, exc_info=True)
 		click.secho('Failed to test trading strategy. Please check the inputs.', fg='red', nl=True)
@@ -157,14 +135,9 @@ def forecast_strategy(symbol, start, end, strategy, upper, lower):
 		return
 	sd = datetime.strptime(start, "%Y-%m-%d").date()
 	ed = datetime.strptime(end, "%Y-%m-%d").date()
-
 	try:
-		df = get_history(symbol, sd, ed)
-		df['datetime'] = df['Date']
-		for key in KEY_MAPPING.keys():
-			df[key] = df[KEY_MAPPING[key]]
-		df.set_index('dt', inplace=True)
-		df.drop(EQUITY_HEADERS, axis = 1, inplace = True)
+		df = get_historical_dataframe(symbol, sd, ed)
+		df = prepare_for_historical_strategy(df)
 		plt, result = daily_forecast(df, symbol, strategy, upper_limit=float(upper), lower_limit=float(lower), periods=7)
 		if plt is not None:
 			plt.show()
@@ -174,3 +147,66 @@ def forecast_strategy(symbol, start, end, strategy, upper, lower):
 		return
 	except SystemExit:
 		pass
+
+def test_intraday_trading_strategy(symbol, strategy, autosearch, lower, upper):
+	df = get_intraday_dataframe(symbol)
+	if lower is None:
+		lower = 30
+	if upper is None:
+		upper = 70
+	run_test_strategy(df, symbol, strategy, autosearch, lower, upper)
+	test_intraday_signals(df, lower, upper)
+
+def get_intraday_dataframe(symbol):
+	df = live_intraday(symbol)
+	df = drop_duplicate_keys(df)
+	df.drop(INTRADAY_EQUITY_HEADERS, axis = 1, inplace = True)
+	return df
+
+def run_test_strategy(df, symbol, strategy, autosearch, lower, upper):
+	strategy = strategy.lower()
+	if strategy in STRATEGY_MAPPING:
+		STRATEGY_MAPPING[strategy](df, autosearch, float(lower), float(upper))
+	elif strategy == 'custom':
+		df = prepare_for_historical_strategy(df)
+		backtest_custom_strategy(df, symbol, strategy, upper_limit=float(upper), lower_limit=float(lower))
+	else:
+		STRATEGY_MAPPING['rsi'](df, autosearch, float(upper), float(lower))
+
+def test_intraday_signals(df, lower, upper):
+	df = update_ti(df)
+	df.drop(list(KEY_MAPPING.keys()), axis = 1, inplace = True)
+	signal = rsisignal()
+	signal.set_limits(lower, upper)
+	rowindex = 0
+	for rsi in (df['RSI']).values:
+		if rsi is not None:
+			price =(df.iloc[rowindex])['Close']
+			signal.index(rsi,price)
+		rowindex = rowindex + 1
+	(plot_rsi(df)).show()
+
+def get_historical_dataframe(symbol, sd, ed):
+	df = get_history(symbol, sd, ed)
+	df['datetime'] = df['Date']
+	return df
+
+def test_historical_trading_strategy(symbol, sd, ed, strategy, autosearch, lower, upper):
+	df = get_historical_dataframe(symbol, sd, ed)
+	run_test_strategy(df, symbol, strategy, autosearch, lower, upper)
+
+def prepare_for_historical_strategy(df):
+	df = drop_duplicate_keys(df)
+	df = reset_date_index(df)
+	df.drop(EQUITY_HEADERS, axis = 1, inplace = True)
+	return df
+
+def reset_date_index(df):
+	df.set_index('dt', inplace=True)
+	return df
+
+def drop_duplicate_keys(df):
+	for key in KEY_MAPPING.keys():
+		df[key] = df[KEY_MAPPING[key]]
+	return df
+

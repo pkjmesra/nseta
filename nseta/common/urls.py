@@ -20,11 +20,15 @@ session = Session()
 	# 'Referer': 'https://www1.nseindia.com/products/content/equities/equities/eq_security.htm'}
 
 headers = {'Accept': '*/*',
-		   'Accept-Encoding': 'gzip, deflate, sdch, br',
-		   'Accept-Language': 'en-GB,en-US;q=0.8,en;q=0.6',
+		   'Accept-Encoding': 'gzip, deflate, br',
+		   'Accept-Language': 'en-GB,en-US;q=0.9,en;q=0.8',
 		   'Connection': 'keep-alive',
 		   'Host': 'www1.nseindia.com',
-		   'User-Agent': 'Mozilla/5.0 (Windows NT 6.3; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/57.0.2987.133 Safari/537.36',
+		   'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 11_1_0) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/87.0.4280.88 Safari/537.36',
+		   'Upgrade-Insecure-Requests': '1',
+		   'Sec-Fetch-Site': 'none',
+		   'Sec-Fetch-Mode': 'navigate',
+		   'Sec-Fetch-Dest': 'document',
 		   'X-Requested-With': 'XMLHttpRequest'}
 
 URLFetchSession = partial(URLFetch, session=session,
@@ -40,7 +44,7 @@ NSE_SYMBOL_COUNT_URL = 'http://www1.nseindia.com/marketinfo/sym_map/symbolCount.
 # PeriodType=1: Weekly data from the beginning of the trading years
 # PeriodType=2/3: Daily data for a given periodicity
 nse_intraday_url_full = URLFetchSession(
-	url='http://www1.nseindia.com/charts/webtame/tame_intraday_getQuote_closing_redgreen.jsp')
+	url='https://www1.nseindia.com/charts/webtame/tame_intraday_getQuote_closing_redgreen.jsp')
 """
 New NSE URL: https://www.nseindia.com/api/chart-databyindex?index=SBINEQN
 For Stocks, index={Symbol}NEQN. See https://www.nseindia.com/tcharts/04jan2020?index=NIFTY%2050

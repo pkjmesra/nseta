@@ -8,7 +8,7 @@ Created on Tue Aug 24 11:23:30 2020.
 from nseta.common.urls import *
 from nseta.common.commons import *
 from nseta.common.constants import *
-from nseta.common.log import logdebug
+from nseta.common.log import default_logger, logdebug
 
 import six
 from datetime import date, timedelta
@@ -159,6 +159,7 @@ def get_history_quanta(**kwargs):
 @logdebug
 def url_to_df(url, params, schema, headers, scaling={}, csvnode=None):
 	resp = url(**params)
+	default_logger().debug("Response:\n" + resp.text)
 	bs = BeautifulSoup(resp.text, 'lxml')
 	tp = ParseTables(soup=bs,
 					 schema=schema,

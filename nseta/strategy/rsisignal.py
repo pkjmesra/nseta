@@ -1,4 +1,6 @@
 import enum
+from nseta.common.log import logdebug, default_logger
+import click
 
 __all__ = ['rsisignal','Direction']
 
@@ -8,6 +10,8 @@ class Direction(enum.Enum):
 	Up = 3
 	V = 4
 	InvertedV = 5
+	LowerLow = 6
+	HigherHigh = 7
 
 class rsisignal:
 	def __init__(self):
@@ -22,13 +26,47 @@ class rsisignal:
 		self._prc = 0
 		self._profit = 0
 		self._buytriggerred = False
+		self._lower = 30
+		self._upper = 70
 
+	@logdebug
+	def set_limits(self, lower, upper):
+		self._lower = lower
+		self._upper = upper
+
+	@logdebug
 	def index(self, rsi, price):
 		if rsi > 0:
 			self.n3 = rsi
 			self.price = price
 			if self.p3 > 0:
 				self.update_direction()
+
+	@property
+	def lower(self):
+		return self._lower
+	
+	@property
+	def pdelta(self):
+		if self.pattern == Direction.InvertedV:
+			return 100 *(self.p1 - self.p3)/self.p3
+		else:
+			return 100 *(self.p3 - self.p1)/self.p3
+
+	@property
+	def ndelta(self):
+		if self.pattern == Direction.InvertedV:
+			return 100 *(self.n1 - self.n3)/self.n1
+		else:
+			return 100 *(self.n3 - self.n1)/self.n1
+
+	@property
+	def basedelta(self):
+		return 100 * (self.p3 - self.n3)/self.p3
+
+	@property
+	def upper(self):
+		return self._upper
 
 	@property
 	def buytriggerred(self):
@@ -115,27 +153,52 @@ class rsisignal:
 		self.n2 = self._n3
 		self._n3 = next3
 
+	@logdebug
 	def update_direction(self):
 		self.direction = Direction.Neutral
 		self.pattern = Direction.Neutral
+		selllog = "Sell Signal at " + self.to_string() + ", Profit:, " + str(self._profit) + "\n"
 		if (self.n1 > self.n2) and (self.n2 > self.n3):
 			self.direction = Direction.Down
+			default_logger().debug("Down direction detected." + self.to_string())
 			if (self.p1 > self.p2) and (self.p2 > self.p3):
 				self.pattern = Direction.InvertedV
-				if self.n3 > 60 and self.buytriggerred:
-					self.sell_signal()
+				if (self.n1 >= self.upper) and self.basedelta >= 5:
+					self.sell_signal(selllog)
+		if self.ndelta >= 20 and self.n3 >= self.upper:
+			self.direction = Direction.Up
+			if self.basedelta <= -25:
+				self.pattern = Direction.HigherHigh
+				self.sell_signal(selllog)
+
+		buylog = "Buy Signal at " + self.to_string() + ", Profit:, " + str(self._profit) + "\n"
 		if (self.n1 < self.n2) and (self.n2 < self.n3):
 			self.direction = Direction.Up
+			default_logger().debug("Up direction detected." + self.to_string())
 			if (self.p1 < self.p2) and (self.p2 < self.p3):
 				self.pattern = Direction.V
-				if self.n3 < 40:
-					self.buy_signal()
+				if (self.n1 <= self.lower) and self.basedelta >=20:
+					self.buy_signal(buylog)
+		if self.ndelta <= -15 and self.n3 <= self.lower:
+			if self.basedelta >=20:
+				self.pattern = Direction.LowerLow
+				self.buy_signal(buylog)
 
-	def buy_signal(self):
+
+	@logdebug
+	def buy_signal(self, log):
 		self.buytriggerred = True
 		self._profit = self._profit - self.price
-		print("Buy Signal at Price," + str(self.price) + ", and RSI, " + str([self.n3, self.n2, self.n1, self.p1, self.p2, self.p3]) + ", Profit:, " + str(self._profit))
+		click.secho(log, fg='green', nl=True)
 
-	def sell_signal(self):
+	@logdebug
+	def sell_signal(self, log):
 		self._profit = self._profit + self.price
-		print("Sell Signal at Price," + str(self.price) + ", and RSI," + str([self.n3, self.n2, self.n1, self.p1, self.p2, self.p3]) + ", Profit:, " + str(self._profit))
+		click.secho(log, fg='red', nl=True)
+
+	def to_string(self):
+		s1 = "Pattern:" + str(self.pattern) + ",Price:" + str(self.price) + "," + " Direction:" + str(self.direction) + ",\n" 
+		s2 = "p3:"+ str(self.p3) + "," + "p2:"+ str(self.p2) + "," + "p1:"+ str(self.p1) + ",\n"
+		s3 = "n1:"+ str(self.n1) + "," + "n2:"+ str(self.n2) + "," + "n3:"+ str(self.n3) + ",\n"
+		s4 = "p-delta:"+ str(self.pdelta) + "," + "n-delta:"+ str(self.ndelta) + "," + "base-delta:"+ str(self.basedelta) + ",\n"
+		return s1 + s2 + s3 + s4

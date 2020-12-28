@@ -22,14 +22,14 @@ RUN_IN_BACKGROUND = True
 @click.command(help='Get live price quote of a security along with other (Optional) parameters')
 @click.option('--symbol', '-S',  help='Security code')
 @click.option('--series', default='EQ', help='Default series - EQ (Equity) (Optional)')
-@click.option('--general', '-G', is_flag=True, help='Get the general (Name, ISIN) details also (Optional)')
-@click.option('--ohlc', '-O', is_flag=True, help='Get the OHLC values also (Optional)')
-@click.option('--wk52', '-W' ,is_flag=True, help='Get the 52 week high/low values also (Optional)')
-@click.option('--volume', '-V', is_flag=True, help='Get the traded volume details also (Optional)')
-@click.option('--orderbook', '-B', is_flag=True, help='Get the current bid/offer details also (Optional)')
-@click.option('--intraday', '-I', is_flag=True, help='Get the current intraday price history (Optional)')
-@click.option('--plot', '-P', is_flag=True, help='Plot the "Close" values (Optional)')
-@click.option('--background', '-R', is_flag=True, help='Keep running the process in the background (Optional)')
+@click.option('--general', '-g', is_flag=True, help='Get the general (Name, ISIN) details also (Optional)')
+@click.option('--ohlc', '-o', is_flag=True, help='Get the OHLC values also (Optional)')
+@click.option('--wk52', '-w' ,is_flag=True, help='Get the 52 week high/low values also (Optional)')
+@click.option('--volume', '-v', is_flag=True, help='Get the traded volume details also (Optional)')
+@click.option('--orderbook', '-b', is_flag=True, help='Get the current bid/offer details also (Optional)')
+@click.option('--intraday', '-i', is_flag=True, help='Get the current intraday price history (Optional)')
+@click.option('--plot', '-p', is_flag=True, help='Plot the "Close" values (Optional)')
+@click.option('--background', '-r', is_flag=True, help='Keep running the process in the background (Optional)')
 @logdebug
 def live_quote(symbol, series, general, ohlc, wk52, volume, orderbook, intraday, plot, background):
 	if not validate_symbol(symbol):

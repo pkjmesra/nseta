@@ -65,7 +65,7 @@ STRATEGY_FORECAST_MAPPING = {
 
 STRATEGY_FORECAST_MAPPING_KEYS = list(STRATEGY_FORECAST_MAPPING.keys())
 
-def backtest_custom_strategy(df, symbol, strategy, lower_limit, upper_limit):
+def backtest_custom_strategy(df, symbol, strategy, lower_limit=1.5, upper_limit=1.5):
 	plt, result = daily_forecast(df, symbol, strategy, upper_limit=float(upper_limit), lower_limit=float(lower_limit), periods=7)
 	return result
 
