@@ -12,6 +12,8 @@ class Direction(enum.Enum):
 	InvertedV = 5
 	LowerLow = 6
 	HigherHigh = 7
+	OverBought = 8
+	OverSold = 9
 
 class rsisignal:
 	def __init__(self):
@@ -155,34 +157,40 @@ class rsisignal:
 
 	@logdebug
 	def update_direction(self):
-		self.direction = Direction.Neutral
-		self.pattern = Direction.Neutral
 		selllog = "Sell Signal at " + self.to_string() + ", Profit:, " + str(self._profit) + "\n"
-		if (self.n1 > self.n2) and (self.n2 > self.n3):
+		if (self.n1 > self.n2) and (self.n2 > self.n3): # The last 3 values fell
 			self.direction = Direction.Down
 			default_logger().debug("Down direction detected." + self.to_string())
-			if (self.p1 > self.p2) and (self.p2 > self.p3):
+			if (self.p1 > self.p2) and (self.p2 > self.p3): # The last 6th, 5th and 4th values were rising
 				self.pattern = Direction.InvertedV
-				if (self.n1 >= self.upper) and self.basedelta >= 5:
+				if self.ndelta >= 15: # RSI fell > 15%
+					self.direction = Direction.Down
 					self.sell_signal(selllog)
-		if self.ndelta >= 20 and self.n3 >= self.upper:
-			self.direction = Direction.Up
-			if self.basedelta <= -25:
-				self.pattern = Direction.HigherHigh
+			elif (self.p1 < self.p2) and (self.p2 < self.p3): # All last 6 values fell
+				self.direction = Direction.Down
+				self.pattern = Direction.LowerLow
 				self.sell_signal(selllog)
+		if self.n3 >= self.upper:
+			self.direction = Direction.Up
+			self.pattern = Direction.OverBought
+			self.sell_signal(selllog)
 
 		buylog = "Buy Signal at " + self.to_string() + ", Profit:, " + str(self._profit) + "\n"
 		if (self.n1 < self.n2) and (self.n2 < self.n3):
-			self.direction = Direction.Up
 			default_logger().debug("Up direction detected." + self.to_string())
 			if (self.p1 < self.p2) and (self.p2 < self.p3):
 				self.pattern = Direction.V
-				if (self.n1 <= self.lower) and self.basedelta >=20:
+				if self.ndelta >= 15: # RSI rose > 15%
+					self.direction = Direction.Up
 					self.buy_signal(buylog)
-		if self.ndelta <= -15 and self.n3 <= self.lower:
-			if self.basedelta >=20:
-				self.pattern = Direction.LowerLow
+			elif (self.p1 > self.p2) and (self.p2 > self.p3):
+				self.direction = Direction.Up
+				self.pattern = Direction.HigherHigh
 				self.buy_signal(buylog)
+		if self.n3 <= self.lower:
+			self.direction = Direction.Down
+			self.pattern = Direction.OverSold
+			self.buy_signal(buylog)
 
 
 	@logdebug

@@ -109,10 +109,14 @@ def test_trading_strategy(symbol, start, end, autosearch, strategy, upper, lower
 		sd = datetime.strptime(start, "%Y-%m-%d").date()
 		ed = datetime.strptime(end, "%Y-%m-%d").date()
 	try:
+		if lower is None:
+			lower = 30
+		if upper is None:
+			upper = 70
 		if intraday:
-			test_intraday_trading_strategy(symbol, strategy, autosearch, float(lower), float(upper))
+			test_intraday_trading_strategy(symbol, strategy, autosearch, lower, upper)
 		else:
-			test_historical_trading_strategy(symbol, sd, ed, strategy, autosearch, float(lower), float(upper))
+			test_historical_trading_strategy(symbol, sd, ed, strategy, autosearch, lower, upper)
 	except Exception as e:
 		default_logger().error(e, exc_info=True)
 		click.secho('Failed to test trading strategy. Please check the inputs.', fg='red', nl=True)
@@ -150,10 +154,6 @@ def forecast_strategy(symbol, start, end, strategy, upper, lower):
 
 def test_intraday_trading_strategy(symbol, strategy, autosearch, lower, upper):
 	df = get_intraday_dataframe(symbol)
-	if lower is None:
-		lower = 30
-	if upper is None:
-		upper = 70
 	run_test_strategy(df, symbol, strategy, autosearch, lower, upper)
 	test_intraday_signals(df, lower, upper)
 

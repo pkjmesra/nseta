@@ -129,6 +129,8 @@ def get_history(symbol, start, end, index=False, futures=False, option_type="",
 	del(kwargs['frame'])
 	start = kwargs['start']
 	end = kwargs['end']
+	# if intraday:
+	# 	get_intraday_history(symbol)
 	if (not intraday) and ((end - start) > timedelta(130)):
 		kwargs1 = dict(kwargs)
 		kwargs2 = dict(kwargs)
@@ -145,6 +147,21 @@ def get_history(symbol, start, end, index=False, futures=False, option_type="",
 	else:
 		return get_history_quanta(**kwargs)
 
+@logdebug
+def get_intraday_history(symbol):
+	resp = nse_intraday_url_new(index=symbol.upper())
+	print(resp)
+	data = resp.json()
+	print('name:', data['name'])
+	print('identifier:', data['identifier'])
+	print('close price:', data['closePrice'])
+
+	prices = data['grapthData'][:10]
+
+	for item in prices:
+		dt = datetime.datetime.utcfromtimestamp(item[0]/1000)
+		value = item[1]
+		print(dt, value)
 
 @logdebug
 def get_history_quanta(**kwargs):

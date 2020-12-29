@@ -12,7 +12,7 @@ from nseta.common.log import logdebug
 from requests import Session
 from functools import partial
 
-__all__ = ['NSE_SYMBOL_COUNT_URL', 'symbol_count_url', 'get_symbol_count', 'equity_history_url_full', 'equity_history_url', 'price_list_url', 'pr_price_list_zipped_url', 'equity_symbol_list_url', 'index_pe_history_url', 'nse_intraday_url']
+__all__ = ['nse_intraday_url_new','NSE_SYMBOL_COUNT_URL', 'symbol_count_url', 'get_symbol_count', 'equity_history_url_full', 'equity_history_url', 'price_list_url', 'pr_price_list_zipped_url', 'equity_symbol_list_url', 'index_pe_history_url', 'nse_intraday_url']
 
 session = Session()
 # headers = {
@@ -55,6 +55,10 @@ nse_intraday_url = partial(nse_intraday_url_full,
 							 IRFExpiryMonth="",CDDate1="",CDDate2="",
 							 Template="tame_intraday_getQuote_closing_redgreen.jsp",
 							 Periodicity="1", PeriodType="2")
+
+nse_intraday_url_new = URLFetchSession(
+	url='https://www.nseindia.com/api/chart-databyindex')
+
 """
 ---------------------------------EQUITY--------------------------------------
 """
