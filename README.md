@@ -75,42 +75,76 @@ python3 -c "import nseta; print(nseta.__version__)"
 
 ## Usage
 
-
-Get the price history of stocks and NSE indices directly in pandas dataframe-
+- Top level command options that provides you with various features
 ```python
 
 #Usage Commands (You can use nsetacli or nseta - either is good.)
-$ nsetacli
-Usage: nsetacli [OPTIONS] COMMAND [ARGS]...
+$ nseta
+Usage: nseta [OPTIONS] COMMAND [ARGS]...
 
 Options:
   --debug / --no-debug  --debug to turn debugging on. Default is off
+  --version             Shows the version of this library
   --help                Show this message and exit.
 
 Commands:
   create-cdl-model       Create candlestick model.Plot uncovered patterns
   forecast-strategy      Forecast & measure performance of a trading model
   history                Get price history of a security for given dates
-  live-quote             Get live price quote of a security
+  live-quote             Get live price quote of a security along with
+                         other...
   pe-history             Get PE history of a security for given dates
   plot-ta                Plot various technical analysis indicators
   test-trading-strategy  Measure the performance of your trading strategy
+```
+- Sample commands
+```python
 
   Example:
-  nseta --debug create-cdl-model -S bandhanbnk -s 2019-07-30 -e 2020-11-20 --steps
-  nseta --debug forecast-strategy -S bandhanbnk -s 2019-07-30 -e 2020-11-20 --strategy rsi
-  nseta --debug history -S bandhanbnk -s 2019-07-30 -e 2020-11-20
-  nseta --debug live-quote -S bandhanbnk
-  nseta --debug pe-history -S bandhanbnk -s 2019-07-30 -e 2020-11-20
-  nseta --debug plot-ta -S bandhanbnk -s 2019-07-30 -e 2020-11-20
-  nseta --debug test-trading-strategy -S bandhanbnk -s 2019-07-30 -e 2020-11-20 --strategy rsi
-
+  nseta create-cdl-model -S bandhanbnk -s 2019-07-30 -e 2020-11-20 --steps
+  nseta forecast-strategy -S bandhanbnk -s 2019-07-30 -e 2020-11-20 --strategy rsi
+  nseta history -S bandhanbnk -s 2019-07-30 -e 2020-11-20
+  nseta live-quote -S bandhanbnk
+  nseta pe-history -S bandhanbnk -s 2019-07-30 -e 2020-11-20
+  nseta plot-ta -S bandhanbnk -s 2019-07-30 -e 2020-11-20
+  nseta test-trading-strategy -S bandhanbnk -s 2019-07-30 -e 2020-11-20 --strategy rsi
 ```
-Sample commands
+- Test your trading strategies
+
+```python
+nseta test-trading-strategy
+Please provide start and end date in format yyyy-mm-dd
+Usage:  [OPTIONS]
+
+  Measure the performance of your trading strategy
+
+Options:
+  -S, --symbol TEXT               Security code
+  -s, --start TEXT                Start date in yyyy-mm-dd format
+  -e, --end TEXT                  End date in yyyy-mm-dd format
+  --strategy [rsi|smac|macd|emac|bbands|multi|custom]
+                                  rsi, smac, macd, emac, bbands, multi,
+                                  custom. Choose one.
+  -u, --upper TEXT                Used as upper limit, for example, for RSI.
+                                  Only when strategy is "custom", we buy the
+                                  security when the predicted next day return
+                                  is > +{upper} %
+  -l, --lower TEXT                Used as lower limit, for example, for RSI.
+                                  Only when strategy is "custom", we sell the
+                                  security when the predicted next day return
+                                  is < -{lower} %
+  --autosearch / --no-autosearch  --auto for allowing to automatically measure
+                                  the performance of your trading strategy on
+                                  multiple combinations of parameters.
+  -i, --intraday                  Test trading strategy for the current
+                                  intraday price history (Optional)
+  --help                          Show this message and exit.
+```
 
 - Test your trading strategies (for example, using *RSI* as technical indicator)
-```
-$ nsetacli test-trading-strategy -S bandhanbnk -s 2020-01-01 -e 2020-10-03 --strategy rsi --autosearch
+
+```python
+$ nseta test-trading-strategy -S bandhanbnk -s 2020-01-01 -e 2020-10-03 --strategy rsi --autosearch
 
 init_cash : 100000
 buy_prop : 1
@@ -136,8 +170,9 @@ Optimal metrics: {'rtot': 0.4850052910757702, 'ravg': 0.00255265942671458, 'rnor
 ![](./docs/assets/trading_strategy_rsi.png)
 
 - Check historical data and export to csv file
+
 ```
-$ nsetacli history -S bandhanbnk -s 2019-01-01 -e 2020-09-30
+$ nseta history -S bandhanbnk -s 2019-01-01 -e 2020-09-30
        Symbol Series        Date  Prev Close    Open   High     Low    Last   Close    VWAP   Volume      Turnover  Trades  Deliverable Volume  %Deliverable
 0  BANDHANBNK     EQ  2019-01-01      550.15  552.50  560.0  544.10  558.00  556.70  552.21   589317  3.254256e+13   16658              175430        0.2977
 1  BANDHANBNK     EQ  2019-01-02      556.70  553.00  563.7  549.60  551.40  552.15  556.91   834846  4.649319e+13   32119              250782        0.3004
@@ -146,10 +181,26 @@ $ nsetacli history -S bandhanbnk -s 2019-01-01 -e 2020-09-30
 4  BANDHANBNK     EQ  2019-01-07      528.90  540.00  542.0  495.55  495.55  498.05  509.49  2684675  1.367813e+14   76816             1160901        0.4324
 Saved to: bandhanbnk.csv
 ```
+- Create candlwstick model
+```python
+nseta create-cdl-model
+Usage:  [OPTIONS]
 
+  Create candlestick model.Plot uncovered patterns
+
+Options:
+  -S, --symbol TEXT       Security code
+  -s, --start TEXT        Start date in yyyy-mm-dd format
+  -e, --end TEXT          End date in yyyy-mm-dd format
+  -o, --file TEXT         Output file name. Default is {symbol}.csv
+  --steps / --no-steps    --steps for saving intermediate steps in output file
+  -f, --format [csv|pkl]  Output format, pkl - to save as Pickel and csv - to
+                          save as csv
+  --help                  Show this message and exit.
+```
 - Create candlestick models with pattern recognition
 ```
-$ nsetacli create-cdl-model -S bandhanbnk -s 2019-01-01 -e 2020-09-30 --steps
+$ nseta create-cdl-model -S bandhanbnk -s 2019-01-01 -e 2020-09-30 --steps
                 Symbol Series  Prev Close    Open   High  ...  CDLUNIQUE3RIVER  CDLUPSIDEGAP2CROWS  CDLXSIDEGAP3METHODS  candlestick_pattern  candlestick_match_count
 Date                                                      ...                                                                                                        
 2019-01-01  BANDHANBNK     EQ      550.15  552.50  560.0  ...                0                   0                    0           CDLHARAMI_Bull                      0.0
@@ -166,13 +217,35 @@ Candlestick pattern model plot saved to: bandhanbnk_candles.html
 
 - Create various plots for analysis with technical indicators 
 ```
-$ nsetacli plot-ta -S bandhanbnk -s 2019-01-01 -e 2020-09-30
+$ nseta plot-ta -S bandhanbnk -s 2019-01-01 -e 2020-09-30
 ```
 ![](./docs/assets/ti_plots.png)
 
-- Create forecast strategies and verify them
+- Forecast strategies
+```python
+nseta forecast-strategy
+Usage:  [OPTIONS]
+
+  Forecast & measure performance of a trading model
+
+Options:
+  -S, --symbol TEXT               Security code
+  -s, --start TEXT                Start date in yyyy-mm-dd format
+  -e, --end TEXT                  End date in yyyy-mm-dd format
+  --strategy [rsi|smac|macd|emac|bbands|multi|custom]
+                                  rsi, smac, macd, emac, bbands, multi,
+                                  custom. Choose one.
+  -u, --upper FLOAT               Only when strategy is "custom". We buy the
+                                  security when the predicted next day return
+                                  is > +{upper} %
+  -l, --lower FLOAT               Only when strategy is "custom". We sell the
+                                  security when the predicted next day return
+                                  is < -{lower} %
+  --help                          Show this message and exit.
 ```
-$ nsetacli forecast-strategy -S bandhanbnk -s 2019-01-01 -e 2020-09-30 --upper 1.5 --lower 1.5
+- Create forecast strategies and verify them
+```python
+$ nseta forecast-strategy -S bandhanbnk -s 2019-01-01 -e 2020-09-30 --upper 1.5 --lower 1.5
 Initial log joint probability = -6.20343
     Iter      log prob        ||dx||      ||grad||       alpha      alpha0  # evals  Notes 
       99       930.108     0.0162936       321.927           1           1      117   
@@ -319,18 +392,50 @@ Optimal metrics: {'rtot': 0.3164216915602497, 'ravg': 0.0007307660313169739, 'rn
 ![](./docs/assets/forecast.png)
 
 -  Get live quotes for a security
+```python
+nseta live-quote
+Please provide security/index code
+Usage:  [OPTIONS]
+
+  Get live price quote of a security along with other (Optional) parameters
+
+Options:
+  -S, --symbol TEXT  Security code
+  --series TEXT      Default series - EQ (Equity) (Optional)
+  -g, --general      Get the general (Name, ISIN) details also (Optional)
+  -o, --ohlc         Get the OHLC values also (Optional)
+  -w, --wk52         Get the 52 week high/low values also (Optional)
+  -v, --volume       Get the traded volume details also (Optional)
+  -b, --orderbook    Get the current bid/offer details also (Optional)
+  -i, --intraday     Get the current intraday price history (Optional)
+  -p, --plot         Plot the "Close" values (Optional)
+  -r, --background   Keep running the process in the background (Optional)
+  --help             Show this message and exit.
 ```
-$ nsetacli live-quote -S bandhanbnk
-As of 06-OCT-2020 10:16:17
-
-                     Last Trade Price Price Change    Open    High     Low Close Prev Close 52 wk High 52 wk Low
-Name                                                                                                            
-Bandhan Bank Limited           302.90         3.61  295.00  304.50  294.55  0.00     292.35     650.00    152.20
-
-
-                Total Traded Volume Total Traded Value
-Quantity Traded                                       
-29,70,467                 42,65,994          12,771.53
+$ nseta live-quote -S bandhanbnk -gowvb
+------------------------------------------
+                                           
+Name                |  Bandhan Bank Limited
+ISIN                |          INE545U01014
+Last Updated        |  29-DEC-2020 16:00:00
+Prev Close          |                406.15
+Last Trade Price    |                413.50
+Change              |                  7.35
+% Change            |                  1.81
+Avg. Price          |                414.43
+Upper Band          |                437.95
+Lower Band          |                358.35
+Open                |                408.00
+High                |                419.25
+Low                 |                407.45
+Close               |                413.20
+52 Wk High          |                526.00
+52 Wk Low           |                152.20
+Quantity Traded     |             82,37,480
+Total Traded Volume |             82,37,480
+Total Traded Value  |             34,138.59
+Delivery Volume     |             17,43,202
+% Delivery          |                 21.16
 
 
              Bid Price Offer Quantity Offer Price

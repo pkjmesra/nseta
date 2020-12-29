@@ -1,15 +1,29 @@
 import click
-from datetime import datetime
-from nseta.common.log import logdebug
+from datetime import datetime, timedelta
+from nseta.common.log import logdebug, default_logger
 
 __all__ = ['validate_inputs', 'print_help_msg', 'validate_symbol']
 
+STRATEGY_DAYS_MAPPING = {
+	"rsi": 20,
+	"smac": 63,
+	"macd": 50,
+	"emac": 63,
+	"bbands": 28,
+	"multi": 63,
+}
+
 @logdebug
-def validate_inputs(start, end,symbol):
+def validate_inputs(start, end,symbol, strategy=None):
 	try:
-		datetime.strptime(start, "%Y-%m-%d").date()
-		datetime.strptime(end, "%Y-%m-%d").date()
-	except Exception:
+		sd = datetime.strptime(start, "%Y-%m-%d").date()
+		ed = datetime.strptime(end, "%Y-%m-%d").date()
+		if strategy is not None:
+			if timedelta(STRATEGY_DAYS_MAPPING[strategy.lower()]) > (ed-sd):
+				click.secho("Please provide start and end date with a time delta of at least " + str(STRATEGY_DAYS_MAPPING[strategy.lower()]) + " days for the selected strategy.", fg='red', nl=True)
+				return False
+	except Exception as e:
+		default_logger().error(e, exc_info=True)
 		click.secho("Please provide start and end date in format yyyy-mm-dd", fg='red', nl=True)
 		return False
 	except SystemExit:

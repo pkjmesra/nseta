@@ -10,7 +10,16 @@ from nseta.plots.plots import plot_technical_indicators
 from nseta.common.log import logdebug, default_logger
 from datetime import datetime, date
 
-__all__ = ['live_quote', 'live_intraday']
+__all__ = ['KEY_MAPPING','live_quote', 'live_intraday']
+
+KEY_MAPPING = {
+	'dt': 'Date',
+	'open': 'Open',
+	'high': 'High',
+	'low': 'Low',
+	'close': 'Close',
+	'volume': 'Volume',
+}
 
 NAME_KEYS = ['companyName', 'isinCode']
 QUOTE_KEYS = ['previousClose', 'lastPrice', 'change', 'pChange', 'averagePrice', 'pricebandupper', 'pricebandlower']
@@ -74,20 +83,22 @@ def live_quote(symbol, series, general, ohlc, wk52, volume, orderbook, intraday,
 def live_intraday(symbol):
 	try:
 		df = get_history(symbol, start=date.today(), end = date.today(), intraday=True)
-		if len(df) >0:
-			df['dt'] = df['Date']
-			df['Close'] = df['allltp']
-			df['Open'] = df['pltp']
-			df['High'] = df['pltp']
-			df['Low'] = df['pltp']
-			df['Symbol'] = symbol
-			df['Volume'] = 0
+		if len(df) > 0:
+			df = drop_duplicate_keys(df, symbol)
 	except Exception as e:
 		default_logger().error(e, exc_info=True)
 		click.secho('Failed to fetch intraday history.', fg='red', nl=True)
 		return
 	except SystemExit:
 		pass
+	return df
+
+def drop_duplicate_keys(df, symbol):
+	for key in KEY_MAPPING.keys():
+		df[key] = df[KEY_MAPPING[key]]
+	df['Symbol'] = symbol
+	df['Volume'] = 0
+	df.drop(list(KEY_MAPPING.keys()), axis = 1, inplace = True)
 	return df
 
 def format_data(data, time, general, ohlc, wk52, volume, orderbook):

@@ -5,7 +5,7 @@ from nseta.common.history import *
 from nseta.common.ti import update_ti
 from nseta.common.log import logdebug, default_logger
 from nseta.cli.inputs import *
-from nseta.cli.livecli import live_intraday
+from nseta.cli.livecli import live_intraday, KEY_MAPPING
 
 import click
 from datetime import datetime
@@ -51,17 +51,25 @@ def macd_strategy(df, autosearch, lower, upper):
 @logdebug
 def multi_strategy(df, autosearch, lower, upper):
 	if not autosearch:
-		backtest_multi_strategy(df, key_variable= "smac", fast_period=10, slow_period=50)
+		SAMPLE_STRAT_DICT = {
+    		"smac": {"fast_period": 10, "slow_period": [40, 50]},
+    		"rsi": {"rsi_lower": [15, 30], "rsi_upper": 70},
+		}
+		results = backtest_multi_strategy(df, SAMPLE_STRAT_DICT)
+		print(results[['smac.fast_period', 'smac.slow_period', 'rsi.rsi_lower', 'rsi.rsi_upper', 'init_cash', 'final_value', 'pnl']].head())
 	else:
-		# key_variables = ["smac", "emac", "macd"]
-		result_smac = backtest_multi_strategy(df, key_variable= "smac", fast_period=10, slow_period=[40,50], rsi_lower=[15,30], rsi_upper=70)
-		result_emac = backtest_multi_strategy(df, key_variable= "emac", fast_period=10, slow_period=[40,50], rsi_lower=[15,30], rsi_upper=70)
-		result_macd = backtest_multi_strategy(df, key_variable= "macd", fast_period=12, slow_period=[26,40], rsi_lower=[15,30], rsi_upper=70)
-		print(result_smac[['smac.fast_period', 'smac.slow_period', 'rsi.rsi_lower', 'rsi.rsi_upper', 'init_cash', 'final_value', 'pnl']].head())
+		SAMPLE_STRAT_DICT = {
+    		"smac": {"fast_period": 10, "slow_period": [40, 50]},
+    		"emac": {"fast_period": 10, "slow_period": [40, 50]},
+    		"macd": {"fast_period": 12, "slow_period": [26, 40]},
+    		"rsi": {"rsi_lower": [15, 20, 30, 40], "rsi_upper": [60, 70, 80]},
+		}
+		results = backtest_multi_strategy(df, SAMPLE_STRAT_DICT)
+		print(results[['smac.fast_period', 'smac.slow_period', 'rsi.rsi_lower', 'rsi.rsi_upper', 'init_cash', 'final_value', 'pnl']].head())
 		print ('\n')
-		print(result_emac[['emac.fast_period', 'emac.slow_period', 'rsi.rsi_lower', 'rsi.rsi_upper', 'init_cash', 'final_value', 'pnl']].head())
+		print(results[['emac.fast_period', 'emac.slow_period', 'rsi.rsi_lower', 'rsi.rsi_upper', 'init_cash', 'final_value', 'pnl']].head())
 		print('\n')
-		print(result_macd[['macd.fast_period', 'macd.slow_period', 'rsi.rsi_lower', 'rsi.rsi_upper', 'init_cash', 'final_value', 'pnl']].head())
+		print(results[['macd.fast_period', 'macd.slow_period', 'rsi.rsi_lower', 'rsi.rsi_upper', 'init_cash', 'final_value', 'pnl']].head())
 		print('\n')
 
 STRATEGY_MAPPING = {
@@ -76,15 +84,6 @@ STRATEGY_MAPPING = {
 	# "custom": CustomStrategy,
 	# "ternary": TernaryStrategy,
 	"multi": multi_strategy
-}
-
-KEY_MAPPING = {
-	'dt': 'Date',
-	'open': 'Open',
-	'high': 'High',
-	'low': 'Low',
-	'close': 'Close',
-	'volume': 'Volume',
 }
 
 STRATEGY_MAPPING_KEYS = list(STRATEGY_MAPPING.keys()) + ['custom']
@@ -103,7 +102,7 @@ STRATEGY_MAPPING_KEYS = list(STRATEGY_MAPPING.keys()) + ['custom']
 @logdebug
 def test_trading_strategy(symbol, start, end, autosearch, strategy, upper, lower, intraday=False):
 	if not intraday:
-		if not validate_inputs(start, end, symbol):
+		if not validate_inputs(start, end, symbol, strategy):
 			print_help_msg(test_trading_strategy)
 			return
 		sd = datetime.strptime(start, "%Y-%m-%d").date()
@@ -134,7 +133,7 @@ def test_trading_strategy(symbol, start, end, autosearch, strategy, upper, lower
 @click.option('--lower', '-l', default=1.5, help='Only when strategy is "custom". We sell the security when the predicted next day return is < -{lower} %')
 @logdebug
 def forecast_strategy(symbol, start, end, strategy, upper, lower):
-	if not validate_inputs(start, end, symbol):
+	if not validate_inputs(start, end, symbol, strategy):
 		print_help_msg(forecast_strategy)
 		return
 	sd = datetime.strptime(start, "%Y-%m-%d").date()

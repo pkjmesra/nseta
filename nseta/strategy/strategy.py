@@ -15,43 +15,63 @@ __all__ = ['backtest_custom_strategy', 'backtest_smac_strategy', 'backtest_emac_
 
 @logdebug
 def backtest_smac_strategy(df, fast_period=10, slow_period=50):
-	result = backtest('smac', df.dropna(), fast_period=fast_period, slow_period=slow_period, verbose=__VERBOSE__)
+	if __VERBOSE__:
+		result = backtest('smac', df.dropna(), fast_period=fast_period, slow_period=slow_period, verbose=__VERBOSE__)
+	else:
+		with suppress_stdout_stderr():
+			result = backtest('smac', df.dropna(), fast_period=fast_period, slow_period=slow_period, verbose=__VERBOSE__)
 	print(result[['fast_period', 'slow_period', 'init_cash', 'final_value', 'pnl']].head())
 	return result
 
 @logdebug
 def backtest_emac_strategy(df, fast_period=10, slow_period=50):
-	result = backtest('emac', df.dropna(), fast_period=fast_period, slow_period=slow_period, verbose=__VERBOSE__)
+	if __VERBOSE__:
+		result = backtest('emac', df.dropna(), fast_period=fast_period, slow_period=slow_period, verbose=__VERBOSE__)
+	else:
+		with suppress_stdout_stderr():
+			result = backtest('emac', df.dropna(), fast_period=fast_period, slow_period=slow_period, verbose=__VERBOSE__)
 	print(result[['fast_period', 'slow_period', 'init_cash', 'final_value', 'pnl']].head())
 	return result
 
 @logdebug
 def backtest_rsi_strategy(df, rsi_period=14, rsi_lower=30, rsi_upper=70):
-	result = backtest('rsi', df.dropna(), rsi_period=rsi_period, rsi_upper=rsi_upper, rsi_lower=rsi_lower, verbose=__VERBOSE__)
+	if __VERBOSE__:
+		result = backtest('rsi', df.dropna(), rsi_period=rsi_period, rsi_upper=rsi_upper, rsi_lower=rsi_lower, verbose=__VERBOSE__)
+	else:
+		with suppress_stdout_stderr():
+			result = backtest('rsi', df.dropna(), rsi_period=rsi_period, rsi_upper=rsi_upper, rsi_lower=rsi_lower, verbose=__VERBOSE__)
 	print(result[['rsi_period', 'rsi_upper', 'rsi_lower', 'init_cash', 'final_value', 'pnl']].head())
 	return result
 
 @logdebug
 def backtest_macd_strategy(df, fast_period=12, slow_period=26):
-	result = backtest('macd', df.dropna(), fast_period=fast_period, slow_period=slow_period, signal_period=9, 
+	if __VERBOSE__:
+		result = backtest('macd', df.dropna(), fast_period=fast_period, slow_period=slow_period, signal_period=9, 
 		sma_period=30, dir_period=10, verbose=__VERBOSE__)
+	else:
+		with suppress_stdout_stderr():
+			result = backtest('macd', df.dropna(), fast_period=fast_period, slow_period=slow_period, signal_period=9, 
+				sma_period=30, dir_period=10, verbose=__VERBOSE__)
 	print(result[['fast_period', 'slow_period', 'signal_period', 'init_cash', 'final_value', 'pnl']].head())
 	return result
 
 @logdebug
 def backtest_bbands_strategy(df, period=20, devfactor=2.0):
-	result = backtest('bbands', df.dropna(), period=period, devfactor=devfactor, verbose=__VERBOSE__)
+	if __VERBOSE__:
+		result = backtest('bbands', df.dropna(), period=period, devfactor=devfactor, verbose=__VERBOSE__)
+	else:
+		with suppress_stdout_stderr():
+			result = backtest('bbands', df.dropna(), period=period, devfactor=devfactor, verbose=__VERBOSE__)
 	print(result[['period', 'devfactor', 'init_cash', 'final_value', 'pnl']].head())
 	return result
 
 @logdebug
-def backtest_multi_strategy(df, key_variable="smac", fast_period=10, slow_period=50, rsi_lower=30, rsi_upper=70):
-	strats = { 
-		key_variable: {"fast_period": fast_period, "slow_period": slow_period},
-		"rsi": {"rsi_lower": rsi_lower, "rsi_upper": rsi_upper} 
-	}
-	result = backtest("multi", df.dropna(), strats=strats, verbose=__VERBOSE__)
-	# print(result[[key_variable +'.fast_period', key_variable+'.slow_period', 'rsi.rsi_lower', 'rsi.rsi_upper', 'init_cash', 'final_value', 'pnl']].head())
+def backtest_multi_strategy(df, strats):
+	if __VERBOSE__:
+		result = backtest("multi", df.dropna(), strats=strats, verbose=__VERBOSE__)
+	else:
+		with suppress_stdout_stderr():
+			result = backtest("multi", df.dropna(), strats=strats, verbose=__VERBOSE__)
 	return result
 
 STRATEGY_FORECAST_MAPPING = {
