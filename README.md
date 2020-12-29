@@ -75,7 +75,7 @@ python3 -c "import nseta; print(nseta.__version__)"
 
 ## Usage
 
-- Top level command options that provides you with various features
+- Top level command options that provide you with various features
 ```python
 
 #Usage Commands (You can use nsetacli or nseta - either is good.)
@@ -181,7 +181,7 @@ $ nseta history -S bandhanbnk -s 2019-01-01 -e 2020-09-30
 4  BANDHANBNK     EQ  2019-01-07      528.90  540.00  542.0  495.55  495.55  498.05  509.49  2684675  1.367813e+14   76816             1160901        0.4324
 Saved to: bandhanbnk.csv
 ```
-- Create candlwstick model
+- Create candlestick model
 ```python
 nseta create-cdl-model
 Usage:  [OPTIONS]
@@ -412,7 +412,9 @@ Options:
   -r, --background   Keep running the process in the background (Optional)
   --help             Show this message and exit.
 ```
-$ nseta live-quote -S bandhanbnk -gowvb
+-  Get live quotes with multiple options along with intraday history
+```python
+nseta live-quote -S bandhanbnk -gowvb
 ------------------------------------------
                                            
 Name                |  Bandhan Bank Limited
