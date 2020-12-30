@@ -91,10 +91,10 @@ Commands:
   create-cdl-model       Create candlestick model.Plot uncovered patterns
   forecast-strategy      Forecast & measure performance of a trading model
   history                Get price history of a security for given dates
-  live-quote             Get live price quote of a security along with
-                         other...
+  live-quote             Get live price quote of a security
   pe-history             Get PE history of a security for given dates
   plot-ta                Plot various technical analysis indicators
+  scan                   Scan live price quotes and calculate RSI for...
   test-trading-strategy  Measure the performance of your trading strategy
 ```
 - Sample commands
@@ -108,6 +108,7 @@ Commands:
   nseta pe-history -S bandhanbnk -s 2019-07-30 -e 2020-11-20
   nseta plot-ta -S bandhanbnk -s 2019-07-30 -e 2020-11-20
   nseta test-trading-strategy -S bandhanbnk -s 2019-07-30 -e 2020-11-20 --strategy rsi
+  nseta scan -S HDFC,ABB
 ```
 - Test your trading strategies
 
@@ -447,6 +448,74 @@ Bid Quantity
 391             302.65         13,936      303.00
 4,368           302.60          3,471      303.05
 5,469           302.55            767      303.10
+```
+- Scan live quotes of securities
+```python
+nseta scan -S HDFC,ABB
+              Updated Symbol     Close       LTP
+ 30-DEC-2020 16:00:00   HDFC  2,518.95  2,521.70
+ 30-DEC-2020 16:00:00    ABB  1,203.05  1,205.30
+```
+- Scan live quotes of a bunch of securities listed in a resource file(stocks.py)
+```python
+nseta scan
+              Updated      Symbol     Close       LTP
+ 30-DEC-2020 16:00:00         ABB  1,203.05  1,205.30
+ 30-DEC-2020 16:00:00         ACC  1,616.75  1,651.00
+ 30-DEC-2020 16:00:00    ADANIENT    489.20    480.00
+ 30-DEC-2020 16:00:00  APOLLOTYRE    180.75    180.05
+ 30-DEC-2020 16:00:00      ASHOKA     90.85     90.05
+ 30-DEC-2020 16:00:00    ASHOKLEY     95.00     94.80
+ 30-DEC-2020 16:00:00   AMBUJACEM    244.40    252.50
+ 30-DEC-2020 16:00:00      ARVIND     45.60     46.85
+ 30-DEC-2020 16:00:00  ASIANPAINT  2,696.80  2,735.30
+ 30-DEC-2020 16:00:00        ATUL  6,389.55  6,500.00
+ 30-DEC-2020 16:00:00  AUROPHARMA    905.05    907.85
+ 30-DEC-2020 16:00:00    AXISBANK    630.20    623.60
+ 30-DEC-2020 16:00:00  BAJFINANCE  5,200.50  5,335.00
+ 30-DEC-2020 16:00:00  BANDHANBNK    413.20    406.50
+ 30-DEC-2020 16:00:00   BANKINDIA     49.40     49.15
+ 30-DEC-2020 16:00:00  BANKBARODA     62.35     62.05
+ 30-DEC-2020 16:00:00   BATAINDIA  1,584.40  1,581.70
+ 30-DEC-2020 16:00:00         BEL    114.75    114.70
+ 30-DEC-2020 16:00:00        BEML    993.90    964.10
+ 30-DEC-2020 16:00:00  BERGEPAINT    744.05    753.10
+ 30-DEC-2020 16:00:00  BHARATFORG    523.45    516.30
+ 30-DEC-2020 16:00:00        BHEL     35.40     35.30
+ 30-DEC-2020 16:00:00   BOMDYEING     74.85     76.85
+ 30-DEC-2020 16:00:00        BPCL    381.50    382.00
+ 30-DEC-2020 16:00:00   BRITANNIA  3,593.30  3,588.65
+ 30-DEC-2020 16:00:00    CADILAHC    479.35    479.80
+ 30-DEC-2020 16:00:00  CASTROLIND    121.95    123.55
+ 30-DEC-2020 16:00:00  CENTURYTEX    396.25    394.50
+ 30-DEC-2020 16:00:00  CHAMBLFERT    235.90    231.80
+ 30-DEC-2020 16:00:00       CIPLA    827.95    823.40
+ 30-DEC-2020 16:00:00    CROMPTON    369.15    370.15
+ 30-DEC-2020 16:00:00  CUMMINSIND    569.00    572.00
+ 30-DEC-2020 16:00:00       DABUR    528.95    538.60
+ 30-DEC-2020 16:00:00     DCBBANK    117.90    120.10
+ 30-DEC-2020 16:00:00         DLF    231.45    235.30
+ 30-DEC-2020 16:00:00     DRREDDY  5,165.60  5,165.00
+ 30-DEC-2020 16:00:00   EICHERMOT  2,460.55  2,521.00
+ 30-DEC-2020 16:00:00     ESCORTS  1,268.90  1,261.25
+ 30-DEC-2020 16:00:00    EVEREADY    204.95    208.70
+ 30-DEC-2020 16:00:00    EXIDEIND    191.35    192.50
+ 30-DEC-2020 16:00:00         FCL     66.05     63.75
+ 30-DEC-2020 16:00:00  FEDERALBNK     67.40     67.00
+ 30-DEC-2020 16:00:00      FORTIS    156.30    154.90
+ 30-DEC-2020 16:00:00         FSL    104.00     98.80
+ 30-DEC-2020 16:00:00        GAIL    123.75    122.90
+ 30-DEC-2020 16:00:00       GLAND  2,348.60  2,351.00
+ 30-DEC-2020 16:00:00    GLENMARK    497.90    496.50
+ 30-DEC-2020 16:00:00    GMRINFRA     26.40     27.30
+ 30-DEC-2020 16:00:00    GODREJCP    741.15    750.00
+ 30-DEC-2020 16:00:00   GODREJIND    431.10    423.90
+ 30-DEC-2020 16:00:00  GODREJPROP  1,405.05  1,390.20
+ 30-DEC-2020 16:00:00    GOODYEAR    969.80    958.20
+ 30-DEC-2020 16:00:00         HAL    836.30    830.00
+ 30-DEC-2020 16:00:00     HCLTECH    935.90    941.15
+ 30-DEC-2020 16:00:00        HDFC  2,518.95  2,521.70
+ 30-DEC-2020 16:00:00    HDFCBANK  1,427.20  1,432.05
 ```
 
 ### Submit patches

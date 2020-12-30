@@ -8,7 +8,7 @@ from nseta.cli.historycli import history, pe_history
 from nseta.cli.modelcli import create_cdl_model
 from nseta.cli.plotscli import plot_ta
 from nseta.cli.strategycli import test_trading_strategy, forecast_strategy
-from nseta.cli.livecli import live_quote
+from nseta.cli.livecli import live_quote, scan
 from nseta.common import log
 
 __all__ = ['nsetacli']
@@ -26,13 +26,14 @@ def nsetacli(debug, version):
 	if version:
 		click.echo('nseta ' + nseta.__version__)
 
+nsetacli.add_command(create_cdl_model)
+nsetacli.add_command(forecast_strategy)
 nsetacli.add_command(history)
+nsetacli.add_command(live_quote)
 nsetacli.add_command(pe_history)
 nsetacli.add_command(plot_ta)
-nsetacli.add_command(create_cdl_model)
+nsetacli.add_command(scan)
 nsetacli.add_command(test_trading_strategy)
-nsetacli.add_command(forecast_strategy)
-nsetacli.add_command(live_quote)
 
 def sigint_handler(signal, frame):
     click.secho('Keyboard Interrupt received. Exiting.', fg='red', nl=True)

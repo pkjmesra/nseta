@@ -5,13 +5,14 @@ Created on Wed Aug 24 22:01:01 2020
 @author: SW274998
 """
 from nseta.common.commons import *
-from nseta.common.log import logdebug
+from nseta.common.log import logdebug, default_logger
 from nseta.live.liveurls import quote_eq_url, quote_derivative_url, option_chain_url, futures_chain_url, holiday_list_url
 
 import dateutil.relativedelta
 import json
 from bs4 import BeautifulSoup
 
+__all__ = ['get_data_list','get_live_quote']
 
 OPTIONS_CHAIN_SCHEMA = [str, int, int, int, float, float, float, int, float, float, int,
 						float,
@@ -26,6 +27,12 @@ FUTURES_SCHEMA = [str, str, StrDate.default_format(
 FUTURES_HEADERS = ["Instrument", "Underlying", "Expiry Date", "Option Type", "Strike Price", "Open Price", "High Price", "Low Price", "Prev. Close", "Last Price", "Volume",
 				   "Turnover", "Underlying Value"]
 FUTURES_INDEX = "Expiry Date"
+
+NAME_KEYS = ['symbol','companyName', 'isinCode']
+QUOTE_KEYS = ['previousClose', 'lastPrice', 'change', 'pChange', 'averagePrice', 'pricebandupper', 'pricebandlower']
+OHLC_KEYS = ['open', 'dayHigh', 'dayLow', 'closePrice']
+WK52_KEYS = ['high52', 'low52']
+VOLUME_KEYS = ['quantityTraded', 'totalTradedVolume', 'totalTradedValue', 'deliveryQuantity', 'deliveryToTradedQuantity']
 
 
 eq_quote_referer = "https://www1.nseindia.com/live_market/dynaContent/live_watch/get_quote/GetQuote.jsp?symbol={}&illiquid=0&smeFlag=0&itpFlag=0"
@@ -223,3 +230,75 @@ def getworkingdays(dtfrom, dtto):
 		# stworking.add(dtspecial)
 
 	return sorted(stworking)
+
+@logdebug
+def get_live_quote(symbol, general=True, ohlc=False, wk52=False, volume=False, orderbook=False, keys=[]):
+	result = get_quote(symbol)
+	# print(result)
+	if len(result['data']) == 0:
+		default_logger().warn('Wrong or invalid inputs.')
+		click.secho("Please check the inputs. Could not fetch the data.", fg='red', nl=True)
+		return
+	primary = format_as_dataframe(result, symbol, general, ohlc, wk52, volume, keys= keys)
+	return result, primary
+
+def format_as_dataframe(orgdata, symbol, general, ohlc, wk52, volume, keys=[]):
+	primary, name_data, quote_data, ohlc_data, wk52_data, volume_data, pipeline_data = get_data_list(orgdata, keys=keys)
+	return primary
+
+def get_data_list(orgdata, keys=[]):
+	data = orgdata['data'][0]
+	time = orgdata['lastUpdateTime']
+	
+	name_data = []
+	quote_data = []
+	ohlc_data = []
+	wk52_data = []
+	volume_data = []
+	pipeline_data = []
+	if len(keys) > 0:
+		primary = [time]
+		for key in keys:
+			primary.append(data[key])
+		return [primary], name_data, quote_data, ohlc_data, wk52_data, volume_data, pipeline_data
+	else:
+		primary = []
+		for key in NAME_KEYS:
+			name_data.append(data[key])
+			primary.append(data[key])
+		name_data = [name_data]
+
+		quote_data.append(time)
+		primary.append(time)
+		for key in QUOTE_KEYS:
+			value = (data[key]).replace(' ','').replace(',','')
+			quote_data.append(float(value))
+			primary.append(float(value))
+		quote_data = [quote_data]
+
+		for key in OHLC_KEYS:
+			value = (data[key]).replace(' ','').replace(',','')
+			ohlc_data.append(float(value))
+		ohlc_data = [ohlc_data]
+
+		for key in WK52_KEYS:
+			value = (data[key]).replace(' ','').replace(',','')
+			wk52_data.append(float(value))
+		wk52_data = [wk52_data]
+
+		for key in VOLUME_KEYS:
+			value = (data[key]).replace(' ','').replace(',','')
+			volume_data.append(float(value))
+		volume_data = [volume_data]
+
+		for x in range(1,5):
+			buy_qty_key = 'buyQuantity' + str(x)
+			buy_prc_key = 'buyPrice' + str(x)
+			sell_qty_key = 'sellQuantity' + str(x)
+			sell_prc_key = 'sellPrice' + str(x)
+			columns = [buy_qty_key, buy_prc_key, sell_qty_key, sell_prc_key]
+			row = []
+			for column in columns:
+				row.append(data[column] + "  ")
+			pipeline_data.append(row)
+		return [primary], name_data, quote_data, ohlc_data, wk52_data, volume_data, pipeline_data
