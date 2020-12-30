@@ -43,6 +43,7 @@ class scanner:
 		# start_date = datetime.datetime.now()-datetime.timedelta(days=365)
 		# end_date = datetime.datetime.now()
 		frames = []
+		signalframes = []
 		for stock in stocks:
 			try:
 				result, primary = get_live_quote(stock, keys = self.keys)
@@ -56,11 +57,18 @@ class scanner:
 				if index >= 15:
 					dfclose = pd.DataFrame(self.stocksdict[stock], columns = ['Close'])
 					rsi = ta.RSI(dfclose['Close'],14)
-					row['RSI'] = rsi[index -1]
+					rsivalue = rsi[index -1]
+					row['RSI'] = rsivalue
+					if rsivalue > 70 or rsivalue < 30:
+						signalframes.append(row)
 				frames.append(row)
 			except Exception as e:
 				default_logger().error("Exception encountered for " + stock)
 				default_logger().error(e, exc_info=True)
 				pass
-		df = pd.concat(frames).to_string(index=False)
-		print(df)
+		if len(frames) > 0:
+			df = pd.concat(frames).to_string(index=False)
+			default_logger().debug(df)
+		if len(signalframes) > 0:
+			signaldf = pd.concat(signalframes).to_string(index=False)
+			print(signaldf)
