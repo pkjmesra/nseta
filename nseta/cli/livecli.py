@@ -2,8 +2,6 @@ import click
 import pandas as pd
 import threading, time
 
-from nseta.common.history import get_history
-from nseta.common.ti import *
 from nseta.live.live import get_quote, get_live_quote, get_data_list
 from nseta.scanner.rsiscanner import scanner
 from nseta.cli.inputs import *
@@ -11,21 +9,12 @@ from nseta.plots.plots import plot_technical_indicators
 from nseta.common.log import logdebug, default_logger
 from datetime import datetime, date
 
-__all__ = ['KEY_MAPPING','live_quote', 'live_intraday']
-
-KEY_MAPPING = {
-	'dt': 'Date',
-	'open': 'Open',
-	'high': 'High',
-	'low': 'Low',
-	'close': 'Close',
-	'volume': 'Volume',
-}
+__all__ = ['live_quote', 'live_intraday']
 
 RUN_IN_BACKGROUND = True
 
 @click.command(help='Get live price quote of a security')
-@click.option('--symbol', '-S',  help='Security code')
+@click.option('--symbol', '-S',  help='Security code. Pass [] with --intraday for scanning.')
 @click.option('--series', default='EQ', help='Default series - EQ (Equity) (Optional)')
 @click.option('--general', '-g', default=False, is_flag=True, help='Get the general (Name, ISIN) details also (Optional)')
 @click.option('--ohlc', '-o', default=False, is_flag=True, help='Get the OHLC values also (Optional)')
@@ -49,16 +38,26 @@ def live_quote(symbol, series, general, ohlc, wk52, volume, orderbook, intraday,
 				b = threading.Thread(name='live_quote_background', target=live_quote_background, args=[symbol, general, ohlc, wk52, volume, orderbook])
 				b.start()
 		else:
-			df = live_intraday(symbol)
-			df = update_ti(df)
-			click.echo(df.head())
-			file_name = symbol + '.csv'
-			df.to_csv(file_name)
-			default_logger().info('Saved to: {}'.format(file_name))
-			click.secho('Saved to: {}'.format(file_name), fg='green', nl=True)
-			if plot:
-				df.set_index('Date', inplace=True)
-				plot_technical_indicators(df).show()
+			if symbol == '[]':
+				stocks = []
+			else:
+				stocks = [symbol]
+			s = scanner()
+			df, signaldf = s.scan_intraday(stocks=stocks)
+			if df is not None and len(df) > 0:
+				# click.echo(df.to_string(index=False))
+				file_name = symbol + '.csv'
+				df.to_csv(file_name)
+				default_logger().info('Saved to: {}'.format(file_name))
+				click.secho('Saved to: {}'.format(file_name), fg='green', nl=True)
+				if plot:
+					df.set_index('Date', inplace=True)
+					plot_technical_indicators(df).show()
+			if signaldf is not None and len(signaldf) > 0:
+				click.echo(signaldf.to_string(index=False))
+			if background:
+				b = threading.Thread(name='live_quote_scan_background', target=live_quote_scan_background, args=[s, stocks])
+				b.start()
 	except KeyboardInterrupt:
 		RUN_IN_BACKGROUND = False
 	except Exception as e:
@@ -82,28 +81,6 @@ def scan(stocks, background):
 	if background:
 		b = threading.Thread(name='scan_background', target=scan_background, args=[s, stocks])
 		b.start()
-
-@logdebug
-def live_intraday(symbol):
-	try:
-		df = get_history(symbol, start=date.today(), end = date.today(), intraday=True)
-		if len(df) > 0:
-			df = drop_duplicate_keys(df, symbol)
-	except Exception as e:
-		default_logger().error(e, exc_info=True)
-		click.secho('Failed to fetch intraday history.', fg='red', nl=True)
-		return
-	except SystemExit:
-		pass
-	return df
-
-def drop_duplicate_keys(df, symbol):
-	for key in KEY_MAPPING.keys():
-		df[key] = df[KEY_MAPPING[key]]
-	df['Symbol'] = symbol
-	df['Volume'] = 0
-	df.drop(list(KEY_MAPPING.keys()), axis = 1, inplace = True)
-	return df
 
 def format_beautified(orgdata, general, ohlc, wk52, volume, orderbook):
 	primary, name_data, quote_data, ohlc_data, wk52_data, volume_data, pipeline_data = get_data_list(orgdata)
@@ -141,4 +118,12 @@ def scan_background(scannerinstance, stocks):
 	global RUN_IN_BACKGROUND
 	while RUN_IN_BACKGROUND:
 		scannerinstance.scan(stocks)
-		time.sleep(3)
+		time.sleep(60)
+
+def live_quote_scan_background(scannerinstance, stocks):
+	global RUN_IN_BACKGROUND
+	while RUN_IN_BACKGROUND:
+		df, signaldf = scannerinstance.scan_intraday(stocks=stocks)
+		if signaldf is not None and len(signaldf) > 0:
+			click.echo(signaldf.to_string(index=False))
+		time.sleep(15)

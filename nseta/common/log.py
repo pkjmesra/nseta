@@ -10,22 +10,32 @@ from collections import OrderedDict, Iterable
 from itertools import *
 
 __all__ = ['setup_custom_logger', 'default_logger', 'log_to', 'logdebug', 'suppress_stdout_stderr']
-
-def setup_custom_logger(name, levelname=logging.DEBUG):
+__trace__ = False
+def setup_custom_logger(name, levelname=logging.DEBUG, trace=False):
 	formatter = logging.Formatter(fmt='%(asctime)s - %(name)s - %(levelname)s - %(filename)s - %(module)s - %(funcName)s - %(lineno)d - %(message)s')
 
 	logger = logging.getLogger(name)
 	logger.setLevel(levelname)
 
-	if levelname == logging.DEBUG:
-		consolehandler = logging.StreamHandler()
-		consolehandler.setFormatter(formatter)
-		logger.addHandler(consolehandler)
+	tracelogger = logging.getLogger('nseta_file_logger')
+	tracelogger.setLevel(levelname)
+	
+	# if levelname == logging.DEBUG:
+	consolehandler = logging.StreamHandler()
+	consolehandler.setFormatter(formatter)
+	consolehandler.setLevel(levelname)
+	logger.addHandler(consolehandler)
+	__trace__ = trace
 
 	filehandler = logging.FileHandler('logs.log')
 	filehandler.setFormatter(formatter)
-	logger.addHandler(filehandler)
+	filehandler.setLevel(logging.DEBUG)
 
+	if trace:
+		logger.debug('Tracing started')
+		tracelogger.addHandler(consolehandler)
+	logger.addHandler(filehandler)
+	tracelogger.addHandler(filehandler)
 	logger.debug('Logging started')
 	# Turn off pystan warnings
 	warnings.simplefilter("ignore", DeprecationWarning)
@@ -33,8 +43,17 @@ def setup_custom_logger(name, levelname=logging.DEBUG):
 	
 	return logger
 
-def default_logger ():
+def default_logger():
 	return logging.getLogger('nseta')
+
+def file_logger():
+	return logging.getLogger('nseta_file_logger')
+
+def trace_log(line):
+	if __trace__:
+		default_logger().info(line)
+	else:
+		file_logger().info(line)
 
 def flatten(l):
 	"""Flatten a list (or other iterable) recursively"""
@@ -83,7 +102,7 @@ def log_to(logger_func):
 		decorator = lambda x: x
 	return decorator
 
-logdebug = log_to(default_logger().debug)
+logdebug = log_to(trace_log)
 
 class suppress_stdout_stderr(object):
 	'''

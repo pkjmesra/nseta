@@ -36,7 +36,7 @@ EQUITY_SCALING = {"Turnover": 100000,
 				  "%Deliverable": 0.01}
 
 INTRADAY_EQUITY_SCHEMA = [dd_mm_yyyy_H_M_S,float, str, float, float]
-INTRADAY_EQUITY_HEADERS = ["Date", "pltp", "nltp", "previousclose","allltp"]
+INTRADAY_EQUITY_HEADERS = ["Date", "Open", "High", "Low","Close"] # ["Date", "pltp", "nltp", "previousclose","allltp"]
 INTRADAY_EQUITY_SCALING = {}
 
 FUTURES_SCHEMA = [str, dd_mmm_yyyy, dd_mmm_yyyy,

@@ -1,19 +1,25 @@
-from nseta.common.log import logdebug
+from nseta.common.log import default_logger, logdebug
 import talib as ta
 
 __all__ = ['update_ti', 'get_rsi_df', 'get_mom_df', 'get_dmi_df', 'get_macd_df', 'get_sma_df', 'get_ema_df', 'get_adx_df', 'get_bbands_df', 'get_obv_df']
 
 @logdebug
 def update_ti(df):
-	df['RSI'] = get_rsi_df(df)
-	df['MOM'] = get_mom_df(df)
-	df['DMI'] = get_dmi_df(df)
-	# df[['macd','macdsignal', 'macdhist']] = get_macd_df(df)
-	# df[['Close','SMA(10)', 'SMA(50)']] = get_sma_df(df)
-	# df = get_ema_df(df)
-	df['ADX'] = get_adx_df(df)
-	# df = get_bbands_df(df)
-	df['OBV'] = get_obv_df(df)
+	try:
+		df['RSI'] = get_rsi_df(df)
+		df['MOM'] = get_mom_df(df)
+		# df['DMI'] = get_dmi_df(df)
+		# df[['macd','macdsignal', 'macdhist']] = get_macd_df(df)
+		# df[['Close','SMA(10)', 'SMA(50)']] = get_sma_df(df)
+		# df = get_ema_df(df)
+		# df['ADX'] = get_adx_df(df)
+		# df = get_bbands_df(df)
+		# df['OBV'] = get_obv_df(df)
+	except Exception as e:
+		default_logger().debug(e, exc_info=True)
+		pass
+	except SystemExit:
+		pass
 	return df
 
 @logdebug

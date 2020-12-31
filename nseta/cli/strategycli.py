@@ -5,7 +5,7 @@ from nseta.common.history import *
 from nseta.common.ti import update_ti
 from nseta.common.log import logdebug, default_logger
 from nseta.cli.inputs import *
-from nseta.cli.livecli import live_intraday, KEY_MAPPING
+from nseta.scanner.rsiscanner import scanner, KEY_MAPPING
 
 import click
 from datetime import datetime
@@ -153,13 +153,16 @@ def forecast_strategy(symbol, start, end, strategy, upper, lower):
 
 def test_intraday_trading_strategy(symbol, strategy, autosearch, lower, upper):
 	df = get_intraday_dataframe(symbol)
-	run_test_strategy(df, symbol, strategy, autosearch, lower, upper)
-	test_intraday_signals(df, lower, upper)
+	if df is not None and len(df) > 0:
+		run_test_strategy(df, symbol, strategy, autosearch, lower, upper)
+		test_intraday_signals(df, lower, upper)
 
 def get_intraday_dataframe(symbol):
-	df = live_intraday(symbol)
-	df = drop_duplicate_keys(df)
-	df.drop(INTRADAY_EQUITY_HEADERS, axis = 1, inplace = True)
+	s = scanner()
+	df, signaldf = s.scan_intraday(stocks=[symbol])
+	# df = map_keys(df)
+	if df is not None and len(df) > 0:
+		df.drop(INTRADAY_EQUITY_HEADERS, axis = 1, inplace = True)
 	return df
 
 def run_test_strategy(df, symbol, strategy, autosearch, lower, upper):
@@ -195,7 +198,7 @@ def test_historical_trading_strategy(symbol, sd, ed, strategy, autosearch, lower
 	run_test_strategy(df, symbol, strategy, autosearch, lower, upper)
 
 def prepare_for_historical_strategy(df):
-	df = drop_duplicate_keys(df)
+	df = map_keys(df)
 	df = reset_date_index(df)
 	df.drop(EQUITY_HEADERS, axis = 1, inplace = True)
 	return df
@@ -204,8 +207,8 @@ def reset_date_index(df):
 	df.set_index('dt', inplace=True)
 	return df
 
-def drop_duplicate_keys(df):
-	for key in KEY_MAPPING.keys():
-		df[key] = df[KEY_MAPPING[key]]
-	return df
+# def map_keys(df):
+# 	for key in KEY_MAPPING.keys():
+# 		df[key] = df[KEY_MAPPING[key]]
+# 	return df
 

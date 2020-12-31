@@ -128,7 +128,20 @@ class ParseTables:
 			i = 0
 			lst = []
 			for cell in cols:
-				lst.append(schema[i](cell))
+				txt = cell
+				if schema[i]==float or schema[i]==int:
+					txt = cell.replace(' ','').replace(',','')
+				try:
+					val = schema[i](txt)
+				except Exception:
+					if schema[i]==float or schema[i]==int:
+						val = np.nan
+					else:
+						val = ''
+						#raise ValueError("Error in %d. %s(%s)"%(i, str(schema[i]), txt))
+				except SystemExit:
+					pass
+				lst.append(val)
 				i += 1
 			lists.append(lst)
 		self.lists = lists

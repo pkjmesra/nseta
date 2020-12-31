@@ -16,11 +16,14 @@ __all__ = ['nsetacli']
 @click.group(invoke_without_command=True, no_args_is_help=True)
 @click.option('--debug/--no-debug', default=False, help='--debug to turn debugging on. Default is off')
 @click.option('--version', is_flag=True, help='Shows the version of this library')
-def nsetacli(debug, version):
+@click.option('--trace/--no-trace', default=False, help='--trace to turn tracing on (works only wwith --debug). Default is off.')
+def nsetacli(debug, version, trace):
 	signal.signal(signal.SIGINT, sigint_handler)
 	if debug:
 		click.echo('Debug mode is %s' % ('on' if debug else 'off'))
-		log.setup_custom_logger('nseta', logging.DEBUG)
+		if trace:
+			click.echo('Tracing mode is %s' % ('on' if trace else 'off'))
+		log.setup_custom_logger('nseta', logging.DEBUG, trace)
 	else:
 		log.setup_custom_logger('nseta', logging.ERROR)
 	if version:
