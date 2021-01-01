@@ -21,7 +21,7 @@ Python Library to
 
 ## Donate
 
-
+[![Otechie](https://api.otechie.com/pkjmes/badge.svg)](https://otechie.com/pkjmes)
 
 ## Libraries Required
 -  beautifulsoup4
