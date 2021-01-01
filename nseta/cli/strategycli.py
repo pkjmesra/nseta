@@ -5,7 +5,7 @@ from nseta.common.history import *
 from nseta.common.ti import update_ti
 from nseta.common.log import logdebug, default_logger
 from nseta.cli.inputs import *
-from nseta.scanner.rsiscanner import scanner, KEY_MAPPING
+from nseta.scanner.tiscanner import scanner, KEY_MAPPING
 
 import click
 from datetime import datetime

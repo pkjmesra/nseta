@@ -3,6 +3,7 @@ import os.path
 import numpy as np
 from os import path
 from datetime import datetime, date
+from time import time
 
 import pandas as pd
 
@@ -29,7 +30,13 @@ INTRADAY_KEYS_MAPPING = {
 	'Close': 'LTP',
 	'Low': 'Prev_Close',
 	'RSI': 'RSI',
-	'MOM': 'MOM',
+	# 'MOM': 'MOM',
+	'SMA(10)': 'SMA(10)',
+	# 'SMA(50)': 'SMA(50)',
+	# 'EMA(10)': 'EMA(10)',
+	'macd(12)': 'macd(12)',
+	'macdsignal(9)': 'macdsignal(9)',
+	# 'macdhist(26)': 'macdhist(26)',
 }
 
 class scanner:
@@ -57,6 +64,7 @@ class scanner:
 	@logdebug
 	def scan(self, stocks=[], start_date=None, end_date=None):
 		dir_path = ""
+		start_time = time()
 		if not path.exists("stocks.py"):
 			dir_path = os.path.dirname(os.path.realpath(__file__)) + "/"
 		# If stocks array is empty, pull stock list from stocks.txt file
@@ -96,9 +104,13 @@ class scanner:
 		if len(signalframes) > 0:
 			signaldf = pd.concat(signalframes)
 			default_logger().info(signaldf.to_string(index=False))
+		end_time = time()
+		time_spent = end_time-start_time
+		default_logger().info("This run of scan took {:.1f} sec".format(time_spent))
 
 	@logdebug
 	def scan_intraday(self, stocks=[]):
+		start_time = time()
 		dir_path = ""
 		if not path.exists("stocks.py"):
 			dir_path = os.path.dirname(os.path.realpath(__file__)) + "/"
@@ -127,9 +139,7 @@ class scanner:
 							if key != searchkey:
 								df.drop([key], axis = 1, inplace = True)
 					frames.append(df)
-					rsivalue = df['RSI'].iloc[0]
-					if (rsivalue is not None) and (rsivalue > 70 or rsivalue < 30):
-						signalframes.append(df)
+					signalframes = self.update_signals(signalframes, df)
 			except Exception as e:
 				default_logger().error("Exception encountered for " + symbol)
 				default_logger().error(e, exc_info=True)
@@ -140,6 +150,9 @@ class scanner:
 		if len(signalframes) > 0:
 			signaldf = pd.concat(signalframes)
 			default_logger().info(signaldf.to_string(index=False))
+		end_time = time()
+		time_spent = end_time-start_time
+		default_logger().info("This run of scan took {:.1f} sec".format(time_spent))
 		return df, signaldf
 
 	@logdebug
@@ -175,3 +188,22 @@ class scanner:
 			default_logger().debug('Exception encountered for key: ' + searchkey + "\n")
 			pass
 		return df
+
+	@logdebug
+	def update_signals(self, signalframes, df):
+		rsivalue = df['RSI'].iloc[0]
+		sma10 = df['SMA(10)'].iloc[0]
+		macd12 = df['macd(12)'].iloc[0]
+		macd9 = df['macdsignal(9)'].iloc[0]
+		df['Signal'] = 'NA'
+		ltp = df['LTP'].iloc[0]
+		if (rsivalue is not None) and (rsivalue > 75 or rsivalue < 25):
+			df['Signal'].iloc[0] = 'RSI >= 75' if rsivalue > 75 else 'RSI <= 25'
+			signalframes.append(df)
+		if (sma10 is not None) and abs(ltp-sma10) <= 0.1:
+			df['Signal'].iloc[0] = 'LTP > SMA(10)' if ltp - sma10 >=0 else 'LTP < SMA(10)'
+			signalframes.append(df)
+		if (macd12 is not None) and (macd9 is not None) and abs(macd12-macd9) <= 0.05:
+			df['Signal'].iloc[0] = 'MACD(12) > MACD(9)' if macd12 - macd9 >=0 else 'MACD(12) < MACD(9)'
+			signalframes.append(df)
+		return signalframes						

@@ -8,13 +8,9 @@ def update_ti(df):
 	try:
 		df['RSI'] = get_rsi_df(df)
 		df['MOM'] = get_mom_df(df)
-		# df['DMI'] = get_dmi_df(df)
-		# df[['macd','macdsignal', 'macdhist']] = get_macd_df(df)
-		# df[['Close','SMA(10)', 'SMA(50)']] = get_sma_df(df)
-		# df = get_ema_df(df)
-		# df['ADX'] = get_adx_df(df)
-		# df = get_bbands_df(df)
-		# df['OBV'] = get_obv_df(df)
+		df[['Close','SMA(10)', 'SMA(50)']] = get_sma_df(df)
+		# df[['Close','EMA(10)']] = get_ema_df(df)
+		df[['macd(12)','macdsignal(9)', 'macdhist(26)']] = get_macd_df(df)
 	except Exception as e:
 		default_logger().debug(e, exc_info=True)
 		pass

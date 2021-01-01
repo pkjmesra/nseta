@@ -3,7 +3,7 @@ import pandas as pd
 import threading, time
 
 from nseta.live.live import get_quote, get_live_quote, get_data_list
-from nseta.scanner.rsiscanner import scanner
+from nseta.scanner.tiscanner import scanner
 from nseta.cli.inputs import *
 from nseta.plots.plots import plot_technical_indicators
 from nseta.common.log import logdebug, default_logger
@@ -40,13 +40,14 @@ def live_quote(symbol, series, general, ohlc, wk52, volume, orderbook, intraday,
 		else:
 			if symbol == '[]':
 				stocks = []
+				file_name = 'Scan_Results.csv'
 			else:
 				stocks = [symbol]
+				file_name = symbol + '.csv'
 			s = scanner()
 			df, signaldf = s.scan_intraday(stocks=stocks)
 			if df is not None and len(df) > 0:
-				# click.echo(df.to_string(index=False))
-				file_name = symbol + '.csv'
+				default_logger().info(df.to_string(index=False))
 				df.to_csv(file_name)
 				default_logger().info('Saved to: {}'.format(file_name))
 				click.secho('Saved to: {}'.format(file_name), fg='green', nl=True)
