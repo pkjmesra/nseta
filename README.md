@@ -16,6 +16,12 @@ Python Library to
 -  pattern recognition and fitment using candlestick charts
 -  backtest trading strategies
 -  forecasting with custom strategies
+-  create scanners and generate signals for various technical indicators or for BUY/SELL
+-  create your own strategy
+
+## Donate
+
+
 
 ## Libraries Required
 -  beautifulsoup4
@@ -517,9 +523,10 @@ nseta scan
  30-DEC-2020 16:00:00        HDFC  2,518.95  2,521.70
  30-DEC-2020 16:00:00    HDFCBANK  1,427.20  1,432.05
 ```
-### Signals and Scanners
 
-## Scanners
+## Signals and Scanners
+
+### Scanners
 - When RSI(14) > 75
 - When RSI(14) < 25
 - When LTP > SMA(10)
@@ -529,7 +536,7 @@ nseta scan
 - When LTP < lower BBand
 - When LTP > higher BBand
 
-## Signals
+### Signals
 - SELL : When RSI(14) > 75
 - BUY : When RSI(14) < 25
 - BUY : When LTP > SMA(10) and SMA(10) is upstrending
