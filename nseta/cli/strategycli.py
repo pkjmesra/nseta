@@ -189,7 +189,8 @@ def test_intraday_signals(df, lower, upper):
 	(plot_rsi(df)).show()
 
 def get_historical_dataframe(symbol, sd, ed):
-	df = get_history(symbol, sd, ed)
+	historyinstance = historicaldata()
+	df = historyinstance.daily_ohlc_history(symbol, sd, ed)
 	df['datetime'] = df['Date']
 	return df
 

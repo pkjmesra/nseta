@@ -12,7 +12,8 @@ from itertools import *
 __all__ = ['setup_custom_logger', 'default_logger', 'log_to', 'logdebug', 'suppress_stdout_stderr']
 __trace__ = False
 def setup_custom_logger(name, levelname=logging.DEBUG, trace=False):
-	formatter = logging.Formatter(fmt='%(asctime)s - %(name)s - %(levelname)s - %(filename)s - %(module)s - %(funcName)s - %(lineno)d - %(message)s')
+	trace_formatter = logging.Formatter(fmt='%(asctime)s - %(name)s - %(levelname)s - %(filename)s - %(module)s - %(funcName)s - %(lineno)d\n%(message)s\n')
+	console_info_formatter = logging.Formatter(fmt='%(levelname)s - %(filename)s(%(funcName)s - %(lineno)d)\n%(message)s\n')
 
 	logger = logging.getLogger(name)
 	logger.setLevel(levelname)
@@ -22,13 +23,13 @@ def setup_custom_logger(name, levelname=logging.DEBUG, trace=False):
 	
 	# if levelname == logging.DEBUG:
 	consolehandler = logging.StreamHandler()
-	consolehandler.setFormatter(formatter)
+	consolehandler.setFormatter(console_info_formatter if levelname == logging.INFO else trace_formatter)
 	consolehandler.setLevel(levelname)
 	logger.addHandler(consolehandler)
 	__trace__ = trace
 
 	filehandler = logging.FileHandler('logs.log')
-	filehandler.setFormatter(formatter)
+	filehandler.setFormatter(trace_formatter)
 	filehandler.setLevel(logging.DEBUG)
 
 	if trace:
@@ -94,8 +95,10 @@ def log_to(logger_func):
 		def decorator(func):
 			@wraps(func)
 			def wrapper(*args, **kwargs):
+				description = ""
 				for line in describe_call(func, *args, **kwargs):
-					logger_func(line)
+					description = description + "\n" + line
+				logger_func(description)
 				return func(*args, **kwargs)
 			return wrapper
 	else:

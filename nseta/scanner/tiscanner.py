@@ -8,7 +8,7 @@ from time import time
 import pandas as pd
 
 from nseta.live.live import get_live_quote
-from nseta.common.history import get_history
+from nseta.common.history import historicaldata
 from nseta.common.log import logdebug, default_logger
 from nseta.common.ti import *
 import talib as ta
@@ -176,9 +176,10 @@ class scanner:
 	def live_intraday(self, symbol):
 		df = None
 		try:
-			df = get_history(symbol, start=date.today(), end = date.today(), intraday=True)
+			historyinstance = historicaldata()
+			df = historyinstance.daily_ohlc_history(symbol, start=date.today(), end = date.today(), intraday=True)
 			if df is not None and len(df) > 0:
-				default_logger().info("Dataframe for " + symbol + "\n" + str(df))
+				default_logger().debug("Dataframe for " + symbol + "\n" + str(df))
 				df = self.map_keys(df, symbol)
 			else:
 				default_logger().info("Empty dataframe for " + symbol)

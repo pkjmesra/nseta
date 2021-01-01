@@ -1,5 +1,5 @@
 import click
-from nseta.common.history import get_history, get_index_pe_history
+from nseta.common.history import historicaldata
 from nseta.common.log import logdebug, default_logger
 from nseta.cli.inputs import *
 from datetime import datetime
@@ -22,8 +22,10 @@ def history(symbol, start, end, series, file_name, index, format): #, futures, e
 		return
 	sd = datetime.strptime(start, "%Y-%m-%d").date()
 	ed = datetime.strptime(end, "%Y-%m-%d").date()
+	df = None
 	try:
-		df = get_history(symbol, sd, ed)
+		historyinstance = historicaldata()
+		df = historyinstance.daily_ohlc_history(symbol, sd, ed)
 		click.echo(df.head())
 	except Exception as e:
 		default_logger().error(e, exc_info=True)
@@ -55,7 +57,8 @@ def pe_history(symbol, start, end, format, file_name):
 	sd = datetime.strptime(start, "%Y-%m-%d").date()
 	ed = datetime.strptime(end, "%Y-%m-%d").date()
 	try:
-		df = get_index_pe_history(symbol, sd, ed)
+		historyinstance = historicaldata()
+		df = historyinstance.get_index_pe_history(symbol, sd, ed)
 		click.echo(df.head())
 	except Exception as e:
 		default_logger().error(e, exc_info=True)

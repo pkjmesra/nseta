@@ -26,7 +26,7 @@ def nsetacli(debug, version, trace):
 			click.echo('Tracing mode is %s' % ('on' if trace else 'off'))
 		log.setup_custom_logger('nseta', logging.DEBUG, trace)
 	else:
-		log.setup_custom_logger('nseta', logging.ERROR)
+		log.setup_custom_logger('nseta', logging.INFO)
 	if version:
 		click.echo('nseta ' + nseta.__version__)
 

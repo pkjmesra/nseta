@@ -1,5 +1,5 @@
 from nseta.analytics.model import *
-from nseta.common.history import get_history
+from nseta.common.history import historicaldata
 from nseta.common.log import logdebug, default_logger
 from nseta.plots.plots import *
 from nseta.cli.inputs import *
@@ -26,7 +26,8 @@ def create_cdl_model(symbol, start, end, file_name, steps, format):
 	ed = datetime.strptime(end, "%Y-%m-%d").date()
 
 	try:
-		df = get_history(symbol, sd, ed)
+		historyinstance = historicaldata()
+		df = historyinstance.daily_ohlc_history(symbol, sd, ed)
 		df.set_index('Date', inplace=True)
 		df = model_candlestick(df, steps)
 		click.echo(df.head())

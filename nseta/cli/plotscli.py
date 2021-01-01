@@ -1,5 +1,5 @@
 
-from nseta.common.history import get_history
+from nseta.common.history import historicaldata
 from nseta.common.log import logdebug, default_logger
 from nseta.plots.plots import *
 from nseta.cli.inputs import *
@@ -37,7 +37,8 @@ def plot_ta(symbol, start, end, plot_type="ALL"):
 	ed = datetime.strptime(end, "%Y-%m-%d").date()
 
 	try:
-		df = get_history(symbol, sd, ed)
+		historyinstance = historicaldata()
+		df = historyinstance.daily_ohlc_history(symbol, sd, ed)
 		df['dt'] = df['Date']
 		df.set_index('Date', inplace=True)
 		plot_type = plot_type.upper()
