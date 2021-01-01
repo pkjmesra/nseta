@@ -517,6 +517,27 @@ nseta scan
  30-DEC-2020 16:00:00        HDFC  2,518.95  2,521.70
  30-DEC-2020 16:00:00    HDFCBANK  1,427.20  1,432.05
 ```
+### Signals and Scanners
+
+## Scanners
+- When RSI(14) > 75
+- When RSI(14) < 25
+- When LTP > SMA(10)
+- When LTP < SMA(10)
+- When LTP > EMA(9)
+- When LTP < SMA(9)
+- When LTP < lower BBand
+- When LTP > higher BBand
+
+## Signals
+- SELL : When RSI(14) > 75
+- BUY : When RSI(14) < 25
+- BUY : When LTP > SMA(10) and SMA(10) is upstrending
+- SELL : When LTP < SMA(10) and SMA(10) is downtrending
+- BUY : When LTP > EMA(9) and EMA(9) is upstrending
+- SELL : When LTP < EMA(9) and EMA(9) is downtrending
+- BUY : When LTP < lower BBand
+- SELL : When LTP > higher BBand
 
 ### Submit patches
 

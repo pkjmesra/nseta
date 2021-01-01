@@ -31,11 +31,11 @@ INTRADAY_KEYS_MAPPING = {
 	'Low': 'Prev_Close',
 	'RSI': 'RSI',
 	# 'MOM': 'MOM',
-	'SMA(10)': 'SMA(10)',
+	# 'SMA(10)': 'SMA(10)',
 	# 'SMA(50)': 'SMA(50)',
-	# 'EMA(10)': 'EMA(10)',
-	'macd(12)': 'macd(12)',
-	'macdsignal(9)': 'macdsignal(9)',
+	'EMA(9)': 'EMA(9)',
+	# 'macd(12)': 'macd(12)',
+	# 'macdsignal(9)': 'macdsignal(9)',
 	# 'macdhist(26)': 'macdhist(26)',
 }
 
@@ -124,6 +124,7 @@ class scanner:
 		signalframes = []
 		df = None
 		signaldf = None
+
 		for symbol in stocks:
 			try:
 				df = self.live_intraday(symbol)
@@ -140,10 +141,26 @@ class scanner:
 								df.drop([key], axis = 1, inplace = True)
 					frames.append(df)
 					signalframes = self.update_signals(signalframes, df)
+			except KeyboardInterrupt as e:
+				default_logger().debug(e, exc_info=True)
+				default_logger().debug('[scan_intraday] Keyboard Interrupt received. Exiting.')
+				try:
+					stocks = []
+					sys.exit(1)
+					break
+				except SystemExit as se:
+					os._exit(1) # se.args[0][0]["code"]
+					break
 			except Exception as e:
 				default_logger().error("Exception encountered for " + symbol)
 				default_logger().error(e, exc_info=True)
 				pass
+			except SystemExit:
+				stocks = []
+				df = None
+				sys.exit(1)
+				break
+				return
 		if len(frames) > 0:
 			df = pd.concat(frames)
 			# default_logger().debug(df.to_string(index=False))
@@ -157,6 +174,7 @@ class scanner:
 
 	@logdebug
 	def live_intraday(self, symbol):
+		df = None
 		try:
 			df = get_history(symbol, start=date.today(), end = date.today(), intraday=True)
 			if df is not None and len(df) > 0:
@@ -164,11 +182,19 @@ class scanner:
 				df = self.map_keys(df, symbol)
 			else:
 				default_logger().info("Empty dataframe for " + symbol)
+		except KeyboardInterrupt as e:
+				default_logger().debug(e, exc_info=True)
+				default_logger().debug('Keyboard Interrupt received. Exiting.')
+				try:
+					sys.exit(e.args[0][0]["code"])
+				except SystemExit as se:
+					os._exit(se.args[0][0]["code"])
 		except Exception as e:
 			default_logger().debug(e, exc_info=True)
 			return
 		except SystemExit:
-			pass
+			df = None
+			return
 		return df
 
 	def map_keys(self, df, symbol):
@@ -191,19 +217,25 @@ class scanner:
 
 	@logdebug
 	def update_signals(self, signalframes, df):
-		rsivalue = df['RSI'].iloc[0]
-		sma10 = df['SMA(10)'].iloc[0]
-		macd12 = df['macd(12)'].iloc[0]
-		macd9 = df['macdsignal(9)'].iloc[0]
-		df['Signal'] = 'NA'
-		ltp = df['LTP'].iloc[0]
-		if (rsivalue is not None) and (rsivalue > 75 or rsivalue < 25):
-			df['Signal'].iloc[0] = 'RSI >= 75' if rsivalue > 75 else 'RSI <= 25'
-			signalframes.append(df)
-		if (sma10 is not None) and abs(ltp-sma10) <= 0.1:
-			df['Signal'].iloc[0] = 'LTP > SMA(10)' if ltp - sma10 >=0 else 'LTP < SMA(10)'
-			signalframes.append(df)
-		if (macd12 is not None) and (macd9 is not None) and abs(macd12-macd9) <= 0.05:
-			df['Signal'].iloc[0] = 'MACD(12) > MACD(9)' if macd12 - macd9 >=0 else 'MACD(12) < MACD(9)'
-			signalframes.append(df)
+		if not 'RSI' in df.keys() and not 'EMA(9)' in df.keys():
+			return signalframes
+		try:
+			rsivalue = df['RSI'].iloc[0]
+			ema9 = df['EMA(9)'].iloc[0]
+			# macd12 = df['macd(12)'].iloc[0]
+			# macd9 = df['macdsignal(9)'].iloc[0]
+			df['Signal'] = 'NA'
+			ltp = df['LTP'].iloc[0]
+			if (rsivalue is not None) and (rsivalue > 75 or rsivalue < 25):
+				df['Signal'].iloc[0] = '(SELL)[RSI >= 75]' if rsivalue > 75 else '(BUY)[RSI <= 25]'
+				signalframes.append(df)
+			if (ema9 is not None) and abs(ltp-ema9) <= 0.1:
+				df['Signal'].iloc[0] = '(BUY)[LTP > EMA(9)]' if ltp - ema9 >=0 else '(SELL)[LTP < EMA(9)]'
+				signalframes.append(df)
+			# if (macd12 is not None) and (macd9 is not None) and abs(macd12-macd9) <= 0.05:
+			# 	df['Signal'].iloc[0] = 'MACD(12) > MACD(9)' if macd12 - macd9 >=0 else 'MACD(12) < MACD(9)'
+			# 	signalframes.append(df)
+		except Exception as e:
+			default_logger().debug(e, exc_info=True)
+			return
 		return signalframes						

@@ -9,7 +9,7 @@ def update_ti(df):
 		df['RSI'] = get_rsi_df(df)
 		df['MOM'] = get_mom_df(df)
 		df[['Close','SMA(10)', 'SMA(50)']] = get_sma_df(df)
-		# df[['Close','EMA(10)']] = get_ema_df(df)
+		df[['Close','EMA(9)']] = get_ema_df(df)
 		df[['macd(12)','macdsignal(9)', 'macdhist(26)']] = get_macd_df(df)
 	except Exception as e:
 		default_logger().debug(e, exc_info=True)
@@ -46,8 +46,8 @@ def get_sma_df(df):
 
 @logdebug
 def get_ema_df(df):
-	df['EMA(10)'] = ta.EMA(df['Close'], timeperiod = 10)
-	return df[['Close','EMA(10)']]
+	df['EMA(9)'] = ta.EMA(df['Close'], timeperiod = 9)
+	return df[['Close','EMA(9)']]
 
 @logdebug
 def get_adx_df(df):

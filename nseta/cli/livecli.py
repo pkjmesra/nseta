@@ -59,14 +59,23 @@ def live_quote(symbol, series, general, ohlc, wk52, volume, orderbook, intraday,
 			if background:
 				b = threading.Thread(name='live_quote_scan_background', target=live_quote_scan_background, args=[s, stocks])
 				b.start()
-	except KeyboardInterrupt:
+	except KeyboardInterrupt as e:
 		RUN_IN_BACKGROUND = False
-	except Exception as e:
 		default_logger().error(e, exc_info=True)
+		click.secho('[live_quote] Keyboard Interrupt received. Exiting.', fg='red', nl=True)
+		try:
+			sys.exit(e.args[0][0]["code"])
+		except SystemExit as se:
+			os._exit(se.args[0][0]["code"])
+		return
+	except Exception as e:
+		RUN_IN_BACKGROUND = False
+		default_logger().debug(e, exc_info=True)
 		click.secho('Failed to fetch live quote', fg='red', nl=True)
 		return
 	except SystemExit:
-		pass
+		RUN_IN_BACKGROUND = False
+		return
 
 @click.command(help='Scan live price quotes and calculate RSI for stocks.')
 @click.option('--stocks', '-S', help='Comma separated security codes(Optional. Configure the tickers in stocks.py)')

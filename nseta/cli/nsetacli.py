@@ -1,6 +1,7 @@
 import signal
 import sys
 import os
+import warnings
 
 import click, logging
 import nseta
@@ -38,20 +39,19 @@ nsetacli.add_command(plot_ta)
 nsetacli.add_command(scan)
 nsetacli.add_command(test_trading_strategy)
 
-def sigint_handler(signal, frame):
-    click.secho('Keyboard Interrupt received. Exiting.', fg='red', nl=True)
-    sys.exit(1)
-    os._exit(1)
-
-signal.signal(signal.SIGINT, sigint_handler)
+def sigint_handler(signum, frame):
+	warnings.filterwarnings("ignore")
+	warnings.simplefilter("ignore")
+	click.secho('[sigint_handler] Keyboard Interrupt received. Exiting.', fg='red', nl=True)
+	signal.signal(signum, signal.SIG_DFL)
+	os.kill(os.getpid(), signum)
 
 if __name__ == '__main__':
 	try:
-		click.secho('Keyboard Interrupt handling', fg='red', nl=True)
 		nsetacli()
 	except KeyboardInterrupt as e:
 		log.default_logger().error(e, exc_info=True)
-		click.secho('Keyboard Interrupt received. Exiting.', fg='red', nl=True)
+		click.secho('[main] Keyboard Interrupt received. Exiting.', fg='red', nl=True)
 		try:
 			sys.exit(e.args[0][0]["code"])
 		except SystemExit as se:
