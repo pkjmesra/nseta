@@ -3,6 +3,7 @@ from nseta.strategy.rsisignal import *
 from nseta.plots.plots import plot_rsi
 from nseta.common.history import *
 from nseta.common.ti import ti
+from nseta.scanner.tiscanner import scanner
 from nseta.common.log import tracelog, default_logger
 from nseta.cli.inputs import *
 from nseta.scanner.tiscanner import scanner, KEY_MAPPING
@@ -140,7 +141,7 @@ def forecast_strategy(symbol, start, end, strategy, upper, lower):
 	ed = datetime.strptime(end, "%Y-%m-%d").date()
 	try:
 		df = get_historical_dataframe(symbol, sd, ed)
-		df = prepare_for_historical_strategy(df)
+		df = prepare_for_historical_strategy(df, symbol)
 		plt, result = daily_forecast(df, symbol, strategy, upper_limit=float(upper), lower_limit=float(lower), periods=7)
 		if plt is not None:
 			plt.show()
@@ -170,7 +171,7 @@ def run_test_strategy(df, symbol, strategy, autosearch, lower, upper):
 	if strategy in STRATEGY_MAPPING:
 		STRATEGY_MAPPING[strategy](df, autosearch, float(lower), float(upper))
 	elif strategy == 'custom':
-		df = prepare_for_historical_strategy(df)
+		df = prepare_for_historical_strategy(df, symbol)
 		backtest_custom_strategy(df, symbol, strategy, upper_limit=float(upper), lower_limit=float(lower))
 	else:
 		STRATEGY_MAPPING['rsi'](df, autosearch, float(upper), float(lower))
@@ -199,8 +200,9 @@ def test_historical_trading_strategy(symbol, sd, ed, strategy, autosearch, lower
 	df = get_historical_dataframe(symbol, sd, ed)
 	run_test_strategy(df, symbol, strategy, autosearch, lower, upper)
 
-def prepare_for_historical_strategy(df):
-	df = map_keys(df)
+def prepare_for_historical_strategy(df, symbol):
+	tiscanner = scanner()
+	df = tiscanner.map_keys(df, symbol)
 	df = reset_date_index(df)
 	df.drop(EQUITY_HEADERS, axis = 1, inplace = True)
 	return df
