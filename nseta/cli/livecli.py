@@ -123,7 +123,6 @@ def scan_live_results(df, signaldf):
 		default_logger().info('No signals to show here.')
 
 def scan_intraday(stocks, indicator, background):
-	file_name = 'Scan_Results.csv'
 	s = scanner()
 	df, signaldf = s.scan_intraday(stocks=stocks, indicator=indicator)
 	scan_intraday_results(df, signaldf)
@@ -133,6 +132,7 @@ def scan_intraday(stocks, indicator, background):
 
 def scan_intraday_results(df, signaldf):
 	if df is not None and len(df) > 0:
+		file_name = 'Scan_Results.csv'
 		default_logger().debug("\nAll Stocks LTP and Signals:\n" + df.to_string(index=False))
 		df.to_csv(file_name)
 		default_logger().info('Saved to: {}'.format(file_name))
