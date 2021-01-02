@@ -14,7 +14,6 @@ class ti:
 			df[['macd(12)','macdsignal(9)', 'macdhist(26)']] = self.get_macd_df(df)
 		except Exception as e:
 			default_logger().debug(e, exc_info=True)
-			pass
 		except SystemExit:
 			pass
 		return df

@@ -181,13 +181,13 @@ class historicaldata:
 	@tracelog
 	def url_to_df(self, url, params, schema, headers, scaling={}, csvnode=None):
 		resp = url(**params)
-		# default_logger().debug("Response:\n" + resp.text)
+		default_logger().debug("[url_to_df] Response:\n" + resp.text)
 		bs = BeautifulSoup(resp.text, 'lxml')
 		tp = ParseTables(soup=bs,
 						 schema=schema,
 						 headers=headers) # index="Date"
 		if csvnode is not None:
-			lists = tp.parse_lists(bs.find(csvnode).text)
+			tp.parse_lists(bs.find(csvnode).text)
 		df = tp.get_df()
 		for key, val in six.iteritems(scaling):
 			df[key] = val * df[key]

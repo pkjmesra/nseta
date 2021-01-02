@@ -164,14 +164,14 @@ class rsisignal:
 			if (self.p1 > self.p2) and (self.p2 > self.p3): # The last 6th, 5th and 4th values were rising
 				self.pattern = Direction.InvertedV
 				# if self.ndelta >= 15: # RSI fell > 15%
-				# 	self.sell_signal(selllog)
+				self.sell_signal(selllog)
 			elif (self.p1 < self.p2) and (self.p2 < self.p3): # All last 6 values fell
 				self.pattern = Direction.LowerLow
-				# self.sell_signal(selllog)
+				self.sell_signal(selllog)
 		if self.n3 >= self.upper:
 			self.direction = Direction.Up
 			self.pattern = Direction.OverBought
-			# self.sell_signal(selllog)
+			self.sell_signal(selllog)
 
 		buylog = "Buy Signal at " + self.to_string() + ", Profit:, " + str(self._profit) + "\n"
 		if (self.n1 < self.n2) and (self.n2 < self.n3):
@@ -180,26 +180,26 @@ class rsisignal:
 			if (self.p1 < self.p2) and (self.p2 < self.p3):
 				self.pattern = Direction.V
 				# if self.ndelta >= 15: # RSI rose > 15%
-				# 	self.buy_signal(buylog)
+				self.buy_signal(buylog)
 			elif (self.p1 > self.p2) and (self.p2 > self.p3):
 				self.pattern = Direction.HigherHigh
-				# self.buy_signal(buylog)
+				self.buy_signal(buylog)
 		if self.n3 <= self.lower:
 			self.direction = Direction.Down
 			self.pattern = Direction.OverSold
-			# self.buy_signal(buylog)
+			self.buy_signal(buylog)
 
 
 	@tracelog
 	def buy_signal(self, log):
 		self.buytriggerred = True
 		self._profit = self._profit - self.price
-		click.secho(log, fg='green', nl=True)
+		default_logger().debug("Possible buy:\n{}".format(log))
 
 	@tracelog
 	def sell_signal(self, log):
 		self._profit = self._profit + self.price
-		click.secho(log, fg='red', nl=True)
+		default_logger().debug("Possible sell:\n{}".format(log))
 
 	def to_string(self):
 		s1 = "Pattern:" + str(self.pattern) + ",Price:" + str(self.price) + "," + " Direction:" + str(self.direction) + ",\n" 

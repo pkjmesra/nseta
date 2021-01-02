@@ -9,7 +9,7 @@ from nseta.plots.plots import plot_technical_indicators
 from nseta.common.log import tracelog, default_logger
 from datetime import datetime, date
 
-__all__ = ['live_quote', 'live_intraday']
+__all__ = ['live_quote', 'scan', 'scan_live', 'scan_intraday', '']
 
 NAME_LIST = ['Symbol', 'Name', 'ISIN']
 QUOTE_LIST = ['Last Updated', 'Prev Close', 'Last Trade Price','Change','% Change', 'Avg. Price', 'Upper Band','Lower Band']
@@ -28,7 +28,7 @@ RUN_IN_BACKGROUND = True
 @click.option('--orderbook', '-b', default=False, is_flag=True, help='Get the current bid/offer details also (Optional)')
 @click.option('--background', '-r', default=False, is_flag=True, help='Keep running the process in the background (Optional)')
 @tracelog
-def live_quote(symbol, general, ohlc, wk52, volume, orderbook, plot, background):
+def live_quote(symbol, general, ohlc, wk52, volume, orderbook, background):
 	if not validate_symbol(symbol):
 		print_help_msg(live_quote)
 		return
@@ -59,8 +59,8 @@ def live_quote(symbol, general, ohlc, wk52, volume, orderbook, plot, background)
 
 @click.command(help='Scan live and intraday for prices and signals.')
 @click.option('--stocks', '-S', default=[], help='Comma separated security codes(Optional. Configure the tickers in stocks.py)')
-@click.option('--live', '-l', default=False, is_flag=True, help='Scans the live-quote and lists those that meet the signal criteria. Works best with --background.')
-@click.option('--intraday', '-i', default=False, is_flag=True, help='Scans the intraday price history and lists those that meet the signal criteria')
+@click.option('--live', '-l', default=False, is_flag=True, help='Scans (every min.) the live-quote and lists those that meet the signal criteria. Works best with --background.')
+@click.option('--intraday', '-i', default=False, is_flag=True, help='Scans (every 10 sec) the intraday price history and lists those that meet the signal criteria')
 @click.option('--background', '-r', default=False, is_flag=True, help='Keep running the process in the background (Optional)')
 @tracelog
 def scan(stocks, live, intraday, background):
@@ -177,7 +177,7 @@ def live_quote_background(symbol, general, ohlc, wk52, volume, orderbook):
 	while RUN_IN_BACKGROUND:
 		result = get_quote(symbol)
 		format_beautified(result, general, ohlc, wk52, volume, orderbook)
-		time.sleep(1)
+		time.sleep(60)
 
 def scan_live_background(scannerinstance, stocks):
 	global RUN_IN_BACKGROUND
@@ -193,4 +193,4 @@ def scan_intraday_background(scannerinstance, stocks):
 		df, signaldf = scannerinstance.scan_intraday(stocks=stocks)
 		if signaldf is not None and len(signaldf) > 0:
 			click.echo(signaldf.to_string(index=False))
-		time.sleep(15)
+		time.sleep(10)

@@ -1,12 +1,10 @@
 import inspect
 import numpy as np
-import os
 import os.path
 import pandas as pd
 import talib as ta
 
 from datetime import datetime, date
-from os import path
 from time import time
 
 from nseta.common.commons import *
@@ -102,7 +100,6 @@ class scanner:
 			except Exception as e:
 				default_logger().debug("Exception encountered for " + stock)
 				default_logger().debug(e, exc_info=True)
-				pass
 		if len(frames) > 0:
 			df = pd.concat(frames)
 			default_logger().debug(df.to_string(index=False))
@@ -118,7 +115,7 @@ class scanner:
 	def scan_intraday(self, stocks=[]):
 		start_time = time()
 		dir_path = ""
-		if not path.exists("stocks.py"):
+		if not os.path.exists("stocks.py"):
 			dir_path = os.path.dirname(os.path.realpath(__file__)) + "/"
 		# If stocks array is empty, pull stock list from stocks.txt file
 		stocks = stocks if len(stocks) > 0 else [
@@ -189,7 +186,6 @@ class scanner:
 				default_logger().debug(e, exc_info=True)
 				default_logger().debug('[scan_intraday] Keyboard Interrupt received. Exiting.')
 				try:
-					stocks = []
 					sys.exit(1)
 					break
 				except SystemExit as se:
@@ -198,13 +194,9 @@ class scanner:
 			except Exception as e:
 				default_logger().error("Exception encountered for " + symbol)
 				default_logger().error(e, exc_info=True)
-				pass
 			except SystemExit:
-				stocks = []
-				df = None
 				sys.exit(1)
-				break
-				return
+				pass
 		if len(frames) > 0:
 			df = pd.concat(frames)
 		if len(signalframes) > 0:
@@ -252,7 +244,6 @@ class scanner:
 		except Exception as e:
 			default_logger().debug(e, exc_info=True)
 			default_logger().debug('Exception encountered for key: ' + searchkey + "\n")
-			pass
 		return df
 
 	@tracelog
