@@ -101,7 +101,7 @@ def scan(stocks, live, intraday, background):
 
 def scan_live(stocks, background):
 	s = scanner()
-	df, signaldf = s.scan(stocks=stocks)
+	df, signaldf = s.scan_live(stocks=stocks)
 	if df is not None and len(df) > 0:
 		default_logger().debug("\nAll Stocks LTP and Signals:\n" + df.to_string(index=False))
 	else:
@@ -183,7 +183,7 @@ def scan_live_background(scannerinstance, stocks):
 	global RUN_IN_BACKGROUND
 	RUN_IN_BACKGROUND = True
 	while RUN_IN_BACKGROUND:
-		scannerinstance.scan(stocks)
+		scannerinstance.scan_live(stocks)
 		time.sleep(60)
 
 def scan_intraday_background(scannerinstance, stocks):

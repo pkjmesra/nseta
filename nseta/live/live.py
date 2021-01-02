@@ -60,7 +60,7 @@ def get_quote(symbol, series='EQ', instrument=None, expiry=None, option_type=Non
 	else:
 		quote_eq_url.session.headers.update(
 			{'Referer': eq_quote_referer.format(symbol)})
-		res = quote_eq_url(symbol, series)
+		res = quote_eq_url(symbol.replace('&','%26'), series)
 
 	html_soup = BeautifulSoup(res.text, 'lxml')
 	hresponseDiv = html_soup.find("div", {"id": "responseDiv"})

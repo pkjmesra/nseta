@@ -61,8 +61,14 @@ class scanner:
 	def stocksdict(self):
 		return self._stocksdict
 
+	def get_func_name(self, token):
+		if token=='live':
+			return self.scan_live_quanta
+		else:
+			return self.scan_intraday_quanta
+
 	@tracelog
-	def scan(self, stocks=[], start_date=None, end_date=None):
+	def scan_live(self, stocks=[], start_date=None, end_date=None):
 		dir_path = ""
 		start_time = time()
 		if not os.path.exists("stocks.py"):
@@ -73,6 +79,14 @@ class scanner:
 		# Time frame you want to pull data from
 		# start_date = datetime.datetime.now()-datetime.timedelta(days=365)
 		# end_date = datetime.datetime.now()
+		list_returned = self.scan_internal(stocks, 'live')
+		end_time = time()
+		time_spent = end_time-start_time
+		default_logger().info("This run of scan took {:.1f} sec".format(time_spent))
+		return list_returned.pop(0), list_returned.pop(0)
+
+	@tracelog
+	def scan_live_quanta(self, stocks):
 		frames = []
 		signalframes = []
 		df = None
@@ -102,14 +116,11 @@ class scanner:
 				default_logger().debug(e, exc_info=True)
 		if len(frames) > 0:
 			df = pd.concat(frames)
-			default_logger().debug(df.to_string(index=False))
+			# default_logger().debug(df.to_string(index=False))
 		if len(signalframes) > 0:
 			signaldf = pd.concat(signalframes)
-			default_logger().debug(signaldf.to_string(index=False))
-		end_time = time()
-		time_spent = end_time-start_time
-		default_logger().info("This run of scan took {:.1f} sec".format(time_spent))
-		return df, signaldf
+			# default_logger().debug(signaldf.to_string(index=False))
+		return [df, signaldf]
 
 	@tracelog
 	def scan_intraday(self, stocks=[]):
@@ -123,14 +134,14 @@ class scanner:
 		# Time frame you want to pull data from
 		# start_date = datetime.datetime.now()-datetime.timedelta(days=365)
 		# end_date = datetime.datetime.now()
-		list_returned = self.scan_intraday_internal(stocks)
+		list_returned = self.scan_internal(stocks, 'intraday')
 		end_time = time()
 		time_spent = end_time-start_time
 		default_logger().info("This run of scan took {:.1f} sec".format(time_spent))
 		return list_returned.pop(0), list_returned.pop(0)
 
 	@tracelog
-	def scan_intraday_internal(self, stocks):
+	def scan_internal(self, stocks, token):
 		frame = inspect.currentframe()
 		args, _, _, kwargs = inspect.getargvalues(frame)
 		del(kwargs['frame'])
@@ -145,8 +156,8 @@ class scanner:
 			# n_segmented_stocks = [stocks_segment[i * n:(i + 1) * n] for i in range((len(stocks_segment) + n - 1) // n )]
 			kwargs1['stocks'] = first_n
 			kwargs2['stocks'] = remaining_stocks
-			t1 = ThreadReturns(target=self.scan_intraday_internal, kwargs=kwargs1)
-			t2 = ThreadReturns(target=self.scan_intraday_internal, kwargs=kwargs2)
+			t1 = ThreadReturns(target=self.scan_internal, kwargs=kwargs1)
+			t2 = ThreadReturns(target=self.scan_internal, kwargs=kwargs2)
 			t1.start()
 			t2.start()
 			t1.join()
@@ -161,19 +172,9 @@ class scanner:
 			signaldf = self.concatenated_dataframe(signaldf1, signaldf2)
 			return [df, signaldf]
 		else:
-			return self.scan_intraday_quanta(**kwargs)
-
-	def concatenated_dataframe(self, df1, df2):
-		if df1 is not None and len(df1) > 0:
-			if df2 is not None and len(df2) > 0:
-				df = pd.concat((df1, df2))
-			else:
-				df = df1
-		elif df2 is not None and len(df2) > 0:
-			df = df2
-		else:
-			df = None
-		return df
+			del(kwargs['token'])
+			func_execute = self.get_func_name(token)
+			return func_execute(**kwargs)
 
 	@tracelog
 	def scan_intraday_quanta(self, stocks):
@@ -184,7 +185,7 @@ class scanner:
 		tiinstance = ti()
 		for symbol in stocks:
 			try:
-				df = self.live_intraday(symbol)
+				df = self.ohlc_intraday_history(symbol)
 				if df is not None and len(df) > 0:
 					df = tiinstance.update_ti(df)
 					df.drop(df.head(len(df) - 1).index, inplace = True)
@@ -220,13 +221,13 @@ class scanner:
 		return [df, signaldf]
 
 	@tracelog
-	def live_intraday(self, symbol):
+	def ohlc_intraday_history(self, symbol):
 		df = None
 		try:
 			historyinstance = historicaldata()
 			df = historyinstance.daily_ohlc_history(symbol, start=date.today(), end = date.today(), intraday=True)
 			if df is not None and len(df) > 0:
-				default_logger().debug("Dataframe for " + symbol + "\n" + str(df))
+				# default_logger().debug("Dataframe for " + symbol + "\n" + str(df))
 				df = self.map_keys(df, symbol)
 			else:
 				default_logger().info("Empty dataframe for " + symbol)
@@ -239,10 +240,22 @@ class scanner:
 					os._exit(se.args[0][0]["code"])
 		except Exception as e:
 			default_logger().debug(e, exc_info=True)
-			return
+			return None
 		except SystemExit:
 			df = None
 			return
+		return df
+
+	def concatenated_dataframe(self, df1, df2):
+		if df1 is not None and len(df1) > 0:
+			if df2 is not None and len(df2) > 0:
+				df = pd.concat((df1, df2))
+			else:
+				df = df1
+		elif df2 is not None and len(df2) > 0:
+			df = df2
+		else:
+			df = None
 		return df
 
 	def map_keys(self, df, symbol):
