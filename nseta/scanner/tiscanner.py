@@ -9,8 +9,8 @@ import pandas as pd
 
 from nseta.live.live import get_live_quote
 from nseta.common.history import historicaldata
-from nseta.common.log import logdebug, default_logger
-from nseta.common.ti import *
+from nseta.common.log import tracelog, default_logger
+from nseta.common.ti import ti
 import talib as ta
 
 __all__ = ['KEY_MAPPING', 'scanner']
@@ -28,7 +28,7 @@ INTRADAY_KEYS_MAPPING = {
 	'Symbol': 'Symbol',
 	'Date': 'Date',
 	'Close': 'LTP',
-	'Low': 'Prev_Close',
+	# 'Low': 'Prev_Close',
 	'RSI': 'RSI',
 	# 'MOM': 'MOM',
 	# 'SMA(10)': 'SMA(10)',
@@ -61,7 +61,7 @@ class scanner:
 	def stocksdict(self):
 		return self._stocksdict
 
-	@logdebug
+	@tracelog
 	def scan(self, stocks=[], start_date=None, end_date=None):
 		dir_path = ""
 		start_time = time()
@@ -108,7 +108,7 @@ class scanner:
 		time_spent = end_time-start_time
 		default_logger().info("This run of scan took {:.1f} sec".format(time_spent))
 
-	@logdebug
+	@tracelog
 	def scan_intraday(self, stocks=[]):
 		start_time = time()
 		dir_path = ""
@@ -124,20 +124,20 @@ class scanner:
 		signalframes = []
 		df = None
 		signaldf = None
-
+		tiinstance = ti()
 		for symbol in stocks:
 			try:
 				df = self.live_intraday(symbol)
 				if df is not None and len(df) > 0:
-					df = update_ti(df)
+					df = tiinstance.update_ti(df)
 					df.drop(df.head(len(df) - 1).index, inplace = True)
 					for key in df.keys():
 						if not key in INTRADAY_KEYS_MAPPING.keys():
 							df.drop([key], axis = 1, inplace = True)
 						else:
 							searchkey = INTRADAY_KEYS_MAPPING[key]
-							df[searchkey] = df[key]
 							if key != searchkey:
+								df[searchkey] = df[key]
 								df.drop([key], axis = 1, inplace = True)
 					frames.append(df)
 					signalframes = self.update_signals(signalframes, df)
@@ -172,7 +172,7 @@ class scanner:
 		default_logger().info("This run of scan took {:.1f} sec".format(time_spent))
 		return df, signaldf
 
-	@logdebug
+	@tracelog
 	def live_intraday(self, symbol):
 		df = None
 		try:
@@ -216,7 +216,7 @@ class scanner:
 			pass
 		return df
 
-	@logdebug
+	@tracelog
 	def update_signals(self, signalframes, df):
 		if not 'RSI' in df.keys() and not 'EMA(9)' in df.keys():
 			return signalframes

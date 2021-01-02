@@ -6,7 +6,7 @@ Created on Wed Aug 24 22:01:01 2020
 """
 import click
 from nseta.common.commons import *
-from nseta.common.log import logdebug, default_logger
+from nseta.common.log import tracelog, default_logger
 from nseta.live.liveurls import quote_eq_url, quote_derivative_url, option_chain_url, futures_chain_url, holiday_list_url
 
 import dateutil.relativedelta
@@ -40,7 +40,7 @@ eq_quote_referer = "https://www1.nseindia.com/live_market/dynaContent/live_watch
 derivative_quote_referer = "https://www1.nseindia.com/live_market/dynaContent/live_watch/get_quote/GetQuoteFO.jsp?underlying={}&instrument={}&expiry={}&type={}&strike={}"
 option_chain_referer = "https://www1.nseindia.com/live_market/dynaContent/live_watch/option_chain/optionKeys.jsp?symbolCode=-9999&symbol=NIFTY&symbol=BANKNIFTY&instrument=OPTIDX&date=-&segmentLink=17&segmentLink=17"
 
-@logdebug
+@tracelog
 def get_quote(symbol, series='EQ', instrument=None, expiry=None, option_type=None, strike=None):
 	"""
 	1. Underlying security (stock symbol or index name)
@@ -82,7 +82,7 @@ def get_quote(symbol, series='EQ', instrument=None, expiry=None, option_type=Non
 		res[k] = v_
 	return res
 
-@logdebug
+@tracelog
 def get_option_chain(symbol, instrument=None, expiry=None):
 
 	if expiry:
@@ -95,7 +95,7 @@ def get_option_chain(symbol, instrument=None, expiry=None):
 
 	return r
 
-@logdebug
+@tracelog
 def get_option_chain_table(symbol, instrument=None, expiry=None):
 	optchainscrape = get_option_chain(symbol, instrument, expiry)
 	html_soup = BeautifulSoup(optchainscrape.text, 'html.parser')
@@ -105,12 +105,12 @@ def get_option_chain_table(symbol, instrument=None, expiry=None):
 					 headers=OPTIONS_CHAIN_HEADERS, index=OPTIONS_CHAIN_INDEX)
 	return tp.get_df()
 
-@logdebug
+@tracelog
 def get_futures_chain(symbol):
 	r = futures_chain_url(symbol)
 	return r
 
-@logdebug
+@tracelog
 def get_futures_chain_table(symbol):
 	futuresscrape = get_futures_chain(symbol)
 	html_soup = BeautifulSoup(futuresscrape.text, 'html.parser')
@@ -120,7 +120,7 @@ def get_futures_chain_table(symbol):
 					 headers=FUTURES_HEADERS, index=FUTURES_INDEX)
 	return tp.get_df()
 
-@logdebug
+@tracelog
 def get_holidays_list(fromDate,
 					  toDate):
 	"""This is the function to get exchange holiday list between 2 dates.
@@ -148,7 +148,7 @@ def get_holidays_list(fromDate,
 	dfret = dfret.drop(["Market Segment"], axis=1)
 	return dfret
 
-@logdebug
+@tracelog
 def isworkingday(dt):
 	"""This is the function to check if a given date is a working day
 		Args:
@@ -167,7 +167,7 @@ def isworkingday(dt):
 
 	return True
 
-@logdebug
+@tracelog
 def nextworkingday(dt):
 	"""This is the function to get the next working day after the given date
 		Args:
@@ -181,7 +181,7 @@ def nextworkingday(dt):
 		if isworkingday(dttmp):
 			return dttmp
 
-@logdebug
+@tracelog
 def previousworkingday(dt):
 	"""This is the function to get the last working day before the given date
 		Args:
@@ -196,7 +196,7 @@ def previousworkingday(dt):
 		if isworkingday(dttmp):
 			return dttmp
 
-@logdebug
+@tracelog
 def getworkingdays(dtfrom, dtto):
 	# pdb.set_trace()
 	dfholiday = get_holidays_list(dtfrom, dtto)
@@ -232,7 +232,7 @@ def getworkingdays(dtfrom, dtto):
 
 	return sorted(stworking)
 
-@logdebug
+@tracelog
 def get_live_quote(symbol, general=True, ohlc=False, wk52=False, volume=False, orderbook=False, keys=[]):
 	result = get_quote(symbol)
 	# print(result)

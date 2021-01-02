@@ -1,5 +1,5 @@
 import enum
-from nseta.common.log import logdebug, default_logger
+from nseta.common.log import tracelog, default_logger
 import click
 
 __all__ = ['rsisignal','Direction']
@@ -31,12 +31,12 @@ class rsisignal:
 		self._lower = 25
 		self._upper = 75
 
-	@logdebug
+	@tracelog
 	def set_limits(self, lower, upper):
 		self._lower = lower
 		self._upper = upper
 
-	@logdebug
+	@tracelog
 	def index(self, rsi, price):
 		if rsi > 0:
 			self.n3 = rsi
@@ -155,7 +155,7 @@ class rsisignal:
 		self.n2 = self._n3
 		self._n3 = next3
 
-	@logdebug
+	@tracelog
 	def update_direction(self):
 		selllog = "Sell Signal at " + self.to_string() + ", Profit:, " + str(self._profit) + "\n"
 		if (self.n1 > self.n2) and (self.n2 > self.n3): # The last 3 values fell
@@ -190,13 +190,13 @@ class rsisignal:
 			# self.buy_signal(buylog)
 
 
-	@logdebug
+	@tracelog
 	def buy_signal(self, log):
 		self.buytriggerred = True
 		self._profit = self._profit - self.price
 		click.secho(log, fg='green', nl=True)
 
-	@logdebug
+	@tracelog
 	def sell_signal(self, log):
 		self._profit = self._profit + self.price
 		click.secho(log, fg='red', nl=True)

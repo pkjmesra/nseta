@@ -2,8 +2,8 @@ from nseta.strategy.strategy import *
 from nseta.strategy.rsisignal import *
 from nseta.plots.plots import plot_rsi
 from nseta.common.history import *
-from nseta.common.ti import update_ti
-from nseta.common.log import logdebug, default_logger
+from nseta.common.ti import ti
+from nseta.common.log import tracelog, default_logger
 from nseta.cli.inputs import *
 from nseta.scanner.tiscanner import scanner, KEY_MAPPING
 
@@ -12,25 +12,25 @@ from datetime import datetime
 
 __all__ = ['test_trading_strategy', 'forecast_strategy']
 
-@logdebug
+@tracelog
 def smac_strategy(df, autosearch, lower, upper):
 	if not autosearch:
 		backtest_smac_strategy(df, fast_period=10, slow_period=50)
 	else:
 		backtest_smac_strategy(df, fast_period=range(10, 30, 3), slow_period=range(40, 60, 3))
 
-@logdebug
+@tracelog
 def emac_strategy(df, autosearch, lower, upper):
 	if not autosearch:
 		backtest_smac_strategy(df, fast_period=10, slow_period=50)
 	else:
 		backtest_smac_strategy(df, fast_period=range(10, 30, 3), slow_period=range(40, 50, 3))
 
-@logdebug
+@tracelog
 def bbands_strategy(df, autosearch, lower, upper):
 	backtest_bbands_strategy(df, period=20, devfactor=2.0)
 
-@logdebug
+@tracelog
 def rsi_strategy(df, autosearch, lower=30, upper=70):
 	if not autosearch:
 		if lower is None:
@@ -41,14 +41,14 @@ def rsi_strategy(df, autosearch, lower=30, upper=70):
 	else:
 		backtest_rsi_strategy(df, rsi_period=[5,7,11,14], rsi_lower=[15,30,40], rsi_upper=[60,70,80,90] )
 
-@logdebug
+@tracelog
 def macd_strategy(df, autosearch, lower, upper):
 	if not autosearch:
 		backtest_macd_strategy(df, fast_period=12, slow_period=26)
 	else:
 		backtest_macd_strategy(df, fast_period=range(4, 12, 2), slow_period=range(14, 26, 2))
 
-@logdebug
+@tracelog
 def multi_strategy(df, autosearch, lower, upper):
 	if not autosearch:
 		SAMPLE_STRAT_DICT = {
@@ -99,7 +99,7 @@ STRATEGY_MAPPING_KEYS = list(STRATEGY_MAPPING.keys()) + ['custom']
 @click.option('--autosearch/--no-autosearch', default=False, 
 	help='--auto for allowing to automatically measure the performance of your trading strategy on multiple combinations of parameters.')
 @click.option('--intraday', '-i', is_flag=True, help='Test trading strategy for the current intraday price history (Optional)')
-@logdebug
+@tracelog
 def test_trading_strategy(symbol, start, end, autosearch, strategy, upper, lower, intraday=False):
 	if not intraday:
 		if not validate_inputs(start, end, symbol, strategy):
@@ -131,7 +131,7 @@ def test_trading_strategy(symbol, start, end, autosearch, strategy, upper, lower
 	help=', '.join(STRATEGY_MAPPING_KEYS) + ". Choose one.")
 @click.option('--upper', '-u', default=1.5, help='Only when strategy is "custom". We buy the security when the predicted next day return is > +{upper} %')
 @click.option('--lower', '-l', default=1.5, help='Only when strategy is "custom". We sell the security when the predicted next day return is < -{lower} %')
-@logdebug
+@tracelog
 def forecast_strategy(symbol, start, end, strategy, upper, lower):
 	if not validate_inputs(start, end, symbol, strategy):
 		print_help_msg(forecast_strategy)
@@ -176,7 +176,8 @@ def run_test_strategy(df, symbol, strategy, autosearch, lower, upper):
 		STRATEGY_MAPPING['rsi'](df, autosearch, float(upper), float(lower))
 
 def test_intraday_signals(df, lower, upper):
-	df = update_ti(df)
+	tiinstance = ti()
+	df = tiinstance.update_ti(df)
 	df.drop(list(KEY_MAPPING.keys()), axis = 1, inplace = True)
 	signal = rsisignal()
 	signal.set_limits(lower, upper)

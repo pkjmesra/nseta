@@ -1,4 +1,4 @@
-from nseta.common.log import logdebug, default_logger, suppress_stdout_stderr
+from nseta.common.log import tracelog, default_logger, suppress_stdout_stderr
 from fastquant import backtest
 from fbprophet import Prophet
 from fbprophet.plot import add_changepoints_to_plot
@@ -13,7 +13,7 @@ import click, logging
 __VERBOSE__ = default_logger().level == logging.DEBUG
 __all__ = ['backtest_custom_strategy', 'backtest_smac_strategy', 'backtest_emac_strategy', 'backtest_rsi_strategy', 'backtest_macd_strategy', 'backtest_bbands_strategy', 'backtest_multi_strategy', 'daily_forecast']
 
-@logdebug
+@tracelog
 def backtest_smac_strategy(df, fast_period=10, slow_period=50):
 	if __VERBOSE__:
 		result = backtest('smac', df.dropna(), fast_period=fast_period, slow_period=slow_period, verbose=__VERBOSE__)
@@ -23,7 +23,7 @@ def backtest_smac_strategy(df, fast_period=10, slow_period=50):
 	print(result[['fast_period', 'slow_period', 'init_cash', 'final_value', 'pnl']].head())
 	return result
 
-@logdebug
+@tracelog
 def backtest_emac_strategy(df, fast_period=10, slow_period=50):
 	if __VERBOSE__:
 		result = backtest('emac', df.dropna(), fast_period=fast_period, slow_period=slow_period, verbose=__VERBOSE__)
@@ -33,7 +33,7 @@ def backtest_emac_strategy(df, fast_period=10, slow_period=50):
 	print(result[['fast_period', 'slow_period', 'init_cash', 'final_value', 'pnl']].head())
 	return result
 
-@logdebug
+@tracelog
 def backtest_rsi_strategy(df, rsi_period=14, rsi_lower=30, rsi_upper=70):
 	if __VERBOSE__:
 		result = backtest('rsi', df.dropna(), rsi_period=rsi_period, rsi_upper=rsi_upper, rsi_lower=rsi_lower, verbose=__VERBOSE__)
@@ -43,7 +43,7 @@ def backtest_rsi_strategy(df, rsi_period=14, rsi_lower=30, rsi_upper=70):
 	print(result[['rsi_period', 'rsi_upper', 'rsi_lower', 'init_cash', 'final_value', 'pnl']].head())
 	return result
 
-@logdebug
+@tracelog
 def backtest_macd_strategy(df, fast_period=12, slow_period=26):
 	if __VERBOSE__:
 		result = backtest('macd', df.dropna(), fast_period=fast_period, slow_period=slow_period, signal_period=9, 
@@ -55,7 +55,7 @@ def backtest_macd_strategy(df, fast_period=12, slow_period=26):
 	print(result[['fast_period', 'slow_period', 'signal_period', 'init_cash', 'final_value', 'pnl']].head())
 	return result
 
-@logdebug
+@tracelog
 def backtest_bbands_strategy(df, period=20, devfactor=2.0):
 	if __VERBOSE__:
 		result = backtest('bbands', df.dropna(), period=period, devfactor=devfactor, verbose=__VERBOSE__)
@@ -65,7 +65,7 @@ def backtest_bbands_strategy(df, period=20, devfactor=2.0):
 	print(result[['period', 'devfactor', 'init_cash', 'final_value', 'pnl']].head())
 	return result
 
-@logdebug
+@tracelog
 def backtest_multi_strategy(df, strats):
 	if __VERBOSE__:
 		result = backtest("multi", df.dropna(), strats=strats, verbose=__VERBOSE__)
@@ -104,7 +104,7 @@ We are going to use the custom strategy to backtest a custom indicator based
 on in-sample time series forecasts. The forecasts are generated using 
 Facebook's Prophet package.
 '''
-@logdebug
+@tracelog
 def daily_forecast(df, symbol, strategy, upper_limit=1.5, lower_limit=1.5, periods=0):
 	train_size = int(0.75 * len(df)) - periods              # Use 3 years of data as train set. Note there are about 252 trading days in a year
 	val_size = int(0.25 * len(df))                  # Use 1 year of data as validation set
@@ -196,7 +196,7 @@ value. In our context, this means we set current closing price as the previous
 day’s closing price. This may be the most cost-effective forecasting model and is 
 commonly used as a benchmark against which more sophisticated models can be compared.
 '''
-@logdebug
+@tracelog
 def fit_model(m, ts, train_val_size, periods):
 	m.fit(ts[0:train_val_size])
 	ts.head(10)
@@ -209,7 +209,7 @@ def fit_model(m, ts, train_val_size, periods):
 	forecast = m.predict(future)
 	return forecast
 
-@logdebug
+@tracelog
 def plot_forecast(m, forecast, symbol, strategy, df, train_val_size, periods):
 	if periods > 0:
 		fig1 = m.plot(forecast, uncertainty=True)
@@ -240,7 +240,7 @@ def plot_forecast(m, forecast, symbol, strategy, df, train_val_size, periods):
 		ax.legend(['Close', 'Predictions'])
 	return plt
 
-@logdebug
+@tracelog
 def predict_buy_sell_1day_returns(df, forecast, strategy, upper_limit, lower_limit):
 	# Convert predictions to expected 1 day returns
 	expected_1day_return = forecast.set_index("ds").yhat.pct_change().shift(-1).multiply(100)

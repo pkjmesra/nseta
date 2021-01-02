@@ -414,7 +414,6 @@ Options:
   -w, --wk52         Get the 52 week high/low values also (Optional)
   -v, --volume       Get the traded volume details also (Optional)
   -b, --orderbook    Get the current bid/offer details also (Optional)
-  -i, --intraday     Get the current intraday price history (Optional)
   -p, --plot         Plot the "Close" values (Optional)
   -r, --background   Keep running the process in the background (Optional)
   --help             Show this message and exit.

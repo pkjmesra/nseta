@@ -1,6 +1,6 @@
 import click
 from datetime import datetime, timedelta
-from nseta.common.log import logdebug, default_logger
+from nseta.common.log import tracelog, default_logger
 
 __all__ = ['validate_inputs', 'print_help_msg', 'validate_symbol']
 
@@ -13,7 +13,7 @@ STRATEGY_DAYS_MAPPING = {
 	"multi": 63,
 }
 
-@logdebug
+@tracelog
 def validate_inputs(start, end,symbol, strategy=None):
 	try:
 		sd = datetime.strptime(start, "%Y-%m-%d").date()
@@ -30,12 +30,12 @@ def validate_inputs(start, end,symbol, strategy=None):
 		pass
 	return validate_symbol(symbol)
 
-@logdebug
+@tracelog
 def print_help_msg(command):
 	with click.Context(command) as ctx:
 		click.echo(command.get_help(ctx))
 
-@logdebug
+@tracelog
 def validate_symbol(symbol):
 	if not symbol:
 		click.secho("Please provide security/index code", fg='red', nl=True)

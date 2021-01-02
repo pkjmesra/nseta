@@ -7,7 +7,7 @@ Created on Thu Nov 19 20:35:13 2015
 
 from nseta.common.commons import URLFetch
 from nseta.common.constants import symbol_count
-from nseta.common.log import logdebug
+from nseta.common.log import tracelog
 
 from requests import Session
 from functools import partial
@@ -65,7 +65,7 @@ nse_intraday_url_new = URLFetchSession(
 symbol_count_url = URLFetchSession(
 	url='http://www1.nseindia.com/marketinfo/sym_map/symbolCount.jsp')
 
-@logdebug
+@tracelog
 def get_symbol_count(symbol):
 	try:
 		return symbol_count[symbol]

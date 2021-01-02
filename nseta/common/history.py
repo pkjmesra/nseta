@@ -2,13 +2,13 @@
 """
 Created on Tue Aug 24 11:23:30 2020.
 
-@author: SW274998
+Originally adapted from @author: SW274998
 """
 
 from nseta.common.urls import *
 from nseta.common.commons import *
 from nseta.common.constants import *
-from nseta.common.log import default_logger, logdebug
+from nseta.common.log import default_logger, tracelog
 
 import six
 from datetime import date, timedelta
@@ -99,7 +99,7 @@ class historicaldata:
 
 	"""
 
-	@logdebug
+	@tracelog
 	def daily_ohlc_history(self, symbol, start, end, index=False, futures=False, option_type="",
 					expiry_date=None, strike_price="", series='EQ', intraday=False):
 		"""This is the function to get the historical prices of any security (index,
@@ -152,7 +152,7 @@ class historicaldata:
 	'''
 	Not being used right now. TODO: Switch to new NSE site.
 	'''
-	@logdebug
+	@tracelog
 	def get_intraday_history(self, symbol):
 		resp = nse_intraday_url_new(index=symbol.upper())
 		# print(resp)
@@ -168,7 +168,7 @@ class historicaldata:
 			value = item[1]
 			print(dt, value)
 
-	@logdebug
+	@tracelog
 	def daily_ohlc_history_quanta(self, **kwargs):
 		url, params, schema, headers, scaling, csvnode = self.validate_params(**kwargs)
 		df = self.url_to_df(url=url,
@@ -178,7 +178,7 @@ class historicaldata:
 		return df
 
 
-	@logdebug
+	@tracelog
 	def url_to_df(self, url, params, schema, headers, scaling={}, csvnode=None):
 		resp = url(**params)
 		# default_logger().debug("Response:\n" + resp.text)
@@ -194,7 +194,7 @@ class historicaldata:
 		return df
 
 
-	@logdebug
+	@tracelog
 	def validate_params(self, symbol, start, end, index=False, futures=False, option_type="",
 						expiry_date=None, strike_price="", series='EQ', intraday=False):
 		"""
@@ -305,7 +305,7 @@ class historicaldata:
 		return url, params, schema, headers, scaling, csvnode
 
 
-	@logdebug
+	@tracelog
 	def get_index_pe_history(self, symbol, start, end):
 		frame = inspect.currentframe()
 		args, _, _, kwargs = inspect.getargvalues(frame)
@@ -329,7 +329,7 @@ class historicaldata:
 			return self.get_index_pe_history_quanta(**kwargs)
 
 
-	@logdebug
+	@tracelog
 	def get_index_pe_history_quanta(self, symbol, start, end):
 		"""This function will fetch the P/E, P/B and dividend yield for a given index
 
@@ -357,7 +357,7 @@ class historicaldata:
 		return df
 
 
-	@logdebug
+	@tracelog
 	def get_price_list(self, dt, series='EQ'):
 		MMM = dt.strftime("%b").upper()
 		yyyy = dt.strftime("%Y")
@@ -378,7 +378,7 @@ class historicaldata:
 	"""
 	Get Trade and Delivery Volume for each stock
 	"""
-	@logdebug
+	@tracelog
 	def get_delivery_position(self, dt, segment='EQ'):
 		dt.strftime("%b").upper()
 		dt.strftime("%Y")
@@ -412,7 +412,7 @@ class historicaldata:
 	"""
 	Get Price range for all Indices
 	"""
-	@logdebug
+	@tracelog
 	def get_indices_price_list(self, dt):
 		res = index_daily_snapshot_url(dt.strftime("%d%m%Y"))
 		df = pd.read_csv(io.StringIO(res.content.decode('utf-8')))
@@ -431,7 +431,7 @@ class historicaldata:
 								"Div Yield": "DIVYIELD"})
 		return df
 
-	@logdebug
+	@tracelog
 	def get_rbi_ref_history(self, start, end):
 		frame = inspect.currentframe()
 		args, _, _, kwargs = inspect.getargvalues(frame)
@@ -454,7 +454,7 @@ class historicaldata:
 		else:
 			return self.get_rbi_ref_history_quanta(**kwargs)
 
-	@logdebug
+	@tracelog
 	def get_rbi_ref_history_quanta(self, start, end):
 		"""
 			Args:

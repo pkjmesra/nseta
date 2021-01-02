@@ -1,6 +1,6 @@
 from nseta.analytics.model import *
 from nseta.common.history import historicaldata
-from nseta.common.log import logdebug, default_logger
+from nseta.common.log import tracelog, default_logger
 from nseta.plots.plots import *
 from nseta.cli.inputs import *
 
@@ -17,7 +17,7 @@ __all__ = ['create_cdl_model']
 @click.option('--steps/--no-steps', default=False, help='--steps for saving intermediate steps in output file')
 @click.option('--format', '-f', default='csv',  type=click.Choice(['csv', 'pkl']),
 				help='Output format, pkl - to save as Pickel and csv - to save as csv')
-@logdebug
+@tracelog
 def create_cdl_model(symbol, start, end, file_name, steps, format):
 	if not validate_inputs(start, end, symbol):
 		print_help_msg(create_cdl_model)

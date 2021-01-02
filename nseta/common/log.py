@@ -9,7 +9,7 @@ from inspect import getcallargs, getargspec
 from collections import OrderedDict, Iterable
 from itertools import *
 
-__all__ = ['setup_custom_logger', 'default_logger', 'log_to', 'logdebug', 'suppress_stdout_stderr']
+__all__ = ['setup_custom_logger', 'default_logger', 'log_to', 'tracelog', 'suppress_stdout_stderr']
 __trace__ = False
 def setup_custom_logger(name, levelname=logging.DEBUG, trace=False):
 	trace_formatter = logging.Formatter(fmt='%(asctime)s - %(name)s - %(levelname)s - %(filename)s - %(module)s - %(funcName)s - %(lineno)d\n%(message)s\n')
@@ -105,7 +105,7 @@ def log_to(logger_func):
 		decorator = lambda x: x
 	return decorator
 
-logdebug = log_to(trace_log)
+tracelog = log_to(trace_log)
 
 class suppress_stdout_stderr(object):
 	'''

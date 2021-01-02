@@ -1,6 +1,6 @@
 import click
 from nseta.common.history import historicaldata
-from nseta.common.log import logdebug, default_logger
+from nseta.common.log import tracelog, default_logger
 from nseta.cli.inputs import *
 from datetime import datetime
 
@@ -10,13 +10,12 @@ __all__ = ['history', 'pe_history']
 @click.option('--symbol', '-S',  help='Security code')
 @click.option('--start', '-s', help='Start date in yyyy-mm-dd format')
 @click.option('--end', '-e', help='End date in yyyy-mm-dd format')
-@click.option('--series', default='EQ', help='Default series - EQ (Equity)')
 @click.option('--file', '-o', 'file_name',  help='Output file name')
 @click.option('--index/--no-index', default=False, help='--index if security is index else --no-index')
 @click.option('--format', '-f', default='csv',  type=click.Choice(['csv', 'pkl']),
 				help='Output format, pkl - to save as Pickel and csv - to save as csv')
-@logdebug
-def history(symbol, start, end, series, file_name, index, format): #, futures, expiry, option_type, strike):
+@tracelog
+def history(symbol, start, end, file_name, index, format): #, futures, expiry, option_type, strike):
 	if not validate_inputs(start, end, symbol):
 		print_help_msg(history)
 		return
@@ -28,7 +27,7 @@ def history(symbol, start, end, series, file_name, index, format): #, futures, e
 		df = historyinstance.daily_ohlc_history(symbol, sd, ed)
 		click.echo(df.head())
 	except Exception as e:
-		default_logger().error(e, exc_info=True)
+		default_logger().debug(e, exc_info=True)
 		click.secho('Failed to fetch history', fg='red', nl=True)
 		return
 	except SystemExit:
@@ -49,7 +48,7 @@ def history(symbol, start, end, series, file_name, index, format): #, futures, e
 @click.option('--format', '-f', default='csv',  type=click.Choice(['csv', 'pkl']),
 				help='Output format, pkl - to save as Pickel and csv - to save as csv')
 @click.option('--file', '-o', 'file_name',  help='Output file name')
-@logdebug
+@tracelog
 def pe_history(symbol, start, end, format, file_name):
 	if not validate_inputs(start, end, symbol):
 		print_help_msg(pe_history)
@@ -61,7 +60,7 @@ def pe_history(symbol, start, end, format, file_name):
 		df = historyinstance.get_index_pe_history(symbol, sd, ed)
 		click.echo(df.head())
 	except Exception as e:
-		default_logger().error(e, exc_info=True)
+		default_logger().debug(e, exc_info=True)
 		click.secho('Failed to fetch PE history.', fg='red', nl=True)
 		return
 	except SystemExit:
