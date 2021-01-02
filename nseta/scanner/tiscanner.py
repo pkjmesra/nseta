@@ -68,7 +68,7 @@ class scanner:
 			return self.scan_intraday_quanta
 
 	@tracelog
-	def scan_live(self, stocks=[], start_date=None, end_date=None):
+	def scan_live(self, stocks=[], indicator='all'):
 		dir_path = ""
 		start_time = time()
 		if not os.path.exists("stocks.py"):
@@ -76,9 +76,6 @@ class scanner:
 		# If stocks array is empty, pull stock list from stocks.txt file
 		stocks = stocks if len(stocks) > 0 else [
 			line.rstrip() for line in open(dir_path + "stocks.py", "r")]
-		# Time frame you want to pull data from
-		# start_date = datetime.datetime.now()-datetime.timedelta(days=365)
-		# end_date = datetime.datetime.now()
 		list_returned = self.scan_internal(stocks, 'live')
 		end_time = time()
 		time_spent = end_time-start_time
@@ -123,7 +120,7 @@ class scanner:
 		return [df, signaldf]
 
 	@tracelog
-	def scan_intraday(self, stocks=[]):
+	def scan_intraday(self, stocks=[], indicator='all'):
 		start_time = time()
 		dir_path = ""
 		if not os.path.exists("stocks.py"):
@@ -131,9 +128,6 @@ class scanner:
 		# If stocks array is empty, pull stock list from stocks.txt file
 		stocks = stocks if len(stocks) > 0 else [
 			line.rstrip() for line in open(dir_path + "stocks.py", "r")]
-		# Time frame you want to pull data from
-		# start_date = datetime.datetime.now()-datetime.timedelta(days=365)
-		# end_date = datetime.datetime.now()
 		list_returned = self.scan_internal(stocks, 'intraday')
 		end_time = time()
 		time_spent = end_time-start_time

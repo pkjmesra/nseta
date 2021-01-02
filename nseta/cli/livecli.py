@@ -17,6 +17,7 @@ OHLC_LIST = ['Open', 'High', 'Low', 'Close']
 WK52_LIST = ['52 Wk High', '52 Wk Low']
 VOLUME_LIST = ['Quantity Traded', 'Total Traded Volume', 'Total Traded Value', 'Delivery Volume', '% Delivery']
 PIPELINE_LIST = ['Bid Quantity', 'Bid Price', 'Offer_Quantity', 'Offer_Price']
+TECH_INDICATOR_KEYS = ['rsi', 'sma10', 'sma50', 'ema', 'macd', 'all']
 RUN_IN_BACKGROUND = True
 
 @click.command(help='Get live price quote of a security')
@@ -58,17 +59,21 @@ def live_quote(symbol, general, ohlc, wk52, volume, orderbook, background):
 		return
 
 @click.command(help='Scan live and intraday for prices and signals.')
-@click.option('--stocks', '-S', default=[], help='Comma separated security codes(Optional. Configure the tickers in stocks.py)')
+@click.option('--stocks', '-S', default=[], help='Comma separated security codes(Optional. When skipped, all stocks configured in stocks.py will be scanned.)')
 @click.option('--live', '-l', default=False, is_flag=True, help='Scans (every min.) the live-quote and lists those that meet the signal criteria. Works best with --background.')
 @click.option('--intraday', '-i', default=False, is_flag=True, help='Scans (every 10 sec) the intraday price history and lists those that meet the signal criteria')
+@click.option('--indicator', '-t', default='all', type=click.Choice(TECH_INDICATOR_KEYS),
+	help=', '.join(TECH_INDICATOR_KEYS) + ". Choose one.")
 @click.option('--background', '-r', default=False, is_flag=True, help='Keep running the process in the background (Optional)')
 @tracelog
-def scan(stocks, live, intraday, background):
+def scan(stocks, live, intraday, indicator, background):
 	if live and intraday:
-		click.secho('Choose only one of --live or --intraday options. Use --help for help.', fg='red', nl=True)
+		click.secho('Choose only one of --live or --intraday options.', fg='red', nl=True)
+		print_help_msg(scan)
 		return
 	elif not live and not intraday:
-		click.secho('Choose at least one of the --live or --intraday (recommended) options.  Use --help for help.', fg='red', nl=True)
+		click.secho('Choose at least one of the --live or --intraday (recommended) options.', fg='red', nl=True)
+		print_help_msg(scan)
 		return
 
 	if stocks is not None and len(stocks) > 0:
@@ -78,9 +83,9 @@ def scan(stocks, live, intraday, background):
 	global RUN_IN_BACKGROUND
 	try:
 		if live:
-			scan_live(stocks, background)
+			scan_live(stocks, indicator, background)
 		elif intraday:
-			scan_intraday(stocks, background)
+			scan_intraday(stocks, indicator, background)
 	except KeyboardInterrupt as e:
 		RUN_IN_BACKGROUND = False
 		default_logger().error(e, exc_info=True)
@@ -99,9 +104,15 @@ def scan(stocks, live, intraday, background):
 		RUN_IN_BACKGROUND = False
 		return
 
-def scan_live(stocks, background):
+def scan_live(stocks, indicator, background):
 	s = scanner()
-	df, signaldf = s.scan_live(stocks=stocks)
+	df, signaldf = s.scan_live(stocks=stocks, indicator=indicator)
+	scan_live_results(df, signaldf)
+	if background:
+		b = threading.Thread(name='scan_live_background', target=scan_live_background, args=[s, stocks, indicator])
+		b.start()
+
+def scan_live_results(df, signaldf):
 	if df is not None and len(df) > 0:
 		default_logger().debug("\nAll Stocks LTP and Signals:\n" + df.to_string(index=False))
 	else:
@@ -110,14 +121,17 @@ def scan_live(stocks, background):
 		default_logger().info("\nSignals:\n" + signaldf.to_string(index=False))
 	else:
 		default_logger().info('No signals to show here.')
-	if background:
-		b = threading.Thread(name='scan_live_background', target=scan_live_background, args=[s, stocks])
-		b.start()
 
-def scan_intraday(stocks, background):
+def scan_intraday(stocks, indicator, background):
 	file_name = 'Scan_Results.csv'
 	s = scanner()
-	df, signaldf = s.scan_intraday(stocks=stocks)
+	df, signaldf = s.scan_intraday(stocks=stocks, indicator=indicator)
+	scan_intraday_results(df, signaldf)
+	if background:
+		b = threading.Thread(name='scan_intraday_background', target=scan_intraday_background, args=[s, stocks, indicator])
+		b.start()
+
+def scan_intraday_results(df, signaldf):
 	if df is not None and len(df) > 0:
 		default_logger().debug("\nAll Stocks LTP and Signals:\n" + df.to_string(index=False))
 		df.to_csv(file_name)
@@ -129,9 +143,6 @@ def scan_intraday(stocks, background):
 		default_logger().info("\nSignals:\n" + signaldf.to_string(index=False))
 	else:
 		default_logger().info('No signals to show here.')
-	if background:
-		b = threading.Thread(name='scan_intraday_background', target=scan_intraday_background, args=[s, stocks])
-		b.start()
 
 def format_beautified(orgdata, general, ohlc, wk52, volume, orderbook):
 	primary, name_data, quote_data, ohlc_data, wk52_data, volume_data, pipeline_data = get_data_list(orgdata)
@@ -179,18 +190,18 @@ def live_quote_background(symbol, general, ohlc, wk52, volume, orderbook):
 		format_beautified(result, general, ohlc, wk52, volume, orderbook)
 		time.sleep(60)
 
-def scan_live_background(scannerinstance, stocks):
+def scan_live_background(scannerinstance, stocks, indicator):
 	global RUN_IN_BACKGROUND
 	RUN_IN_BACKGROUND = True
 	while RUN_IN_BACKGROUND:
-		scannerinstance.scan_live(stocks)
+		df, signaldf = scannerinstance.scan_live(stocks=stocks, indicator=indicator)
+		scan_live_results(df, signaldf)
 		time.sleep(60)
 
-def scan_intraday_background(scannerinstance, stocks):
+def scan_intraday_background(scannerinstance, stocks, indicator):
 	global RUN_IN_BACKGROUND
 	RUN_IN_BACKGROUND = True
 	while RUN_IN_BACKGROUND:
-		df, signaldf = scannerinstance.scan_intraday(stocks=stocks)
-		if signaldf is not None and len(signaldf) > 0:
-			click.echo(signaldf.to_string(index=False))
+		df, signaldf = scannerinstance.scan_intraday(stocks=stocks, indicator=indicator)
+		scan_intraday_results(df, signaldf)
 		time.sleep(10)
