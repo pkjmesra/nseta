@@ -65,7 +65,7 @@ class scanner:
 	def scan(self, stocks=[], start_date=None, end_date=None):
 		dir_path = ""
 		start_time = time()
-		if not path.exists("stocks.py"):
+		if not os.path.exists("stocks.py"):
 			dir_path = os.path.dirname(os.path.realpath(__file__)) + "/"
 		# If stocks array is empty, pull stock list from stocks.txt file
 		stocks = stocks if len(stocks) > 0 else [
@@ -153,11 +153,27 @@ class scanner:
 			t2.join()
 			list1 = t1.result
 			list2 = t2.result
-			df = pd.concat((list1.pop(0), list2.pop(0)))
-			signaldf = pd.concat((list1.pop(0), list2.pop(0)))
+			df1 = list1.pop(0)
+			df2 = list2.pop(0)
+			signaldf1 = list1.pop(0)
+			signaldf2 = list2.pop(0)
+			df = self.concatenated_dataframe(df1, df2)
+			signaldf = self.concatenated_dataframe(signaldf1, signaldf2)
 			return [df, signaldf]
 		else:
 			return self.scan_intraday_quanta(**kwargs)
+
+	def concatenated_dataframe(self, df1, df2):
+		if df1 is not None and len(df1) > 0:
+			if df2 is not None and len(df2) > 0:
+				df = pd.concat((df1, df2))
+			else:
+				df = df1
+		elif df2 is not None and len(df2) > 0:
+			df = df2
+		else:
+			df = None
+		return df
 
 	@tracelog
 	def scan_intraday_quanta(self, stocks):
