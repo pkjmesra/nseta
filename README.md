@@ -90,6 +90,7 @@ Usage: nseta [OPTIONS] COMMAND [ARGS]...
 
 Options:
   --debug / --no-debug  --debug to turn debugging on. Default is off
+  --trace / --no-trace  --trace to turn tracing on (works only with --debug). Default is off.
   --version             Shows the version of this library
   --help                Show this message and exit.
 
@@ -115,6 +116,7 @@ Commands:
   nseta plot-ta -S bandhanbnk -s 2019-07-30 -e 2020-11-20
   nseta test-trading-strategy -S bandhanbnk -s 2019-07-30 -e 2020-11-20 --strategy rsi
   nseta scan -S HDFC,ABB
+  nseta scan -i
 ```
 - Test your trading strategies
 
@@ -463,7 +465,7 @@ nseta scan -S HDFC,ABB
 ```
 - Scan live quotes of a bunch of securities listed in a resource file(stocks.py)
 ```python
-nseta scan
+nseta scan -l
               Updated      Symbol     Close       LTP
  30-DEC-2020 16:00:00         ABB  1,203.05  1,205.30
  30-DEC-2020 16:00:00         ACC  1,616.75  1,651.00

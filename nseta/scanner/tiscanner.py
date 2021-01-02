@@ -1,17 +1,19 @@
+import inspect
+import numpy as np
 import os
 import os.path
-import numpy as np
-from os import path
+import pandas as pd
+import talib as ta
+
 from datetime import datetime, date
+from os import path
 from time import time
 
-import pandas as pd
-
-from nseta.live.live import get_live_quote
+from nseta.common.commons import *
 from nseta.common.history import historicaldata
 from nseta.common.log import tracelog, default_logger
 from nseta.common.ti import ti
-import talib as ta
+from nseta.live.live import get_live_quote
 
 __all__ = ['KEY_MAPPING', 'scanner']
 
@@ -75,38 +77,42 @@ class scanner:
 		# end_date = datetime.datetime.now()
 		frames = []
 		signalframes = []
+		df = None
+		signaldf = None
 		for stock in stocks:
 			try:
 				result, primary = get_live_quote(stock, keys = self.keys)
-				row = pd.DataFrame(primary, columns = ['Updated', 'Symbol', 'Close', 'LTP'], index = [''])
-				value = (row['LTP'][0]).replace(' ','').replace(',','')
-				if stock in self.stocksdict:
-					(self.stocksdict[stock]).append(float(value))
-				else:
-					self.stocksdict[stock] = [float(value)]
-				index = len(self.stocksdict[stock])
-				if index >= 15:
-					dfclose = pd.DataFrame(self.stocksdict[stock], columns = ['Close'])
-					rsi = ta.RSI(dfclose['Close'],14)
-					rsivalue = rsi[index -1]
-					row['RSI'] = rsivalue
-					print(stock + " RSI:" + str(rsi))
-					if rsivalue > 70 or rsivalue < 30:
-						signalframes.append(row)
-				frames.append(row)
+				if primary is not None and len(primary) > 0:
+					row = pd.DataFrame(primary, columns = ['Updated', 'Symbol', 'Close', 'LTP'], index = [''])
+					value = (row['LTP'][0]).replace(' ','').replace(',','')
+					if stock in self.stocksdict:
+						(self.stocksdict[stock]).append(float(value))
+					else:
+						self.stocksdict[stock] = [float(value)]
+					index = len(self.stocksdict[stock])
+					if index >= 15:
+						dfclose = pd.DataFrame(self.stocksdict[stock], columns = ['Close'])
+						rsi = ta.RSI(dfclose['Close'],14)
+						rsivalue = rsi[index -1]
+						row['RSI'] = rsivalue
+						print(stock + " RSI:" + str(rsi))
+						if rsivalue > 70 or rsivalue < 30:
+							signalframes.append(row)
+					frames.append(row)
 			except Exception as e:
-				default_logger().error("Exception encountered for " + stock)
-				default_logger().error(e, exc_info=True)
+				default_logger().debug("Exception encountered for " + stock)
+				default_logger().debug(e, exc_info=True)
 				pass
 		if len(frames) > 0:
 			df = pd.concat(frames)
 			default_logger().debug(df.to_string(index=False))
 		if len(signalframes) > 0:
 			signaldf = pd.concat(signalframes)
-			default_logger().info(signaldf.to_string(index=False))
+			default_logger().debug(signaldf.to_string(index=False))
 		end_time = time()
 		time_spent = end_time-start_time
 		default_logger().info("This run of scan took {:.1f} sec".format(time_spent))
+		return df, signaldf
 
 	@tracelog
 	def scan_intraday(self, stocks=[]):
@@ -120,6 +126,44 @@ class scanner:
 		# Time frame you want to pull data from
 		# start_date = datetime.datetime.now()-datetime.timedelta(days=365)
 		# end_date = datetime.datetime.now()
+		list_returned = self.scan_intraday_internal(stocks)
+		end_time = time()
+		time_spent = end_time-start_time
+		default_logger().info("This run of scan took {:.1f} sec".format(time_spent))
+		return list_returned.pop(0), list_returned.pop(0)
+
+	@tracelog
+	def scan_intraday_internal(self, stocks):
+		frame = inspect.currentframe()
+		args, _, _, kwargs = inspect.getargvalues(frame)
+		del(kwargs['frame'])
+		del(kwargs['self'])
+		stocks_segment = kwargs['stocks']
+		n = 3 # Max number of stocks to be processed at a time by a thread
+		if len(stocks_segment) > n:
+			kwargs1 = dict(kwargs)
+			kwargs2 = dict(kwargs)
+			first_n = stocks[:n]
+			remaining_stocks = stocks[n:]
+			# n_segmented_stocks = [stocks_segment[i * n:(i + 1) * n] for i in range((len(stocks_segment) + n - 1) // n )]
+			kwargs1['stocks'] = first_n
+			kwargs2['stocks'] = remaining_stocks
+			t1 = ThreadReturns(target=self.scan_intraday_internal, kwargs=kwargs1)
+			t2 = ThreadReturns(target=self.scan_intraday_internal, kwargs=kwargs2)
+			t1.start()
+			t2.start()
+			t1.join()
+			t2.join()
+			list1 = t1.result
+			list2 = t2.result
+			df = pd.concat((list1.pop(0), list2.pop(0)))
+			signaldf = pd.concat((list1.pop(0), list2.pop(0)))
+			return [df, signaldf]
+		else:
+			return self.scan_intraday_quanta(**kwargs)
+
+	@tracelog
+	def scan_intraday_quanta(self, stocks):
 		frames = []
 		signalframes = []
 		df = None
@@ -163,14 +207,9 @@ class scanner:
 				return
 		if len(frames) > 0:
 			df = pd.concat(frames)
-			# default_logger().debug(df.to_string(index=False))
 		if len(signalframes) > 0:
 			signaldf = pd.concat(signalframes)
-			default_logger().info(signaldf.to_string(index=False))
-		end_time = time()
-		time_spent = end_time-start_time
-		default_logger().info("This run of scan took {:.1f} sec".format(time_spent))
-		return df, signaldf
+		return [df, signaldf]
 
 	@tracelog
 	def live_intraday(self, symbol):

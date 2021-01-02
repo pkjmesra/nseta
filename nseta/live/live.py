@@ -238,8 +238,8 @@ def get_live_quote(symbol, general=True, ohlc=False, wk52=False, volume=False, o
 	# print(result)
 	if len(result['data']) == 0:
 		default_logger().warn('Wrong or invalid inputs.')
-		click.secho("Please check the inputs. Could not fetch the data.", fg='red', nl=True)
-		return
+		click.secho("Please check the inputs. Could not fetch the data for {}".format(symbol), fg='red', nl=True)
+		return None, None
 	primary = format_as_dataframe(result, symbol, general, ohlc, wk52, volume, keys= keys)
 	return result, primary
 

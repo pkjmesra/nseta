@@ -26,7 +26,6 @@ RUN_IN_BACKGROUND = True
 @click.option('--wk52', '-w' ,default=False, is_flag=True, help='Get the 52 week high/low values also (Optional)')
 @click.option('--volume', '-v', default=False, is_flag=True, help='Get the traded volume details also (Optional)')
 @click.option('--orderbook', '-b', default=False, is_flag=True, help='Get the current bid/offer details also (Optional)')
-@click.option('--plot', '-p', default=False, is_flag=True, help='Plot the "Close" values (Optional)')
 @click.option('--background', '-r', default=False, is_flag=True, help='Keep running the process in the background (Optional)')
 @tracelog
 def live_quote(symbol, general, ohlc, wk52, volume, orderbook, plot, background):
@@ -58,7 +57,7 @@ def live_quote(symbol, general, ohlc, wk52, volume, orderbook, plot, background)
 		RUN_IN_BACKGROUND = False
 		return
 
-@click.command(help='Scan live price quotes and calculate RSI for stocks.')
+@click.command(help='Scan live and intraday for prices and signals.')
 @click.option('--stocks', '-S', default=[], help='Comma separated security codes(Optional. Configure the tickers in stocks.py)')
 @click.option('--live', '-l', default=False, is_flag=True, help='Scans the live-quote and lists those that meet the signal criteria. Works best with --background.')
 @click.option('--intraday', '-i', default=False, is_flag=True, help='Scans the intraday price history and lists those that meet the signal criteria')
@@ -66,10 +65,10 @@ def live_quote(symbol, general, ohlc, wk52, volume, orderbook, plot, background)
 @tracelog
 def scan(stocks, live, intraday, background):
 	if live and intraday:
-		click.secho('Choose only one of --live or --intraday options.', fg='red', nl=True)
+		click.secho('Choose only one of --live or --intraday options. Use --help for help.', fg='red', nl=True)
 		return
 	elif not live and not intraday:
-		click.secho('Choose at least one of the --live or --intraday (recommended) options.', fg='red', nl=True)
+		click.secho('Choose at least one of the --live or --intraday (recommended) options.  Use --help for help.', fg='red', nl=True)
 		return
 
 	if stocks is not None and len(stocks) > 0:
@@ -102,7 +101,15 @@ def scan(stocks, live, intraday, background):
 
 def scan_live(stocks, background):
 	s = scanner()
-	s.scan(stocks=stocks)
+	df, signaldf = s.scan(stocks=stocks)
+	if df is not None and len(df) > 0:
+		default_logger().debug("\nAll Stocks LTP and Signals:\n" + df.to_string(index=False))
+	else:
+		default_logger().info('Nothing to show here.')
+	if signaldf is not None and len(signaldf) > 0:
+		default_logger().info("\nSignals:\n" + signaldf.to_string(index=False))
+	else:
+		default_logger().info('No signals to show here.')
 	if background:
 		b = threading.Thread(name='scan_live_background', target=scan_live_background, args=[s, stocks])
 		b.start()
@@ -112,15 +119,16 @@ def scan_intraday(stocks, background):
 	s = scanner()
 	df, signaldf = s.scan_intraday(stocks=stocks)
 	if df is not None and len(df) > 0:
-		default_logger().info(df.to_string(index=False))
+		default_logger().debug("\nAll Stocks LTP and Signals:\n" + df.to_string(index=False))
 		df.to_csv(file_name)
 		default_logger().info('Saved to: {}'.format(file_name))
 		click.secho('Saved to: {}'.format(file_name), fg='green', nl=True)
-		if plot:
-			df.set_index('Date', inplace=True)
-			plot_technical_indicators(df).show()
+	else:
+		default_logger().info('Nothing to show here.')
 	if signaldf is not None and len(signaldf) > 0:
-		click.echo(signaldf.to_string(index=False))
+		default_logger().info("\nSignals:\n" + signaldf.to_string(index=False))
+	else:
+		default_logger().info('No signals to show here.')
 	if background:
 		b = threading.Thread(name='scan_intraday_background', target=scan_intraday_background, args=[s, stocks])
 		b.start()
