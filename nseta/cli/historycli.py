@@ -25,6 +25,7 @@ def history(symbol, start, end, file_name, index, format): #, futures, expiry, o
 	try:
 		historyinstance = historicaldata()
 		df = historyinstance.daily_ohlc_history(symbol, sd, ed)
+		default_logger().debug(df.to_string(index=False))
 		click.echo(df.head())
 	except Exception as e:
 		default_logger().debug(e, exc_info=True)

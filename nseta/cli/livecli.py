@@ -62,17 +62,18 @@ def live_quote(symbol, general, ohlc, wk52, volume, orderbook, background):
 @click.option('--stocks', '-S', default=[], help='Comma separated security codes(Optional. When skipped, all stocks configured in stocks.py will be scanned.)')
 @click.option('--live', '-l', default=False, is_flag=True, help='Scans (every min.) the live-quote and lists those that meet the signal criteria. Works best with --background.')
 @click.option('--intraday', '-i', default=False, is_flag=True, help='Scans (every 10 sec) the intraday price history and lists those that meet the signal criteria')
+@click.option('--swing', '-s', default=False, is_flag=True, help='Scans (every 10 sec) the past 365 days price history and lists those that meet the signal criteria')
 @click.option('--indicator', '-t', default='all', type=click.Choice(TECH_INDICATOR_KEYS),
 	help=', '.join(TECH_INDICATOR_KEYS) + ". Choose one.")
 @click.option('--background', '-r', default=False, is_flag=True, help='Keep running the process in the background (Optional)')
 @tracelog
-def scan(stocks, live, intraday, indicator, background):
-	if live and intraday:
-		click.secho('Choose only one of --live or --intraday options.', fg='red', nl=True)
+def scan(stocks, live, intraday, swing, indicator, background):
+	if (live and intraday) or ( live and swing) or (intraday and swing):
+		click.secho('Choose only one of --live, --intraday or --swing options.', fg='red', nl=True)
 		print_help_msg(scan)
 		return
-	elif not live and not intraday:
-		click.secho('Choose at least one of the --live or --intraday (recommended) options.', fg='red', nl=True)
+	elif not live and not intraday and not swing:
+		click.secho('Choose at least one of the --live, --intraday (recommended) or --swing options.', fg='red', nl=True)
 		print_help_msg(scan)
 		return
 
@@ -86,6 +87,8 @@ def scan(stocks, live, intraday, indicator, background):
 			scan_live(stocks, indicator, background)
 		elif intraday:
 			scan_intraday(stocks, indicator, background)
+		elif swing:
+			scan_swing(stocks, indicator, background)
 	except KeyboardInterrupt as e:
 		RUN_IN_BACKGROUND = False
 		default_logger().error(e, exc_info=True)
@@ -129,6 +132,14 @@ def scan_intraday(stocks, indicator, background):
 	if background:
 		b = threading.Thread(name='scan_intraday_background', target=scan_intraday_background, args=[s, stocks, indicator])
 		b.start()
+
+def scan_swing(stocks, indicator, background):
+	s = scanner()
+	df, signaldf = s.scan_swing(stocks=stocks, indicator=indicator)
+	scan_intraday_results(df, signaldf)
+	# if background:
+	# 	b = threading.Thread(name='scan_intraday_background', target=scan_intraday_background, args=[s, stocks, indicator])
+	# 	b.start()
 
 def scan_intraday_results(df, signaldf):
 	if df is not None and len(df) > 0:
