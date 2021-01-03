@@ -1,6 +1,5 @@
 import enum
 from nseta.common.log import tracelog, default_logger
-import click
 
 __all__ = ['rsisignal','Direction']
 

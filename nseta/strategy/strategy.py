@@ -7,7 +7,7 @@ from pylab import rcParams
 
 from matplotlib import pyplot as plt
 
-import matplotlib
+# import matplotlib
 import click, logging
 
 __VERBOSE__ = default_logger().level == logging.DEBUG

@@ -1,4 +1,4 @@
-from nseta.common.log import default_logger, tracelog
+from nseta.common.log import default_logger
 import talib as ta
 
 __all__ = ['ti']

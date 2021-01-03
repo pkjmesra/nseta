@@ -5,11 +5,10 @@ import threading, time
 from nseta.live.live import get_quote, get_live_quote, get_data_list
 from nseta.scanner.tiscanner import scanner
 from nseta.cli.inputs import *
-from nseta.plots.plots import plot_technical_indicators
 from nseta.common.log import tracelog, default_logger
 from datetime import datetime, date
 
-__all__ = ['live_quote', 'scan', 'scan_live', 'scan_intraday', '']
+__all__ = ['live_quote', 'scan', 'scan_live', 'scan_intraday']
 
 NAME_LIST = ['Symbol', 'Name', 'ISIN']
 QUOTE_LIST = ['Last Updated', 'Prev Close', 'Last Trade Price','Change','% Change', 'Avg. Price', 'Upper Band','Lower Band']

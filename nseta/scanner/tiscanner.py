@@ -230,7 +230,6 @@ class scanner:
 				default_logger().debug(e, exc_info=True)
 			except SystemExit:
 				sys.exit(1)
-				pass
 		if len(frames) > 0:
 			df = pd.concat(frames)
 		if len(signalframes) > 0:
@@ -281,7 +280,6 @@ class scanner:
 				default_logger().debug(e, exc_info=True)
 			except SystemExit:
 				sys.exit(1)
-				pass
 		if len(frames) > 0:
 			df = pd.concat(frames)
 		if len(signalframes) > 0:
@@ -310,8 +308,7 @@ class scanner:
 			default_logger().debug(e, exc_info=True)
 			return None
 		except SystemExit:
-			df = None
-			return
+			return None
 		return df
 
 	def concatenated_dataframe(self, df1, df2):
