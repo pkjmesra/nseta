@@ -16,9 +16,9 @@ from nseta.live.live import get_live_quote
 
 __all__ = ['KEY_MAPPING', 'scanner']
 
-TOKEN_LIVE = 'live'
-TOKEN_INTRADAY = 'intraday'
-TOKEN_SWING = 'swing'
+TYPE_LIVE = 'live'
+TYPE_INTRADAY = 'intraday'
+TYPE_SWING = 'swing'
 
 KEY_MAPPING = {
 	'dt': 'Date',
@@ -66,12 +66,12 @@ class scanner:
 	def stocksdict(self):
 		return self._stocksdict
 
-	def get_func_name(self, token):
-		if token==TOKEN_LIVE:
+	def get_func_name(self, kind):
+		if kind==TYPE_LIVE:
 			return self.scan_live_quanta
-		elif token==TOKEN_INTRADAY:
+		elif kind==TYPE_INTRADAY:
 			return self.scan_intraday_quanta
-		elif token==TOKEN_SWING:
+		elif kind==TYPE_SWING:
 			return self.scan_swing_quanta
 
 	@tracelog
@@ -83,7 +83,7 @@ class scanner:
 		# If stocks array is empty, pull stock list from stocks.txt file
 		stocks = stocks if len(stocks) > 0 else [
 			line.rstrip() for line in open(dir_path + "stocks.py", "r")]
-		list_returned = self.scan_internal(stocks, TOKEN_LIVE)
+		list_returned = self.scan_internal(stocks, TYPE_LIVE)
 		end_time = time()
 		time_spent = end_time-start_time
 		default_logger().info("This run of live scan took {:.1f} sec".format(time_spent))
@@ -98,7 +98,7 @@ class scanner:
 		# If stocks array is empty, pull stock list from stocks.txt file
 		stocks = stocks if len(stocks) > 0 else [
 			line.rstrip() for line in open(dir_path + "stocks.py", "r")]
-		list_returned = self.scan_internal(stocks, TOKEN_INTRADAY)
+		list_returned = self.scan_internal(stocks, TYPE_INTRADAY)
 		end_time = time()
 		time_spent = end_time-start_time
 		default_logger().info("This run of intraday scan took {:.1f} sec".format(time_spent))
@@ -113,14 +113,14 @@ class scanner:
 		# If stocks array is empty, pull stock list from stocks.txt file
 		stocks = stocks if len(stocks) > 0 else [
 			line.rstrip() for line in open(dir_path + "stocks.py", "r")]
-		list_returned = self.scan_internal(stocks, TOKEN_SWING)
+		list_returned = self.scan_internal(stocks, TYPE_SWING)
 		end_time = time()
 		time_spent = end_time-start_time
 		default_logger().info("This run of swing scan took {:.1f} sec".format(time_spent))
 		return list_returned.pop(0), list_returned.pop(0)
 
 	@tracelog
-	def scan_internal(self, stocks, token):
+	def scan_internal(self, stocks, kind):
 		frame = inspect.currentframe()
 		args, _, _, kwargs = inspect.getargvalues(frame)
 		del(kwargs['frame'])
@@ -151,8 +151,8 @@ class scanner:
 			signaldf = self.concatenated_dataframe(signaldf1, signaldf2)
 			return [df, signaldf]
 		else:
-			del(kwargs['token'])
-			func_execute = self.get_func_name(token)
+			del(kwargs['kind'])
+			func_execute = self.get_func_name(kind)
 			return func_execute(**kwargs)
 
 	@tracelog
