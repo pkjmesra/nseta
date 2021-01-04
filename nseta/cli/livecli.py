@@ -152,7 +152,7 @@ def scan_intraday_results(df, signaldf):
 	else:
 		default_logger().info('Nothing to show here.')
 	if signaldf is not None and len(signaldf) > 0:
-		default_logger().info("\nWe recommend taking the following BUY/SELL positions immediately for day trading. Intraday Signals:\n" + signaldf.to_string(index=False))
+		default_logger().info("\nWe recommend taking the following BUY/SELL positions for day trading. Intraday Signals:\n" + signaldf.to_string(index=False))
 	else:
 		default_logger().info('No signals to show here.')
 

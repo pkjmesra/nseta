@@ -365,6 +365,7 @@ class scanner:
 			return signalframes
 		try:
 			df['Signal'] = 'NA'
+			decimals = 2
 			ltp = df['LTP'].iloc[0]
 			if self.indicator == 'bbands' or self.indicator == 'all':
 				upper_band = round(df['BBands-U'].iloc[0],2)
@@ -377,6 +378,8 @@ class scanner:
 					df['Signal'].iloc[0] = '(SELL) [LTP ~ BBands-U]' if ltp - upper_band <=0 else '(SELL) [LTP > BBands-U]'
 					default_logger().debug(df.to_string(index=False))
 					signalframes.append(df)
+				df['BBands-U'] = df['BBands-U'].apply(lambda x: round(x, decimals))
+				df['BBands-L'] = df['BBands-L'].apply(lambda x: round(x, decimals))
 			else:
 				df.drop(['BBands-U', 'BBands-L'], axis = 1, inplace = True)
 
@@ -386,6 +389,7 @@ class scanner:
 					df['Signal'].iloc[0] = '(SELL) [RSI >= 75]' if rsivalue > 75 else '(BUY)  [RSI <= 25]'
 					default_logger().debug(df.to_string(index=False))
 					signalframes.append(df)
+				df['RSI'] = df['RSI'].apply(lambda x: round(x, decimals))
 			else:
 				df.drop(['RSI'], axis = 1, inplace = True)
 
@@ -395,6 +399,7 @@ class scanner:
 					df['Signal'].iloc[0] = '(BUY)  [LTP > EMA(9)]' if ltp - ema9 >=0 else '(SELL) [LTP < EMA(9)]'
 					default_logger().debug(df.to_string(index=False))
 					signalframes.append(df)
+				df['EMA(9)'] = df['EMA(9)'].apply(lambda x: round(x, decimals))
 			else:
 				df.drop(['EMA(9)'], axis = 1, inplace = True)
 
@@ -405,6 +410,9 @@ class scanner:
 					df['Signal'].iloc[0] = '(BUY)  [MACD > EMA]' if macd12 - macd9 >=0 else '(SELL) [MACD < EMA]'
 					default_logger().debug(df.to_string(index=False))
 					signalframes.append(df)
+				df['macd(12)'] = df['macd(12)'].apply(lambda x: round(x, decimals))
+				df['macdsignal(9)'] = df['macdsignal(9)'].apply(lambda x: round(x, decimals))
+				df['macdhist(26)'] = df['macdhist(26)'].apply(lambda x: round(x, decimals))
 			else:
 				df.drop(['macd(12)', 'macdsignal(9)', 'macdhist(26)'], axis = 1, inplace = True)
 
