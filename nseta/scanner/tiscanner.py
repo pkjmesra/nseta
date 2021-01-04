@@ -5,7 +5,6 @@ import pandas as pd
 import talib as ta
 import datetime
 
-from datetime import date
 from time import time
 
 from nseta.common.commons import *
@@ -311,7 +310,7 @@ class scanner:
 		df = None
 		try:
 			historyinstance = historicaldata()
-			df = historyinstance.daily_ohlc_history(symbol, start=date.today(), end = date.today(), intraday=True)
+			df = historyinstance.daily_ohlc_history(symbol, start=datetime.date.today(), end = datetime.date.today(), intraday=True)
 			if df is not None and len(df) > 0:
 				# default_logger().debug("Dataframe for " + symbol + "\n" + str(df))
 				df = self.map_keys(df, symbol)

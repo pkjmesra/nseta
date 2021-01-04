@@ -8,7 +8,7 @@ Originally adapted from @author: SW274998
 from nseta.common.urls import *
 from nseta.common.commons import *
 from nseta.common.constants import *
-from nseta.common.log import default_logger, tracelog
+from nseta.common.log import tracelog
 
 import six
 from datetime import date, timedelta
@@ -181,7 +181,6 @@ class historicaldata:
 	@tracelog
 	def url_to_df(self, url, params, schema, headers, scaling={}, csvnode=None):
 		resp = url(**params)
-		# default_logger().debug("[url_to_df] Response:\n" + resp.text)
 		bs = BeautifulSoup(resp.text, 'lxml')
 		tp = ParseTables(soup=bs,
 						 schema=schema,
