@@ -121,7 +121,7 @@ def scan_live_results(df, signaldf):
 	else:
 		default_logger().info('Nothing to show here.')
 	if signaldf is not None and len(signaldf) > 0:
-		default_logger().info("\nSignals:\n" + signaldf.to_string(index=False))
+		default_logger().info("\nLive Signals:\n" + signaldf.to_string(index=False))
 	else:
 		default_logger().info('No signals to show here.')
 
@@ -134,12 +134,29 @@ def scan_intraday(stocks, indicator, background):
 		b.start()
 
 def scan_swing(stocks, indicator, background):
+	default_logger().info('Background running not supported yet. Stay tuned. Executing just this once...')
 	s = scanner(indicator=indicator)
 	df, signaldf = s.scan_swing(stocks=stocks)
-	scan_intraday_results(df, signaldf)
+	scan_swing_results(df, signaldf)
+	# TODO: Include get-quote results for OHLC of today before market closing hours for better accuracy
 	# if background:
 	# 	b = threading.Thread(name='scan_intraday_background', target=scan_intraday_background, args=[s, stocks, indicator])
 	# 	b.start()
+
+def scan_swing_results(df, signaldf):
+	if df is not None and len(df) > 0:
+		file_name = 'Scan_Results.csv'
+		default_logger().debug("\nAll Stocks LTP and Signals:\n" + df.to_string(index=False))
+		arch = archiver()
+		arch.archive(df, file_name)
+		default_logger().info('Saved to: {}'.format(file_name))
+		# click.secho('Saved to: {}'.format(file_name), fg='green', nl=True)
+	else:
+		default_logger().info('Nothing to show here.')
+	if signaldf is not None and len(signaldf) > 0:
+		default_logger().info("\nWe recommend taking the following BUY/SELL positions for swingh trading. Swing Signals:\n" + signaldf.to_string(index=False))
+	else:
+		default_logger().info('No signals to show here.')
 
 def scan_intraday_results(df, signaldf):
 	if df is not None and len(df) > 0:
@@ -148,7 +165,7 @@ def scan_intraday_results(df, signaldf):
 		arch = archiver()
 		arch.archive(df, file_name)
 		default_logger().info('Saved to: {}'.format(file_name))
-		click.secho('Saved to: {}'.format(file_name), fg='green', nl=True)
+		# click.secho('Saved to: {}'.format(file_name), fg='green', nl=True)
 	else:
 		default_logger().info('Nothing to show here.')
 	if signaldf is not None and len(signaldf) > 0:

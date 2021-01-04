@@ -166,8 +166,8 @@ class scanner:
 			df2 = list2.pop(0)
 			signaldf1 = list1.pop(0)
 			signaldf2 = list2.pop(0)
-			df = self.concatenated_dataframe(df1, df2)
-			signaldf = self.concatenated_dataframe(signaldf1, signaldf2)
+			df = concatenated_dataframe(df1, df2)
+			signaldf = concatenated_dataframe(signaldf1, signaldf2)
 			return [df, signaldf]
 		else:
 			del(kwargs['kind'])
@@ -328,18 +328,6 @@ class scanner:
 			return None
 		except SystemExit:
 			return None
-		return df
-
-	def concatenated_dataframe(self, df1, df2):
-		if df1 is not None and len(df1) > 0:
-			if df2 is not None and len(df2) > 0:
-				df = pd.concat((df1, df2))
-			else:
-				df = df1
-		elif df2 is not None and len(df2) > 0:
-			df = df2
-		else:
-			df = None
 		return df
 
 	def map_keys(self, df, symbol):

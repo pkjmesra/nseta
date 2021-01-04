@@ -23,7 +23,7 @@ import sys
 
 from six.moves.urllib.parse import urlparse
 
-__all__ = ['is_index','is_index_derivative', 'StrDate', 'ParseTables', 'unzip_str', 'ThreadReturns', 'URLFetch', 'byte_adaptor', 'js_adaptor']
+__all__ = ['concatenated_dataframe','is_index','is_index_derivative', 'StrDate', 'ParseTables', 'unzip_str', 'ThreadReturns', 'URLFetch', 'byte_adaptor', 'js_adaptor']
 
 def is_index(index):
 	return index in NSE_INDICES
@@ -248,3 +248,15 @@ def js_adaptor(buffer):
 	buffer = re.sub('none', 'None', buffer)
 	buffer = re.sub('NaN', '"NaN"', buffer)
 	return buffer
+
+def concatenated_dataframe(df1, df2):
+	if df1 is not None and len(df1) > 0:
+		if df2 is not None and len(df2) > 0:
+			df = pd.concat((df1, df2))
+		else:
+			df = df1
+	elif df2 is not None and len(df2) > 0:
+		df = df2
+	else:
+		df = None
+	return df

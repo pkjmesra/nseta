@@ -8,7 +8,7 @@ Originally adapted from @author: SW274998
 from nseta.common.urls import *
 from nseta.common.commons import *
 from nseta.common.constants import *
-from nseta.common.log import tracelog
+from nseta.common.log import tracelog, default_logger
 
 import six
 from datetime import date, timedelta
@@ -145,7 +145,7 @@ class historicaldata:
 			t2.start()
 			t1.join()
 			t2.join()
-			return pd.concat((t1.result, t2.result))
+			return concatenated_dataframe(t1.result, t2.result)
 		else:
 			return self.daily_ohlc_history_quanta(**kwargs)
 
@@ -170,11 +170,15 @@ class historicaldata:
 
 	@tracelog
 	def daily_ohlc_history_quanta(self, **kwargs):
-		url, params, schema, headers, scaling, csvnode = self.validate_params(**kwargs)
-		df = self.url_to_df(url=url,
-					   params=params,
-					   schema=schema,
-					   headers=headers, scaling=scaling, csvnode=csvnode)
+		df = None
+		try:
+			url, params, schema, headers, scaling, csvnode = self.validate_params(**kwargs)
+			df = self.url_to_df(url=url,
+						   params=params,
+						   schema=schema,
+						   headers=headers, scaling=scaling, csvnode=csvnode)
+		except Exception as e:
+			default_logger().debug(e, exc_info=True)
 		return df
 
 
