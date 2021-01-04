@@ -367,60 +367,46 @@ class scanner:
 			df['Signal'] = 'NA'
 			decimals = 2
 			ltp = df['LTP'].iloc[0]
-			if self.indicator == 'bbands' or self.indicator == 'all':
-				upper_band = round(df['BBands-U'].iloc[0],2)
-				lower_band = round(df['BBands-L'].iloc[0],2)
-				if (lower_band is not None) and abs(lower_band-ltp) <= 0.05:
-					df['Signal'].iloc[0] = '(BUY)  [LTP < BBands-L]' if ltp - lower_band <=0 else '(BUY)  [LTP ~ BBands-L]'
-					default_logger().debug(df.to_string(index=False))
-					signalframes.append(df)
-				if (upper_band is not None) and abs(upper_band-ltp) <= 0.05:
-					df['Signal'].iloc[0] = '(SELL) [LTP ~ BBands-U]' if ltp - upper_band <=0 else '(SELL) [LTP > BBands-U]'
-					default_logger().debug(df.to_string(index=False))
-					signalframes.append(df)
-				df['BBands-U'] = df['BBands-U'].apply(lambda x: round(x, decimals))
-				df['BBands-L'] = df['BBands-L'].apply(lambda x: round(x, decimals))
-			else:
-				df.drop(['BBands-U', 'BBands-L'], axis = 1, inplace = True)
-
-			if self.indicator == 'rsi' or self.indicator == 'all':
-				rsivalue = df['RSI'].iloc[0]
-				if (rsivalue is not None) and (rsivalue > 75 or rsivalue < 25):
-					df['Signal'].iloc[0] = '(SELL) [RSI >= 75]' if rsivalue > 75 else '(BUY)  [RSI <= 25]'
-					default_logger().debug(df.to_string(index=False))
-					signalframes.append(df)
-				df['RSI'] = df['RSI'].apply(lambda x: round(x, decimals))
-			else:
-				df.drop(['RSI'], axis = 1, inplace = True)
-
-			if self.indicator == 'ema' or self.indicator == 'all':
-				ema9 = df['EMA(9)'].iloc[0]
-				if (ema9 is not None) and abs(ltp-ema9) <= 0.1:
-					df['Signal'].iloc[0] = '(BUY)  [LTP > EMA(9)]' if ltp - ema9 >=0 else '(SELL) [LTP < EMA(9)]'
-					default_logger().debug(df.to_string(index=False))
-					signalframes.append(df)
-				df['EMA(9)'] = df['EMA(9)'].apply(lambda x: round(x, decimals))
-			else:
-				df.drop(['EMA(9)'], axis = 1, inplace = True)
-
+			signalframes = self.update_signal_indicator(df, signalframes, 'bbands', 'BBands-L', 0.05, ltp, '<=', '(BUY)  [LTP < BBands-L]', '(BUY)  [LTP ~ BBands-L]')
+			signalframes = self.update_signal_indicator(df, signalframes, 'bbands', 'BBands-U', 0.05, ltp, '<=', '(SELL) [LTP ~ BBands-U]', '(SELL) [LTP > BBands-U]')
+			signalframes = self.update_signal_indicator(df, signalframes, 'rsi', 'RSI', 25, 75, '><', '(SELL) [RSI >= 75]', '(BUY)  [RSI <= 25]')
+			signalframes = self.update_signal_indicator(df, signalframes, 'ema', 'EMA(9)', 0.1, ltp, '>=', '(BUY)  [LTP > EMA(9)]', '(SELL) [LTP < EMA(9)]')
+			macd12 = df['macd(12)'].iloc[0]
+			signalframes = self.update_signal_indicator(df, signalframes, 'macd', 'macdsignal(9)', 0.05, macd12, '>=', '(BUY)  [MACD > EMA]', '(SELL) [MACD < EMA]')
 			if self.indicator == 'macd' or self.indicator == 'all':
-				macd12 = df['macd(12)'].iloc[0]
-				macd9 = df['macdsignal(9)'].iloc[0]
-				if (macd12 is not None) and (macd9 is not None) and abs(macd12-macd9) <= 0.05:
-					df['Signal'].iloc[0] = '(BUY)  [MACD > EMA]' if macd12 - macd9 >=0 else '(SELL) [MACD < EMA]'
-					default_logger().debug(df.to_string(index=False))
-					signalframes.append(df)
 				df['macd(12)'] = df['macd(12)'].apply(lambda x: round(x, decimals))
-				df['macdsignal(9)'] = df['macdsignal(9)'].apply(lambda x: round(x, decimals))
 				df['macdhist(26)'] = df['macdhist(26)'].apply(lambda x: round(x, decimals))
 			else:
-				df.drop(['macd(12)', 'macdsignal(9)', 'macdhist(26)'], axis = 1, inplace = True)
-
+				df.drop(['macd(12)', 'macdhist(26)'], axis = 1, inplace = True)
 			# Drop the Momentum indicator. We don't need it anymore
 			df.drop(['MOM'], axis = 1, inplace = True)
 		except Exception as e:
 			default_logger().debug(e, exc_info=True)
 			return
+		return signalframes
+
+	def update_signal_indicator(self, df, signalframes, indicator, column, margin, comparator_value, ltp_label_comparator, true_remarks, false_remarks):
+		if self.indicator == indicator or self.indicator == 'all':
+			decimals = 2
+			value = round(df[column].iloc[0],2)
+			true_remarks = true_remarks.ljust(23)
+			false_remarks = false_remarks.ljust(23)
+			if ltp_label_comparator == '><':
+				if (value is not None) and (value > comparator_value or value < margin):
+					df['Signal'].iloc[0] = true_remarks if value > comparator_value else false_remarks
+					default_logger().debug(df.to_string(index=False))
+					signalframes.append(df)
+			else:
+				if (value is not None) and abs(value-comparator_value) <= margin:
+					if ltp_label_comparator == '<=':
+						df['Signal'].iloc[0] = true_remarks if comparator_value - value <=0 else false_remarks
+					elif ltp_label_comparator == '>=':
+						df['Signal'].iloc[0] = true_remarks if comparator_value - value >=0 else false_remarks
+					default_logger().debug(df.to_string(index=False))
+					signalframes.append(df)
+			df[column] = df[column].apply(lambda x: round(x, decimals))
+		else:
+			df.drop([column], axis = 1, inplace = True)
 		return signalframes
 
 	# def buy_solid():
