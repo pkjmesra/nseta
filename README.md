@@ -10,31 +10,25 @@
 [![Language grade: Python](https://img.shields.io/lgtm/grade/python/g/pkjmesra/nseta.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/pkjmesra/nseta/context:python)
 [![codecov](https://codecov.io/gh/pkjmesra/nseta/branch/main/graph/badge.svg)](https://codecov.io/gh/pkjmesra/nseta)
 
-Python Library to 
--  get publicly available data on [NSE India website](https://www1.nseindia.com/) ie. stock live quotes, historical data, live indices.
--  plot various technical indicators
--  pattern recognition and fitment using candlestick charts
--  backtest trading strategies
--  forecasting with custom strategies
--  create scanners and generate signals for various technical indicators or for BUY/SELL
--  create your own strategy
+Python Library (and console/CLI application) to 
+-  Get publicly available data on [NSE India website](https://www1.nseindia.com/) ie. stock live-quotes and historical data.
+-  Plot various technical indicators
+-  Pattern recognition and fitment using candlestick charts
+-  Backtest trading strategies
+-  Forecasting with standard as well as custom strategies
+-  Create scanners and generate signals for various technical indicators or for BUY/SELL
+-  Create and build your own trading strategy
+
+## Disclaimer
+- The recommendations that you receive when you run the scan for intraday or swing trading is only for academic research purposes.
+- Though, you are free to take the recommended BUY/SELL positions. Any loss you make from those are entirely at your own risk.
+- The author of the library cannot be held responsible and is free from any legal liability.
 
 ## Donate
 
 [![Otechie](https://api.otechie.com/pkjmes/badge.svg)](https://otechie.com/pkjmes)
 
 ## Libraries Required
--  beautifulsoup4
--  requests
--  numpy
--  pandas
--  Click
--  six
--  lxml
--  Sphinx
--  pystan
--  fbprophet
--  fastquant
 - (See requirements.txt file for more)
 
 For Windows systems you can install Anaconda, this will cover many dependancies (You'll have to install requests and beautifulsoup additionally though)
@@ -537,6 +531,57 @@ nseta scan -l
 - When LTP < lower BBand
 - When LTP > higher BBand
 
+- Scanning options
+```python
+nseta scan --help
+Usage: nseta scan [OPTIONS]
+
+  Scan live and intraday for prices and signals.
+
+Options:
+  -S, --stocks TEXT               Comma separated security codes(Optional.
+                                  When skipped, all stocks configured in
+                                  stocks.py will be scanned.)
+  -l, --live                      Scans (every min.) the live-quote and lists
+                                  those that meet the signal criteria. Works
+                                  best with --background.
+  -i, --intraday                  Scans (every 10 sec) the intraday price
+                                  history and lists those that meet the signal
+                                  criteria
+  -s, --swing                     Scans (every 10 sec) the past 365 days price
+                                  history and lists those that meet the signal
+                                  criteria
+  -t, --indicator [rsi|sma10|sma50|ema|macd|bbands|all]
+                                  rsi, sma10, sma50, ema, macd, bbands, all.
+                                  Choose one.
+  -r, --background                Keep running the process in the background
+                                  (Optional)
+  --help                          Show this message and exit.
+```
+
+For example:
+- Scanning based on Bollinger bands
+```python
+nseta scan -i -t bbands
+INFO - tiscanner.py(scan_intraday - 123)
+This run of intraday scan took 10.7 sec
+
+INFO - livecli.py(scan_intraday_results - 150)
+Saved to: Scan_Results.csv
+
+Saved to: Scan_Results.csv
+INFO - livecli.py(scan_intraday_results - 155)
+
+We recommend taking the following BUY/SELL positions immediately for day trading. Intraday Signals:
+               Date      Symbol     BBands-U     BBands-L      LTP                   Signal
+2021-01-04 14:30:04      ASHOKA    93.434693    93.170307    93.40  (SELL) [LTP ~ BBands-U]
+2021-01-04 14:30:00   BANKINDIA    50.440129    50.294871    50.40  (SELL) [LTP ~ BBands-U]
+2021-01-04 14:30:01        BHEL    40.154087    39.935913    40.10  (SELL) [LTP ~ BBands-U]
+2021-01-04 14:30:00  JINDALSTEL   284.777021   282.052979   284.80  (SELL) [LTP > BBands-U]
+2021-01-04 14:30:00        NTPC    99.039443    98.860557    99.00  (SELL) [LTP ~ BBands-U]
+2021-01-04 14:30:00        SAIL    77.886024    77.103976    77.85  (SELL) [LTP ~ BBands-U]
+2021-01-04 14:30:00  ULTRACEMCO  5313.098214  5301.341786  5313.15  (SELL) [LTP > BBands-U]
+```
 ### Signals
 - SELL : When RSI(14) > 75
 - BUY : When RSI(14) < 25

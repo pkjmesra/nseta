@@ -14,7 +14,7 @@ from nseta.common.log import tracelog, default_logger
 from nseta.common.ti import ti
 from nseta.live.live import get_live_quote
 
-__all__ = ['KEY_MAPPING', 'scanner']
+__all__ = ['KEY_MAPPING', 'scanner', 'TECH_INDICATOR_KEYS']
 
 TYPE_LIVE = 'live'
 TYPE_INTRADAY = 'intraday'
@@ -29,38 +29,55 @@ KEY_MAPPING = {
 	'volume': 'Volume',
 }
 
+TECH_INDICATOR_KEYS = ['rsi', 'sma10', 'sma50', 'ema', 'macd', 'bbands', 'all']
+
 INTRADAY_KEYS_MAPPING = {
 	'Symbol': 'Symbol',
 	'Date': 'Date',
 	'Close': 'LTP',
 	# 'Low': 'Prev_Close',
 	'RSI': 'RSI',
-	# 'MOM': 'MOM',
+	'MOM': 'MOM',
+	'BBands-U': 'BBands-U',
+	'BBands-L' : 'BBands-L',
 	# 'SMA(10)': 'SMA(10)',
 	# 'SMA(50)': 'SMA(50)',
 	'EMA(9)': 'EMA(9)',
-	# 'macd(12)': 'macd(12)',
-	# 'macdsignal(9)': 'macdsignal(9)',
-	# 'macdhist(26)': 'macdhist(26)',
+	'macd(12)': 'macd(12)',
+	'macdsignal(9)': 'macdsignal(9)',
+	'macdhist(26)': 'macdhist(26)',
 }
 
 class scanner:
-	def __init__(self, scan_intraday=False):
-		self._intraday = scan_intraday
+	def __init__(self, indicator='all'):
+		self._indicator = indicator
 		self._stocksdict = {}
 		self._keys = ['symbol','previousClose', 'lastPrice']
+		self._scanner_dir = os.path.dirname(os.path.realpath(__file__))
 
 	@property
 	def keys(self):
 		return self._keys
 
 	@property
-	def intraday(self):
-		return self._intraday
+	def scanner_directory(self):
+		return self._scanner_dir
 
-	@intraday.setter
-	def intraday(self, value):
-		self._intraday = value
+	@property
+	def scan_type(self):
+		return self._scan_type
+
+	@scan_type.setter
+	def scan_type(self, value):
+		self._scan_type = value
+
+	@property
+	def indicator(self):
+		return self._indicator
+
+	@indicator.setter
+	def indicator(self, value):
+		self._indicator = value
 
 	@property
 	def stocksdict(self):
@@ -75,14 +92,15 @@ class scanner:
 			return self.scan_swing_quanta
 
 	@tracelog
-	def scan_live(self, stocks=[], indicator='all'):
-		dir_path = ""
+	def scan_live(self, stocks=[]):
 		start_time = time()
-		if not os.path.exists("stocks.py"):
-			dir_path = os.path.dirname(os.path.realpath(__file__)) + "/"
+		file_path = "stocks.py"
+		if not os.path.exists(file_path):
+			file_path = os.path.join(self.scanner_directory, file_path)
 		# If stocks array is empty, pull stock list from stocks.txt file
 		stocks = stocks if len(stocks) > 0 else [
-			line.rstrip() for line in open(dir_path + "stocks.py", "r")]
+			line.rstrip() for line in open(file_path, "r")]
+		self.scan_type = TYPE_LIVE
 		list_returned = self.scan_internal(stocks, TYPE_LIVE)
 		end_time = time()
 		time_spent = end_time-start_time
@@ -90,14 +108,15 @@ class scanner:
 		return list_returned.pop(0), list_returned.pop(0)
 
 	@tracelog
-	def scan_intraday(self, stocks=[], indicator='all'):
+	def scan_intraday(self, stocks=[]):
 		start_time = time()
-		dir_path = ""
-		if not os.path.exists("stocks.py"):
-			dir_path = os.path.dirname(os.path.realpath(__file__)) + "/"
+		file_path = "stocks.py"
+		if not os.path.exists(file_path):
+			file_path = os.path.join(self.scanner_directory, file_path)
 		# If stocks array is empty, pull stock list from stocks.txt file
 		stocks = stocks if len(stocks) > 0 else [
-			line.rstrip() for line in open(dir_path + "stocks.py", "r")]
+			line.rstrip() for line in open(file_path, "r")]
+		self.scan_type = TYPE_INTRADAY
 		list_returned = self.scan_internal(stocks, TYPE_INTRADAY)
 		end_time = time()
 		time_spent = end_time-start_time
@@ -105,14 +124,15 @@ class scanner:
 		return list_returned.pop(0), list_returned.pop(0)
 
 	@tracelog
-	def scan_swing(self, stocks=[], indicator='all'):
-		dir_path = ""
+	def scan_swing(self, stocks=[]):
 		start_time = time()
-		if not os.path.exists("stocks.py"):
-			dir_path = os.path.dirname(os.path.realpath(__file__)) + "/"
+		file_path = "stocks.py"
+		if not os.path.exists(file_path):
+			file_path = os.path.join(self.scanner_directory, file_path)
 		# If stocks array is empty, pull stock list from stocks.txt file
 		stocks = stocks if len(stocks) > 0 else [
-			line.rstrip() for line in open(dir_path + "stocks.py", "r")]
+			line.rstrip() for line in open(file_path, "r")]
+		self.scan_type = TYPE_SWING
 		list_returned = self.scan_internal(stocks, TYPE_SWING)
 		end_time = time()
 		time_spent = end_time-start_time
@@ -345,22 +365,60 @@ class scanner:
 		if (df is None) or (len(df) < 1) or (not 'RSI' in df.keys() and not 'EMA(9)' in df.keys()):
 			return signalframes
 		try:
-			rsivalue = df['RSI'].iloc[0]
-			ema9 = df['EMA(9)'].iloc[0]
-			# macd12 = df['macd(12)'].iloc[0]
-			# macd9 = df['macdsignal(9)'].iloc[0]
 			df['Signal'] = 'NA'
 			ltp = df['LTP'].iloc[0]
-			if (rsivalue is not None) and (rsivalue > 75 or rsivalue < 25):
-				df['Signal'].iloc[0] = '(SELL)[RSI >= 75]' if rsivalue > 75 else '(BUY)[RSI <= 25]'
-				signalframes.append(df)
-			if (ema9 is not None) and abs(ltp-ema9) <= 0.1:
-				df['Signal'].iloc[0] = '(BUY)[LTP > EMA(9)]' if ltp - ema9 >=0 else '(SELL)[LTP < EMA(9)]'
-				signalframes.append(df)
-			# if (macd12 is not None) and (macd9 is not None) and abs(macd12-macd9) <= 0.05:
-			# 	df['Signal'].iloc[0] = 'MACD(12) > MACD(9)' if macd12 - macd9 >=0 else 'MACD(12) < MACD(9)'
-			# 	signalframes.append(df)
+			if self.indicator == 'bbands' or self.indicator == 'all':
+				upper_band = round(df['BBands-U'].iloc[0],2)
+				lower_band = round(df['BBands-L'].iloc[0],2)
+				if (lower_band is not None) and abs(lower_band-ltp) <= 0.05:
+					df['Signal'].iloc[0] = '(BUY)  [LTP < BBands-L]' if ltp - lower_band <=0 else '(BUY)  [LTP ~ BBands-L]'
+					default_logger().debug(df.to_string(index=False))
+					signalframes.append(df)
+				if (upper_band is not None) and abs(upper_band-ltp) <= 0.05:
+					df['Signal'].iloc[0] = '(SELL) [LTP ~ BBands-U]' if ltp - upper_band <=0 else '(SELL) [LTP > BBands-U]'
+					default_logger().debug(df.to_string(index=False))
+					signalframes.append(df)
+			else:
+				df.drop(['BBands-U', 'BBands-L'], axis = 1, inplace = True)
+
+			if self.indicator == 'rsi' or self.indicator == 'all':
+				rsivalue = df['RSI'].iloc[0]
+				if (rsivalue is not None) and (rsivalue > 75 or rsivalue < 25):
+					df['Signal'].iloc[0] = '(SELL) [RSI >= 75]' if rsivalue > 75 else '(BUY)  [RSI <= 25]'
+					default_logger().debug(df.to_string(index=False))
+					signalframes.append(df)
+			else:
+				df.drop(['RSI'], axis = 1, inplace = True)
+
+			if self.indicator == 'ema' or self.indicator == 'all':
+				ema9 = df['EMA(9)'].iloc[0]
+				if (ema9 is not None) and abs(ltp-ema9) <= 0.1:
+					df['Signal'].iloc[0] = '(BUY)  [LTP > EMA(9)]' if ltp - ema9 >=0 else '(SELL) [LTP < EMA(9)]'
+					default_logger().debug(df.to_string(index=False))
+					signalframes.append(df)
+			else:
+				df.drop(['EMA(9)'], axis = 1, inplace = True)
+
+			if self.indicator == 'macd' or self.indicator == 'all':
+				macd12 = df['macd(12)'].iloc[0]
+				macd9 = df['macdsignal(9)'].iloc[0]
+				if (macd12 is not None) and (macd9 is not None) and abs(macd12-macd9) <= 0.05:
+					df['Signal'].iloc[0] = '(BUY)  [MACD > EMA]' if macd12 - macd9 >=0 else '(SELL) [MACD < EMA]'
+					default_logger().debug(df.to_string(index=False))
+					signalframes.append(df)
+			else:
+				df.drop(['macd(12)', 'macdsignal(9)', 'macdhist(26)'], axis = 1, inplace = True)
+
+			# Drop the Momentum indicator. We don't need it anymore
+			df.drop(['MOM'], axis = 1, inplace = True)
 		except Exception as e:
 			default_logger().debug(e, exc_info=True)
 			return
-		return signalframes						
+		return signalframes
+
+	# def buy_solid():
+		# OBV trending upwards
+		# RSI trending upwards. If not, then if it's closer to lower limit, strong buy
+		# MACD trending upwards and +ve. MACD > MACD 12
+		# LTP line > EMA9 and LTP > MA50
+		# MOM +ve and trending upwards

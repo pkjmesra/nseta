@@ -3,7 +3,8 @@ import pandas as pd
 import threading, time
 
 from nseta.live.live import get_quote, get_live_quote, get_data_list
-from nseta.scanner.tiscanner import scanner
+from nseta.scanner.tiscanner import scanner, TECH_INDICATOR_KEYS
+from nseta.archives.archiver import archiver
 from nseta.cli.inputs import *
 from nseta.common.log import tracelog, default_logger
 from datetime import datetime, date
@@ -16,11 +17,11 @@ OHLC_LIST = ['Open', 'High', 'Low', 'Close']
 WK52_LIST = ['52 Wk High', '52 Wk Low']
 VOLUME_LIST = ['Quantity Traded', 'Total Traded Volume', 'Total Traded Value', 'Delivery Volume', '% Delivery']
 PIPELINE_LIST = ['Bid Quantity', 'Bid Price', 'Offer_Quantity', 'Offer_Price']
-TECH_INDICATOR_KEYS = ['rsi', 'sma10', 'sma50', 'ema', 'macd', 'all']
+
 RUN_IN_BACKGROUND = True
 
 @click.command(help='Get live price quote of a security')
-@click.option('--symbol', '-S',  help='Security code. Pass [] with --intraday for scanning.')
+@click.option('--symbol', '-S',  help='Security code.')
 @click.option('--general', '-g', default=False, is_flag=True, help='Get the general (Name, ISIN) details also (Optional)')
 @click.option('--ohlc', '-o', default=False, is_flag=True, help='Get the OHLC values also (Optional)')
 @click.option('--wk52', '-w' ,default=False, is_flag=True, help='Get the 52 week high/low values also (Optional)')
@@ -107,11 +108,11 @@ def scan(stocks, live, intraday, swing, indicator, background):
 		return
 
 def scan_live(stocks, indicator, background):
-	s = scanner()
-	df, signaldf = s.scan_live(stocks=stocks, indicator=indicator)
+	s = scanner(indicator=indicator)
+	df, signaldf = s.scan_live(stocks=stocks)
 	scan_live_results(df, signaldf)
 	if background:
-		b = threading.Thread(name='scan_live_background', target=scan_live_background, args=[s, stocks, indicator])
+		b = threading.Thread(name='scan_live_background', target=scan_live_background, args=[s, stocks])
 		b.start()
 
 def scan_live_results(df, signaldf):
@@ -125,16 +126,16 @@ def scan_live_results(df, signaldf):
 		default_logger().info('No signals to show here.')
 
 def scan_intraday(stocks, indicator, background):
-	s = scanner()
-	df, signaldf = s.scan_intraday(stocks=stocks, indicator=indicator)
+	s = scanner(indicator=indicator)
+	df, signaldf = s.scan_intraday(stocks=stocks)
 	scan_intraday_results(df, signaldf)
 	if background:
-		b = threading.Thread(name='scan_intraday_background', target=scan_intraday_background, args=[s, stocks, indicator])
+		b = threading.Thread(name='scan_intraday_background', target=scan_intraday_background, args=[s, stocks])
 		b.start()
 
 def scan_swing(stocks, indicator, background):
-	s = scanner()
-	df, signaldf = s.scan_swing(stocks=stocks, indicator=indicator)
+	s = scanner(indicator=indicator)
+	df, signaldf = s.scan_swing(stocks=stocks)
 	scan_intraday_results(df, signaldf)
 	# if background:
 	# 	b = threading.Thread(name='scan_intraday_background', target=scan_intraday_background, args=[s, stocks, indicator])
@@ -144,13 +145,14 @@ def scan_intraday_results(df, signaldf):
 	if df is not None and len(df) > 0:
 		file_name = 'Scan_Results.csv'
 		default_logger().debug("\nAll Stocks LTP and Signals:\n" + df.to_string(index=False))
-		df.to_csv(file_name)
+		arch = archiver()
+		arch.archive(df, file_name)
 		default_logger().info('Saved to: {}'.format(file_name))
 		click.secho('Saved to: {}'.format(file_name), fg='green', nl=True)
 	else:
 		default_logger().info('Nothing to show here.')
 	if signaldf is not None and len(signaldf) > 0:
-		default_logger().info("\nSignals:\n" + signaldf.to_string(index=False))
+		default_logger().info("\nWe recommend taking the following BUY/SELL positions immediately for day trading. Intraday Signals:\n" + signaldf.to_string(index=False))
 	else:
 		default_logger().info('No signals to show here.')
 
@@ -200,18 +202,18 @@ def live_quote_background(symbol, general, ohlc, wk52, volume, orderbook):
 		format_beautified(result, general, ohlc, wk52, volume, orderbook)
 		time.sleep(60)
 
-def scan_live_background(scannerinstance, stocks, indicator):
+def scan_live_background(scannerinstance, stocks):
 	global RUN_IN_BACKGROUND
 	RUN_IN_BACKGROUND = True
 	while RUN_IN_BACKGROUND:
-		df, signaldf = scannerinstance.scan_live(stocks=stocks, indicator=indicator)
+		df, signaldf = scannerinstance.scan_live(stocks=stocks)
 		scan_live_results(df, signaldf)
 		time.sleep(60)
 
-def scan_intraday_background(scannerinstance, stocks, indicator):
+def scan_intraday_background(scannerinstance, stocks):
 	global RUN_IN_BACKGROUND
 	RUN_IN_BACKGROUND = True
 	while RUN_IN_BACKGROUND:
-		df, signaldf = scannerinstance.scan_intraday(stocks=stocks, indicator=indicator)
+		df, signaldf = scannerinstance.scan_intraday(stocks=stocks)
 		scan_intraday_results(df, signaldf)
 		time.sleep(10)

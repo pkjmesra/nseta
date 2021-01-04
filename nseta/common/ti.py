@@ -12,6 +12,7 @@ class ti:
 			df[['Close','SMA(10)', 'SMA(50)']] = self.get_sma_df(df)
 			df[['Close','EMA(9)']] = self.get_ema_df(df)
 			df[['macd(12)','macdsignal(9)', 'macdhist(26)']] = self.get_macd_df(df)
+			df[['Close','BBands-U','BBands-M','BBands-L']] = self.get_bbands_df(df)
 		except Exception as e:
 			default_logger().debug(e, exc_info=True)
 		except SystemExit:
