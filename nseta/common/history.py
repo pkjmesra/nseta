@@ -177,6 +177,20 @@ class historicaldata:
 						   params=params,
 						   schema=schema,
 						   headers=headers, scaling=scaling, csvnode=csvnode)
+			if 'Symbol' in headers and 'Symbol' in df.keys():
+				# Check if we received the correct Symbol in response what we expected
+				expected_symbol = params['symbol']
+				received_symbol = df['Symbol'].iloc[0]
+				if not received_symbol == expected_symbol:
+					default_logger().debug(df.to_string(index=False))
+					default_logger().debug('Unexpected symbol "{}" received. Retrying...'.format(received_symbol))
+					params['symbolCount'] = get_symbol_count(expected_symbol, force_refresh=True)
+					# We don't want to recursively call daily_ohlc_history_quanta and risk getting into an infinite loop
+					# if the expected symbol is again not received.
+					df = self.url_to_df(url=url,
+						params=params,
+						schema=schema,
+						headers=headers, scaling=scaling, csvnode=csvnode)
 		except Exception as e:
 			default_logger().debug(e, exc_info=True)
 		return df

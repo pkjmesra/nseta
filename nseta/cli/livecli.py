@@ -4,7 +4,7 @@ import threading, time
 
 from nseta.live.live import get_quote, get_live_quote, get_data_list
 from nseta.scanner.tiscanner import scanner, TECH_INDICATOR_KEYS
-from nseta.archives.archiver import archiver
+from nseta.archives.archiver import *
 from nseta.cli.inputs import *
 from nseta.common.log import tracelog, default_logger
 from datetime import datetime, date
@@ -127,8 +127,14 @@ def scan_live_results(df, signaldf):
 
 def scan_intraday(stocks, indicator, background):
 	s = scanner(indicator=indicator)
-	df, signaldf = s.scan_intraday(stocks=stocks)
-	scan_intraday_results(df, signaldf)
+	df_file_name = 'df_Scan_Results.{}'.format(indicator)
+	signaldf_file_name = 'signaldf_Scan_Results.{}'.format(indicator)
+	arch = archiver()
+	df = arch.restore(df_file_name, ResponseType.Intraday)
+	signaldf = arch.restore(signaldf_file_name, ResponseType.Intraday)
+	if df is None or len(df) == 0:
+		df, signaldf = s.scan_intraday(stocks=stocks)
+	scan_intraday_results(df, signaldf, indicator)
 	if background:
 		b = threading.Thread(name='scan_intraday_background', target=scan_intraday_background, args=[s, stocks])
 		b.start()
@@ -158,14 +164,15 @@ def scan_swing_results(df, signaldf):
 	else:
 		default_logger().info('No signals to show here.')
 
-def scan_intraday_results(df, signaldf):
+def scan_intraday_results(df, signaldf, indicator):
 	if df is not None and len(df) > 0:
-		file_name = 'Scan_Results.csv'
+		df_file_name = 'df_Scan_Results.{}'.format(indicator)
+		signaldf_file_name = 'signaldf_Scan_Results.{}'.format(indicator)
 		default_logger().debug("\nAll Stocks LTP and Signals:\n" + df.to_string(index=False))
 		arch = archiver()
-		arch.archive(df, file_name)
-		default_logger().info('Saved to: {}'.format(file_name))
-		# click.secho('Saved to: {}'.format(file_name), fg='green', nl=True)
+		arch.archive(df, df_file_name, ResponseType.Intraday)
+		arch.archive(signaldf, signaldf_file_name, ResponseType.Intraday)
+		default_logger().debug('Saved to: {} and {}'.format(df_file_name, signaldf_file_name))
 	else:
 		default_logger().info('Nothing to show here.')
 	if signaldf is not None and len(signaldf) > 0:

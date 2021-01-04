@@ -11,10 +11,11 @@ from nseta.common.log import tracelog
 
 from requests import Session
 from functools import partial
+from cachecontrol import CacheControl
 
 __all__ = ['nse_intraday_url_new','NSE_SYMBOL_COUNT_URL', 'symbol_count_url', 'get_symbol_count', 'equity_history_url_full', 'equity_history_url', 'price_list_url', 'pr_price_list_zipped_url', 'equity_symbol_list_url', 'index_pe_history_url', 'nse_intraday_url']
 
-session = Session()
+session = CacheControl(Session())
 # headers = {
 	# 'Host': 'www1.nseindia.com',
 	# 'Referer': 'https://www1.nseindia.com/products/content/equities/equities/eq_security.htm'}
@@ -66,16 +67,19 @@ symbol_count_url = URLFetchSession(
 	url='http://www1.nseindia.com/marketinfo/sym_map/symbolCount.jsp')
 
 @tracelog
-def get_symbol_count(symbol):
+def get_symbol_count(symbol, force_refresh=False):
 	try:
-		return symbol_count[symbol]
+		return fetch_fresh_symbol_count(symbol) if force_refresh else symbol_count[symbol]
 	except Exception:
-		cnt = symbol_count_url(symbol=symbol).text.lstrip().rstrip()
-		symbol_count[symbol] = cnt
-		return cnt
+		return fetch_fresh_symbol_count(symbol)
 	except SystemExit:
 		pass
 
+
+def fetch_fresh_symbol_count(symbol):
+	cnt = symbol_count_url(symbol=symbol).text.lstrip().rstrip()
+	symbol_count[symbol] = cnt
+	return cnt
 
 """
 # http://www1.nseindia.com/products/dynaContent/common/productsSymbolMapping.jsp?symbol=SBIN&segmentLink=3&symbolCount=1&series=EQ&dateRange=1month&fromDate=2020-12-01&toDate=2020-12-25&dataType=PRICEVOLUMEDELIVERABLE'

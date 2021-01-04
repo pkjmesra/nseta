@@ -8,6 +8,7 @@ import datetime
 from time import time
 
 from nseta.common.commons import *
+from nseta.archives.archiver import *
 from nseta.common.history import historicaldata
 from nseta.common.log import tracelog, default_logger
 from nseta.common.ti import ti
@@ -310,10 +311,14 @@ class scanner:
 		df = None
 		try:
 			historyinstance = historicaldata()
-			df = historyinstance.daily_ohlc_history(symbol, start=datetime.date.today(), end = datetime.date.today(), intraday=True)
+			arch = archiver()
+			df = arch.restore(symbol, ResponseType.Intraday)
+			if df is None or len(df) == 0:
+				df = historyinstance.daily_ohlc_history(symbol, start=datetime.date.today(), end = datetime.date.today(), intraday=True)
 			if df is not None and len(df) > 0:
 				# default_logger().debug("Dataframe for " + symbol + "\n" + str(df))
 				df = self.map_keys(df, symbol)
+				arch.archive(df, symbol, ResponseType.Intraday)
 			else:
 				default_logger().info("Empty dataframe for " + symbol)
 		except KeyboardInterrupt as e:
