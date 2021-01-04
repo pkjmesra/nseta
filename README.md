@@ -21,8 +21,8 @@ Python Library (and console/CLI application) to
 
 ## Disclaimer
 - The recommendations that you receive when you run the scan for intraday or swing trading is only for academic research purposes.
-- Though, you are free to take the recommended BUY/SELL positions. Any loss you make from those are entirely at your own risk.
-- The author of the library cannot be held responsible and is free from any legal liability.
+- Though, you are free to take the recommended BUY/SELL positions, any loss you make from those are entirely at your own risk.
+- The author of this library/console cannot be held responsible and is deemed free from any legal liability.
 
 ## Donate
 
