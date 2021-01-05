@@ -2,6 +2,7 @@ import click
 from nseta.common.history import historicaldata
 from nseta.common.log import tracelog, default_logger
 from nseta.cli.inputs import *
+from nseta.archives.archiver import *
 from datetime import datetime
 
 __all__ = ['history', 'pe_history']
@@ -12,10 +13,11 @@ __all__ = ['history', 'pe_history']
 @click.option('--end', '-e', help='End date in yyyy-mm-dd format')
 @click.option('--file', '-o', 'file_name',  help='Output file name')
 @click.option('--index/--no-index', default=False, help='--index if security is index else --no-index')
+@click.option('--clear', '-c', default=False, is_flag=True, help='Clears the cached data for the given options.')
 @click.option('--format', '-f', default='csv',  type=click.Choice(['csv', 'pkl']),
 				help='Output format, pkl - to save as Pickel and csv - to save as csv')
 @tracelog
-def history(symbol, start, end, file_name, index, format): #, futures, expiry, option_type, strike):
+def history(symbol, start, end, file_name, index, clear, format): #, futures, expiry, option_type, strike):
 	if not validate_inputs(start, end, symbol):
 		print_help_msg(history)
 		return
@@ -23,10 +25,13 @@ def history(symbol, start, end, file_name, index, format): #, futures, expiry, o
 	ed = datetime.strptime(end, "%Y-%m-%d").date()
 	df = None
 	try:
+		if clear:
+			arch = archiver()
+			arch.clearcache(response_type=ResponseType.History)
 		historyinstance = historicaldata()
 		df = historyinstance.daily_ohlc_history(symbol, sd, ed)
 		default_logger().debug(df.to_string(index=False))
-		click.echo(df.head())
+		click.echo("\n{}".format(df.head()))
 	except Exception as e:
 		default_logger().debug(e, exc_info=True)
 		click.secho('Failed to fetch history', fg='red', nl=True)

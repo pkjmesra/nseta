@@ -3,6 +3,7 @@ from nseta.common.history import historicaldata
 from nseta.common.log import tracelog, default_logger
 from nseta.plots.plots import *
 from nseta.cli.inputs import *
+from nseta.archives.archiver import *
 
 import click
 from datetime import datetime
@@ -15,10 +16,11 @@ __all__ = ['create_cdl_model']
 @click.option('--end', '-e', help='End date in yyyy-mm-dd format')
 @click.option('--file', '-o', 'file_name',  help='Output file name. Default is {symbol}.csv')
 @click.option('--steps/--no-steps', default=False, help='--steps for saving intermediate steps in output file')
+@click.option('--clear', '-c', default=False, is_flag=True, help='Clears the cached data for the given options.')
 @click.option('--format', '-f', default='csv',  type=click.Choice(['csv', 'pkl']),
 				help='Output format, pkl - to save as Pickel and csv - to save as csv')
 @tracelog
-def create_cdl_model(symbol, start, end, file_name, steps, format):
+def create_cdl_model(symbol, start, end, file_name, steps, clear, format):
 	if not validate_inputs(start, end, symbol):
 		print_help_msg(create_cdl_model)
 		return
@@ -26,6 +28,9 @@ def create_cdl_model(symbol, start, end, file_name, steps, format):
 	ed = datetime.strptime(end, "%Y-%m-%d").date()
 
 	try:
+		if clear:
+			arch = archiver()
+			arch.clearcache(response_type=ResponseType.History)
 		historyinstance = historicaldata()
 		df = historyinstance.daily_ohlc_history(symbol, sd, ed)
 		df.set_index('Date', inplace=True)

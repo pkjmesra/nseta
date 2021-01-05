@@ -9,6 +9,7 @@ from nseta.common.urls import *
 from nseta.common.commons import *
 from nseta.common.constants import *
 from nseta.common.log import tracelog, default_logger
+from nseta.archives.archiver import *
 
 import six
 from datetime import date, timedelta
@@ -170,7 +171,12 @@ class historicaldata:
 
 	@tracelog
 	def daily_ohlc_history_quanta(self, **kwargs):
-		df = None
+		symbol = kwargs['symbol']
+		start = kwargs['start']
+		end = kwargs['end']
+		df = self.unarchive_history(symbol, start, end)
+		if df is not None and len (df) > 0:
+			return df
 		try:
 			url, params, schema, headers, scaling, csvnode = self.validate_params(**kwargs)
 			df = self.url_to_df(url=url,
@@ -179,7 +185,7 @@ class historicaldata:
 						   headers=headers, scaling=scaling, csvnode=csvnode)
 			if 'Symbol' in headers and 'Symbol' in df.keys():
 				# Check if we received the correct Symbol in response what we expected
-				expected_symbol = params['symbol']
+				expected_symbol = symbol
 				received_symbol = df['Symbol'].iloc[0]
 				if not received_symbol == expected_symbol:
 					default_logger().debug(df.to_string(index=False))
@@ -193,6 +199,7 @@ class historicaldata:
 						headers=headers, scaling=scaling, csvnode=csvnode)
 		except Exception as e:
 			default_logger().debug(e, exc_info=True)
+		self.archive_history(df, symbol, start, end)
 		return df
 
 
@@ -489,4 +496,17 @@ class historicaldata:
 						 schema=RBI_REF_RATE_SCHEMA,
 						 headers=RBI_REF_RATE_HEADERS, index="Date")
 		df = tp.get_df()
+		return df
+
+	@tracelog
+	def archive_history(self, df, symbol, start_date, end_date):
+		symbol = '{}_{}_{}'.format(symbol, start_date.strftime('%d-%m-%Y'), end_date.strftime('%d-%m-%Y'))
+		arch = archiver()
+		arch.archive(df, symbol, ResponseType.History)
+
+	@tracelog
+	def unarchive_history(self, symbol, start_date, end_date):
+		symbol = '{}_{}_{}'.format(symbol, start_date.strftime('%d-%m-%Y'), end_date.strftime('%d-%m-%Y'))
+		arch = archiver()
+		df = arch.restore(symbol, ResponseType.History)
 		return df

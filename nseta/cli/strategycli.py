@@ -7,6 +7,7 @@ from nseta.scanner.tiscanner import scanner
 from nseta.common.log import tracelog, default_logger
 from nseta.cli.inputs import *
 from nseta.scanner.tiscanner import scanner, KEY_MAPPING
+from nseta.archives.archiver import *
 
 import click
 from datetime import datetime
@@ -99,9 +100,10 @@ STRATEGY_MAPPING_KEYS = list(STRATEGY_MAPPING.keys()) + ['custom']
 @click.option('--lower', '-l', help='Used as lower limit, for example, for RSI. Only when strategy is "custom", we sell the security when the predicted next day return is < -{lower} %')
 @click.option('--autosearch/--no-autosearch', default=False, 
 	help='--auto for allowing to automatically measure the performance of your trading strategy on multiple combinations of parameters.')
+@click.option('--clear', '-c', default=False, is_flag=True, help='Clears the cached data for the given options.')
 @click.option('--intraday', '-i', is_flag=True, help='Test trading strategy for the current intraday price history (Optional)')
 @tracelog
-def test_trading_strategy(symbol, start, end, autosearch, strategy, upper, lower, intraday=False):
+def test_trading_strategy(symbol, start, end, autosearch, strategy, upper, lower, clear, intraday=False):
 	if not intraday:
 		if not validate_inputs(start, end, symbol, strategy):
 			print_help_msg(test_trading_strategy)
@@ -113,6 +115,9 @@ def test_trading_strategy(symbol, start, end, autosearch, strategy, upper, lower
 			lower = 30
 		if upper is None:
 			upper = 70
+		if clear:
+			arch = archiver()
+			arch.clearcache(response_type=ResponseType.Intraday if intraday else ResponseType.History)
 		if intraday:
 			test_intraday_trading_strategy(symbol, strategy, autosearch, lower, upper)
 		else:
@@ -153,17 +158,21 @@ def forecast_strategy(symbol, start, end, strategy, upper, lower):
 		pass
 
 def test_intraday_trading_strategy(symbol, strategy, autosearch, lower, upper):
-	df = get_intraday_dataframe(symbol)
+	df = get_intraday_dataframe(symbol, strategy)
 	if df is not None and len(df) > 0:
 		run_test_strategy(df, symbol, strategy, autosearch, lower, upper)
 		test_intraday_signals(df, lower, upper)
 
-def get_intraday_dataframe(symbol):
-	s = scanner()
+def get_intraday_dataframe(symbol, strategy):
+	s = scanner(strategy)
 	df, signaldf = s.scan_intraday(stocks=[symbol])
 	# df = map_keys(df)
-	if df is not None and len(df) > 0:
-		df.drop(INTRADAY_EQUITY_HEADERS, axis = 1, inplace = True)
+	try:
+		df['datetime'] = df['Date']
+		if df is not None and len(df) > 0:
+			df.drop(INTRADAY_EQUITY_HEADERS, axis = 1, inplace = True)
+	except Exception:
+		pass
 	return df
 
 def run_test_strategy(df, symbol, strategy, autosearch, lower, upper):

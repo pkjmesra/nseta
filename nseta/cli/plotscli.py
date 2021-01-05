@@ -3,6 +3,7 @@ from nseta.common.history import historicaldata
 from nseta.common.log import tracelog, default_logger
 from nseta.plots.plots import *
 from nseta.cli.inputs import *
+from nseta.archives.archiver import *
 
 import click
 from datetime import datetime
@@ -27,6 +28,7 @@ PLOT_TI_KEYS = list(PLOT_KEY_TO_FUNC.keys())
 @click.option('--symbol', '-S',  help='Security code')
 @click.option('--start', '-s', help='Start date in yyyy-mm-dd format')
 @click.option('--end', '-e', help='End date in yyyy-mm-dd format')
+@click.option('--clear', '-c', default=False, is_flag=True, help='Clears the cached data for the given options.')
 @click.option('--plot-type', '-p','plot_type', default='ALL', help=', '.join(PLOT_TI_KEYS) + ". Choose one.")
 @tracelog
 def plot_ta(symbol, start, end, plot_type="ALL"):
@@ -37,6 +39,9 @@ def plot_ta(symbol, start, end, plot_type="ALL"):
 	ed = datetime.strptime(end, "%Y-%m-%d").date()
 
 	try:
+		if clear:
+			arch = archiver()
+			arch.clearcache(response_type=ResponseType.History)
 		historyinstance = historicaldata()
 		df = historyinstance.daily_ohlc_history(symbol, sd, ed)
 		df['dt'] = df['Date']

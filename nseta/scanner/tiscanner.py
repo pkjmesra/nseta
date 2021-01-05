@@ -30,7 +30,7 @@ KEY_MAPPING = {
 	'volume': 'Volume',
 }
 
-TECH_INDICATOR_KEYS = ['rsi', 'sma10', 'sma50', 'ema', 'macd', 'bbands', 'all']
+TECH_INDICATOR_KEYS = ['rsi', 'smac', 'emac', 'macd', 'bbands', 'all']
 
 INTRADAY_KEYS_MAPPING = {
 	'Symbol': 'Symbol',
@@ -51,6 +51,8 @@ INTRADAY_KEYS_MAPPING = {
 
 class scanner:
 	def __init__(self, indicator='all'):
+		if indicator not in TECH_INDICATOR_KEYS:
+			indicator = 'all'
 		self._indicator = indicator
 		self._stocksdict = {}
 		self._keys = ['symbol','previousClose', 'lastPrice']
@@ -78,6 +80,8 @@ class scanner:
 
 	@indicator.setter
 	def indicator(self, value):
+		if value not in TECH_INDICATOR_KEYS:
+			value = 'all'
 		self._indicator = value
 
 	@property
