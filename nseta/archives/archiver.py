@@ -1,6 +1,7 @@
 import enum
 import os
 import pandas as pd
+import shutil
 
 __all__ = ['archiver', 'ResponseType']
 
@@ -50,9 +51,20 @@ class archiver:
 		else:
 			return os.path.join(self.archival_directory, symbol.upper())
 
+	def get_directory(self, response_type=ResponseType.History):
+		if response_type == ResponseType.Intraday:
+			return self.intraday_directory
+		elif response_type == ResponseType.History:
+			return self.history_directory
+		elif response_type == ResponseType.Quote:
+			return self.quote_directory
+		else:
+			return self.archival_directory
+
 	def archive(self, df, symbol, response_type=ResponseType.Default):
 		# df = df.reset_index(drop=True)
-		df.to_csv(self.get_path(symbol, response_type))
+		if df is not None and len(df) > 0:
+			df.to_csv(self.get_path(symbol, response_type))
 
 	def restore(self, symbol, response_type=ResponseType.Default):
 		df = None
@@ -61,3 +73,14 @@ class archiver:
 			df = pd.read_csv(file_path)
 		return df
 
+	def clearcache(self, symbol=None, response_type=ResponseType.Default):
+		try:
+			if symbol is not None:
+				file_path = self.get_path(symbol, response_type)
+				if os.path.exists(file_path):
+					os.remove(file_path)
+			    
+			else:
+				shutil.rmtree(self.get_directory(response_type))
+		except OSError:
+			pass

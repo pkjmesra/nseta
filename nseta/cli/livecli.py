@@ -65,9 +65,10 @@ def live_quote(symbol, general, ohlc, wk52, volume, orderbook, background):
 @click.option('--swing', '-s', default=False, is_flag=True, help='Scans (every 10 sec) the past 365 days price history and lists those that meet the signal criteria')
 @click.option('--indicator', '-t', default='all', type=click.Choice(TECH_INDICATOR_KEYS),
 	help=', '.join(TECH_INDICATOR_KEYS) + ". Choose one.")
+@click.option('--clear', '-c', default=False, is_flag=True, help='Clears the cached data for the given options.')
 @click.option('--background', '-r', default=False, is_flag=True, help='Keep running the process in the background (Optional)')
 @tracelog
-def scan(stocks, live, intraday, swing, indicator, background):
+def scan(stocks, live, intraday, swing, indicator, clear, background):
 	if (live and intraday) or ( live and swing) or (intraday and swing):
 		click.secho('Choose only one of --live, --intraday or --swing options.', fg='red', nl=True)
 		print_help_msg(scan)
@@ -83,6 +84,17 @@ def scan(stocks, live, intraday, swing, indicator, background):
 		stocks = []
 	global RUN_IN_BACKGROUND
 	try:
+		response_type = ResponseType.Default
+		response_type = ResponseType.Intraday if intraday else response_type
+		response_type = ResponseType.Quote if live else response_type
+		response_type = ResponseType.History if swing else response_type
+		if clear:
+				arch = archiver()
+				df_file_name = 'df_Scan_Results.{}'.format(indicator)
+				signaldf_file_name = 'signaldf_Scan_Results.{}'.format(indicator)
+				arch.clearcache(df_file_name, response_type)
+				arch.clearcache(signaldf_file_name, response_type)
+				arch.clearcache(response_type=response_type)
 		if live:
 			scan_live(stocks, indicator, background)
 		elif intraday:
