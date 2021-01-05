@@ -327,7 +327,7 @@ class scanner:
 				df = self.map_keys(df, symbol)
 				arch.archive(df, symbol, ResponseType.Intraday)
 			else:
-				default_logger().info("Empty dataframe for " + symbol)
+				default_logger().debug("Empty dataframe for " + symbol)
 		except KeyboardInterrupt as e:
 				default_logger().debug(e, exc_info=True)
 				default_logger().debug('Keyboard Interrupt received. Exiting.')

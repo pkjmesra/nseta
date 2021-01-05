@@ -2,6 +2,8 @@ import enum
 import os
 import pandas as pd
 import shutil
+import sys
+from datetime import datetime, time
 
 from nseta.common.log import tracelog, default_logger
 from nseta.common.tradingtime import current_time_in_ist_trading_time_range
@@ -68,9 +70,9 @@ class archiver:
 
 	@tracelog
 	def archive(self, df, symbol, response_type=ResponseType.Default):
-		# df = df.reset_index(drop=True)
+		df = df.reset_index(drop=True)
 		if df is not None and len(df) > 0:
-			df.to_csv(self.get_path(symbol, response_type))
+			df.to_csv(self.get_path(symbol, response_type), index=False)
 
 	@tracelog
 	def restore(self, symbol, response_type=ResponseType.Default):
@@ -78,12 +80,15 @@ class archiver:
 		file_path = self.get_path(symbol, response_type)
 		if os.path.exists(file_path):
 			df = pd.read_csv(file_path)
+			df = df.reset_index(drop=True)
 			if df is not None and len(df) > 0:
+				last_modified = datetime.fromtimestamp(os.path.getmtime(file_path))
 				if current_time_in_ist_trading_time_range():
-					cache_warn = 'Fetched from the disk cache. You may wish to clear cache (nseta [command] --clear).'
-					print(cache_warn)
+					cache_warn = 'Last Modified:{}. Fetched from the disk cache. You may wish to clear cache (nseta [command] --clear).'.format(str(last_modified))
+					sys.stdout.write("\r{}".format(cache_warn))
 				else:
-					print('***** Fetched from the disk cache. *****.')
+					sys.stdout.write("\rLast Modified: {}. ***** Fetched from the disk cache. *****.".format(str(last_modified)))
+				sys.stdout.flush()
 		return df
 
 	@tracelog
