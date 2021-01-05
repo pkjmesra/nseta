@@ -167,12 +167,14 @@ def get_intraday_dataframe(symbol, strategy):
 	s = scanner(strategy)
 	df = s.ohlc_intraday_history(symbol)
 	# df = map_keys(df)
-	try:
-		if df is not None and len(df) > 0:
-			df.drop(INTRADAY_EQUITY_HEADERS, axis = 1, inplace = True)
-	except Exception as e:
-		default_logger().debug(e, exc_info=True)
-		pass
+	# try:
+	# 	if df is not None and len(df) > 0:
+	# 		for key in INTRADAY_EQUITY_HEADERS:
+	# 			if key in df.keys():
+	# 				df.drop([key], axis = 1, inplace = True)
+	# except Exception as e:
+	# 	default_logger().debug(e, exc_info=True)
+	# 	pass
 	return df
 
 def run_test_strategy(df, symbol, strategy, autosearch, lower, upper):
@@ -195,8 +197,10 @@ def test_intraday_signals(df, lower, upper):
 	for rsi in (df['RSI']).values:
 		if rsi is not None:
 			price =(df.iloc[rowindex])['Close']
-			signal.index(rsi,price)
+			ts =(df.iloc[rowindex])['Date']
+			signal.index(rsi, price, ts)
 		rowindex = rowindex + 1
+	print("\n{}\n".format(signal.report.to_string(index=False)))
 	(plot_rsi(df)).show()
 
 def get_historical_dataframe(symbol, sd, ed):

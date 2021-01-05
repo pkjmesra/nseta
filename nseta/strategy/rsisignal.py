@@ -1,4 +1,5 @@
 import enum
+import pandas as pd
 from nseta.common.log import tracelog, default_logger
 
 __all__ = ['rsisignal','Direction']
@@ -26,22 +27,32 @@ class rsisignal:
 		self._n3 = 0
 		self._prc = 0
 		self._profit = 0
+		self._ts = ''
 		self._buytriggerred = False
 		self._lower = 25
 		self._upper = 75
+		self._ledger = {'DateTime':[],'Signal':[],'Price':[],'Profit':[],'Pattern':[],'Direction':[], 'P3':[], 'P2':[], 'P1':[], 'N1':[], 'N2':[], 'N3':[],'P-delta':[], 'N-delta':[], 'Base-delta':[]}
 
 	@tracelog
 	def set_limits(self, lower, upper):
 		self._lower = lower
 		self._upper = upper
 
-	@tracelog
-	def index(self, rsi, price):
+	def index(self, rsi, price, timestamp):
 		if rsi > 0:
 			self.n3 = rsi
 			self.price = price
+			self.timestamp = timestamp
 			if self.p3 > 0:
 				self.update_direction()
+
+	@property
+	def ledger(self):
+		return self._ledger
+
+	@property
+	def report(self):
+		return pd.DataFrame(self.ledger)
 
 	@property
 	def lower(self):
@@ -84,6 +95,14 @@ class rsisignal:
 	@price.setter
 	def price(self, prc):
 		self._prc = prc
+
+	@property
+	def timestamp(self):
+		return self._ts
+
+	@timestamp.setter
+	def timestamp(self, ts):
+		self._ts = ts
 
 	@property
 	def pattern(self):
@@ -154,55 +173,60 @@ class rsisignal:
 		self.n2 = self._n3
 		self._n3 = next3
 
-	@tracelog
 	def update_direction(self):
-		selllog = "Sell Signal at " + self.to_string() + ", Profit:, " + str(self._profit) + "\n"
 		if (self.n1 > self.n2) and (self.n2 > self.n3): # The last 3 values fell
 			self.direction = Direction.Down
-			default_logger().debug("Down direction detected." + self.to_string())
 			if (self.p1 > self.p2) and (self.p2 > self.p3): # The last 6th, 5th and 4th values were rising
 				self.pattern = Direction.InvertedV
 				# if self.ndelta >= 15: # RSI fell > 15%
-				self.sell_signal(selllog)
+				self.sell_signal()
 			elif (self.p1 < self.p2) and (self.p2 < self.p3): # All last 6 values fell
 				self.pattern = Direction.LowerLow
-				self.sell_signal(selllog)
+				self.sell_signal()
 		if self.n3 >= self.upper:
 			self.direction = Direction.Up
 			self.pattern = Direction.OverBought
-			self.sell_signal(selllog)
+			self.sell_signal()
 
-		buylog = "Buy Signal at " + self.to_string() + ", Profit:, " + str(self._profit) + "\n"
 		if (self.n1 < self.n2) and (self.n2 < self.n3):
 			self.direction = Direction.Up
-			default_logger().debug("Up direction detected." + self.to_string())
 			if (self.p1 < self.p2) and (self.p2 < self.p3):
 				self.pattern = Direction.V
 				# if self.ndelta >= 15: # RSI rose > 15%
-				self.buy_signal(buylog)
+				self.buy_signal()
 			elif (self.p1 > self.p2) and (self.p2 > self.p3):
 				self.pattern = Direction.HigherHigh
-				self.buy_signal(buylog)
+				self.buy_signal()
 		if self.n3 <= self.lower:
 			self.direction = Direction.Down
 			self.pattern = Direction.OverSold
-			self.buy_signal(buylog)
+			self.buy_signal()
 
 
-	@tracelog
-	def buy_signal(self, log):
+	def buy_signal(self):
 		self.buytriggerred = True
 		self._profit = self._profit - self.price
-		default_logger().debug("Possible buy:\n{}".format(log))
+		self.update_ledger('BUY')
+		default_logger().debug("\n{}".format(pd.DataFrame(self.ledger)))
 
-	@tracelog
-	def sell_signal(self, log):
+	def sell_signal(self):
 		self._profit = self._profit + self.price
-		default_logger().debug("Possible sell:\n{}".format(log))
+		self.update_ledger('SELL')
+		default_logger().debug("\n{}".format(pd.DataFrame(self.ledger)))
 
-	def to_string(self):
-		s1 = "Pattern:" + str(self.pattern) + ",Price:" + str(self.price) + "," + " Direction:" + str(self.direction) + ",\n" 
-		s2 = "p3:"+ str(self.p3) + "," + "p2:"+ str(self.p2) + "," + "p1:"+ str(self.p1) + ",\n"
-		s3 = "n1:"+ str(self.n1) + "," + "n2:"+ str(self.n2) + "," + "n3:"+ str(self.n3) + ",\n"
-		s4 = "p-delta:"+ str(self.pdelta) + "," + "n-delta:"+ str(self.ndelta) + "," + "base-delta:"+ str(self.basedelta) + ",\n"
-		return s1 + s2 + s3 + s4
+	def update_ledger(self, signal):
+		(self.ledger['DateTime']).append(self.timestamp)
+		(self.ledger['Signal']).append(signal)
+		(self.ledger['Price']).append(str(self.price))
+		(self.ledger['Profit']).append(str(round(self._profit,2)))
+		(self.ledger['Pattern']).append(str(self.pattern))
+		(self.ledger['Direction']).append(str(self.direction))
+		(self.ledger['P3']).append(str(round(self.p3,2)))
+		(self.ledger['P2']).append(str(round(self.p2,2)))
+		(self.ledger['P1']).append(str(round(self.p1)))
+		(self.ledger['N1']).append(str(round(self.n1)))
+		(self.ledger['N2']).append(str(round(self.n2)))
+		(self.ledger['N3']).append(str(round(self.n3)))
+		(self.ledger['P-delta']).append(str(round(self.pdelta)))
+		(self.ledger['N-delta']).append(str(round(self.ndelta)))
+		(self.ledger['Base-delta']).append(str(round(self.basedelta)))

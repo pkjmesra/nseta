@@ -355,9 +355,10 @@ class scanner:
 				else:
 					df[key] = np.nan
 					df[searchkey] = np.nan
+				if key in df.keys():
+					df.drop([key], axis = 1, inplace = True)
 			df['Symbol'] = symbol
 			df['datetime'] = df['Date']
-			df.drop(list(KEY_MAPPING.keys()), axis = 1, inplace = True)
 		except Exception as e:
 			default_logger().debug(e, exc_info=True)
 			default_logger().debug('Exception encountered for key: ' + searchkey + "\n")

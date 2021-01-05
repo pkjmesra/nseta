@@ -20,7 +20,7 @@ def backtest_smac_strategy(df, fast_period=10, slow_period=50):
 	else:
 		with suppress_stdout_stderr():
 			result = backtest('smac', df.dropna(), fast_period=fast_period, slow_period=slow_period, verbose=__VERBOSE__)
-	print(result[['fast_period', 'slow_period', 'init_cash', 'final_value', 'pnl']].head())
+	print("\n{}".format(result[['fast_period', 'slow_period', 'init_cash', 'final_value', 'pnl']].head()))
 	return result
 
 @tracelog
@@ -30,7 +30,7 @@ def backtest_emac_strategy(df, fast_period=10, slow_period=50):
 	else:
 		with suppress_stdout_stderr():
 			result = backtest('emac', df.dropna(), fast_period=fast_period, slow_period=slow_period, verbose=__VERBOSE__)
-	print(result[['fast_period', 'slow_period', 'init_cash', 'final_value', 'pnl']].head())
+	print("\n{}".format(result[['fast_period', 'slow_period', 'init_cash', 'final_value', 'pnl']].head()))
 	return result
 
 @tracelog
@@ -40,7 +40,7 @@ def backtest_rsi_strategy(df, rsi_period=14, rsi_lower=30, rsi_upper=70):
 	else:
 		with suppress_stdout_stderr():
 			result = backtest('rsi', df.dropna(), rsi_period=rsi_period, rsi_upper=rsi_upper, rsi_lower=rsi_lower, verbose=__VERBOSE__)
-	print(result[['rsi_period', 'rsi_upper', 'rsi_lower', 'init_cash', 'final_value', 'pnl']].head())
+	print("\n{}".format(result[['rsi_period', 'rsi_upper', 'rsi_lower', 'init_cash', 'final_value', 'pnl']].head()))
 	return result
 
 @tracelog
@@ -52,7 +52,7 @@ def backtest_macd_strategy(df, fast_period=12, slow_period=26):
 		with suppress_stdout_stderr():
 			result = backtest('macd', df.dropna(), fast_period=fast_period, slow_period=slow_period, signal_period=9, 
 				sma_period=30, dir_period=10, verbose=__VERBOSE__)
-	print(result[['fast_period', 'slow_period', 'signal_period', 'init_cash', 'final_value', 'pnl']].head())
+	print("\n{}".format(result[['fast_period', 'slow_period', 'signal_period', 'init_cash', 'final_value', 'pnl']].head()))
 	return result
 
 @tracelog
@@ -62,7 +62,7 @@ def backtest_bbands_strategy(df, period=20, devfactor=2.0):
 	else:
 		with suppress_stdout_stderr():
 			result = backtest('bbands', df.dropna(), period=period, devfactor=devfactor, verbose=__VERBOSE__)
-	print(result[['period', 'devfactor', 'init_cash', 'final_value', 'pnl']].head())
+	print("\n{}".format(result[['period', 'devfactor', 'init_cash', 'final_value', 'pnl']].head()))
 	return result
 
 @tracelog
@@ -142,7 +142,7 @@ def daily_forecast(df, symbol, strategy, upper_limit=1.5, lower_limit=1.5, perio
 	else:
 		with suppress_stdout_stderr():
 			result = predict_buy_sell_1day_returns(df, forecast, strategy, upper_limit, lower_limit)
-	print(result[['init_cash', 'final_value', 'pnl']].head())
+	print("\n{}".format(result[['init_cash', 'final_value', 'pnl']].head()))
 	# get_error_metrics(ts, periods, train_size, val_size, 2.5, 10, None)
 
 	return plt, result
