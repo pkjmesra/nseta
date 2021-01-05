@@ -6,6 +6,7 @@ from nseta.live.live import get_quote, get_live_quote, get_data_list
 from nseta.scanner.tiscanner import scanner, TECH_INDICATOR_KEYS
 from nseta.archives.archiver import *
 from nseta.cli.inputs import *
+from nseta.common.tradingtime import *
 from nseta.common.log import tracelog, default_logger
 from datetime import datetime, date
 
@@ -88,7 +89,7 @@ def scan(stocks, live, intraday, swing, indicator, clear, background):
 		response_type = ResponseType.Intraday if intraday else response_type
 		response_type = ResponseType.Quote if live else response_type
 		response_type = ResponseType.History if swing else response_type
-		if clear:
+		if clear or background:
 				arch = archiver()
 				df_file_name = 'df_Scan_Results.{}'.format(indicator)
 				signaldf_file_name = 'signaldf_Scan_Results.{}'.format(indicator)
@@ -119,16 +120,37 @@ def scan(stocks, live, intraday, swing, indicator, clear, background):
 		RUN_IN_BACKGROUND = False
 		return
 
+def scan_results_file_names(indicator):
+	return 'df_Scan_Results.{}'.format(indicator), 'signaldf_Scan_Results.{}'.format(indicator)
+
+def load_archived_scan_results(indicator, response_type):
+	df_file_name , signaldf_file_name = scan_results_file_names(indicator)
+	arch = archiver()
+	df = arch.restore(df_file_name, response_type)
+	signaldf = arch.restore(signaldf_file_name, response_type)
+	return df, signaldf
+
+def save_scan_results_archive(df, signaldf, response_type, indicator, should_cache=True):
+	if should_cache or not current_time_in_ist_trading_time_range():
+		df_file_name , signaldf_file_name = scan_results_file_names(indicator)
+		arch = archiver()
+		arch.archive(df, df_file_name, response_type)
+		arch.archive(signaldf, signaldf_file_name, response_type)
+		default_logger().info('Saved to: {} and {}'.format(df_file_name, signaldf_file_name))
+
 def scan_live(stocks, indicator, background):
-	s = scanner(indicator=indicator)
-	df, signaldf = s.scan_live(stocks=stocks)
-	scan_live_results(df, signaldf)
+	df, signaldf = load_archived_scan_results(indicator, ResponseType.Quote)
+	if df is None or len(df) == 0:
+		s = scanner(indicator=indicator)
+		df, signaldf = s.scan_live(stocks=stocks)
+	scan_live_results(df, signaldf, indicator)
 	if background:
-		b = threading.Thread(name='scan_live_background', target=scan_live_background, args=[s, stocks])
+		b = threading.Thread(name='scan_live_background', target=scan_live_background, args=[s, stocks, indicator])
 		b.start()
 
-def scan_live_results(df, signaldf):
+def scan_live_results(df, signaldf, indicator, should_cache=True):
 	if df is not None and len(df) > 0:
+		save_scan_results_archive(df, signaldf, ResponseType.Quote, indicator, should_cache)
 		default_logger().debug("\nAll Stocks LTP and Signals:\n" + df.to_string(index=False))
 	else:
 		default_logger().info('Nothing to show here.')
@@ -138,57 +160,46 @@ def scan_live_results(df, signaldf):
 		default_logger().info('No signals to show here.')
 
 def scan_intraday(stocks, indicator, background):
-	s = scanner(indicator=indicator)
-	df_file_name = 'df_Scan_Results.{}'.format(indicator)
-	signaldf_file_name = 'signaldf_Scan_Results.{}'.format(indicator)
-	arch = archiver()
-	df = arch.restore(df_file_name, ResponseType.Intraday)
-	signaldf = arch.restore(signaldf_file_name, ResponseType.Intraday)
+	df, signaldf = load_archived_scan_results(indicator, ResponseType.Intraday)
 	if df is None or len(df) == 0:
+		s = scanner(indicator=indicator)
 		df, signaldf = s.scan_intraday(stocks=stocks)
 	scan_intraday_results(df, signaldf, indicator)
 	if background:
-		b = threading.Thread(name='scan_intraday_background', target=scan_intraday_background, args=[s, stocks])
+		b = threading.Thread(name='scan_intraday_background', target=scan_intraday_background, args=[s, stocks, indicator])
 		b.start()
+
+def scan_intraday_results(df, signaldf, indicator, should_cache=True):
+	if df is not None and len(df) > 0:
+		save_scan_results_archive(df, signaldf, ResponseType.Intraday, indicator, should_cache)
+		default_logger().debug("\nAll Stocks LTP and Signals:\n" + df.to_string(index=False))
+	else:
+		default_logger().info('Nothing to show here.')
+	if signaldf is not None and len(signaldf) > 0:
+		default_logger().info("\nWe recommend taking the following BUY/SELL positions for day trading. Intraday Signals:\n" + signaldf.to_string(index=False))
+	else:
+		default_logger().info('No signals to show here.')
 
 def scan_swing(stocks, indicator, background):
 	default_logger().info('Background running not supported yet. Stay tuned. Executing just this once...')
-	s = scanner(indicator=indicator)
-	df, signaldf = s.scan_swing(stocks=stocks)
-	scan_swing_results(df, signaldf)
+	df, signaldf = load_archived_scan_results(indicator, ResponseType.History)
+	if df is None or len(df) == 0:
+		s = scanner(indicator=indicator)
+		df, signaldf = s.scan_swing(stocks=stocks)
+	scan_swing_results(df, signaldf, indicator)
 	# TODO: Include get-quote results for OHLC of today before market closing hours for better accuracy
 	# if background:
 	# 	b = threading.Thread(name='scan_intraday_background', target=scan_intraday_background, args=[s, stocks, indicator])
 	# 	b.start()
 
-def scan_swing_results(df, signaldf):
+def scan_swing_results(df, signaldf, indicator, should_cache=True):
 	if df is not None and len(df) > 0:
-		file_name = 'Scan_Results.csv'
+		save_scan_results_archive(df, signaldf,ResponseType.History, indicator, should_cache)
 		default_logger().debug("\nAll Stocks LTP and Signals:\n" + df.to_string(index=False))
-		arch = archiver()
-		arch.archive(df, file_name)
-		default_logger().info('Saved to: {}'.format(file_name))
-		# click.secho('Saved to: {}'.format(file_name), fg='green', nl=True)
 	else:
 		default_logger().info('Nothing to show here.')
 	if signaldf is not None and len(signaldf) > 0:
 		default_logger().info("\nWe recommend taking the following BUY/SELL positions for swingh trading. Swing Signals:\n" + signaldf.to_string(index=False))
-	else:
-		default_logger().info('No signals to show here.')
-
-def scan_intraday_results(df, signaldf, indicator):
-	if df is not None and len(df) > 0:
-		df_file_name = 'df_Scan_Results.{}'.format(indicator)
-		signaldf_file_name = 'signaldf_Scan_Results.{}'.format(indicator)
-		default_logger().debug("\nAll Stocks LTP and Signals:\n" + df.to_string(index=False))
-		arch = archiver()
-		arch.archive(df, df_file_name, ResponseType.Intraday)
-		arch.archive(signaldf, signaldf_file_name, ResponseType.Intraday)
-		default_logger().debug('Saved to: {} and {}'.format(df_file_name, signaldf_file_name))
-	else:
-		default_logger().info('Nothing to show here.')
-	if signaldf is not None and len(signaldf) > 0:
-		default_logger().info("\nWe recommend taking the following BUY/SELL positions for day trading. Intraday Signals:\n" + signaldf.to_string(index=False))
 	else:
 		default_logger().info('No signals to show here.')
 
@@ -238,18 +249,18 @@ def live_quote_background(symbol, general, ohlc, wk52, volume, orderbook):
 		format_beautified(result, general, ohlc, wk52, volume, orderbook)
 		time.sleep(60)
 
-def scan_live_background(scannerinstance, stocks):
+def scan_live_background(scannerinstance, stocks, indicator):
 	global RUN_IN_BACKGROUND
 	RUN_IN_BACKGROUND = True
 	while RUN_IN_BACKGROUND:
 		df, signaldf = scannerinstance.scan_live(stocks=stocks)
-		scan_live_results(df, signaldf)
+		scan_live_results(df, signaldf, indicator, should_cache=False)
 		time.sleep(60)
 
-def scan_intraday_background(scannerinstance, stocks):
+def scan_intraday_background(scannerinstance, stocks, indicator):
 	global RUN_IN_BACKGROUND
 	RUN_IN_BACKGROUND = True
 	while RUN_IN_BACKGROUND:
 		df, signaldf = scannerinstance.scan_intraday(stocks=stocks)
-		scan_intraday_results(df, signaldf)
+		scan_intraday_results(df, signaldf, indicator, should_cache= False)
 		time.sleep(10)
