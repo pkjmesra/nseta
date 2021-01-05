@@ -20,15 +20,24 @@ class archiver:
 
 	def __init__(self):
 		self._archival_dir = os.path.dirname(os.path.realpath(__file__))
-		self._intraday_dir = os.path.join(self.archival_directory, 'intraday')
-		if not os.path.exists(self._intraday_dir):
-			os.makedirs(self._intraday_dir)
-		self._history_dir = os.path.join(self.archival_directory, 'history')
-		if not os.path.exists(self._history_dir):
-			os.makedirs(self._history_dir)
-		self._quote_dir = os.path.join(self.archival_directory, 'quote')
-		if not os.path.exists(self._quote_dir):
-			os.makedirs(self._quote_dir)
+		try:
+			self._intraday_dir = os.path.join(self.archival_directory, 'intraday')
+			if not os.path.exists(self._intraday_dir):
+				os.makedirs(self._intraday_dir)
+		except OSError:
+			pass
+		try:
+			self._history_dir = os.path.join(self.archival_directory, 'history')
+			if not os.path.exists(self._history_dir):
+				os.makedirs(self._history_dir)
+		except OSError:
+			pass
+		try:
+			self._quote_dir = os.path.join(self.archival_directory, 'quote')
+			if not os.path.exists(self._quote_dir):
+				os.makedirs(self._quote_dir)
+		except OSError:
+			pass
 
 	@property
 	def archival_directory(self):
@@ -70,8 +79,8 @@ class archiver:
 
 	@tracelog
 	def archive(self, df, symbol, response_type=ResponseType.Default):
-		df = df.reset_index(drop=True)
 		if df is not None and len(df) > 0:
+			df = df.reset_index(drop=True)
 			df.to_csv(self.get_path(symbol, response_type), index=False)
 
 	@tracelog
@@ -80,8 +89,8 @@ class archiver:
 		file_path = self.get_path(symbol, response_type)
 		if os.path.exists(file_path):
 			df = pd.read_csv(file_path)
-			df = df.reset_index(drop=True)
 			if df is not None and len(df) > 0:
+				df = df.reset_index(drop=True)
 				last_modified = datetime.fromtimestamp(os.path.getmtime(file_path))
 				if current_time_in_ist_trading_time_range():
 					cache_warn = 'Last Modified:{}. Fetched from the disk cache. You may wish to clear cache (nseta [command] --clear).'.format(str(last_modified))

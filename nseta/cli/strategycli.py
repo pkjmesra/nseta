@@ -165,13 +165,13 @@ def test_intraday_trading_strategy(symbol, strategy, autosearch, lower, upper):
 
 def get_intraday_dataframe(symbol, strategy):
 	s = scanner(strategy)
-	df, signaldf = s.scan_intraday(stocks=[symbol])
+	df = s.ohlc_intraday_history(symbol)
 	# df = map_keys(df)
 	try:
-		df['datetime'] = df['Date']
 		if df is not None and len(df) > 0:
 			df.drop(INTRADAY_EQUITY_HEADERS, axis = 1, inplace = True)
-	except Exception:
+	except Exception as e:
+		default_logger().debug(e, exc_info=True)
 		pass
 	return df
 
@@ -188,7 +188,7 @@ def run_test_strategy(df, symbol, strategy, autosearch, lower, upper):
 def test_intraday_signals(df, lower, upper):
 	tiinstance = ti()
 	df = tiinstance.update_ti(df)
-	df.drop(list(KEY_MAPPING.keys()), axis = 1, inplace = True)
+	# df.drop(list(KEY_MAPPING.keys()), axis = 1, inplace = True)
 	signal = rsisignal()
 	signal.set_limits(lower, upper)
 	rowindex = 0

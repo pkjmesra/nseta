@@ -109,7 +109,7 @@ Commands:
   nseta pe-history -S bandhanbnk -s 2019-07-30 -e 2020-11-20
   nseta plot-ta -S bandhanbnk -s 2019-07-30 -e 2020-11-20
   nseta test-trading-strategy -S bandhanbnk -s 2019-07-30 -e 2020-11-20 --strategy rsi
-  nseta scan -S HDFC,ABB
+  nseta scan -S HDFC,ABB -s
   nseta scan -i
 ```
 - Test your trading strategies

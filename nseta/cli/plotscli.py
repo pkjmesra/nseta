@@ -31,7 +31,7 @@ PLOT_TI_KEYS = list(PLOT_KEY_TO_FUNC.keys())
 @click.option('--clear', '-c', default=False, is_flag=True, help='Clears the cached data for the given options.')
 @click.option('--plot-type', '-p','plot_type', default='ALL', help=', '.join(PLOT_TI_KEYS) + ". Choose one.")
 @tracelog
-def plot_ta(symbol, start, end, plot_type="ALL"):
+def plot_ta(symbol, start, end, clear, plot_type="ALL"):
 	if not validate_inputs(start, end, symbol):
 		print_help_msg(plot_ta)
 		return

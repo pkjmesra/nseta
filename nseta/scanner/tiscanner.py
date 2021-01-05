@@ -24,10 +24,10 @@ TYPE_SWING = 'swing'
 KEY_MAPPING = {
 	'dt': 'Date',
 	'open': 'Open',
-	'high': 'High',
-	'low': 'Low',
+	'High': 'High',
+	'Low': 'Low',
 	'close': 'Close',
-	'volume': 'Volume',
+	# 'volume': 'Volume',
 }
 
 TECH_INDICATOR_KEYS = ['rsi', 'smac', 'emac', 'macd', 'bbands', 'all']
@@ -356,8 +356,8 @@ class scanner:
 					df[key] = np.nan
 					df[searchkey] = np.nan
 			df['Symbol'] = symbol
-			df['Volume'] = np.nan
-			# df.drop(list(KEY_MAPPING.keys()), axis = 1, inplace = True)
+			df['datetime'] = df['Date']
+			df.drop(list(KEY_MAPPING.keys()), axis = 1, inplace = True)
 		except Exception as e:
 			default_logger().debug(e, exc_info=True)
 			default_logger().debug('Exception encountered for key: ' + searchkey + "\n")

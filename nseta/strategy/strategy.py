@@ -227,7 +227,7 @@ def plot_forecast(m, forecast, symbol, strategy, df, train_val_size, periods):
 
 		# Plot the predictions
 		rcParams['figure.figsize'] = 10, 8 # width 10, height 8
-		matplotlib.rcParams.update({'font.size': 14})
+		rcParams.update({'font.size': 14})
 
 		ax = df.plot(x='datetime', y='close', style='bx-', grid=True)
 
