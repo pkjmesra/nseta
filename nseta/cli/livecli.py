@@ -136,7 +136,7 @@ def save_scan_results_archive(df, signaldf, response_type, indicator, should_cac
 		arch = archiver()
 		arch.archive(df, df_file_name, response_type)
 		arch.archive(signaldf, signaldf_file_name, response_type)
-		default_logger().info('Saved to: {} and {}'.format(df_file_name, signaldf_file_name))
+		default_logger().debug('Saved to: {} and {}'.format(df_file_name, signaldf_file_name))
 
 def scan_live(stocks, indicator, background):
 	df, signaldf = load_archived_scan_results(indicator, ResponseType.Quote)
@@ -153,11 +153,11 @@ def scan_live_results(df, signaldf, indicator, should_cache=True):
 		save_scan_results_archive(df, signaldf, ResponseType.Quote, indicator, should_cache)
 		default_logger().debug("\nAll Stocks LTP and Signals:\n" + df.to_string(index=False))
 	else:
-		default_logger().info('Nothing to show here.')
+		print('Nothing to show here.')
 	if signaldf is not None and len(signaldf) > 0:
-		default_logger().info("\nLive Signals:\n" + signaldf.to_string(index=False))
+		print("\nLive Signals:\n" + signaldf.to_string(index=False))
 	else:
-		default_logger().info('No signals to show here.')
+		print('No signals to show here.')
 
 def scan_intraday(stocks, indicator, background):
 	df, signaldf = load_archived_scan_results(indicator, ResponseType.Intraday)
@@ -174,11 +174,11 @@ def scan_intraday_results(df, signaldf, indicator, should_cache=True):
 		save_scan_results_archive(df, signaldf, ResponseType.Intraday, indicator, should_cache)
 		default_logger().debug("\nAll Stocks LTP and Signals:\n" + df.to_string(index=False))
 	else:
-		default_logger().info('Nothing to show here.')
+		print('Nothing to show here.')
 	if signaldf is not None and len(signaldf) > 0:
-		default_logger().info("\nWe recommend taking the following BUY/SELL positions for day trading. Intraday Signals:\n" + signaldf.to_string(index=False))
+		print("\nWe recommend taking the following BUY/SELL positions for day trading. Intraday Signals:\n" + signaldf.to_string(index=False))
 	else:
-		default_logger().info('No signals to show here.')
+		print('No signals to show here.')
 
 def scan_swing(stocks, indicator, background):
 	default_logger().info('Background running not supported yet. Stay tuned. Executing just this once...')
@@ -197,11 +197,11 @@ def scan_swing_results(df, signaldf, indicator, should_cache=True):
 		save_scan_results_archive(df, signaldf,ResponseType.History, indicator, should_cache)
 		default_logger().debug("\nAll Stocks LTP and Signals:\n" + df.to_string(index=False))
 	else:
-		default_logger().info('Nothing to show here.')
+		print('Nothing to show here.')
 	if signaldf is not None and len(signaldf) > 0:
-		default_logger().info("\nWe recommend taking the following BUY/SELL positions for swingh trading. Swing Signals:\n" + signaldf.to_string(index=False))
+		print("\nWe recommend taking the following BUY/SELL positions for swingh trading. Swing Signals:\n" + signaldf.to_string(index=False))
 	else:
-		default_logger().info('No signals to show here.')
+		print('No signals to show here.')
 
 def format_beautified(orgdata, general, ohlc, wk52, volume, orderbook):
 	primary, name_data, quote_data, ohlc_data, wk52_data, volume_data, pipeline_data = get_data_list(orgdata)

@@ -3,6 +3,9 @@ import os
 import pandas as pd
 import shutil
 
+from nseta.common.log import tracelog, default_logger
+from nseta.common.tradingtime import current_time_in_ist_trading_time_range
+
 __all__ = ['archiver', 'ResponseType']
 
 class ResponseType(enum.Enum):
@@ -41,6 +44,7 @@ class archiver:
 	def quote_directory(self):
 		return self._quote_dir
 
+	@tracelog
 	def get_path(self, symbol, response_type=ResponseType.History):
 		if response_type == ResponseType.Intraday:
 			return os.path.join(self.intraday_directory, symbol.upper())
@@ -51,6 +55,7 @@ class archiver:
 		else:
 			return os.path.join(self.archival_directory, symbol.upper())
 
+	@tracelog
 	def get_directory(self, response_type=ResponseType.History):
 		if response_type == ResponseType.Intraday:
 			return self.intraday_directory
@@ -61,25 +66,33 @@ class archiver:
 		else:
 			return self.archival_directory
 
+	@tracelog
 	def archive(self, df, symbol, response_type=ResponseType.Default):
 		# df = df.reset_index(drop=True)
 		if df is not None and len(df) > 0:
 			df.to_csv(self.get_path(symbol, response_type))
 
+	@tracelog
 	def restore(self, symbol, response_type=ResponseType.Default):
 		df = None
 		file_path = self.get_path(symbol, response_type)
 		if os.path.exists(file_path):
 			df = pd.read_csv(file_path)
+			if df is not None and len(df) > 0:
+				if current_time_in_ist_trading_time_range():
+					cache_warn = 'Fetched from the disk cache. You may wish to clear cache (nseta [command] --clear).'
+					print(cache_warn)
+				else:
+					print('***** Fetched from the disk cache. *****.')
 		return df
 
+	@tracelog
 	def clearcache(self, symbol=None, response_type=ResponseType.Default):
 		try:
 			if symbol is not None:
 				file_path = self.get_path(symbol, response_type)
 				if os.path.exists(file_path):
 					os.remove(file_path)
-			    
 			else:
 				shutil.rmtree(self.get_directory(response_type))
 		except OSError:

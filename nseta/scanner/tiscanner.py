@@ -4,6 +4,7 @@ import os.path
 import pandas as pd
 import talib as ta
 import datetime
+import sys
 
 from time import time
 
@@ -104,7 +105,7 @@ class scanner:
 		list_returned = self.scan_internal(stocks, TYPE_LIVE)
 		end_time = time()
 		time_spent = end_time-start_time
-		default_logger().info("This run of live scan took {:.1f} sec".format(time_spent))
+		print("This run of live scan took {:.1f} sec".format(time_spent))
 		return list_returned.pop(0), list_returned.pop(0)
 
 	@tracelog
@@ -120,7 +121,7 @@ class scanner:
 		list_returned = self.scan_internal(stocks, TYPE_INTRADAY)
 		end_time = time()
 		time_spent = end_time-start_time
-		default_logger().info("This run of intraday scan took {:.1f} sec".format(time_spent))
+		print("This run of intraday scan took {:.1f} sec".format(time_spent))
 		return list_returned.pop(0), list_returned.pop(0)
 
 	@tracelog
@@ -136,7 +137,7 @@ class scanner:
 		list_returned = self.scan_internal(stocks, TYPE_SWING)
 		end_time = time()
 		time_spent = end_time-start_time
-		default_logger().info("This run of swing scan took {:.1f} sec".format(time_spent))
+		print("This run of swing scan took {:.1f} sec".format(time_spent))
 		return list_returned.pop(0), list_returned.pop(0)
 
 	@tracelog
@@ -183,6 +184,8 @@ class scanner:
 		signaldf = None
 		for stock in stocks:
 			try:
+				sys.stdout.write("\rFetching for {}".ljust(25).format(stock))
+				sys.stdout.flush()
 				result, primary = get_live_quote(stock, keys = self.keys)
 				if primary is not None and len(primary) > 0:
 					row = pd.DataFrame(primary, columns = ['Updated', 'Symbol', 'Close', 'LTP'], index = [''])
@@ -221,6 +224,8 @@ class scanner:
 		tiinstance = ti()
 		for symbol in stocks:
 			try:
+				sys.stdout.write("\rFetching for {}".ljust(25).format(symbol))
+				sys.stdout.flush()
 				df = self.ohlc_intraday_history(symbol)
 				if df is not None and len(df) > 0:
 					df = tiinstance.update_ti(df)
@@ -269,6 +274,8 @@ class scanner:
 		end_date = datetime.datetime.now()
 		for symbol in stocks:
 			try:
+				sys.stdout.write("\rFetching for {}".ljust(25).format(symbol))
+				sys.stdout.flush()
 				df = historyinstance.daily_ohlc_history(symbol, start_date, end_date)
 				if df is not None and len(df) > 0:
 					df = tiinstance.update_ti(df)
