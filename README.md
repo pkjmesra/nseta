@@ -1,4 +1,4 @@
-# nseta :nerd_face: <img src="https://www.nseindia.com/assets/images/NSE_Logo.svg" width="128" height="44" alt="NSE India" >
+# nseta :nerd_face: <img src="/docs/assets/NSE_Logo.svg" width="128" height="44" alt="NSE India" >
 
 [![Build Status](https://travis-ci.com/pkjmesra/nseta.svg?branch=main)](https://travis-ci.com/pkjmesra/nseta)
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/pkjmesra/nseta/blob/main/LICENSE)
