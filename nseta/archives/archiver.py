@@ -5,7 +5,7 @@ import shutil
 import sys
 from datetime import datetime, time
 
-from nseta.common.log import tracelog, default_logger
+from nseta.common.log import tracelog
 from nseta.common.tradingtime import current_time_in_ist_trading_time_range
 
 __all__ = ['archiver', 'ResponseType']

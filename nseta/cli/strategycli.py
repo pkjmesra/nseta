@@ -6,7 +6,7 @@ from nseta.common.ti import ti
 from nseta.scanner.tiscanner import scanner
 from nseta.common.log import tracelog, default_logger
 from nseta.cli.inputs import *
-from nseta.scanner.tiscanner import scanner, KEY_MAPPING
+from nseta.scanner.tiscanner import scanner
 from nseta.archives.archiver import *
 
 import click
