@@ -1,4 +1,4 @@
-# nseta :nerd_face: <img src="/docs/assets/NSE_Logo.svg" width="118" height="34" alt="NSE India" >
+# nseta :nerd_face:
 
 [![Build Status](https://travis-ci.com/pkjmesra/nseta.svg?branch=main)](https://travis-ci.com/pkjmesra/nseta)
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/pkjmesra/nseta/blob/main/LICENSE)
@@ -11,7 +11,7 @@
 [![codecov](https://codecov.io/gh/pkjmesra/nseta/branch/main/graph/badge.svg)](https://codecov.io/gh/pkjmesra/nseta)
 
 Python Library (and console/CLI application) to 
--  Get publicly available data on [NSE India website](https://www1.nseindia.com/) ie. stock live-quotes and historical data[ *EQUITY ONLY* AT THIS TIME. No support for Futures/Options/Derivatives yet.]
+-  Get publicly available data on [NSE India website](https://www1.nseindia.com/) <img src="/docs/assets/NSE_Logo.svg" width="118" height="28" alt="NSE India" > ie. stock live-quotes and historical data[ *EQUITY ONLY* AT THIS TIME. No support for Futures/Options/Derivatives yet.]
 -  Plot various technical indicators
 -  Pattern recognition and fitment using candlestick charts
 -  Backtest trading strategies
