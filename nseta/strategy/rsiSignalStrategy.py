@@ -2,7 +2,7 @@ import enum
 import pandas as pd
 from nseta.common.log import tracelog, default_logger
 
-__all__ = ['rsisignal','Direction']
+__all__ = ['rsiSignalStrategy','Direction']
 
 class Direction(enum.Enum):
 	Down = 1
@@ -15,7 +15,7 @@ class Direction(enum.Enum):
 	OverBought = 8
 	OverSold = 9
 
-class rsisignal:
+class rsiSignalStrategy:
 	def __init__(self):
 		self._pat = Direction.Neutral
 		self._dir = Direction.Neutral
@@ -37,6 +37,21 @@ class rsisignal:
 	def set_limits(self, lower, upper):
 		self._lower = lower
 		self._upper = upper
+
+	def test_strategy(self, df):
+		# TODO: What if keys are in lowercase or dt/datetime is used instead of date/Date
+		try:
+			rowindex = 0
+			for rsi in (df['RSI']).values:
+				if rsi is not None:
+					price =(df.iloc[rowindex])['Close']
+					ts =(df.iloc[rowindex])['Date']
+					self.index(rsi, price, ts)
+				rowindex = rowindex + 1
+		except Exception as e:
+			default_logger().debug(e, exc_info=True)
+			pass
+		return self.report
 
 	def index(self, rsi, price, timestamp):
 		if rsi > 0:

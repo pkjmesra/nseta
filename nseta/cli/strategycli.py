@@ -1,5 +1,5 @@
 from nseta.strategy.strategy import *
-from nseta.strategy.rsisignal import *
+from nseta.strategy.rsiSignalStrategy import *
 from nseta.plots.plots import plot_rsi
 from nseta.common.history import *
 from nseta.common.ti import ti
@@ -191,16 +191,10 @@ def test_intraday_signals(df, lower, upper):
 	tiinstance = ti()
 	df = tiinstance.update_ti(df)
 	# df.drop(list(KEY_MAPPING.keys()), axis = 1, inplace = True)
-	signal = rsisignal()
-	signal.set_limits(lower, upper)
-	rowindex = 0
-	for rsi in (df['RSI']).values:
-		if rsi is not None:
-			price =(df.iloc[rowindex])['Close']
-			ts =(df.iloc[rowindex])['Date']
-			signal.index(rsi, price, ts)
-		rowindex = rowindex + 1
-	print("\n{}\n".format(signal.report.to_string(index=False)))
+	rsisignal = rsiSignalStrategy()
+	rsisignal.set_limits(lower, upper)
+	results = rsisignal.test_strategy(df)
+	print("\n{}\n".format(results.to_string(index=False)))
 	(plot_rsi(df)).show()
 
 def get_historical_dataframe(symbol, sd, ed):
