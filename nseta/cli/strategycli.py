@@ -1,5 +1,6 @@
 from nseta.strategy.strategy import *
 from nseta.strategy.rsiSignalStrategy import *
+from nseta.strategy.bbandsSignalStrategy import *
 from nseta.plots.plots import plot_rsi
 from nseta.common.history import *
 from nseta.common.ti import ti
@@ -161,7 +162,7 @@ def test_intraday_trading_strategy(symbol, strategy, autosearch, lower, upper):
 	df = get_intraday_dataframe(symbol, strategy)
 	if df is not None and len(df) > 0:
 		run_test_strategy(df, symbol, strategy, autosearch, lower, upper)
-		test_intraday_signals(df, lower, upper)
+		test_intraday_signals(df, lower, upper, strategy)
 
 def get_intraday_dataframe(symbol, strategy):
 	s = scanner(strategy)
@@ -187,15 +188,19 @@ def run_test_strategy(df, symbol, strategy, autosearch, lower, upper):
 	else:
 		STRATEGY_MAPPING['rsi'](df, autosearch, float(upper), float(lower))
 
-def test_intraday_signals(df, lower, upper):
+def test_intraday_signals(df, lower, upper, strategy):
 	tiinstance = ti()
 	df = tiinstance.update_ti(df)
-	# df.drop(list(KEY_MAPPING.keys()), axis = 1, inplace = True)
-	rsisignal = rsiSignalStrategy()
-	rsisignal.set_limits(lower, upper)
-	results = rsisignal.test_strategy(df)
-	print("\n{}\n".format(results.to_string(index=False)))
-	(plot_rsi(df)).show()
+	if strategy.lower() == 'rsi':
+		rsisignal = rsiSignalStrategy()
+		rsisignal.set_limits(lower, upper)
+		results = rsisignal.test_strategy(df)
+		print("\n{}\n".format(results.to_string(index=False)))
+		(plot_rsi(df)).show()
+	elif strategy.lower() == 'bbands':
+		bbandsSignal = bbandsSignalStrategy()
+		results = bbandsSignal.test_strategy(df)
+		print("\n{}\n".format(results.to_string(index=False)))
 
 def get_historical_dataframe(symbol, sd, ed):
 	historyinstance = historicaldata()

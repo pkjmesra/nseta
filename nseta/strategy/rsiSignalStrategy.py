@@ -1,19 +1,8 @@
-import enum
 import pandas as pd
 from nseta.common.log import tracelog, default_logger
+from nseta.common.commons import Direction
 
-__all__ = ['rsiSignalStrategy','Direction']
-
-class Direction(enum.Enum):
-	Down = 1
-	Neutral = 2
-	Up = 3
-	V = 4
-	InvertedV = 5
-	LowerLow = 6
-	HigherHigh = 7
-	OverBought = 8
-	OverSold = 9
+__all__ = ['rsiSignalStrategy']
 
 class rsiSignalStrategy:
 	def __init__(self):
@@ -238,10 +227,10 @@ class rsiSignalStrategy:
 		(self.ledger['Direction']).append(str(self.direction))
 		(self.ledger['P3']).append(str(round(self.p3,2)))
 		(self.ledger['P2']).append(str(round(self.p2,2)))
-		(self.ledger['P1']).append(str(round(self.p1)))
-		(self.ledger['N1']).append(str(round(self.n1)))
-		(self.ledger['N2']).append(str(round(self.n2)))
-		(self.ledger['N3']).append(str(round(self.n3)))
-		(self.ledger['P-delta']).append(str(round(self.pdelta)))
-		(self.ledger['N-delta']).append(str(round(self.ndelta)))
-		(self.ledger['Base-delta']).append(str(round(self.basedelta)))
+		(self.ledger['P1']).append(str(round(self.p1,2)))
+		(self.ledger['N1']).append(str(round(self.n1,2)))
+		(self.ledger['N2']).append(str(round(self.n2,2)))
+		(self.ledger['N3']).append(str(round(self.n3,2)))
+		(self.ledger['P-delta']).append(str(round(self.pdelta,2)))
+		(self.ledger['N-delta']).append(str(round(self.ndelta,2)))
+		(self.ledger['Base-delta']).append(str(round(self.basedelta,2)))

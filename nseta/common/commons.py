@@ -13,6 +13,7 @@ try:
 except ImportError:
 	pass
 
+import enum
 import zipfile
 import threading
 import six
@@ -23,7 +24,18 @@ import sys
 
 from six.moves.urllib.parse import urlparse
 
-__all__ = ['concatenated_dataframe','is_index','is_index_derivative', 'StrDate', 'ParseTables', 'unzip_str', 'ThreadReturns', 'URLFetch', 'byte_adaptor', 'js_adaptor']
+__all__ = ['Direction','concatenated_dataframe','is_index','is_index_derivative', 'StrDate', 'ParseTables', 'unzip_str', 'ThreadReturns', 'URLFetch', 'byte_adaptor', 'js_adaptor']
+
+class Direction(enum.Enum):
+	Down = 1
+	Neutral = 2
+	Up = 3
+	V = 4
+	InvertedV = 5
+	LowerLow = 6
+	HigherHigh = 7
+	OverBought = 8
+	OverSold = 9
 
 def is_index(index):
 	return index in NSE_INDICES
