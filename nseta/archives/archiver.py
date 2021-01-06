@@ -4,9 +4,10 @@ import pandas as pd
 # import shutil
 import sys
 from datetime import datetime, time
+import pytz
 
 from nseta.common.log import tracelog, default_logger
-from nseta.common.tradingtime import current_time_in_ist_trading_time_range
+from nseta.common.tradingtime import *
 
 __all__ = ['archiver', 'ResponseType']
 
@@ -99,8 +100,8 @@ class archiver:
 			df = pd.read_csv(file_path)
 			if df is not None and len(df) > 0:
 				df = df.reset_index(drop=True)
-				last_modified = datetime.fromtimestamp(os.path.getmtime(file_path))
-				if current_time_in_ist_trading_time_range():
+				last_modified = self.get_last_modified_datetime(file_path)
+				if current_datetime_in_ist_trading_time_range():
 					cache_warn = 'Last Modified:{}. Fetched {} from the disk cache. You may wish to clear cache (nseta [command] --clear).'.format(str(last_modified), symbol)
 					sys.stdout.write("\r{}".format(cache_warn))
 				else:
@@ -113,13 +114,12 @@ class archiver:
 		return df
 
 	@tracelog
-	def clearcache(self, symbol=None, response_type=ResponseType.Default):
+	def clearcache(self, symbol=None, response_type=ResponseType.Default, force_clear=False):
 		try:
 			if symbol is not None:
 				file_path = self.get_path(symbol, response_type)
 				if os.path.exists(file_path):
-					os.remove(file_path)
-					default_logger().debug("File removed:{}".format(file_path))
+					self.remove_cached_file(file_path, force_clear)
 				else:
 					default_logger().debug("File path does not exist:{}".format(file_path))
 			else:
@@ -131,9 +131,23 @@ class archiver:
 				for file in os.listdir(directory):
 					filename = os.fsdecode(file)
 					dir_file_path = os.path.join(dir_path, filename)
-					os.remove(dir_file_path)
-					default_logger().debug("File removed:{}".format(dir_file_path))
+					self.remove_cached_file(dir_file_path, force_clear)
 		except OSError as e:
 			default_logger().debug("Exception in clearcache.")
 			default_logger().debug(e, exc_info=True)
 			pass
+
+	def get_last_modified_datetime(self, file_path):
+		last_modified = datetime.utcfromtimestamp(os.path.getmtime(file_path))
+		return last_modified
+
+	def remove_cached_file(self, file_path, force_clear=False):
+		last_modified_unaware = self.get_last_modified_datetime(file_path)
+		last_modified_aware = pytz.utc.localize(last_modified_unaware)
+		should_clear = datetime_in_ist_trading_time_range(last_modified_aware)
+		if should_clear or force_clear:
+			os.remove(file_path)
+			default_logger().debug("File removed:{}".format(file_path))
+		else:
+			default_logger().debug("\nFetching from server will get the same data. If you want to force clear, use 'force_clear=True' option.")
+			default_logger().debug("\nFile NOT removed:{}.\n Last Modified:{}".format(file_path, str(last_modified_aware)))

@@ -85,17 +85,7 @@ def scan(stocks, live, intraday, swing, indicator, clear, background):
 		stocks = []
 	global RUN_IN_BACKGROUND
 	try:
-		response_type = ResponseType.Default
-		response_type = ResponseType.Intraday if intraday else response_type
-		response_type = ResponseType.Quote if live else response_type
-		response_type = ResponseType.History if swing else response_type
-		if clear or background:
-				arch = archiver()
-				df_file_name = 'df_Scan_Results.{}'.format(indicator)
-				signaldf_file_name = 'signaldf_Scan_Results.{}'.format(indicator)
-				arch.clearcache(df_file_name, response_type)
-				arch.clearcache(signaldf_file_name, response_type)
-				arch.clearcache(response_type=response_type)
+		clear_cache(clear, background, indicator, intraday, live, swing)
 		if live:
 			scan_live(stocks, indicator, background)
 		elif intraday:
@@ -131,7 +121,7 @@ def load_archived_scan_results(indicator, response_type):
 	return df, signaldf
 
 def save_scan_results_archive(df, signaldf, response_type, indicator, should_cache=True):
-	if should_cache or not current_time_in_ist_trading_time_range():
+	if should_cache or not current_datetime_in_ist_trading_time_range():
 		df_file_name , signaldf_file_name = scan_results_file_names(indicator)
 		arch = archiver()
 		arch.archive(df, df_file_name, response_type)
@@ -140,8 +130,8 @@ def save_scan_results_archive(df, signaldf, response_type, indicator, should_cac
 
 def scan_live(stocks, indicator, background):
 	df, signaldf = load_archived_scan_results(indicator, ResponseType.Quote)
+	s = scanner(indicator=indicator)
 	if df is None or len(df) == 0:
-		s = scanner(indicator=indicator)
 		df, signaldf = s.scan_live(stocks=stocks)
 	scan_live_results(df, signaldf, indicator)
 	if background:
@@ -161,8 +151,8 @@ def scan_live_results(df, signaldf, indicator, should_cache=True):
 
 def scan_intraday(stocks, indicator, background):
 	df, signaldf = load_archived_scan_results(indicator, ResponseType.Intraday)
+	s = scanner(indicator=indicator)
 	if df is None or len(df) == 0:
-		s = scanner(indicator=indicator)
 		df, signaldf = s.scan_intraday(stocks=stocks)
 	scan_intraday_results(df, signaldf, indicator)
 	if background:
@@ -241,6 +231,19 @@ def formatted_dataframe(list_data, column_names, indices=True):
 		df = pd.DataFrame(list_data, columns = columns)
 	return df
 
+def clear_cache(clear, background, indicator, intraday = True, live = False, swing = False):
+	response_type = ResponseType.Default
+	response_type = ResponseType.Intraday if intraday else response_type
+	response_type = ResponseType.Quote if live else response_type
+	response_type = ResponseType.History if swing else response_type
+	if clear or background:
+		arch = archiver()
+		df_file_name = 'df_Scan_Results.{}'.format(indicator)
+		signaldf_file_name = 'signaldf_Scan_Results.{}'.format(indicator)
+		arch.clearcache(df_file_name, response_type, force_clear=False)
+		arch.clearcache(signaldf_file_name, response_type, force_clear=False)
+		arch.clearcache(response_type=response_type, force_clear=False)
+
 def live_quote_background(symbol, general, ohlc, wk52, volume, orderbook):
 	global RUN_IN_BACKGROUND
 	RUN_IN_BACKGROUND = True
@@ -253,6 +256,7 @@ def scan_live_background(scannerinstance, stocks, indicator):
 	global RUN_IN_BACKGROUND
 	RUN_IN_BACKGROUND = True
 	while RUN_IN_BACKGROUND:
+		clear_cache(True, True, indicator, False, True, False)
 		df, signaldf = scannerinstance.scan_live(stocks=stocks)
 		scan_live_results(df, signaldf, indicator, should_cache=False)
 		time.sleep(60)
@@ -261,6 +265,7 @@ def scan_intraday_background(scannerinstance, stocks, indicator):
 	global RUN_IN_BACKGROUND
 	RUN_IN_BACKGROUND = True
 	while RUN_IN_BACKGROUND:
+		clear_cache(True, True, indicator, True, False, False)
 		df, signaldf = scannerinstance.scan_intraday(stocks=stocks)
 		scan_intraday_results(df, signaldf, indicator, should_cache= False)
 		time.sleep(10)

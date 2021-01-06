@@ -112,12 +112,12 @@ def test_trading_strategy(symbol, start, end, autosearch, strategy, upper, lower
 		ed = datetime.strptime(end, "%Y-%m-%d").date()
 	try:
 		if lower is None:
-			lower = 30
+			lower = 25
 		if upper is None:
-			upper = 70
+			upper = 75
 		if clear:
 			arch = archiver()
-			arch.clearcache(response_type=ResponseType.Intraday if intraday else ResponseType.History)
+			arch.clearcache(response_type=ResponseType.Intraday if intraday else ResponseType.History, force_clear=False)
 		if intraday:
 			test_intraday_trading_strategy(symbol, strategy, autosearch, lower, upper)
 		else:

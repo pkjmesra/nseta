@@ -30,7 +30,7 @@ def create_cdl_model(symbol, start, end, file_name, steps, clear, format):
 	try:
 		if clear:
 			arch = archiver()
-			arch.clearcache(response_type=ResponseType.History)
+			arch.clearcache(response_type=ResponseType.History, force_clear=False)
 		historyinstance = historicaldata()
 		df = historyinstance.daily_ohlc_history(symbol, sd, ed)
 		df.set_index('Date', inplace=True)
