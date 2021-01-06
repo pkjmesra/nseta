@@ -174,7 +174,8 @@ class historicaldata:
 		symbol = kwargs['symbol']
 		start = kwargs['start']
 		end = kwargs['end']
-		df = self.unarchive_history(symbol, start, end)
+		intraday = kwargs['intraday']
+		df = self.unarchive_history(symbol, start, end, intraday)
 		if df is not None and len (df) > 0:
 			return df
 		try:
@@ -199,7 +200,7 @@ class historicaldata:
 						headers=headers, scaling=scaling, csvnode=csvnode)
 		except Exception as e:
 			default_logger().debug(e, exc_info=True)
-		self.archive_history(df, symbol, start, end)
+		self.archive_history(df, symbol, start, end, intraday)
 		return df
 
 
@@ -499,14 +500,14 @@ class historicaldata:
 		return df
 
 	@tracelog
-	def archive_history(self, df, symbol, start_date, end_date):
-		symbol = '{}_{}_{}'.format(symbol, start_date.strftime('%d-%m-%Y'), end_date.strftime('%d-%m-%Y'))
+	def archive_history(self, df, symbol, start_date, end_date, intraday=False):
+		symbol = symbol if intraday else '{}_{}_{}'.format(symbol, start_date.strftime('%d-%m-%Y'), end_date.strftime('%d-%m-%Y'))
 		arch = archiver()
-		arch.archive(df, symbol, ResponseType.History)
+		arch.archive(df, symbol, ResponseType.Intraday if intraday else ResponseType.History)
 
 	@tracelog
-	def unarchive_history(self, symbol, start_date, end_date):
-		symbol = '{}_{}_{}'.format(symbol, start_date.strftime('%d-%m-%Y'), end_date.strftime('%d-%m-%Y'))
+	def unarchive_history(self, symbol, start_date, end_date, intraday = False):
+		symbol = symbol if intraday else '{}_{}_{}'.format(symbol, start_date.strftime('%d-%m-%Y'), end_date.strftime('%d-%m-%Y'))
 		arch = archiver()
-		df = arch.restore(symbol, ResponseType.History)
+		df = arch.restore(symbol, ResponseType.Intraday if intraday else ResponseType.History)
 		return df

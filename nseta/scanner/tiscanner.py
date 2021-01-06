@@ -109,7 +109,7 @@ class scanner:
 		list_returned = self.scan_internal(stocks, TYPE_LIVE)
 		end_time = time()
 		time_spent = end_time-start_time
-		print("This run of live scan took {:.1f} sec".format(time_spent))
+		print("\nThis run of live scan took {:.1f} sec".format(time_spent))
 		return list_returned.pop(0), list_returned.pop(0)
 
 	@tracelog
@@ -125,7 +125,7 @@ class scanner:
 		list_returned = self.scan_internal(stocks, TYPE_INTRADAY)
 		end_time = time()
 		time_spent = end_time-start_time
-		print("This run of intraday scan took {:.1f} sec".format(time_spent))
+		print("\nThis run of intraday scan took {:.1f} sec".format(time_spent))
 		return list_returned.pop(0), list_returned.pop(0)
 
 	@tracelog
@@ -141,7 +141,7 @@ class scanner:
 		list_returned = self.scan_internal(stocks, TYPE_SWING)
 		end_time = time()
 		time_spent = end_time-start_time
-		print("This run of swing scan took {:.1f} sec".format(time_spent))
+		print("\nThis run of swing scan took {:.1f} sec".format(time_spent))
 		return list_returned.pop(0), list_returned.pop(0)
 
 	@tracelog
