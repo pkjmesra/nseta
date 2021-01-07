@@ -5,7 +5,7 @@ import warnings
 # import pandas as pd
 
 from functools import wraps
-from inspect import getcallargs, getargspec
+from inspect import getcallargs, getfullargspec
 from collections import OrderedDict, Iterable
 from itertools import *
 
@@ -69,8 +69,8 @@ def getargnames(func):
 	"""Return an iterator over all arg names, including nested arg names and varargs.
 	Goes in the order of the functions argspec, with varargs and
 	keyword args last if present."""
-	(argnames, varargname, kwargname, _) = getargspec(func)
-	return chain(flatten(argnames), filter(None, [varargname, kwargname]))
+	(args, varargs, varkw, defaults, kwonlyargs, kwonlydefaults, annotations) = getfullargspec(func)
+	return chain(flatten(args), filter(None, [varargs, varkw]))
 
 def getcallargs_ordered(func, *args, **kwargs):
 	"""Return an OrderedDict of all arguments to a function.

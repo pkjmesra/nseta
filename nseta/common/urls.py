@@ -13,7 +13,7 @@ from requests import Session
 from functools import partial
 from cachecontrol import CacheControl
 
-__all__ = ['nse_intraday_url_new','NSE_SYMBOL_COUNT_URL', 'symbol_count_url', 'get_symbol_count', 'equity_history_url_full', 'equity_history_url', 'price_list_url', 'pr_price_list_zipped_url', 'equity_symbol_list_url', 'index_pe_history_url', 'nse_intraday_url']
+__all__ = ['derivative_expiry_dates_url','derivative_history_url','derivative_price_list_url','index_daily_snapshot_url','index_history_url','index_vix_history_url','daily_volatility_url','nse_intraday_url_new','NSE_SYMBOL_COUNT_URL', 'symbol_count_url', 'get_symbol_count', 'equity_history_url_full', 'equity_history_url', 'price_list_url', 'pr_price_list_zipped_url', 'equity_symbol_list_url', 'index_pe_history_url', 'nse_intraday_url']
 
 session = CacheControl(Session())
 # headers = {
