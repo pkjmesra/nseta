@@ -58,5 +58,6 @@ setup(
 	],
 	install_requires = install_requires,
 	keywords = ['NSE', 'Technical Indicators', 'Backtesting', 'Forecasting'],
+	test_suite="tests",
 ),
 python_requires='>=3.6',
