@@ -61,6 +61,7 @@ jobs:
         coverage run -m unittest discover -s tests -p 'test_*.py'
         coverage report -m
         coverage html
+        bash <(curl -s https://codecov.io/bash)
     - name: "Upload test coverage to Codecov"
       uses: codecov/codecov-action@v1
       with:
@@ -71,7 +72,7 @@ jobs:
         env_vars: OS,PYTHON
         name: codecov-umbrella
         fail_ci_if_error: false
-        path_to_write_report: ./coverage/codecov_report.txt
+        # path_to_write_report: ./coverage/codecov_report.txt
         verbose: true
     - name: Build and publish distribution 📦 to Test PyPI
       env:
