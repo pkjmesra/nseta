@@ -1,5 +1,6 @@
 from nseta.common.log import default_logger
 import talib as ta
+import pandas as pd
 
 __all__ = ['ti']
 
@@ -13,7 +14,13 @@ class ti:
 			df[['Close','EMA(9)']] = self.get_ema_df(df)
 			df[['macd(12)','macdsignal(9)', 'macdhist(26)']] = self.get_macd_df(df)
 			df[['Close','BBands-U','BBands-M','BBands-L']] = self.get_bbands_df(df)
-			# df[['PP','R1','S1','R2', 'S2', 'R3', 'S3']] = self.get_ppsr_df(df)
+			# can_have_pivots = True
+			# for key in ['Low', 'High', 'Close']:
+			# 	if key not in df.keys():
+			# 		can_have_pivots = False
+			# 		break
+			# if can_have_pivots:
+			# 	df = self.get_ppsr_df(df)
 		except Exception as e:
 			default_logger().debug(e, exc_info=True)
 		except SystemExit:
@@ -57,6 +64,15 @@ class ti:
 		df['OBV'] = ta.OBV(df['Close'], df['Volume'])
 		return df['OBV']
 
-def get_ppsr_df(self, df):
-	df = ta.PPSR(df)
-	return df[['PP','R1','S1','R2', 'S2', 'R3', 'S3']]
+	def get_ppsr_df(self, df):
+		PP = pd.Series((df['High'] + df['Low'] + df['Close']) / 3)
+		R1 = pd.Series(2 * PP - df['Low'])
+		S1 = pd.Series(2 * PP - df['High'])
+		R2 = pd.Series(PP + df['High'] - df['Low'])
+		S2 = pd.Series(PP - df['High'] + df['Low'])
+		R3 = pd.Series(df['High'] + 2 * (PP - df['Low']))
+		S3 = pd.Series(df['Low'] - 2 * (df['High'] - PP))
+		psr = {'PP':round(PP,2), 'R1':round(R1,2), 'S1':round(S1,2), 'R2':round(R2,2), 'S2':round(S2,2), 'R3':round(R3,2), 'S3':round(S3,2)}
+		PSR = pd.DataFrame(psr)
+		df = df.join(PSR)
+		return df

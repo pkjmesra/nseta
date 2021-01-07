@@ -184,7 +184,7 @@ class historicaldata:
 						   params=params,
 						   schema=schema,
 						   headers=headers, scaling=scaling, csvnode=csvnode)
-			if 'Symbol' in headers and 'Symbol' in df.keys():
+			if (df is not None and len(df) > 0) and ('Symbol' in headers and 'Symbol' in df.keys()):
 				# Check if we received the correct Symbol in response what we expected
 				expected_symbol = symbol
 				received_symbol = df['Symbol'].iloc[0]

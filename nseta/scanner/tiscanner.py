@@ -47,7 +47,16 @@ INTRADAY_KEYS_MAPPING = {
 	'macd(12)': 'macd(12)',
 	'macdsignal(9)': 'macdsignal(9)',
 	'macdhist(26)': 'macdhist(26)',
+	# 'PP':'PP',
+	# 'R1': 'R1',
+	# 'S1': 'S1',
+	# 'R2': 'R2',
+	# 'S2': 'S2',
+	# 'R3': 'R3',
+	# 'S3': 'S3',
 }
+
+# PIVOT_KEYS =['PP', 'R1','S1','R2','S2','R3','S3']
 
 class scanner:
 	def __init__(self, indicator='all'):
@@ -283,6 +292,7 @@ class scanner:
 				df = historyinstance.daily_ohlc_history(symbol, start_date, end_date)
 				if df is not None and len(df) > 0:
 					df = tiinstance.update_ti(df)
+					df = df.sort_values(by='Date',ascending=True)
 					df = df.tail(1)
 					default_logger().debug(df.to_string(index=False))
 					for key in df.keys():

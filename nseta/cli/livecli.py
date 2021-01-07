@@ -171,7 +171,8 @@ def scan_intraday_results(df, signaldf, indicator, should_cache=True):
 		print('No signals to show here.')
 
 def scan_swing(stocks, indicator, background):
-	default_logger().info('Background running not supported yet. Stay tuned. Executing just this once...')
+	if background:
+		default_logger().info('Background running not supported yet. Stay tuned. Executing just once...')
 	df, signaldf = load_archived_scan_results(indicator, ResponseType.History)
 	if df is None or len(df) == 0:
 		s = scanner(indicator=indicator)
