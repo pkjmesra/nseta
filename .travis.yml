@@ -13,9 +13,12 @@ before_install:
   - pip3 install convertdate==2.2.0
 install:
   - python3 setup.py clean build test install sdist bdist_wheel
-  - pip install codecov
+  - pip3 install codecov
+  - pip3 install coverage
 script:
-  - coverage run tests.py
+  - coverage run -m unittest discover -s tests -p 'test_*.py'
+  - coverage report -m
+  - coverage html
   - nseta --help
   - nseta --version
 # Push the results back to codecov
