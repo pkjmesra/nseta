@@ -13,6 +13,8 @@ class ti:
 			df[['Close','EMA(9)']] = self.get_ema_df(df)
 			df[['macd(12)','macdsignal(9)', 'macdhist(26)']] = self.get_macd_df(df)
 			df[['Close','BBands-U','BBands-M','BBands-L']] = self.get_bbands_df(df)
+			# df[['PP','R1','S1','R2', 'S2', 'R3', 'S3']] = self.get_ppsr_df(df)
+			PPSR
 		except Exception as e:
 			default_logger().debug(e, exc_info=True)
 		except SystemExit:
@@ -55,3 +57,7 @@ class ti:
 	def get_obv_df(self, df):
 		df['OBV'] = ta.OBV(df['Close'], df['Volume'])
 		return df['OBV']
+
+def get_ppsr_df(self, df):
+	df = ta.PPSR(df)
+	return df[['PP','R1','S1','R2', 'S2', 'R3', 'S3']]
