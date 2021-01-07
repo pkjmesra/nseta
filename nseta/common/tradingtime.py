@@ -46,7 +46,7 @@ def is_datetime_between(begin_datetime, end_datetime, check_datetime=None):
 def trade_begin_datetime_ist():
 	delhi_now = IST_datetime()
 	tz = pytz.timezone(IST_TIMEZONE)
-	begin_dt = datetime(delhi_now.year, delhi_now.month, delhi_now.day, 9, 15, tzinfo = tz)
+	begin_dt = datetime(delhi_now.year, delhi_now.month, delhi_now.day, 9, 0, tzinfo = tz)
 	return begin_dt
 
 def trade_end_datetime_ist():

@@ -14,7 +14,6 @@ class ti:
 			df[['macd(12)','macdsignal(9)', 'macdhist(26)']] = self.get_macd_df(df)
 			df[['Close','BBands-U','BBands-M','BBands-L']] = self.get_bbands_df(df)
 			# df[['PP','R1','S1','R2', 'S2', 'R3', 'S3']] = self.get_ppsr_df(df)
-			PPSR
 		except Exception as e:
 			default_logger().debug(e, exc_info=True)
 		except SystemExit:
