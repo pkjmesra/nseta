@@ -28,7 +28,6 @@ class archiver:
 		except OSError as e:
 			default_logger().debug("Exception in archiver while creating DIR:{}.".format(self._intraday_dir))
 			default_logger().debug(e, exc_info=True)
-			pass
 		try:
 			self._history_dir = os.path.join(self.archival_directory, 'history')
 			if not os.path.exists(self._history_dir):
@@ -36,7 +35,6 @@ class archiver:
 		except OSError as e:
 			default_logger().debug("Exception in archiver while creating DIR:{}.".format(self._history_dir))
 			default_logger().debug(e, exc_info=True)
-			pass
 		try:
 			self._quote_dir = os.path.join(self.archival_directory, 'quote')
 			if not os.path.exists(self._quote_dir):
@@ -44,7 +42,6 @@ class archiver:
 		except OSError as e:
 			default_logger().debug("Exception in archiver while creating DIR:{}.".format(self._quote_dir))
 			default_logger().debug(e, exc_info=True)
-			pass
 
 	@property
 	def archival_directory(self):
@@ -135,7 +132,6 @@ class archiver:
 		except OSError as e:
 			default_logger().debug("Exception in clearcache.")
 			default_logger().debug(e, exc_info=True)
-			pass
 
 	def get_last_modified_datetime(self, file_path):
 		last_modified = datetime.utcfromtimestamp(os.path.getmtime(file_path))

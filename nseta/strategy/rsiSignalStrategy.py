@@ -44,9 +44,9 @@ class rsiSignalStrategy:
 			self.update_ledger(buy_sell)
 		except Exception as e:
 			default_logger().debug(e, exc_info=True)
-			pass
 		return self.report
 
+	@tracelog
 	def index(self, rsi, price, timestamp):
 		if rsi > 0:
 			self.n3 = rsi
@@ -229,6 +229,7 @@ class rsiSignalStrategy:
 		self.update_ledger('SELL')
 		default_logger().debug("\n{}".format(pd.DataFrame(self.ledger)))
 
+	@tracelog
 	def update_ledger(self, signal):
 		(self.ledger['DateTime']).append(self.timestamp)
 		(self.ledger['Signal']).append(signal)

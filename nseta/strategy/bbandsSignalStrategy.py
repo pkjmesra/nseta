@@ -31,9 +31,9 @@ class bbandsSignalStrategy:
 			self.update_ledger(buy_sell)
 		except Exception as e:
 			default_logger().debug(e, exc_info=True)
-			pass
 		return self.report
 
+	@tracelog
 	def index(self, lower_bband, upper_bband, price, timestamp):
 		self.price = price
 		self.timestamp = timestamp
@@ -127,6 +127,7 @@ class bbandsSignalStrategy:
 		self.update_ledger('SELL')
 		default_logger().debug("\n{}".format(pd.DataFrame(self.ledger)))
 
+	@tracelog
 	def update_ledger(self, signal):
 		(self.ledger['DateTime']).append(self.timestamp)
 		(self.ledger['Signal']).append(signal)
