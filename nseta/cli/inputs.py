@@ -23,7 +23,7 @@ def validate_inputs(start, end,symbol, strategy=None):
 				click.secho("Please provide start and end date with a time delta of at least " + str(STRATEGY_DAYS_MAPPING[strategy.lower()]) + " days for the selected strategy.", fg='red', nl=True)
 				return False
 	except Exception as e:
-		default_logger().error(e, exc_info=True)
+		default_logger().debug(e, exc_info=True)
 		click.secho("Please provide start and end date in format yyyy-mm-dd", fg='red', nl=True)
 		return False
 	except SystemExit:
