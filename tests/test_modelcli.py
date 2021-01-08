@@ -13,7 +13,6 @@ class TestModelcli(unittest.TestCase):
 	def test_create_cdl_model(self):
 		runner = CliRunner()
 		result = runner.invoke(create_cdl_model, args=['--symbol', 'BANDHANBNK', '--start', '2020-01-01', '--end', '2020-01-08', '--steps', '--clear'])
-		print('{} - {}'.format(result, result.output))
 		self.assertEqual(result.exit_code , 0)
 		self.assertIn("Model saved to: BANDHANBNK.csv", result.output, str(result.output))
 		self.assertIn("Candlestick pattern model plot saved to: BANDHANBNK_candles.html", result.output, str(result.output))

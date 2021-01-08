@@ -31,7 +31,7 @@ def history(symbol, start, end, file_name, index, clear, format): #, futures, ex
 		historyinstance = historicaldata()
 		df = historyinstance.daily_ohlc_history(symbol, sd, ed)
 		default_logger().debug(df.to_string(index=False))
-		click.echo("\n{}".format(df.head()))
+		click.echo("History for symbol:{}\n{}\n".format(symbol, df.head()))
 	except Exception as e:
 		default_logger().debug(e, exc_info=True)
 		click.secho('Failed to fetch history', fg='red', nl=True)
@@ -64,7 +64,7 @@ def pe_history(symbol, start, end, format, file_name):
 	try:
 		historyinstance = historicaldata()
 		df = historyinstance.get_index_pe_history(symbol, sd, ed)
-		click.echo(df.head())
+		click.echo("PE History for symbol:{}\n{}\n".format(symbol, df.head()))
 	except Exception as e:
 		default_logger().debug(e, exc_info=True)
 		click.secho('Failed to fetch PE history.', fg='red', nl=True)
