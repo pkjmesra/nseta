@@ -111,6 +111,13 @@ class archiver:
 		return df
 
 	@tracelog
+	def restore_from_path(self, file_path):
+		df = None
+		if os.path.exists(file_path):
+			df = pd.read_csv(file_path)
+		return df
+
+	@tracelog
 	def clearcache(self, symbol=None, response_type=ResponseType.Default, force_clear=False):
 		try:
 			if symbol is not None:
