@@ -5,7 +5,7 @@ import unittest
 from nseta.analytics.model import *
 from nseta.archives.archiver import archiver
 
-FIXTURE_PATH = 'tests/fixtures/BANDHANBNK_01-01-2021_08-01-2021'
+FIXTURE_PATH = 'tests/fixtures/BANDHANBNK_01-01-2020_08-01-2021'
 class TestAnalyticsModel(unittest.TestCase):
 	def setUp(self):
 		arch = archiver()
@@ -19,7 +19,7 @@ class TestAnalyticsModel(unittest.TestCase):
 		candle_names = get_candle_funcs()
 		candle_counts = len(candle_names)
 		df = create_pattern_data(self.df)
-		self.assertEqual(len(df.keys()), 71)
+		self.assertEqual(len(df.keys()), 73)
 		self.assertIn("CDL3LINESTRIKE", df.columns, str(df.columns))
 
 	def test_pick_best_rank_from_pattern(self):
@@ -27,8 +27,8 @@ class TestAnalyticsModel(unittest.TestCase):
 		df_ranked = pick_best_rank_from_pattern(df)
 		self.assertIn("candlestick_pattern", df_ranked.columns, str(df_ranked.columns))
 		self.assertIn("candlestick_match_count", df_ranked.columns, str(df_ranked.columns))
-		NO_PATTERN = df_ranked['candlestick_pattern'].iloc[0]
-		self.assertEqual(NO_PATTERN, 'NO_PATTERN')
+		CDLENGULFING_Bull = df_ranked['candlestick_pattern'].iloc[2]
+		self.assertEqual(CDLENGULFING_Bull, 'CDLENGULFING_Bull')
 
 	def test_recognize_candlestick_pattern(self):
 		df_pattern = recognize_candlestick_pattern(self.df, False)
