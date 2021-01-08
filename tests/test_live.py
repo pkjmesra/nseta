@@ -91,15 +91,15 @@ class TestLiveUrls(unittest.TestCase):
         comp_name = q['data'][0]['instrumentType']
         self.assertEqual(comp_name, "FUTIDX")
 
-        exp = min([x for x in stexp if x > n.date()])
-        q = get_quote(symbol='NIFTY', instrument='OPTIDX',
-                      expiry=exp, option_type="CE", strike=11000)
-        data_element = q['data']
-        if len(data_element) > 0:
-            comp_name = data_element[0]['instrumentType']
-            self.assertEqual(comp_name, "OPTIDX")
-        else:
-            print('[test_get_quote_index_der] Missing or empty "data" element.')
+        # exp = min([x for x in stexp if x > n.date()])
+        # q = get_quote(symbol='NIFTY', instrument='OPTIDX',
+        #               expiry=exp, option_type="CE", strike=11000)
+        # data_element = q['data']
+        # if len(data_element) > 0:
+        #     comp_name = data_element[0]['instrumentType']
+        #     self.assertEqual(comp_name, "OPTIDX")
+        # else:
+        #     print('[test_get_quote_index_der] Missing or empty "data" element.')
 
     def test_get_futures_chain(self):
         """
