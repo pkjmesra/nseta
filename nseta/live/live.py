@@ -12,6 +12,7 @@ from nseta.live.liveurls import quote_eq_url, quote_derivative_url, option_chain
 import dateutil.relativedelta
 import json
 from bs4 import BeautifulSoup
+from datetime import datetime, date, timedelta
 
 __all__ = ['get_data_list','get_live_quote']
 
@@ -204,7 +205,7 @@ def getworkingdays(dtfrom, dtto):
 	stweekends = set()
 
 	for i in range((dtto - dtfrom).days + 1):
-		dt = dtfrom + datetime.timedelta(days=i)
+		dt = dtfrom + timedelta(days=i)
 		stalldays.add(dt)
 
 		if dt.isoweekday() in (6, 7):
@@ -212,7 +213,7 @@ def getworkingdays(dtfrom, dtto):
 
 	# pdb.set_trace()
 	stspecial  = set(
-	  [datetime.date(2020,2,1) # Budget day
+	  [date(2020,2,1) # Budget day
 	  ]
 	)
 

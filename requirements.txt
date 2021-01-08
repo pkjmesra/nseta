@@ -9,7 +9,7 @@ chardet==3.0.4
 Click==7.0
 convertdate==2.2.0
 croniter==0.3.35
-# fastquant @ git+git://github.com/enzoampil/fastquant.git@5f17e7087e1efb534e2db88775dba268d31de4be
+# fastquant git+git://github.com/enzoampil/fastquant.git@5f17e7087e1efb534e2db88775dba268d31de4be
 fbprophet==0.7.1
 idna==2.8
 lxml==4.6.2
