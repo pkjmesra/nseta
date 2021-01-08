@@ -48,10 +48,22 @@ class TestLivecli(unittest.TestCase):
 		self.assertEqual(result.exit_code , 0)
 		self.assertIn("Swing scanning finished.", result.output, str(result.output))
 
-	def test_livec_quote_inputs(self):
+	def test_live_quote_inputs(self):
 		runner = CliRunner()
 		result = runner.invoke(live_quote, args=['-gowvb'])
 		self.assertEqual(result.exit_code , 0)
+		self.assertIn("Usage:  [OPTIONS]", result.output, str(result.output))
+
+	def test_scan_inputs(self):
+		runner = CliRunner()
+		result = runner.invoke(scan, args=['--stocks', 'BANDHANBNK,HDFC', '--swing', '--intraday', '--indicator', 'all', '--clear'])
+		self.assertEqual(result.exit_code , 0)
+		self.assertIn("Choose only one of --live, --intraday or --swing options.", result.output, str(result.output))
+		self.assertIn("Usage:  [OPTIONS]", result.output, str(result.output))
+
+		result = runner.invoke(scan, args=['--stocks', 'BANDHANBNK,HDFC', '--indicator', 'all', '--clear'])
+		self.assertEqual(result.exit_code , 0)
+		self.assertIn("Choose at least one of the --live, --intraday (recommended) or --swing options.", result.output, str(result.output))
 		self.assertIn("Usage:  [OPTIONS]", result.output, str(result.output))
 
 	def tearDown(self):
