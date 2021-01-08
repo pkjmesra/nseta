@@ -70,7 +70,7 @@ jobs:
         # directory: ./coverage/reports/
         flags: unittests
         env_vars: THIS_VERSION,GITHUB_REF
-        name: ${{ THIS_VERSION }}
+        name: codecov-umbrella
         fail_ci_if_error: false
         # path_to_write_report: ./coverage/codecov_report.txt
         verbose: true
