@@ -24,6 +24,30 @@ class TestHistorycli(unittest.TestCase):
 		self.assertIn("PE History for symbol:BANDHANBNK", result.output, str(result.output))
 		self.assertIn("Saved to: BANDHANBNK.csv", result.output, str(result.output))
 
+	def test_history_inputs(self):
+		runner = CliRunner()
+		result = runner.invoke(history, args=['--start', '2020-01-01', '--end', '2020-01-08'])
+		self.assertEqual(result.exit_code , 0)
+		self.assertIn("Usage:  [OPTIONS]", result.output, str(result.output))
+
+	def test_history_pickle(self):
+		runner = CliRunner()
+		result = runner.invoke(history, args=['--symbol', 'BANDHANBNK', '--start', '2020-01-01', '--end', '2020-01-08', '--format', 'pkl'])
+		self.assertEqual(result.exit_code , 0)
+		self.assertIn("Saved to: BANDHANBNK.pkl", result.output, str(result.output))
+
+	def test_pe_history_inputs(self):
+		runner = CliRunner()
+		result = runner.invoke(pe_history, args=['--start', '2020-01-01', '--end', '2020-01-08'])
+		self.assertEqual(result.exit_code , 0)
+		self.assertIn("Usage:  [OPTIONS]", result.output, str(result.output))
+
+	def test_pe_history_pickle(self):
+		runner = CliRunner()
+		result = runner.invoke(pe_history, args=['--symbol', 'BANDHANBNK', '--start', '2020-01-01', '--end', '2020-01-08', '--format', 'pkl'])
+		self.assertEqual(result.exit_code , 0)
+		self.assertIn("Saved to: BANDHANBNK.pkl", result.output, str(result.output))
+
 	def tearDown(self):
 	  pass
 

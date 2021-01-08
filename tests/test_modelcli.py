@@ -17,6 +17,19 @@ class TestModelcli(unittest.TestCase):
 		self.assertIn("Model saved to: BANDHANBNK.csv", result.output, str(result.output))
 		self.assertIn("Candlestick pattern model plot saved to: BANDHANBNK_candles.html", result.output, str(result.output))
 
+	def test_create_cdl_model_inputs(self):
+		runner = CliRunner()
+		result = runner.invoke(create_cdl_model, args=['--start', '2020-01-01', '--end', '2020-01-08', '--steps', '--clear'])
+		self.assertEqual(result.exit_code , 0)
+		self.assertIn("Usage:  [OPTIONS]", result.output, str(result.output))
+
+	def test_create_cdl_model_pickle(self):
+		runner = CliRunner()
+		result = runner.invoke(create_cdl_model, args=['--symbol', 'BANDHANBNK', '--start', '2020-01-01', '--end', '2020-01-08', '--format', 'pkl'])
+		self.assertEqual(result.exit_code , 0)
+		self.assertIn("Model saved to: BANDHANBNK.pkl", result.output, str(result.output))
+		self.assertIn("Candlestick pattern model plot saved to: BANDHANBNK_candles.html", result.output, str(result.output))
+
 	def tearDown(self):
 	  pass
 
