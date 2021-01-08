@@ -48,6 +48,12 @@ class TestLivecli(unittest.TestCase):
 		self.assertEqual(result.exit_code , 0)
 		self.assertIn("Swing scanning finished.", result.output, str(result.output))
 
+	def test_livec_quote_inputs(self):
+		runner = CliRunner()
+		result = runner.invoke(live_quote, args=['-gowvb'])
+		self.assertEqual(result.exit_code , 0)
+		self.assertIn("Usage:  [OPTIONS]", result.output, str(result.output))
+
 	def tearDown(self):
 	  self.session.close()
 
