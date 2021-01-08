@@ -148,6 +148,7 @@ def scan_live_results(df, signaldf, indicator, should_cache=True):
 		print("\nLive Signals:\n" + signaldf.to_string(index=False))
 	else:
 		print('No signals to show here.')
+	click.secho('Live scanning finished.', fg='green', nl=True)
 
 def scan_intraday(stocks, indicator, background):
 	df, signaldf = load_archived_scan_results(indicator, ResponseType.Intraday)
@@ -169,6 +170,7 @@ def scan_intraday_results(df, signaldf, indicator, should_cache=True):
 		print("\nWe recommend taking the following BUY/SELL positions for day trading. Intraday Signals:\n" + signaldf.to_string(index=False))
 	else:
 		print('No signals to show here.')
+	click.secho('Intraday scanning finished.', fg='green', nl=True)
 
 def scan_swing(stocks, indicator, background):
 	if background:
@@ -193,6 +195,7 @@ def scan_swing_results(df, signaldf, indicator, should_cache=True):
 		print("\nWe recommend taking the following BUY/SELL positions for swingh trading. Swing Signals:\n" + signaldf.to_string(index=False))
 	else:
 		print('No signals to show here.')
+	click.secho('Swing scanning finished.', fg='green', nl=True)
 
 def format_beautified(orgdata, general, ohlc, wk52, volume, orderbook):
 	primary, name_data, quote_data, ohlc_data, wk52_data, volume_data, pipeline_data = get_data_list(orgdata)
