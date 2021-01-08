@@ -69,8 +69,8 @@ jobs:
         # files: ./coverage1.xml,./coverage2.xml
         # directory: ./coverage/reports/
         flags: unittests
-        env_vars: OS,PYTHON
-        name: codecov-umbrella
+        env_vars: THIS_VERSION,GITHUB_REF
+        name: ${{ THIS_VERSION }}
         fail_ci_if_error: false
         # path_to_write_report: ./coverage/codecov_report.txt
         verbose: true
