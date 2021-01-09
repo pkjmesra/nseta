@@ -64,15 +64,15 @@ class ti:
 		df['OBV'] = ta.OBV(df['Close'], df['Volume'])
 		return df['OBV']
 
-	def get_ppsr_df(self, df):
-		PP = pd.Series((df['High'] + df['Low'] + df['Close']) / 3)
-		R1 = pd.Series(2 * PP - df['Low'])
-		S1 = pd.Series(2 * PP - df['High'])
-		R2 = pd.Series(PP + df['High'] - df['Low'])
-		S2 = pd.Series(PP - df['High'] + df['Low'])
-		R3 = pd.Series(df['High'] + 2 * (PP - df['Low']))
-		S3 = pd.Series(df['Low'] - 2 * (df['High'] - PP))
-		psr = {'PP':round(PP,2), 'R1':round(R1,2), 'S1':round(S1,2), 'R2':round(R2,2), 'S2':round(S2,2), 'R3':round(R3,2), 'S3':round(S3,2)}
-		PSR = pd.DataFrame(psr)
-		df = df.join(PSR)
-		return df
+	# def get_ppsr_df(self, df):
+	# 	PP = pd.Series((df['High'] + df['Low'] + df['Close']) / 3)
+	# 	R1 = pd.Series(2 * PP - df['Low'])
+	# 	S1 = pd.Series(2 * PP - df['High'])
+	# 	R2 = pd.Series(PP + df['High'] - df['Low'])
+	# 	S2 = pd.Series(PP - df['High'] + df['Low'])
+	# 	R3 = pd.Series(df['High'] + 2 * (PP - df['Low']))
+	# 	S3 = pd.Series(df['Low'] - 2 * (df['High'] - PP))
+	# 	psr = {'PP':round(PP,2), 'R1':round(R1,2), 'S1':round(S1,2), 'R2':round(R2,2), 'S2':round(S2,2), 'R3':round(R3,2), 'S3':round(S3,2)}
+	# 	PSR = pd.DataFrame(psr)
+	# 	df = df.join(PSR)
+	# 	return df
