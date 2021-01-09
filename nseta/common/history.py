@@ -151,8 +151,7 @@ class historicaldata:
 			return self.daily_ohlc_history_quanta(**kwargs)
 
 	'''
-	Not being used right now. TODO: Switch to new NSE site.
-	'''
+	#Not being used right now. TODO: Switch to new NSE site.
 	@tracelog
 	def get_intraday_history(self, symbol):
 		resp = nse_intraday_url_new(index=symbol.upper())
@@ -168,7 +167,7 @@ class historicaldata:
 			dt = datetime.datetime.utcfromtimestamp(item[0]/1000)
 			value = item[1]
 			print(dt, value)
-
+'''
 	@tracelog
 	def daily_ohlc_history_quanta(self, **kwargs):
 		symbol = kwargs['symbol']
@@ -414,7 +413,6 @@ class historicaldata:
 		res = daily_deliverypositions_url(dt.strftime("%d%m%Y").upper())
 		text = res.content.decode()
 		fp = six.StringIO(text)
-
 		# The file starts with initial lines that just have text infomation
 		# e.g.
 		# Security Wise Delivery Position - Compulsory Rolling Settlement
@@ -475,7 +473,7 @@ class historicaldata:
 			t2.start()
 			t1.join()
 			t2.join()
-			return pd.concat((t1.result, t2.result))
+			return concatenated_dataframe(t1.result, t2.result)
 		else:
 			return self.get_rbi_ref_history_quanta(**kwargs)
 

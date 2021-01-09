@@ -25,6 +25,13 @@ class TestHistorycli(unittest.TestCase):
 		self.assertIn("PE History for symbol:BANDHANBNK", result.output, str(result.output))
 		self.assertIn("Saved to: BANDHANBNK.csv", result.output, str(result.output))
 
+	def test_pe_history_130_days(self):
+		runner = CliRunner()
+		result = runner.invoke(pe_history, args=['--symbol', 'BANDHANBNK', '--start', '2020-06-01', '--end', '2020-12-31'])
+		self.assertEqual(result.exit_code , 0)
+		self.assertIn("PE History for symbol:BANDHANBNK", result.output, str(result.output))
+		self.assertIn("Saved to: BANDHANBNK.csv", result.output, str(result.output))
+
 	def test_history_inputs(self):
 		runner = CliRunner()
 		result = runner.invoke(history, args=['--start', '2020-01-01', '--end', '2020-01-08'])
