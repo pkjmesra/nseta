@@ -14,18 +14,107 @@ class TestStrategycli(unittest.TestCase):
 		pass
 
 	@patch('matplotlib.pyplot.show')
-	def test_test_trading_strategy(self, mock_pyplot):
+	def test_test_trading_strategy_historical_bbands(self, mock_pyplot):
 		runner = CliRunner()
 		result = runner.invoke(test_trading_strategy, args=['--symbol', 'BANDHANBNK', '--start', '2020-08-01', '--end', '2021-01-01', '--strategy', 'bbands', '--clear'])
 		self.assertEqual(result.exit_code , 0)
-		self.assertIn("Final Portfolio Value", result.output, str(result.output))
-		self.assertIn("Optimal parameters", result.output, str(result.output))
-		self.assertIn("Final PnL", result.output, str(result.output))
+		self.assertIn("final_value", result.output, str(result.output))
+
+	@patch('matplotlib.pyplot.show')
+	def test_test_trading_strategy_historical_rsi(self, mock_pyplot):
+		runner = CliRunner()
+		result = runner.invoke(test_trading_strategy, args=['--symbol', 'BANDHANBNK', '--start', '2020-08-01', '--end', '2021-01-01', '--strategy', 'rsi', '--clear'])
+		self.assertEqual(result.exit_code , 0)
+		self.assertIn("final_value", result.output, str(result.output))
+
+	@patch('matplotlib.pyplot.show')
+	def test_test_trading_strategy_historical_smac(self, mock_pyplot):
+		runner = CliRunner()
+		result = runner.invoke(test_trading_strategy, args=['--symbol', 'BANDHANBNK', '--start', '2020-08-01', '--end', '2021-01-01', '--strategy', 'smac', '--clear'])
+		self.assertEqual(result.exit_code , 0)
+		self.assertIn("final_value", result.output, str(result.output))
+
+	@patch('matplotlib.pyplot.show')
+	def test_test_trading_strategy_historical_emac(self, mock_pyplot):
+		runner = CliRunner()
+		result = runner.invoke(test_trading_strategy, args=['--symbol', 'BANDHANBNK', '--start', '2020-08-01', '--end', '2021-01-01', '--strategy', 'emac', '--clear'])
+		self.assertEqual(result.exit_code , 0)
+		self.assertIn("final_value", result.output, str(result.output))
+
+	@patch('matplotlib.pyplot.show')
+	def test_test_trading_strategy_historical_multi(self, mock_pyplot):
+		runner = CliRunner()
+		result = runner.invoke(test_trading_strategy, args=['--symbol', 'BANDHANBNK', '--start', '2020-08-01', '--end', '2021-01-01', '--strategy', 'multi', '--clear'])
+		self.assertEqual(result.exit_code , 0)
+		self.assertIn("final_value", result.output, str(result.output))
+
+	@patch('matplotlib.pyplot.show')
+	def test_test_trading_strategy_historical_custom(self, mock_pyplot):
+		runner = CliRunner()
+		result = runner.invoke(test_trading_strategy, args=['--symbol', 'BANDHANBNK', '--start', '2020-08-01', '--end', '2021-01-01', '--strategy', 'custom', '-l', '1.5', '-u', '1.5', '--clear'])
+		self.assertEqual(result.exit_code , 0)
+		self.assertIn("final_value", result.output, str(result.output))
+
+	@patch('matplotlib.pyplot.show')
+	def test_test_trading_strategy_historical_autosearch(self, mock_pyplot):
+		runner = CliRunner()
+		result = runner.invoke(test_trading_strategy, args=['--symbol', 'BANDHANBNK', '--start', '2020-08-01', '--end', '2021-01-01', '--strategy', 'bbands', '--clear', '--autosearch'])
+		self.assertEqual(result.exit_code , 0)
+		self.assertIn("final_value", result.output, str(result.output))
+
+	@patch('matplotlib.pyplot.show')
+	def test_test_trading_strategy_intraday(self, mock_pyplot):
+		runner = CliRunner()
+		result = runner.invoke(test_trading_strategy, args=['--symbol', 'BANDHANBNK', '--strategy', 'bbands', '--clear', '--intraday'])
+		self.assertEqual(result.exit_code , 0)
+		self.assertIn("final_value", result.output, str(result.output))
+
+	@patch('matplotlib.pyplot.show')
+	def test_test_trading_strategy_intraday_autosearch(self, mock_pyplot):
+		runner = CliRunner()
+		result = runner.invoke(test_trading_strategy, args=['--symbol', 'BANDHANBNK', '--strategy', 'bbands', '--clear', '--intraday', '--autosearch'])
+		self.assertEqual(result.exit_code , 0)
+		self.assertIn("final_value", result.output, str(result.output))
 	
 	@patch('matplotlib.pyplot.show')
-	def test_forecast_strategy(self, mock_pyplot):
+	def test_forecast_strategy_bbands(self, mock_pyplot):
 		runner = CliRunner()
-		result = runner.invoke(forecast_strategy, args=['--symbol', 'BANDHANBNK', '--start', '2020-11-01', '--end', '2021-01-01', '--strategy', 'bbands', '--clear'])
+		result = runner.invoke(forecast_strategy, args=['--symbol', 'BANDHANBNK', '--start', '2020-08-01', '--end', '2021-01-01', '--strategy', 'bbands', '--clear'])
+		self.assertEqual(result.exit_code , 0)
+		self.assertIn("final_value", result.output, str(result.output))
+
+	@patch('matplotlib.pyplot.show')
+	def test_forecast_strategy_rsi(self, mock_pyplot):
+		runner = CliRunner()
+		result = runner.invoke(forecast_strategy, args=['--symbol', 'BANDHANBNK', '--start', '2020-08-01', '--end', '2021-01-01', '--strategy', 'rsi', '--clear'])
+		self.assertEqual(result.exit_code , 0)
+		self.assertIn("final_value", result.output, str(result.output))
+
+	@patch('matplotlib.pyplot.show')
+	def test_forecast_strategy_smac(self, mock_pyplot):
+		runner = CliRunner()
+		result = runner.invoke(forecast_strategy, args=['--symbol', 'BANDHANBNK', '--start', '2020-08-01', '--end', '2021-01-01', '--strategy', 'smac', '--clear'])
+		self.assertEqual(result.exit_code , 0)
+		self.assertIn("final_value", result.output, str(result.output))
+
+	@patch('matplotlib.pyplot.show')
+	def test_forecast_strategy_emac(self, mock_pyplot):
+		runner = CliRunner()
+		result = runner.invoke(forecast_strategy, args=['--symbol', 'BANDHANBNK', '--start', '2020-08-01', '--end', '2021-01-01', '--strategy', 'emac', '--clear'])
+		self.assertEqual(result.exit_code , 0)
+		self.assertIn("final_value", result.output, str(result.output))
+
+	@patch('matplotlib.pyplot.show')
+	def test_forecast_strategy_multi(self, mock_pyplot):
+		runner = CliRunner()
+		result = runner.invoke(forecast_strategy, args=['--symbol', 'BANDHANBNK', '--start', '2020-08-01', '--end', '2021-01-01', '--strategy', 'multi', '--clear'])
+		self.assertEqual(result.exit_code , 0)
+		self.assertIn("final_value", result.output, str(result.output))
+
+	@patch('matplotlib.pyplot.show')
+	def test_forecast_strategy_custom(self, mock_pyplot):
+		runner = CliRunner()
+		result = runner.invoke(forecast_strategy, args=['--symbol', 'BANDHANBNK', '--start', '2020-08-01', '--end', '2021-01-01', '--strategy', 'custom', '-l', '1.5', '-u', '1.5', '--clear'])
 		self.assertEqual(result.exit_code , 0)
 		self.assertIn("final_value", result.output, str(result.output))
 

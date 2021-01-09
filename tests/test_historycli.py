@@ -5,6 +5,7 @@ import unittest
 from click.testing import CliRunner
 
 from nseta.cli.historycli import history, pe_history
+import nseta.common.urls as urls
 
 class TestHistorycli(unittest.TestCase):
 	def setUp(self):
@@ -49,7 +50,7 @@ class TestHistorycli(unittest.TestCase):
 		self.assertIn("Saved to: BANDHANBNK.pkl", result.output, str(result.output))
 
 	def tearDown(self):
-	  pass
+		urls.session.close()
 
 if __name__ == '__main__':
 

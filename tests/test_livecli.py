@@ -9,7 +9,7 @@ from nseta.common import urls
 
 class TestLivecli(unittest.TestCase):
 	def setUp(self):
-		self.session = urls.session
+		pass
 
 	def test_live_quote(self):
 		runner = CliRunner()
@@ -67,7 +67,7 @@ class TestLivecli(unittest.TestCase):
 		self.assertIn("Usage:  [OPTIONS]", result.output, str(result.output))
 
 	def tearDown(self):
-	  self.session.close()
+	  urls.session.close()
 
 if __name__ == '__main__':
 

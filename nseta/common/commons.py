@@ -210,6 +210,15 @@ class URLFetch:
 		self.session = session
 		return self
 
+	def __enter__(self):
+		return self
+
+	def close(self):
+		self.session.close()
+
+	def __exit__(self, exc_type, exc_value, traceback):
+		self.close()
+
 	def __call__(self, *args, **kwargs):
 		u = urlparse(self.url)
 		self.session.headers.update({'Host': u.hostname})
@@ -228,8 +237,6 @@ class URLFetch:
 
 	def update_headers(self, headers):
 		self.session.headers.update(headers)
-
-
 
 def byte_adaptor(fbuffer):
 	""" provides py3 compatibility by converting byte based

@@ -55,17 +55,17 @@ def macd_strategy(df, autosearch, lower, upper):
 def multi_strategy(df, autosearch, lower, upper):
 	if not autosearch:
 		SAMPLE_STRAT_DICT = {
-    		"smac": {"fast_period": 10, "slow_period": [40, 50]},
-    		"rsi": {"rsi_lower": [15, 30], "rsi_upper": 70},
+			"smac": {"fast_period": 10, "slow_period": [40, 50]},
+			"rsi": {"rsi_lower": [15, 30], "rsi_upper": 70},
 		}
 		results = backtest_multi_strategy(df, SAMPLE_STRAT_DICT)
 		print(results[['smac.fast_period', 'smac.slow_period', 'rsi.rsi_lower', 'rsi.rsi_upper', 'init_cash', 'final_value', 'pnl']].head())
 	else:
 		SAMPLE_STRAT_DICT = {
-    		"smac": {"fast_period": 10, "slow_period": [40, 50]},
-    		"emac": {"fast_period": 10, "slow_period": [40, 50]},
-    		"macd": {"fast_period": 12, "slow_period": [26, 40]},
-    		"rsi": {"rsi_lower": [15, 20, 30, 40], "rsi_upper": [60, 70, 80]},
+			"smac": {"fast_period": 10, "slow_period": [40, 50]},
+			"emac": {"fast_period": 10, "slow_period": [40, 50]},
+			"macd": {"fast_period": 12, "slow_period": [26, 40]},
+			"rsi": {"rsi_lower": [15, 20, 30, 40], "rsi_upper": [60, 70, 80]},
 		}
 		results = backtest_multi_strategy(df, SAMPLE_STRAT_DICT)
 		print(results[['smac.fast_period', 'smac.slow_period', 'rsi.rsi_lower', 'rsi.rsi_upper', 'init_cash', 'final_value', 'pnl']].head())

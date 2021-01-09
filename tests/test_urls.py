@@ -116,7 +116,6 @@ class TestUrls(unittest.TestCase):
     def tearDown(self):
       urls.session.close()
 
-
 if __name__ == '__main__':
 
     suite = unittest.TestLoader().loadTestsFromTestCase(TestUrls)

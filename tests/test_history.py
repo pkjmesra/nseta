@@ -120,6 +120,8 @@ class TestHistory(unittest.TestCase):
         idxname = dfplidx[dfplidx['NAME'] == 'Nifty 100'].squeeze()
         self.assertEqual(idxname['CLOSE'], 14305.5)
 
+    def tearDown(self):
+      urls.session.close()
 
 if __name__ == '__main__':
 

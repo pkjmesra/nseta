@@ -160,3 +160,5 @@ class TestLiveUrls(unittest.TestCase):
             2020, 1, 31), datetime.date(2020, 2, 3))
         self.assertEqual(len(workingdays), 3)
         
+    def tearDown(self):
+      urls.session.close()

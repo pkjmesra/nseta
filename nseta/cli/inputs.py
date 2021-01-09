@@ -11,6 +11,7 @@ STRATEGY_DAYS_MAPPING = {
 	"emac": 63,
 	"bbands": 28,
 	"multi": 63,
+	"custom": 20,
 }
 
 @tracelog

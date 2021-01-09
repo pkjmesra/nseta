@@ -5,6 +5,7 @@ import unittest
 from click.testing import CliRunner
 
 from nseta.cli.modelcli import create_cdl_model
+import nseta.common.urls as urls
 
 class TestModelcli(unittest.TestCase):
 	def setUp(self):
@@ -38,7 +39,7 @@ class TestModelcli(unittest.TestCase):
 		self.assertIn("Candlestick pattern model plot saved to: BANDHANBNK_candles.html", result.output, str(result.output))
 
 	def tearDown(self):
-	  pass
+	  urls.session.close()
 
 if __name__ == '__main__':
 

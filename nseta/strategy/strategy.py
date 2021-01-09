@@ -66,7 +66,12 @@ def backtest_bbands_strategy(df, period=20, devfactor=2.0):
 	return result
 
 @tracelog
-def backtest_multi_strategy(df, strats):
+def backtest_multi_strategy(df, strats=None):
+	if strats is None:
+		strats = {
+			"smac": {"fast_period": 10, "slow_period": [40, 50]},
+			"rsi": {"rsi_lower": [15, 30], "rsi_upper": 70},
+		}
 	if __VERBOSE__:
 		result = backtest("multi", df.dropna(), strats=strats, verbose=__VERBOSE__)
 	else:

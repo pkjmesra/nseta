@@ -7,6 +7,7 @@ from unittest.mock import patch
 from click.testing import CliRunner
 
 from nseta.cli.plotscli import plot_ta
+import nseta.common.urls as urls
 
 class TestStrategycli(unittest.TestCase):
 	def setUp(self):
@@ -97,7 +98,7 @@ class TestStrategycli(unittest.TestCase):
 		self.assertIn("Technical indicator(s): BBANDS, plotted.", result.output, str(result.output))
 
 	def tearDown(self):
-	  pass
+	  urls.session.close()
 
 if __name__ == '__main__':
 
