@@ -25,9 +25,9 @@ def smac_strategy(df, autosearch, lower, upper):
 @tracelog
 def emac_strategy(df, autosearch, lower, upper):
 	if not autosearch:
-		backtest_smac_strategy(df, fast_period=10, slow_period=50)
+		backtest_emac_strategy(df, fast_period=10, slow_period=50)
 	else:
-		backtest_smac_strategy(df, fast_period=range(10, 30, 3), slow_period=range(40, 50, 3))
+		backtest_emac_strategy(df, fast_period=range(10, 30, 3), slow_period=range(40, 50, 3))
 
 @tracelog
 def bbands_strategy(df, autosearch, lower, upper):
