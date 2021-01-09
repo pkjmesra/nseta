@@ -47,12 +47,4 @@ def sigint_handler(signum, frame):
 	os.kill(os.getpid(), signum)
 
 if __name__ == '__main__':
-	try:
-		nsetacli()
-	except KeyboardInterrupt as e:
-		log.default_logger().error(e, exc_info=True)
-		click.secho('[main] Keyboard Interrupt received. Exiting.', fg='red', nl=True)
-		try:
-			sys.exit(e.args[0][0]["code"])
-		except SystemExit as se:
-			os._exit(se.args[0][0]["code"])
+	nsetacli()

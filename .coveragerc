@@ -8,15 +8,13 @@ exclude_lines =
     pragma: no cover
     raise NotImplementedError
     except
-    pass
     if __name__ == .__main__.:
     if background:
     print
-    default_logger
-    if clear
     while RUN_IN_BACKGROUND:
     RUN_IN_BACKGROUND
     sigint_handler
 ignore_errors = True
 omit =
     tests/*
+    scanner/stocks.py

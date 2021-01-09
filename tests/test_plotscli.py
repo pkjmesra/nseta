@@ -13,10 +13,23 @@ class TestStrategycli(unittest.TestCase):
 	def setUp(self):
 		pass
 
+	def test_plot_ta_inputs(self):
+		runner = CliRunner()
+		result = runner.invoke(plot_ta, args=['--start', '2020-08-01', '--end', '2021-01-01'])
+		self.assertEqual(result.exit_code , 0)
+		self.assertIn("Please provide security/index code", result.output, str(result.output))
+
 	@patch('matplotlib.pyplot.show')
 	def test_plot_ta_all(self, mock_pyplot):
 		runner = CliRunner()
 		result = runner.invoke(plot_ta, args=['--symbol', 'BANDHANBNK', '--start', '2020-11-01', '--end', '2021-01-01', '--plot-type', 'ALL'])
+		self.assertEqual(result.exit_code , 0)
+		self.assertIn("Technical indicator(s): ALL, plotted.", result.output, str(result.output))
+
+	@patch('matplotlib.pyplot.show')
+	def test_plot_ta_no_option(self, mock_pyplot):
+		runner = CliRunner()
+		result = runner.invoke(plot_ta, args=['--symbol', 'BANDHANBNK', '--start', '2020-11-01', '--end', '2021-01-01'])
 		self.assertEqual(result.exit_code , 0)
 		self.assertIn("Technical indicator(s): ALL, plotted.", result.output, str(result.output))
 	

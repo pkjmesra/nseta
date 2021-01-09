@@ -254,15 +254,6 @@ class scanner:
 								df.drop([key], axis = 1, inplace = True)
 					frames.append(df)
 					signalframes = self.update_signals(signalframes, df)
-			except KeyboardInterrupt as e:
-				default_logger().debug(e, exc_info=True)
-				default_logger().debug('[scan_intraday] Keyboard Interrupt received. Exiting.')
-				try:
-					sys.exit(1)
-					break
-				except SystemExit as se:
-					os._exit(1) # se.args[0][0]["code"]
-					break
 			except Exception as e:
 				default_logger().debug("Exception encountered for " + symbol)
 				default_logger().debug(e, exc_info=True)
@@ -307,15 +298,6 @@ class scanner:
 					default_logger().debug(df.to_string(index=False))
 					frames.append(df)
 					signalframes = self.update_signals(signalframes, df)
-			except KeyboardInterrupt as e:
-				default_logger().debug(e, exc_info=True)
-				default_logger().debug('[scan_intraday] Keyboard Interrupt received. Exiting.')
-				try:
-					sys.exit(1)
-					break
-				except SystemExit as se:
-					os._exit(1) # se.args[0][0]["code"]
-					break
 			except Exception as e:
 				default_logger().debug("Exception encountered for " + symbol)
 				default_logger().debug(e, exc_info=True)
@@ -342,13 +324,6 @@ class scanner:
 				arch.archive(df, symbol, ResponseType.Intraday)
 			else:
 				default_logger().debug("Empty dataframe for " + symbol)
-		except KeyboardInterrupt as e:
-				default_logger().debug(e, exc_info=True)
-				default_logger().debug('Keyboard Interrupt received. Exiting.')
-				try:
-					sys.exit(e.args[0][0]["code"])
-				except SystemExit as se:
-					os._exit(se.args[0][0]["code"])
 		except Exception as e:
 			default_logger().debug(e, exc_info=True)
 			return None
