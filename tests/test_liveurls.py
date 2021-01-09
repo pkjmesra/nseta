@@ -4,6 +4,8 @@ import json
 import requests
 import six
 
+import timeout_decorator
+
 from bs4 import BeautifulSoup
 from datetime import datetime, timedelta
 
@@ -15,7 +17,7 @@ from nseta.common.commons import (is_index, is_index_derivative,
                            ParseTables, StrDate, unzip_str,
                            ThreadReturns, URLFetch)
 
-
+LOCAL_TIMEOUT = 60
 class TestLiveUrls(unittest.TestCase):
     def setUp(self):
         proxy_on = False
@@ -43,6 +45,7 @@ class TestLiveUrls(unittest.TestCase):
         d = json.loads(hresponseDiv.get_text().strip())
         self.assertEqual(d['data'][0]['underlying'], 'NIFTY')
 
+    @timeout_decorator.timeout(LOCAL_TIMEOUT)
     def test_option_chain_url(self):
         """
             1. Underlying symbol
@@ -53,6 +56,7 @@ class TestLiveUrls(unittest.TestCase):
         resp = option_chain_url('SBIN', 'OPTSTK', '30JAN2020')
         self.assertGreaterEqual(resp.text.find('Open Interest'), 0)
 
+    @timeout_decorator.timeout(LOCAL_TIMEOUT)
     def test_futures_chain_url(self):
         """
             1. Underlying symbol

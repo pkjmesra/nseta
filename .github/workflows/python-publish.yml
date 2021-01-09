@@ -56,6 +56,7 @@ jobs:
         echo "##[set-output name=THIS_VERSION;]$(echo ${THIS_VERSION})"
     - name: Generate test coverage report
       run: |
+        pip3 install timeout-decorator
         pip3 install coverage
         python setup.py clean build install
         coverage run -m unittest discover -s tests -p 'test_*.py'

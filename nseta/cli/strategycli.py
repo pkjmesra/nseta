@@ -118,7 +118,7 @@ def test_trading_strategy(symbol, start, end, autosearch, strategy, upper, lower
 			upper = 75
 		if clear:
 			arch = archiver()
-			arch.clearcache(response_type=ResponseType.Intraday if intraday else ResponseType.History, force_clear=False)
+			arch.clearcache(response_type=ResponseType.Intraday if intraday else ResponseType.History, force_clear=True)
 		if intraday:
 			test_intraday_trading_strategy(symbol, strategy, autosearch, lower, upper)
 		else:
@@ -138,14 +138,18 @@ def test_trading_strategy(symbol, start, end, autosearch, strategy, upper, lower
 	help=', '.join(STRATEGY_MAPPING_KEYS) + ". Choose one.")
 @click.option('--upper', '-u', default=1.5, help='Only when strategy is "custom". We buy the security when the predicted next day return is > +{upper} %')
 @click.option('--lower', '-l', default=1.5, help='Only when strategy is "custom". We sell the security when the predicted next day return is < -{lower} %')
+@click.option('--clear', '-c', default=False, is_flag=True, help='Clears the cached data for the given options.')
 @tracelog
-def forecast_strategy(symbol, start, end, strategy, upper, lower):
+def forecast_strategy(symbol, start, end, strategy, upper, lower, clear):
 	if not validate_inputs(start, end, symbol, strategy):
 		print_help_msg(forecast_strategy)
 		return
 	sd = datetime.strptime(start, "%Y-%m-%d").date()
 	ed = datetime.strptime(end, "%Y-%m-%d").date()
 	try:
+		if clear:
+			arch = archiver()
+			arch.clearcache(response_type=ResponseType.History, force_clear=True)
 		df = get_historical_dataframe(symbol, sd, ed)
 		df = prepare_for_historical_strategy(df, symbol)
 		plt, result = daily_forecast(df, symbol, strategy, upper_limit=float(upper), lower_limit=float(lower), periods=7)
@@ -214,9 +218,12 @@ def test_historical_trading_strategy(symbol, sd, ed, strategy, autosearch, lower
 
 def prepare_for_historical_strategy(df, symbol):
 	tiscanner = scanner()
-	df = tiscanner.map_keys(df, symbol)
+	# df = tiscanner.map_keys(df, symbol)
+	df['datetime'] = df['Date']
+	df['dt'] = df['Date']
+	df['close'] = df['Close']
 	df = reset_date_index(df)
-	df.drop(EQUITY_HEADERS, axis = 1, inplace = True)
+	# df.drop(EQUITY_HEADERS, axis = 1, inplace = True)
 	return df
 
 def reset_date_index(df):

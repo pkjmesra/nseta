@@ -209,7 +209,6 @@ def fit_model(m, ts, train_val_size, periods):
 	forecast = m.predict(future)
 	return forecast
 
-@tracelog
 def plot_forecast(m, forecast, symbol, strategy, df, train_val_size, periods):
 	if periods > 0:
 		fig1 = m.plot(forecast, uncertainty=True)

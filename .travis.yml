@@ -11,6 +11,7 @@ before_install:
   - pip3 install fastquant git+git://github.com/enzoampil/fastquant.git@5f17e7087e1efb534e2db88775dba268d31de4be
   - pip3 install -r requirements.txt
   - pip3 install convertdate==2.2.0
+  - pip3 install timeout-decorator
 install:
   - python3 setup.py clean build test install sdist bdist_wheel
   - pip3 install codecov
