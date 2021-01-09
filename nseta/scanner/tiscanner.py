@@ -76,22 +76,8 @@ class scanner:
 		return self._scanner_dir
 
 	@property
-	def scan_type(self):
-		return self._scan_type
-
-	@scan_type.setter
-	def scan_type(self, value):
-		self._scan_type = value
-
-	@property
 	def indicator(self):
 		return self._indicator
-
-	@indicator.setter
-	def indicator(self, value):
-		if value not in TECH_INDICATOR_KEYS:
-			value = 'all'
-		self._indicator = value
 
 	@property
 	def stocksdict(self):
@@ -114,7 +100,6 @@ class scanner:
 		# If stocks array is empty, pull stock list from stocks.txt file
 		stocks = stocks if len(stocks) > 0 else [
 			line.rstrip() for line in open(file_path, "r")]
-		self.scan_type = TYPE_LIVE
 		list_returned = self.scan_internal(stocks, TYPE_LIVE)
 		end_time = time()
 		time_spent = end_time-start_time
@@ -130,7 +115,6 @@ class scanner:
 		# If stocks array is empty, pull stock list from stocks.txt file
 		stocks = stocks if len(stocks) > 0 else [
 			line.rstrip() for line in open(file_path, "r")]
-		self.scan_type = TYPE_INTRADAY
 		list_returned = self.scan_internal(stocks, TYPE_INTRADAY)
 		end_time = time()
 		time_spent = end_time-start_time
@@ -146,7 +130,6 @@ class scanner:
 		# If stocks array is empty, pull stock list from stocks.txt file
 		stocks = stocks if len(stocks) > 0 else [
 			line.rstrip() for line in open(file_path, "r")]
-		self.scan_type = TYPE_SWING
 		list_returned = self.scan_internal(stocks, TYPE_SWING)
 		end_time = time()
 		time_spent = end_time-start_time
