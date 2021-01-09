@@ -49,7 +49,7 @@ def build_dt_dict():
                         dt.year, dt.month, index=True)
                     if existing_date < dt:
                         add_dt(idx_exp, dt)
-                except:
+                except Exception:
                     add_dt(idx_exp, dt)
 
             if line.find('stk') > -1:
@@ -58,7 +58,7 @@ def build_dt_dict():
                         dt.year, dt.month, index=False, stock=False, vix=False)
                     if existing_date < dt:
                         add_dt(stk_exp, dt)
-                except:
+                except Exception:
                     add_dt(stk_exp, dt)
 
             if line.find('vix') > -1:
@@ -67,7 +67,7 @@ def build_dt_dict():
                         dt.year, dt.month, index=False, stock=False, vix=True)
                     if existing_date < dt:
                         add_dt(vix_exp, dt)
-                except:
+                except Exception:
                     add_dt(vix_exp, dt)
 
 
@@ -90,14 +90,14 @@ def try_to_get_expiry_date(year, month, index=True, stock=False, vix=False):
             return idx_exp[year][month]
 
         raise Exception
-    except:
+    except Exception:
 
+        name = 'vix derivatives'
         if index:
             name = 'index derivatives'
         if stock:
             name = 'stock derivatives'
-        else:
-            name = 'vix derivatives'
+            
         raise ExpiryDateError(
             'No expiry date found in the month of {}-{} for {}'.format(year, month, name))
 
@@ -106,7 +106,7 @@ def get_expiry_date(year, month, index=True, stock=False, vix=False, recursion=0
 
     try:
         return try_to_get_expiry_date(year, month, index, stock, vix)
-    except:
+    except Exception:
 
         if recursion > 1:
             raise

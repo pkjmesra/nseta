@@ -1,13 +1,7 @@
 import requests as req
-import datetime
-try:
-    import numpy as np
-    import pandas as pd
-except:
-    pass
+import pandas as pd
 
-from bs4 import BeautifulSoup
-from io import StringIO, BytesIO
+from io import StringIO
 
 from nseta.derivatives.archives import date_to_str, __raw_zip_data_to_str
 
