@@ -3,7 +3,7 @@ from datetime import datetime, time
 
 IST_TIMEZONE = 'Asia/Kolkata'
 
-__all__ = ['IST_time', 'current_datetime_in_ist_trading_time_range', 'datetime_in_ist_trading_time_range', 'is_datetime_between', 'is_trading_day', 'trade_begin_datetime_ist', 'trade_end_datetime_ist']
+__all__ = ['IST_time', 'IST_date', 'IST_datetime', 'current_datetime_in_ist_trading_time_range', 'datetime_in_ist_trading_time_range', 'is_datetime_between', 'is_trading_day', 'trade_begin_datetime_ist', 'trade_end_datetime_ist']
 
 def IST_time():
 	tz = pytz.timezone(IST_TIMEZONE)
