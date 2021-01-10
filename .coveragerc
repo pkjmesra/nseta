@@ -10,9 +10,6 @@ exclude_lines =
     except
     if __name__ == .__main__.:
     if background:
-    print
-    while RUN_IN_BACKGROUND:
-    RUN_IN_BACKGROUND
     sigint_handler
 ignore_errors = True
 omit =
