@@ -4,10 +4,12 @@ source = nseta
 
 [report]
 exclude_lines =
-    if self.debug:
     pragma: no cover
     raise NotImplementedError
     except
+    if __name__ == .__main__.:
+    if background:
+    print
     sigint_handler
 ignore_errors = True
 omit =
