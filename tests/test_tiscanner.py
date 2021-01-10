@@ -13,6 +13,12 @@ class TestTIScanner(unittest.TestCase):
 		s = scanner('NA')
 		self.assertEqual(s.indicator, 'all')
 
+	def test_empty_dataframe(self):
+		s = scanner('emac')
+		df, signaldf = s.scan_intraday(['SOMESYMBOL'])
+		self.assertEqual(df, None)
+		self.assertEqual(signaldf, None)
+
 	def test_scan_intraday_more_than_n(self):
 		s = scanner('bbands')
 		n = 4
@@ -36,7 +42,7 @@ class TestTIScanner(unittest.TestCase):
 		self.assertEqual(len(signaldf), 1)
 
 	def test_scan_live_queue_ema(self):
-		s = scanner('ema')
+		s = scanner('emac')
 		n = range(15)
 		for iteration in n:
 			df, signaldf = s.scan_live(['HDFC'])
