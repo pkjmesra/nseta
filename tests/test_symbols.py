@@ -1,9 +1,13 @@
 import unittest
 from nseta.common.symbols import get_symbol_list, get_index_constituents_list
 import pdb
+import time
 
 
 class TestSymbols(unittest.TestCase):
+    def setUp(self):
+        self.startTime = time.time()
+
     def test_symbol_list(self):
         df = get_symbol_list()
         # Check popular names are in the list
@@ -33,3 +37,7 @@ class TestSymbols(unittest.TestCase):
         _oil = df["Symbol"] == "OIL"
         # Check company matches the expected value
         self.assertEqual(df[_oil].iloc[0].get('ISIN Code'), "INE274J01014")
+
+    def tearDown(self):
+        t = time.time() - self.startTime
+        print('%s: %.3f' % (self.id(), t))

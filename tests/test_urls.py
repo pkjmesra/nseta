@@ -8,6 +8,8 @@ import pdb
 from nseta.common.commons import *
 import datetime
 import unittest
+import time
+
 from bs4 import BeautifulSoup
 from tests import htmls
 import json
@@ -20,6 +22,7 @@ from six.moves.urllib.parse import urlparse
 
 class TestUrls(unittest.TestCase):
     def setUp(self):
+        self.startTime = time.time()
         proxy_on = False
         if proxy_on:
             urls.session.proxies.update({'http': 'proxy1.wipro.com:8080'})
@@ -114,7 +117,9 @@ class TestUrls(unittest.TestCase):
         csv = unzip_str(resp.content)
 
     def tearDown(self):
-      urls.session.close()
+        urls.session.close()
+        t = time.time() - self.startTime
+        print('%s: %.3f' % (self.id(), t))
 
 if __name__ == '__main__':
 

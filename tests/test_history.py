@@ -9,6 +9,7 @@ from nseta.common.history import historicaldata
 from nseta.common.urls import get_symbol_count
 from nseta.common import urls
 from nseta.common import history
+import time
 
 import unittest
 from datetime import date, timedelta
@@ -18,6 +19,7 @@ import pdb
 
 class TestHistory(unittest.TestCase):
 		def setUp(self):
+				self.startTime = time.time()
 				self.start = date(2020, 12, 30)
 				self.end = date(2021, 1, 8)
 				self.historicaldata = historicaldata()
@@ -91,19 +93,19 @@ class TestHistory(unittest.TestCase):
 			JSL JSLHISAR
 		'''
 		def test_daily_ohlc_history_for_DVL_GOKUL_symbols(self):
-			result = self.historicaldata.daily_ohlc_history('DVL', start=date.today()-timedelta(4), end = date.today())
-			row1 = result['Symbol'].iloc[0]
-			row2 = (result['Symbol']).iloc[1]
-			self.assertEqual('DVL', row1 if row1 == 'DVL' else row2)
-			result = self.historicaldata.daily_ohlc_history('GOKUL', start=(date.today()-timedelta(4)), end = date.today())
-			row1 = result['Symbol'].iloc[0]
-			self.assertEqual('GOKUL', row1)
-			result = self.historicaldata.daily_ohlc_history('ICIL', start=(date.today()-timedelta(4)), end = date.today())
-			row1 = result['Symbol'].iloc[0]
-			self.assertEqual('ICIL', row1)
-			result = self.historicaldata.daily_ohlc_history('JSL', start=(date.today()-timedelta(4)), end = date.today())
-			row1 = result['Symbol'].iloc[0]
-			self.assertEqual('JSL', row1)
+				result = self.historicaldata.daily_ohlc_history('DVL', start=date.today()-timedelta(4), end = date.today())
+				row1 = result['Symbol'].iloc[0]
+				row2 = (result['Symbol']).iloc[1]
+				self.assertEqual('DVL', row1 if row1 == 'DVL' else row2)
+				result = self.historicaldata.daily_ohlc_history('GOKUL', start=(date.today()-timedelta(4)), end = date.today())
+				row1 = result['Symbol'].iloc[0]
+				self.assertEqual('GOKUL', row1)
+				result = self.historicaldata.daily_ohlc_history('ICIL', start=(date.today()-timedelta(4)), end = date.today())
+				row1 = result['Symbol'].iloc[0]
+				self.assertEqual('ICIL', row1)
+				result = self.historicaldata.daily_ohlc_history('JSL', start=(date.today()-timedelta(4)), end = date.today())
+				row1 = result['Symbol'].iloc[0]
+				self.assertEqual('JSL', row1)
 
 		# def test_get_rbi_ref_history(self):
 		# 	start_date = date.today()-timedelta(131)
@@ -111,7 +113,10 @@ class TestHistory(unittest.TestCase):
 		# 	print(result)
 
 		def tearDown(self):
-			urls.session.close()
+				urls.session.close()
+				t = time.time() - self.startTime
+				print('%s: %.3f' % (self.id(), t))
+
 
 if __name__ == '__main__':
 

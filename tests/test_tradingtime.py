@@ -3,13 +3,14 @@ import pdb
 import unittest
 import pandas as pd
 import os
+import time
 
-from datetime import datetime, time
+from datetime import datetime
 from nseta.common.tradingtime import *
 
 class TestTradingTime(unittest.TestCase):
 	def setUp(self):
-		pass
+		self.startTime = time.time()
 
 	def test_ist_time(self):
 		t = IST_time()
@@ -31,7 +32,8 @@ class TestTradingTime(unittest.TestCase):
 		self.assertTrue(is_datetime_between(b, e, c))
 
 	def tearDown(self):
-	  pass
+		t = time.time() - self.startTime
+		print('%s: %.3f' % (self.id(), t))
 
 if __name__ == '__main__':
 

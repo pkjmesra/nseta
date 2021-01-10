@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 import pdb
 import unittest
+import time
 
 from click.testing import CliRunner
 
@@ -9,7 +10,7 @@ import nseta
 
 class TestNSEtacli(unittest.TestCase):
 	def setUp(self):
-		pass
+		self.startTime = time.time()
 
 	def test_nsetacli_entry(self):
 		runner = CliRunner()
@@ -31,7 +32,8 @@ class TestNSEtacli(unittest.TestCase):
 		self.assertIn('nseta ' + nseta.__version__ , result.output, str(result.output))
 
 	def tearDown(self):
-	  pass
+		t = time.time() - self.startTime
+		print('%s: %.3f' % (self.id(), t))
 
 if __name__ == '__main__':
 

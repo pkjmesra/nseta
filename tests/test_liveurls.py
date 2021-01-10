@@ -5,6 +5,7 @@ import requests
 import six
 
 import timeout_decorator
+import time
 
 from bs4 import BeautifulSoup
 from datetime import datetime, timedelta
@@ -20,6 +21,7 @@ from nseta.common.commons import (is_index, is_index_derivative,
 LOCAL_TIMEOUT = 60
 class TestLiveUrls(unittest.TestCase):
     def setUp(self):
+        self.startTime = time.time()
         proxy_on = False
         if proxy_on:
             urls.session.proxies.update({'http': 'proxy1.wipro.com:8080'})
@@ -70,7 +72,9 @@ class TestLiveUrls(unittest.TestCase):
         self.assertGreaterEqual(resp.text.find('Holi'), 0)
 
     def tearDown(self):
-      urls.session.close()
+        urls.session.close()
+        t = time.time() - self.startTime
+        print('%s: %.3f' % (self.id(), t))
 
     def get_next_expiry_date(self, base_expiry_date):
         new_expiry_date = base_expiry_date

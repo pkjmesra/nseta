@@ -3,6 +3,7 @@ import pdb
 import unittest
 import matplotlib.pyplot as plt
 from unittest.mock import patch
+import time
 
 from click.testing import CliRunner
 
@@ -11,7 +12,7 @@ import nseta.common.urls as urls
 
 class TestStrategycli(unittest.TestCase):
 	def setUp(self):
-		pass
+		self.startTime = time.time()
 
 	def test_plot_ta_inputs(self):
 		runner = CliRunner()
@@ -111,7 +112,9 @@ class TestStrategycli(unittest.TestCase):
 		self.assertIn("Technical indicator(s): BBANDS, plotted.", result.output, str(result.output))
 
 	def tearDown(self):
-	  urls.session.close()
+		urls.session.close()
+		t = time.time() - self.startTime
+		print('%s: %.3f' % (self.id(), t))
 
 if __name__ == '__main__':
 

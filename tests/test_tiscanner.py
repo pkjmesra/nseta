@@ -1,13 +1,14 @@
 # -*- coding: utf-8 -*-
 import pdb
 import unittest
+import time
 
 from nseta.scanner.tiscanner import scanner
 from nseta.common import urls
 
 class TestTIScanner(unittest.TestCase):
 	def setUp(self):
-		pass
+		self.startTime = time.time()
 
 	def test_default_indicator(self):
 		s = scanner('NA')
@@ -58,7 +59,9 @@ class TestTIScanner(unittest.TestCase):
 		self.assertEqual(len(signaldf), 1)
 
 	def tearDown(self):
-	  urls.session.close()
+		urls.session.close()
+		t = time.time() - self.startTime
+		print('%s: %.3f' % (self.id(), t))
 
 if __name__ == '__main__':
 

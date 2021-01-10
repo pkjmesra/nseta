@@ -51,13 +51,7 @@ def get_quote(symbol, series='EQ', instrument=None, expiry=None, option_type=Non
 	5. strike (strike price upto two decimal places
 	"""
 	if instrument:
-		expiry_str = "%02d%s%d" % (
-			expiry.day, months[expiry.month][0:3].upper(), expiry.year)
-		quote_derivative_url.session.headers.update(
-			{'Referer': eq_quote_referer.format(symbol)})
-		strike_str = "{:.2f}".format(strike) if strike else ""
-		res = quote_derivative_url(
-			symbol, instrument, expiry_str, option_type, strike_str)
+		print('Not supported yet')
 	else:
 		quote_eq_url.session.headers.update(
 			{'Referer': eq_quote_referer.format(symbol)})
@@ -82,29 +76,6 @@ def get_quote(symbol, series='EQ', instrument=None, expiry=None, option_type=Non
 			pass
 		res[k] = v_
 	return res
-
-@tracelog
-def get_option_chain(symbol, instrument=None, expiry=None):
-
-	if expiry:
-		expiry_str = "%02d%s%d" % (
-			expiry.day, months[expiry.month][0:3].upper(), expiry.year)
-	else:
-		expiry_str = "-"
-	option_chain_url.session.headers.update({'Referer': option_chain_referer})
-	r = option_chain_url(symbol, instrument, expiry_str)
-
-	return r
-
-@tracelog
-def get_option_chain_table(symbol, instrument=None, expiry=None):
-	optchainscrape = get_option_chain(symbol, instrument, expiry)
-	html_soup = BeautifulSoup(optchainscrape.text, 'html.parser')
-	sptable = html_soup.find("table", {"id": "octable"})
-	tp = ParseTables(soup=sptable,
-					 schema=OPTIONS_CHAIN_SCHEMA,
-					 headers=OPTIONS_CHAIN_HEADERS, index=OPTIONS_CHAIN_INDEX)
-	return tp.get_df()
 
 @tracelog
 def get_futures_chain(symbol):
@@ -148,54 +119,6 @@ def get_holidays_list(fromDate,
 	dfret = tp.get_df()
 	dfret = dfret.drop(["Market Segment"], axis=1)
 	return dfret
-
-@tracelog
-def isworkingday(dt):
-	"""This is the function to check if a given date is a working day
-		Args:
-			dt (datetime.date): Date to Check
-		Returns:
-			bool 
-	"""
-	weekday = dt.isoweekday()
-	if weekday in (6, 7):
-		return False
-	else:
-		lsholiday = get_holidays_list(dt, dt)
-		# pdb.set_trace()
-		if dt in lsholiday.index:
-			return False
-
-	return True
-
-@tracelog
-def nextworkingday(dt):
-	"""This is the function to get the next working day after the given date
-		Args:
-			dt (datetime.date): Date to Check
-		Returns:
-			dt (datetime.date): Nearest working day after the given date
-	"""
-	dttmp = dt
-	while True:
-		dttmp = dttmp + dateutil.relativedelta.relativedelta(days=1)
-		if isworkingday(dttmp):
-			return dttmp
-
-@tracelog
-def previousworkingday(dt):
-	"""This is the function to get the last working day before the given date
-		Args:
-			dt (datetime.date): Date to Check
-		Returns:
-			dt (datetime.date): Nearest working day before the given date
-	"""
-
-	dttmp = dt
-	while True:
-		dttmp = dttmp - dateutil.relativedelta.relativedelta(days=1)
-		if isworkingday(dttmp):
-			return dttmp
 
 @tracelog
 def getworkingdays(dtfrom, dtto):

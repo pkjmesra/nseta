@@ -3,6 +3,7 @@ import pdb
 import unittest
 import matplotlib.pyplot as plt
 from unittest.mock import patch
+import time
 
 from click.testing import CliRunner
 
@@ -11,7 +12,7 @@ from nseta.common import urls
 
 class TestStrategycli(unittest.TestCase):
 	def setUp(self):
-		pass
+		self.startTime = time.time()
 
 	def test_test_trading_strategy_inputs(self):
 		runner = CliRunner()
@@ -43,7 +44,7 @@ class TestStrategycli(unittest.TestCase):
 	@patch('matplotlib.pyplot.show')
 	def test_test_trading_strategy_historical_rsi_autosearch(self, mock_pyplot):
 		runner = CliRunner()
-		result = runner.invoke(test_trading_strategy, args=['--symbol', 'BANDHANBNK', '--start', '2020-08-01', '--end', '2021-01-01', '--strategy', 'rsi', '--clear', '--autosearch'])
+		result = runner.invoke(test_trading_strategy, args=['--symbol', 'BANDHANBNK', '--start', '2020-08-01', '--end', '2021-01-01', '--strategy', 'rsi', '--autosearch'])
 		self.assertEqual(result.exit_code , 0)
 		self.assertIn("pnl", result.output, str(result.output))
 
@@ -57,7 +58,7 @@ class TestStrategycli(unittest.TestCase):
 	@patch('matplotlib.pyplot.show')
 	def test_test_trading_strategy_historical_macd_autosearch(self, mock_pyplot):
 		runner = CliRunner()
-		result = runner.invoke(test_trading_strategy, args=['--symbol', 'BANDHANBNK', '--start', '2020-08-01', '--end', '2021-01-01', '--strategy', 'macd', '--clear', '--autosearch'])
+		result = runner.invoke(test_trading_strategy, args=['--symbol', 'BANDHANBNK', '--start', '2020-08-01', '--end', '2021-01-01', '--strategy', 'macd', '--autosearch'])
 		self.assertEqual(result.exit_code , 0)
 		self.assertIn("pnl", result.output, str(result.output))
 
@@ -71,7 +72,7 @@ class TestStrategycli(unittest.TestCase):
 	@patch('matplotlib.pyplot.show')
 	def test_test_trading_strategy_historical_smac_autosearch(self, mock_pyplot):
 		runner = CliRunner()
-		result = runner.invoke(test_trading_strategy, args=['--symbol', 'BANDHANBNK', '--start', '2020-08-01', '--end', '2021-01-01', '--strategy', 'smac', '--clear', '--autosearch'])
+		result = runner.invoke(test_trading_strategy, args=['--symbol', 'BANDHANBNK', '--start', '2020-08-01', '--end', '2021-01-01', '--strategy', 'smac', '--autosearch'])
 		self.assertEqual(result.exit_code , 0)
 		self.assertIn("pnl", result.output, str(result.output))
 
@@ -85,7 +86,7 @@ class TestStrategycli(unittest.TestCase):
 	@patch('matplotlib.pyplot.show')
 	def test_test_trading_strategy_historical_emac_autosearch(self, mock_pyplot):
 		runner = CliRunner()
-		result = runner.invoke(test_trading_strategy, args=['--symbol', 'BANDHANBNK', '--start', '2020-08-01', '--end', '2021-01-01', '--strategy', 'emac', '--clear', '--autosearch'])
+		result = runner.invoke(test_trading_strategy, args=['--symbol', 'BANDHANBNK', '--start', '2020-08-01', '--end', '2021-01-01', '--strategy', 'emac', '--autosearch'])
 		self.assertEqual(result.exit_code , 0)
 		self.assertIn("pnl", result.output, str(result.output))
 
@@ -99,7 +100,7 @@ class TestStrategycli(unittest.TestCase):
 	@patch('matplotlib.pyplot.show')
 	def test_test_trading_strategy_historical_multi_autosearch(self, mock_pyplot):
 		runner = CliRunner()
-		result = runner.invoke(test_trading_strategy, args=['--symbol', 'BANDHANBNK', '--start', '2020-08-01', '--end', '2021-01-01', '--strategy', 'multi', '--clear','--autosearch'])
+		result = runner.invoke(test_trading_strategy, args=['--symbol', 'BANDHANBNK', '--start', '2020-08-01', '--end', '2021-01-01', '--strategy', 'multi', '--autosearch'])
 		self.assertEqual(result.exit_code , 0)
 		self.assertIn("pnl", result.output, str(result.output))
 
@@ -113,7 +114,7 @@ class TestStrategycli(unittest.TestCase):
 	@patch('matplotlib.pyplot.show')
 	def test_test_trading_strategy_historical_bbands_autosearch(self, mock_pyplot):
 		runner = CliRunner()
-		result = runner.invoke(test_trading_strategy, args=['--symbol', 'BANDHANBNK', '--start', '2020-08-01', '--end', '2021-01-01', '--strategy', 'bbands', '--clear', '--autosearch'])
+		result = runner.invoke(test_trading_strategy, args=['--symbol', 'BANDHANBNK', '--start', '2020-08-01', '--end', '2021-01-01', '--strategy', 'bbands','--autosearch'])
 		self.assertEqual(result.exit_code , 0)
 		self.assertIn("pnl", result.output, str(result.output))
 
@@ -127,7 +128,7 @@ class TestStrategycli(unittest.TestCase):
 	@patch('matplotlib.pyplot.show')
 	def test_test_trading_strategy_intraday_autosearch(self, mock_pyplot):
 		runner = CliRunner()
-		result = runner.invoke(test_trading_strategy, args=['--symbol', 'BANDHANBNK', '--strategy', 'bbands', '--clear', '--intraday', '--autosearch'])
+		result = runner.invoke(test_trading_strategy, args=['--symbol', 'BANDHANBNK', '--strategy', 'bbands', '--intraday', '--autosearch'])
 		self.assertEqual(result.exit_code , 0)
 		self.assertIn("pnl", result.output, str(result.output))
 
@@ -187,7 +188,9 @@ class TestStrategycli(unittest.TestCase):
 		self.assertIn("pnl", result.output, str(result.output))
 
 	def tearDown(self):
-	  urls.session.close()
+		urls.session.close()
+		t = time.time() - self.startTime
+		print('%s: %.3f' % (self.id(), t))
 
 if __name__ == '__main__':
 

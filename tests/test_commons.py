@@ -1,8 +1,10 @@
 from nseta.common.commons import *
 from nseta.common.urls import *
 from nseta.common.constants import NSE_INDICES, INDEX_DERIVATIVES
-
+from nseta.common import urls
 import datetime
+import time
+
 import unittest
 import pandas as pd
 from bs4 import BeautifulSoup
@@ -50,7 +52,7 @@ def text_to_list(text, schema):
 
 class TestCommons(unittest.TestCase):
 	def setUp(self):
-		pass
+		self.startTime = time.time()
 
 	def test_is_index(self):
 		for i in NSE_INDICES:
@@ -157,8 +159,14 @@ class TestCommons(unittest.TestCase):
 		self.assertEqual(df_actual['B'].iloc[0], df_expected['B'].iloc[0])
 		self.assertEqual(df_actual['B'].iloc[1], df_expected['B'].iloc[1])
 
+	def tearDown(self):
+		urls.session.close()
+		t = time.time() - self.startTime
+		print('%s: %.3f' % (self.id(), t))
+
 class TestURLFetch(unittest.TestCase):
 	def setUp(self):
+		self.startTime = time.time()
 		self.proxy_on = False
 		self.session = requests.Session()
 		if self.proxy_on:
@@ -257,7 +265,9 @@ class TestURLFetch(unittest.TestCase):
 		self.assertEqual(json['headers']['User-Agent'], 'Testing')
 
 	def tearDown(self):
-		self.session.close()
+		urls.session.close()
+		t = time.time() - self.startTime
+		print('%s: %.3f' % (self.id(), t))
 
 
 if __name__ == '__main__':

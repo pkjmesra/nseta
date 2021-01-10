@@ -3,13 +3,14 @@ import pdb
 import unittest
 
 from click.testing import CliRunner
+import time
 
 from nseta.cli.historycli import history, pe_history
 import nseta.common.urls as urls
 
 class TestHistorycli(unittest.TestCase):
 	def setUp(self):
-		pass
+		self.startTime = time.time()
 
 	def test_history(self):
 		runner = CliRunner()
@@ -58,6 +59,9 @@ class TestHistorycli(unittest.TestCase):
 
 	def tearDown(self):
 		urls.session.close()
+		t = time.time() - self.startTime
+		print('%s: %.3f' % (self.id(), t))
+
 
 if __name__ == '__main__':
 

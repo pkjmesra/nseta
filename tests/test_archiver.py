@@ -3,12 +3,13 @@ import pdb
 import unittest
 import pandas as pd
 import os
+import time
 
 from nseta.archives.archiver import *
 
 class TestArchiver(unittest.TestCase):
 	def setUp(self):
-		pass
+		self.startTime = time.time()
 
 	def test_get_path_default(self):
 		a = archiver()
@@ -31,7 +32,8 @@ class TestArchiver(unittest.TestCase):
 		self.assertFalse(os.path.exists(file_path))
 
 	def tearDown(self):
-	  pass
+		t = time.time() - self.startTime
+		print('%s: %.3f' % (self.id(), t))
 
 if __name__ == '__main__':
 

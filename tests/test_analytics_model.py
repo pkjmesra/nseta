@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 import pdb
 import unittest
+import time
 
 from nseta.analytics.model import *
 from nseta.archives.archiver import archiver
@@ -9,6 +10,7 @@ import nseta.common.urls as urls
 FIXTURE_PATH = 'tests/fixtures/BANDHANBNK_01-01-2020_08-01-2021'
 class TestAnalyticsModel(unittest.TestCase):
 	def setUp(self):
+		self.startTime = time.time()
 		arch = archiver()
 		self.df = arch.restore_from_path(FIXTURE_PATH)
 
@@ -57,6 +59,8 @@ class TestAnalyticsModel(unittest.TestCase):
 
 	def tearDown(self):
 		urls.session.close()
+		t = time.time() - self.startTime
+		print('%s: %.3f' % (self.id(), t))
 
 if __name__ == '__main__':
 

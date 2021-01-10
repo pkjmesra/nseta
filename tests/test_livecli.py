@@ -3,6 +3,7 @@ import pdb
 import unittest
 
 from click.testing import CliRunner
+import time
 
 from nseta.cli.livecli import live_quote, scan, live_quote_background, scan_live_background, scan_intraday_background
 from nseta.common import urls
@@ -10,7 +11,7 @@ from nseta.scanner.tiscanner import scanner
 
 class TestLivecli(unittest.TestCase):
 	def setUp(self):
-		pass
+		self.startTime = time.time()
 
 	def test_live_quote(self):
 		runner = CliRunner()
@@ -82,7 +83,10 @@ class TestLivecli(unittest.TestCase):
 		self.assertIn("Usage:  [OPTIONS]", result.output, str(result.output))
 
 	def tearDown(self):
-	  urls.session.close()
+		urls.session.close()
+		t = time.time() - self.startTime
+		print('%s: %.3f' % (self.id(), t))
+
 
 if __name__ == '__main__':
 
