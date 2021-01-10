@@ -238,93 +238,23 @@ class historicaldata:
 		if start > end:
 			raise ValueError('Please check start and end dates')
 
-		if (futures and not option_type) or (not futures and option_type):  # EXOR
+		if (not intraday):
 			params['symbol'] = symbol
-			params['dateRange'] = ''
-			params['optionType'] = 'select'
-			params['strikePrice'] = ''
-			params['fromDate'] = start.strftime('%d-%b-%Y')
-			params['toDate'] = end.strftime('%d-%b-%Y')
-			url = derivative_history_url
-
-			try:
-				params['expiryDate'] = expiry_date.strftime("%d-%m-%Y")
-			except AttributeError as e:
-				raise ValueError(
-					'Derivative contracts must have expiry_date as datetime.date')
-
-			option_type = option_type.upper()
-			if option_type in ("CE", "PE", "CA", "PA"):
-				if not isinstance(strike_price, int) and not isinstance(strike_price, float):
-					raise ValueError(
-						"strike_price argument missing or not of type int or float")
-				# option specific
-				if index:
-					params['instrumentType'] = 'OPTIDX'
-				else:
-					params['instrumentType'] = 'OPTSTK'
-				params['strikePrice'] = strike_price
-				params['optionType'] = option_type
-				schema = OPTION_SCHEMA
-				headers = OPTION_HEADERS
-				scaling = OPTION_SCALING
-			elif option_type:
-				# this means that there's an invalid value in option_type
-				raise ValueError(
-					"Invalid value in option_type, valid values-'CE' or 'PE' or 'CA' or 'CE'")
-			else:
-				# its a futures request
-				if index:
-					if symbol == 'INDIAVIX':
-						params['instrumentType'] = 'FUTIVX'
-					else:
-						params['instrumentType'] = 'FUTIDX'
-				else:
-					params['instrumentType'] = 'FUTSTK'
-				schema = FUTURES_SCHEMA
-				headers = FUTURES_HEADERS
-				scaling = FUTURES_SCALING
-		elif futures and option_type:
-			raise ValueError(
-				"select either futures='True' or option_type='CE' or 'PE' not both")
-		else:  # its a normal request
-
-			if index:
-				if symbol == 'INDIAVIX':
-					params['fromDate'] = start.strftime('%d-%b-%Y')
-					params['toDate'] = end.strftime('%d-%b-%Y')
-					url = index_vix_history_url
-					schema = VIX_INDEX_SCHEMA
-					headers = VIX_INDEX_HEADERS
-					scaling = VIX_SCALING
-				else:
-					if symbol in DERIVATIVE_TO_INDEX:
-						params['indexType'] = DERIVATIVE_TO_INDEX[symbol]
-					else:
-						params['indexType'] = symbol
-					params['fromDate'] = start.strftime('%d-%m-%Y')
-					params['toDate'] = end.strftime('%d-%m-%Y')
-					url = index_history_url
-					schema = INDEX_SCHEMA
-					headers = INDEX_HEADERS
-					scaling = INDEX_SCALING
-			elif (not intraday):
-				params['symbol'] = symbol
-				params['series'] = series
-				params['symbolCount'] = get_symbol_count(symbol)
-				params['fromDate'] = start.strftime('%d-%m-%Y')
-				params['toDate'] = end.strftime('%d-%m-%Y')
-				url = equity_history_url
-				schema = EQUITY_SCHEMA
-				headers = EQUITY_HEADERS
-				scaling = EQUITY_SCALING
-			elif intraday:
-				params['CDSymbol'] = symbol
-				url = nse_intraday_url
-				schema = INTRADAY_EQUITY_SCHEMA
-				headers = INTRADAY_EQUITY_HEADERS
-				scaling = INTRADAY_EQUITY_SCALING
-				csvnode = "data"
+			params['series'] = series
+			params['symbolCount'] = get_symbol_count(symbol)
+			params['fromDate'] = start.strftime('%d-%m-%Y')
+			params['toDate'] = end.strftime('%d-%m-%Y')
+			url = equity_history_url
+			schema = EQUITY_SCHEMA
+			headers = EQUITY_HEADERS
+			scaling = EQUITY_SCALING
+		elif intraday:
+			params['CDSymbol'] = symbol
+			url = nse_intraday_url
+			schema = INTRADAY_EQUITY_SCHEMA
+			headers = INTRADAY_EQUITY_HEADERS
+			scaling = INTRADAY_EQUITY_SCALING
+			csvnode = "data"
 
 		return url, params, schema, headers, scaling, csvnode
 
@@ -397,40 +327,6 @@ class historicaldata:
 		df = pd.read_csv(fp)
 		del df['Unnamed: 13']
 		return df[df['SERIES'] == series]
-
-
-	"""
-	Get Trade and Delivery Volume for each stock
-	"""
-	@tracelog
-	def get_delivery_position(self, dt, segment='EQ'):
-		dt.strftime("%b").upper()
-		dt.strftime("%Y")
-
-		"""
-		1. ddmmyyyy
-		"""
-		res = daily_deliverypositions_url(dt.strftime("%d%m%Y").upper())
-		text = res.content.decode()
-		fp = six.StringIO(text)
-		# The file starts with initial lines that just have text infomation
-		# e.g.
-		# Security Wise Delivery Position - Compulsory Rolling Settlement
-		# 10,MTO,19072019,471778636,0001790
-		# Trade Date <19-JUL-2019>,Settlement Type <N>
-
-		# Skip the initial lines till we get to the actual data
-
-		df = pd.read_csv(fp, names=["RECORD TYPE", "SR NO", "SYMBOL", "SEGMENT", "TRADE VOLUME", "TOTDELQTY", "PCT DEL TO TRADE"],
-						 header=None, skiprows=4,
-						 usecols=["SYMBOL", "SEGMENT", "TRADE VOLUME",
-								  "TOTDELQTY", "PCT DEL TO TRADE"]
-						 )
-		flsegment = df['SEGMENT'] == segment
-		df = df[flsegment]
-
-		return df
-
 
 	"""
 	Get Price range for all Indices

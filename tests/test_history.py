@@ -36,49 +36,6 @@ class TestHistory(unittest.TestCase):
 				self.assertEqual(url, urls.equity_history_url)
 				self.assertEqual(schema, history.EQUITY_SCHEMA)
 
-				# test index history params
-				"""
-				1. indexType=index name
-				2. fromDate string dd-mm-yyyy
-				3. toDate string dd-mm-yyyy
-				"""
-				params = {"indexType": "NIFTY 50",
-									"fromDate": "30-12-2020",
-									"toDate": "08-01-2021"}
-				self.assertEqual(params, self.historicaldata.validate_params(symbol='NIFTY 50',
-																								 index=True,
-																								 start=date(2020, 12, 30),
-																								 end=date(2021, 1, 8))[1])
-
-				# test index options params
-				"""
-				instrumentType=OPTIDX
-				symbol=NIFTY
-				expiryDate=26-11-2015
-				optionType=select
-				strikePrice=
-				dateRange=15days
-				fromDate= 01-Nov-2015
-				toDate=19-Nov-2015
-				segmentLink=9&
-				symbolCount=
-				"""
-				params = {"instrumentType": "OPTIDX",
-									"symbol": "NIFTY",
-									"expiryDate": "26-11-2015",
-									"optionType": "CE",
-									"strikePrice": 7800,
-									"dateRange": "",
-									"fromDate": "30-Dec-2020",
-									"toDate": "08-Jan-2021"}
-				self.assertEqual(params, self.historicaldata.validate_params(symbol="NIFTY",
-																								 index=True,
-																								 option_type="CE",
-																								 expiry_date=date(2015, 11, 26),
-																								 start=date(2020, 12, 30),
-																								 end=date(2021, 1, 8),
-																								 strike_price=7800)[1])
-
 				negative_args = []
 				# start>end
 				negative_args.append({'symbol': 'SBIN', 'end': date(2020, 12, 30),
