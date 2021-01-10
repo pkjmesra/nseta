@@ -8,8 +8,6 @@ exclude_lines =
     pragma: no cover
     raise NotImplementedError
     except
-    if __name__ == .__main__.:
-    if background:
     sigint_handler
 ignore_errors = True
 omit =
