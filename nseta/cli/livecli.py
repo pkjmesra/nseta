@@ -41,15 +41,6 @@ def live_quote(symbol, general, ohlc, wk52, volume, orderbook, background):
 		if background:
 			b = threading.Thread(name='live_quote_background', target=live_quote_background, args=[symbol, general, ohlc, wk52, volume, orderbook])
 			b.start()
-	except KeyboardInterrupt as e:
-		RUN_IN_BACKGROUND = False
-		default_logger().error(e, exc_info=True)
-		click.secho('[live_quote] Keyboard Interrupt received. Exiting.', fg='red', nl=True)
-		try:
-			sys.exit(e.args[0][0]["code"])
-		except SystemExit as se:
-			os._exit(se.args[0][0]["code"])
-		return
 	except Exception as e:
 		RUN_IN_BACKGROUND = False
 		default_logger().debug(e, exc_info=True)
@@ -92,15 +83,6 @@ def scan(stocks, live, intraday, swing, indicator, clear, background):
 			scan_intraday(stocks, indicator, background)
 		elif swing:
 			scan_swing(stocks, indicator, background)
-	except KeyboardInterrupt as e:
-		RUN_IN_BACKGROUND = False
-		default_logger().error(e, exc_info=True)
-		click.secho('[scan] Keyboard Interrupt received. Exiting.', fg='red', nl=True)
-		try:
-			sys.exit(e.args[0][0]["code"])
-		except SystemExit as se:
-			os._exit(se.args[0][0]["code"])
-		return
 	except Exception as e:
 		RUN_IN_BACKGROUND = False
 		default_logger().debug(e, exc_info=True)
@@ -248,28 +230,49 @@ def clear_cache(clear, background, indicator, intraday = True, live = False, swi
 		arch.clearcache(signaldf_file_name, response_type, force_clear=False)
 		arch.clearcache(response_type=response_type, force_clear=False)
 
-def live_quote_background(symbol, general, ohlc, wk52, volume, orderbook):
+def live_quote_background(symbol, general, ohlc, wk52, volume, orderbook, terminate_after_iter=0, wait_time=60):
 	global RUN_IN_BACKGROUND
 	RUN_IN_BACKGROUND = True
+	iteration = 0
 	while RUN_IN_BACKGROUND:
+		iteration = iteration + 1
+		if terminate_after_iter > 0 and iteration >= terminate_after_iter:
+			RUN_IN_BACKGROUND = False
+			break
 		result = get_quote(symbol)
 		format_beautified(result, general, ohlc, wk52, volume, orderbook)
-		time.sleep(60)
+		time.sleep(wait_time)
+	click.secho('Finished all iterations of scanning live quotes.', fg='green', nl=True)
+	return iteration
 
-def scan_live_background(scannerinstance, stocks, indicator):
+def scan_live_background(scannerinstance, stocks, indicator, terminate_after_iter=0, wait_time=60):
 	global RUN_IN_BACKGROUND
 	RUN_IN_BACKGROUND = True
+	iteration = 0
 	while RUN_IN_BACKGROUND:
+		iteration = iteration + 1
+		if terminate_after_iter > 0 and iteration >= terminate_after_iter:
+			RUN_IN_BACKGROUND = False
+			break
 		clear_cache(True, True, indicator, False, True, False)
 		df, signaldf = scannerinstance.scan_live(stocks=stocks)
 		scan_live_results(df, signaldf, indicator, should_cache=False)
-		time.sleep(60)
+		time.sleep(wait_time)
+	click.secho('Finished all iterations of scanning live stocks.', fg='green', nl=True)
+	return iteration
 
-def scan_intraday_background(scannerinstance, stocks, indicator):
+def scan_intraday_background(scannerinstance, stocks, indicator, terminate_after_iter=0, wait_time=10):
 	global RUN_IN_BACKGROUND
 	RUN_IN_BACKGROUND = True
+	iteration = 0
 	while RUN_IN_BACKGROUND:
+		iteration = iteration + 1
+		if terminate_after_iter > 0 and iteration >= terminate_after_iter:
+			RUN_IN_BACKGROUND = False
+			break
 		clear_cache(True, True, indicator, True, False, False)
 		df, signaldf = scannerinstance.scan_intraday(stocks=stocks)
 		scan_intraday_results(df, signaldf, indicator, should_cache= False)
-		time.sleep(10)
+		time.sleep(wait_time)
+	click.secho('Finished all iterations of scanning intraday.', fg='green', nl=True)
+	return iteration

@@ -4,8 +4,9 @@ import unittest
 
 from click.testing import CliRunner
 
-from nseta.cli.livecli import live_quote, scan
+from nseta.cli.livecli import live_quote, scan, live_quote_background, scan_live_background, scan_intraday_background
 from nseta.common import urls
+from nseta.scanner.tiscanner import scanner
 
 class TestLivecli(unittest.TestCase):
 	def setUp(self):
@@ -36,11 +37,21 @@ class TestLivecli(unittest.TestCase):
 		self.assertEqual(result.exit_code , 0)
 		self.assertIn("Intraday scanning finished.", result.output, str(result.output))
 
+	def test_scan_intraday_background(self):
+		s = scanner('rsi')
+		result = scan_intraday_background(s, ['HDFC'], 'emac', terminate_after_iter=2, wait_time=2)
+		self.assertEqual(result , 2)
+
 	def test_scan_live(self):
 		runner = CliRunner()
 		result = runner.invoke(scan, args=['--stocks', 'BANDHANBNK,HDFC', '--live', '--indicator', 'all', '--clear'])
 		self.assertEqual(result.exit_code , 0)
 		self.assertIn("Live scanning finished.", result.output, str(result.output))
+
+	def test_scan_live_background(self):
+		s = scanner('rsi')
+		result = scan_live_background(s, ['HDFC'], 'emac', terminate_after_iter=2, wait_time=2)
+		self.assertEqual(result , 2)
 
 	def test_scan_swing(self):
 		runner = CliRunner()
@@ -53,6 +64,10 @@ class TestLivecli(unittest.TestCase):
 		result = runner.invoke(live_quote, args=['-gowvb'])
 		self.assertEqual(result.exit_code , 0)
 		self.assertIn("Usage:  [OPTIONS]", result.output, str(result.output))
+
+	def test_scan_live_quote_background(self):
+		result = live_quote_background('HDFC', True, True, True, True, True, terminate_after_iter=2, wait_time=2)
+		self.assertEqual(result , 2)
 
 	def test_scan_inputs(self):
 		runner = CliRunner()
