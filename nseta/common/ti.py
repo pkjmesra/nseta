@@ -1,6 +1,5 @@
 from nseta.common.log import default_logger
 import talib as ta
-import pandas as pd
 
 __all__ = ['ti']
 

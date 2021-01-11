@@ -177,10 +177,7 @@ def unzip_str(zipped_str, file_name = None):
 
 class ThreadReturns(threading.Thread):
 	def run(self):
-		if sys.version_info[0] == 2:
-			self.result = self._Thread__target(*self._Thread__args, **self._Thread__kwargs)
-		else: # assuming v3
-			self.result = self._target(*self._args, **self._kwargs)
+		self.result = self._target(*self._args, **self._kwargs)
 
 class URLFetch:
 
@@ -196,12 +193,12 @@ class URLFetch:
 			self.session = session
 
 		if headers:
-			self.session.headers.update(headers)
+			self.update_headers(headers)
 		if proxy:
 			self.update_proxy(proxy)
 		else:
 			self.update_proxy('')
-
+	'''
 	def set_session(self, session):
 		self.session = session
 		return self
@@ -218,6 +215,7 @@ class URLFetch:
 
 	def __exit__(self, exc_type, exc_value, traceback):
 		self.close()
+	'''
 
 	def __call__(self, *args, **kwargs):
 		u = urlparse(self.url)

@@ -350,6 +350,7 @@ class historicaldata:
 								"Div Yield": "DIVYIELD"})
 		return df
 
+	'''
 	@tracelog
 	def get_rbi_ref_history(self, start, end):
 		frame = inspect.currentframe()
@@ -392,7 +393,7 @@ class historicaldata:
 						 headers=RBI_REF_RATE_HEADERS, index="Date")
 		df = tp.get_df()
 		return df
-
+	'''
 	@tracelog
 	def archive_history(self, df, symbol, start_date, end_date, intraday=False):
 		symbol = symbol if intraday else '{}_{}_{}'.format(symbol, start_date.strftime('%d-%m-%Y'), end_date.strftime('%d-%m-%Y'))
