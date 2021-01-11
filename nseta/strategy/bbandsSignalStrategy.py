@@ -117,13 +117,11 @@ class bbandsSignalStrategy:
 	def buy_signal(self):
 		self.buytriggerred = True
 		self.order_queue.buy(self.price, allow_square_off_at_EOD=True)
-		# self._profit = self._profit - self.price
 		self.update_ledger('BUY')
 		default_logger().debug("\n{}".format(pd.DataFrame(self.ledger)))
 
 	def sell_signal(self):
 		self.order_queue.sell(self.price, allow_square_off_at_EOD=True)
-		# self._profit = self._profit + self.price
 		self.update_ledger('SELL')
 		default_logger().debug("\n{}".format(pd.DataFrame(self.ledger)))
 

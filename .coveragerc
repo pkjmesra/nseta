@@ -9,6 +9,7 @@ exclude_lines =
     except
     if __name__ == .__main__.:
     if background:
+    if __VERBOSE__:
     print
     sigint_handler
 ignore_errors = True

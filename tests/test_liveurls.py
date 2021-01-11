@@ -74,7 +74,7 @@ class TestLiveUrls(unittest.TestCase):
     def tearDown(self):
         urls.session.close()
         t = time.time() - self.startTime
-        print('%s: %.3f' % (self.id(), t))
+        print('%s: %.3f' % (self.id().ljust(100), t))
 
     def get_next_expiry_date(self, base_expiry_date):
         new_expiry_date = base_expiry_date

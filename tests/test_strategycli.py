@@ -69,6 +69,7 @@ class TestStrategycli(unittest.TestCase):
 		self.assertEqual(result.exit_code , 0)
 		self.assertIn("pnl", result.output, str(result.output))
 
+	# TODO: Takes 121 seconds to run
 	@patch('matplotlib.pyplot.show')
 	def test_test_trading_strategy_historical_smac_autosearch(self, mock_pyplot):
 		runner = CliRunner()
@@ -83,6 +84,7 @@ class TestStrategycli(unittest.TestCase):
 		self.assertEqual(result.exit_code , 0)
 		self.assertIn("pnl", result.output, str(result.output))
 
+	# TODO: Takes 118 seconds to run
 	@patch('matplotlib.pyplot.show')
 	def test_test_trading_strategy_historical_emac_autosearch(self, mock_pyplot):
 		runner = CliRunner()
@@ -190,7 +192,7 @@ class TestStrategycli(unittest.TestCase):
 	def tearDown(self):
 		urls.session.close()
 		t = time.time() - self.startTime
-		print('%s: %.3f' % (self.id(), t))
+		print('%s: %.3f' % (self.id().ljust(100), t))
 
 if __name__ == '__main__':
 

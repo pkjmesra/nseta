@@ -162,7 +162,7 @@ class TestCommons(unittest.TestCase):
 	def tearDown(self):
 		urls.session.close()
 		t = time.time() - self.startTime
-		print('%s: %.3f' % (self.id(), t))
+		print('%s: %.3f' % (self.id().ljust(100), t))
 
 class TestURLFetch(unittest.TestCase):
 	def setUp(self):
@@ -267,7 +267,7 @@ class TestURLFetch(unittest.TestCase):
 	def tearDown(self):
 		urls.session.close()
 		t = time.time() - self.startTime
-		print('%s: %.3f' % (self.id(), t))
+		print('%s: %.3f' % (self.id().ljust(100), t))
 
 
 if __name__ == '__main__':

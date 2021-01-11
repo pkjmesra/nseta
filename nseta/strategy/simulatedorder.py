@@ -76,9 +76,9 @@ class simulatedorder:
 			self.funds = self.funds - final_size * (self.stock_price * (1 + self.commission))
 		elif allow_square_off_at_EOD:
 			if square_off:
-				self.order_size = self.sell_prop
-				self.holdings_size = self.holdings_size + self.order_size
-				self.funds = self.funds + self.holdings_size * (self.stock_price * (1 + self.commission))
+				self.order_size = self.holdings_size
+				self.holdings_size = 0
+				self.funds = self.funds + self.order_size * (self.stock_price * (1 + self.commission))
 			else:
 				self.order_size = self.buy_prop
 				self.holdings_size = self.holdings_size + self.order_size
@@ -95,7 +95,7 @@ class simulatedorder:
 		elif allow_square_off_at_EOD:
 			if square_off:
 				self.order_size = self.holdings_size
-				self.holdings_size = self.holdings_size - self.order_size
+				self.holdings_size = 0
 				self.funds = self.funds + self.order_size * (self.stock_price * (1 + self.commission))
 			else:
 				self.order_size = self.sell_prop

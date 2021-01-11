@@ -40,4 +40,4 @@ class TestSymbols(unittest.TestCase):
 
     def tearDown(self):
         t = time.time() - self.startTime
-        print('%s: %.3f' % (self.id(), t))
+        print('%s: %.3f' % (self.id().ljust(100), t))

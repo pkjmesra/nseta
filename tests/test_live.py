@@ -88,4 +88,4 @@ class TestLiveUrls(unittest.TestCase):
 	def tearDown(self):
 		urls.session.close()
 		t = time.time() - self.startTime
-		print('%s: %.3f' % (self.id(), t))
+		print('%s: %.3f' % (self.id().ljust(100), t))
