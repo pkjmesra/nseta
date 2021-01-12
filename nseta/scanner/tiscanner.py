@@ -389,7 +389,6 @@ class scanner:
 		ema = round(df['EMA(9)'].iloc[0],2)
 		macdsignal = round(df['macdsignal(9)'].iloc[0],2)
 		macd12 = round(df['macd(12)'].iloc[0],2)
-		macd26 = round(df['macdhist(26)'].iloc[0],2)
 		mom = round(df['MOM'].iloc[0],2)
 		signal = df['Signal'].iloc[0]
 		ltp = df['LTP'].iloc[0]
