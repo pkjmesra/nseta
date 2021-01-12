@@ -17,10 +17,9 @@ import enum
 import zipfile
 import threading
 import six
-import sys
+
 import numpy as np
 import re
-import sys
 
 from six.moves.urllib.parse import urlparse
 

@@ -217,13 +217,10 @@ def test_historical_trading_strategy(symbol, sd, ed, strategy, autosearch, lower
 	run_test_strategy(df, symbol, strategy, autosearch, lower, upper)
 
 def prepare_for_historical_strategy(df, symbol):
-	tiscanner = scanner()
-	# df = tiscanner.map_keys(df, symbol)
 	df['datetime'] = df['Date']
 	df['dt'] = df['Date']
 	df['close'] = df['Close']
 	df = reset_date_index(df)
-	# df.drop(EQUITY_HEADERS, axis = 1, inplace = True)
 	return df
 
 def reset_date_index(df):
