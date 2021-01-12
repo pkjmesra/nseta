@@ -64,7 +64,7 @@ class scanner:
 			indicator = 'all'
 		self._indicator = indicator
 		self._stocksdict = {}
-		self._keys = ['symbol','previousClose', 'lastPrice']
+		self._keys = ['symbol','previousClose', 'lastPrice', 'deliveryToTradedQuantity', 'BuySellDiffQty']
 		self._scanner_dir = os.path.dirname(os.path.realpath(__file__))
 
 	@property
@@ -184,7 +184,7 @@ class scanner:
 				sys.stdout.flush()
 				result, primary = get_live_quote(stock, keys = self.keys)
 				if primary is not None and len(primary) > 0:
-					row = pd.DataFrame(primary, columns = ['Updated', 'Symbol', 'Close', 'LTP'], index = [''])
+					row = pd.DataFrame(primary, columns = ['Updated', 'Symbol', 'Close', 'LTP', '% Delivery', 'Buy - Sell'], index = [''])
 					value = (row['LTP'][0]).replace(' ','').replace(',','')
 					if stock in self.stocksdict:
 						(self.stocksdict[stock]).append(float(value))

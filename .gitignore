@@ -138,6 +138,8 @@ dmypy.json
 
 # Test outputs
 # Unit test / coverage outputs
+nseta/archives/run/
+nseta/archives/logs/
 nseta/archives/history/
 nseta/archives/intraday/
 nseta/archives/quote/

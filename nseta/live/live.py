@@ -5,6 +5,7 @@ Created on Wed Aug 24 22:01:01 2020
 @author: SW274998
 """
 import click
+import numpy as np
 from nseta.common.commons import *
 from nseta.common.log import tracelog, default_logger
 from nseta.live.liveurls import quote_eq_url, futures_chain_url, holiday_list_url
@@ -191,7 +192,8 @@ def get_data_list(orgdata, keys=[]):
 					totalSellQuantity = float((data['totalSellQuantity']).replace(' ','').replace(',',''))
 					primary.append(float(totalBuyQuantity - totalSellQuantity))
 				except Exception:
-					primary.append('NA')
+					primary.append(np.nan)
+					continue
 		return [primary], name_data, quote_data, ohlc_data, wk52_data, volume_data, pipeline_data
 	else:
 		primary = []
@@ -219,12 +221,25 @@ def get_data_list(orgdata, keys=[]):
 		wk52_data = [wk52_data]
 
 		for key in VOLUME_KEYS:
-			value = (data[key]).replace(' ','').replace(',','')
-			volume_data.append(float(value))
-		totalBuyQuantity = float((data['totalBuyQuantity']).replace(' ','').replace(',',''))
-		totalSellQuantity = float((data['totalSellQuantity']).replace(' ','').replace(',',''))
-		volume_data.append(float(totalBuyQuantity - totalSellQuantity))
-		volume_data = [volume_data]
+			try:
+				value = (data[key]).replace(' ','').replace(',','')
+				volume_data.append(float(value))
+			except Exception:
+				volume_data.append(np.nan)
+				continue
+		try:
+			totalBuyQuantity = float((data['totalBuyQuantity']).replace(' ','').replace(',',''))
+		except Exception:
+			totalBuyQuantity = np.nan
+		try:
+			totalSellQuantity = float((data['totalSellQuantity']).replace(' ','').replace(',',''))
+		except Exception:
+			totalSellQuantity = np.nan
+		try:
+			volume_data.append(float(totalBuyQuantity - totalSellQuantity))
+			volume_data = [volume_data]
+		except Exception:
+			volume_data.append(np.nan)
 
 		for x in range(1,5):
 			buy_qty_key = 'buyQuantity' + str(x)

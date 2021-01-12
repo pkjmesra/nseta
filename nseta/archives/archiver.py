@@ -22,21 +22,35 @@ class archiver:
 	def __init__(self):
 		self._archival_dir = os.path.dirname(os.path.realpath(__file__))
 		try:
-			self._intraday_dir = os.path.join(self.archival_directory, 'intraday')
+			self._logs_dir = os.path.join(self.archival_directory, 'logs')
+			if not os.path.exists(self._logs_dir):
+				os.makedirs(self._logs_dir)
+		except OSError as e:
+			default_logger().debug("Exception in archiver while creating DIR:{}.".format(self._logs_dir))
+			default_logger().debug(e, exc_info=True)
+		try:
+			self._run_dir = os.path.join(self.archival_directory, 'run')
+			if not os.path.exists(self._run_dir):
+				os.makedirs(self._run_dir)
+		except OSError as e:
+			default_logger().debug("Exception in archiver while creating DIR:{}.".format(self._run_dir))
+			default_logger().debug(e, exc_info=True)
+		try:
+			self._intraday_dir = os.path.join(self.run_directory, 'intraday')
 			if not os.path.exists(self._intraday_dir):
 				os.makedirs(self._intraday_dir)
 		except OSError as e:
 			default_logger().debug("Exception in archiver while creating DIR:{}.".format(self._intraday_dir))
 			default_logger().debug(e, exc_info=True)
 		try:
-			self._history_dir = os.path.join(self.archival_directory, 'history')
+			self._history_dir = os.path.join(self.run_directory, 'history')
 			if not os.path.exists(self._history_dir):
 				os.makedirs(self._history_dir)
 		except OSError as e:
 			default_logger().debug("Exception in archiver while creating DIR:{}.".format(self._history_dir))
 			default_logger().debug(e, exc_info=True)
 		try:
-			self._quote_dir = os.path.join(self.archival_directory, 'quote')
+			self._quote_dir = os.path.join(self.run_directory, 'quote')
 			if not os.path.exists(self._quote_dir):
 				os.makedirs(self._quote_dir)
 		except OSError as e:
@@ -46,6 +60,14 @@ class archiver:
 	@property
 	def archival_directory(self):
 		return self._archival_dir
+
+	@property
+	def logs_directory(self):
+		return self._logs_dir
+
+	@property
+	def run_directory(self):
+		return self._run_dir
 
 	@property
 	def intraday_directory(self):
@@ -68,7 +90,7 @@ class archiver:
 		elif response_type == ResponseType.Quote:
 			return os.path.join(self.quote_directory, symbol.upper())
 		else:
-			return os.path.join(self.archival_directory, symbol.upper())
+			return os.path.join(self.run_directory, symbol.upper())
 
 	@tracelog
 	def get_directory(self, response_type=ResponseType.History):
@@ -79,7 +101,7 @@ class archiver:
 		elif response_type == ResponseType.Quote:
 			return self.quote_directory
 		else:
-			return self.archival_directory
+			return self.run_directory
 
 	@tracelog
 	def archive(self, df, symbol, response_type=ResponseType.Default):

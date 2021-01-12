@@ -10,6 +10,7 @@ from nseta.cli.plotscli import plot_ta
 from nseta.cli.strategycli import test_trading_strategy, forecast_strategy
 from nseta.cli.livecli import live_quote, scan
 from nseta.common import log
+from nseta.archives.archiver import archiver
 
 __all__ = ['nsetacli']
 
@@ -19,13 +20,15 @@ __all__ = ['nsetacli']
 @click.option('--trace/--no-trace', default=False, help='--trace to turn tracing on (works only with --debug). Default is off.')
 def nsetacli(debug, version, trace):
 	signal.signal(signal.SIGINT, sigint_handler)
+	arch = archiver()
+	log_file_path = os.path.join(arch.logs_directory,'logs.log')
 	if debug:
 		click.echo('Debug mode is %s' % ('on' if debug else 'off'))
 		if trace:
 			click.echo('Tracing mode is %s' % ('on' if trace else 'off'))
-		log.setup_custom_logger('nseta', logging.DEBUG, trace)
+		log.setup_custom_logger('nseta', logging.DEBUG, trace, log_file_path=log_file_path)
 	else:
-		log.setup_custom_logger('nseta', logging.INFO)
+		log.setup_custom_logger('nseta', logging.INFO, log_file_path=log_file_path)
 	if version:
 		click.echo('nseta ' + nseta.__version__)
 

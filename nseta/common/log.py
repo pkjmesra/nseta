@@ -11,7 +11,7 @@ from itertools import *
 
 __all__ = ['setup_custom_logger', 'default_logger', 'log_to', 'tracelog', 'suppress_stdout_stderr']
 __trace__ = False
-def setup_custom_logger(name, levelname=logging.DEBUG, trace=False):
+def setup_custom_logger(name, levelname=logging.DEBUG, trace=False, log_file_path='logs.log'):
 	trace_formatter = logging.Formatter(fmt='%(asctime)s - %(name)s - %(levelname)s - %(filename)s - %(module)s - %(funcName)s - %(lineno)d\n%(message)s\n')
 	console_info_formatter = logging.Formatter(fmt='%(levelname)s - %(filename)s(%(funcName)s - %(lineno)d)\n%(message)s\n')
 
@@ -28,7 +28,7 @@ def setup_custom_logger(name, levelname=logging.DEBUG, trace=False):
 	logger.addHandler(consolehandler)
 	__trace__ = trace
 
-	filehandler = logging.FileHandler('logs.log')
+	filehandler = logging.FileHandler(log_file_path)
 	filehandler.setFormatter(trace_formatter)
 	filehandler.setLevel(logging.DEBUG)
 
