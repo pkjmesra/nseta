@@ -257,7 +257,7 @@ class scanner:
 		tiinstance = ti()
 		historyinstance = historicaldata()
 		# Time frame you want to pull data from
-		start_date = datetime.datetime.now()-datetime.timedelta(days=365)
+		start_date = datetime.datetime.now()-datetime.timedelta(days=90)
 		end_date = datetime.datetime.now()
 		for symbol in stocks:
 			try:
@@ -338,49 +338,114 @@ class scanner:
 			return signalframes
 		try:
 			df['Signal'] = 'NA'
+			df['Remarks'] = 'NA'
+			df['Confidence'] = 'NA'
 			decimals = 2
 			ltp = df['LTP'].iloc[0]
-			signalframes = self.update_signal_indicator(df, signalframes, 'bbands', 'BBands-L', 0.05, ltp, '<=', '(BUY)  [LTP < BBands-L]', '(BUY)  [LTP ~ BBands-L]')
-			signalframes = self.update_signal_indicator(df, signalframes, 'bbands', 'BBands-U', 0.05, ltp, '<=', '(SELL) [LTP ~ BBands-U]', '(SELL) [LTP > BBands-U]')
-			signalframes = self.update_signal_indicator(df, signalframes, 'rsi', 'RSI', 25, 75, '><', '(SELL) [RSI >= 75]', '(BUY)  [RSI <= 25]')
-			signalframes = self.update_signal_indicator(df, signalframes, 'ema', 'EMA(9)', 0.1, ltp, '>=', '(BUY)  [LTP > EMA(9)]', '(SELL) [LTP < EMA(9)]')
+			signalframes = self.update_signal_indicator(df, signalframes, 'bbands', 'BBands-L', 0.05, ltp, '<=', 'BUY', '[LTP < BBands-L]', 'BUY', '[LTP ~ BBands-L]')
+			signalframes = self.update_signal_indicator(df, signalframes, 'bbands', 'BBands-U', 0.05, ltp, '<=', 'SELL', '[LTP ~ BBands-U]', 'SELL', '[LTP > BBands-U]')
+			signalframes = self.update_signal_indicator(df, signalframes, 'rsi', 'RSI', 25, 75, '><', 'SELL', '[RSI >= 75]', 'BUY', '[RSI <= 25]')
+			signalframes = self.update_signal_indicator(df, signalframes, 'emac', 'EMA(9)', 0.1, ltp, '>=', 'BUY', '[LTP > EMA(9)]', 'SELL', '[LTP < EMA(9)]')
 			macd12 = df['macd(12)'].iloc[0]
-			signalframes = self.update_signal_indicator(df, signalframes, 'macd', 'macdsignal(9)', 0.05, macd12, '>=', '(BUY)  [MACD > EMA]', '(SELL) [MACD < EMA]')
+			signalframes = self.update_signal_indicator(df, signalframes, 'macd', 'macdsignal(9)', 0.05, macd12, '>=', 'BUY', '[MACD > EMA]', 'SELL', '[MACD < EMA]')
 			if self.indicator == 'macd' or self.indicator == 'all':
 				df['macd(12)'] = df['macd(12)'].apply(lambda x: round(x, decimals))
 				df['macdhist(26)'] = df['macdhist(26)'].apply(lambda x: round(x, decimals))
-			else:
-				df.drop(['macd(12)', 'macdhist(26)'], axis = 1, inplace = True)
-			# Drop the Momentum indicator. We don't need it anymore
-			df.drop(['MOM'], axis = 1, inplace = True)
+			self.trim_columns(df)
 		except Exception as e:
 			default_logger().debug(e, exc_info=True)
 			return
 		return signalframes
 
-	def update_signal_indicator(self, df, signalframes, indicator, column, margin, comparator_value, ltp_label_comparator, true_remarks, false_remarks):
+	def update_signal_indicator(self, df, signalframes, indicator, column, margin, comparator_value, ltp_label_comparator, true_type, true_remarks, false_type, false_remarks):
 		if self.indicator == indicator or self.indicator == 'all':
 			decimals = 2
 			value = round(df[column].iloc[0],2)
-			true_remarks = true_remarks.ljust(23)
-			false_remarks = false_remarks.ljust(23)
 			if ltp_label_comparator == '><':
 				if (value is not None) and (value > comparator_value or value < margin):
-					df['Signal'].iloc[0] = true_remarks if value > comparator_value else false_remarks
+					df['Remarks'].iloc[0] = true_remarks if value > comparator_value else false_remarks
+					df['Signal'].iloc[0] = true_type if value > comparator_value else false_type
+					self.update_confidence_level(df)
 					default_logger().debug(df.to_string(index=False))
 					signalframes.append(df)
 			else:
 				if (value is not None) and abs(value-comparator_value) <= margin:
 					if ltp_label_comparator == '<=':
-						df['Signal'].iloc[0] = true_remarks if comparator_value - value <=0 else false_remarks
+						df['Remarks'].iloc[0] = true_remarks if comparator_value - value <=0 else false_remarks
+						df['Signal'].iloc[0] = true_type if comparator_value - value <=0 else false_type
 					elif ltp_label_comparator == '>=':
-						df['Signal'].iloc[0] = true_remarks if comparator_value - value >=0 else false_remarks
+						df['Remarks'].iloc[0] = true_remarks if comparator_value - value >=0 else false_remarks
+						df['Signal'].iloc[0] = true_type if comparator_value - value >=0 else false_type
+					self.update_confidence_level(df)
 					default_logger().debug(df.to_string(index=False))
 					signalframes.append(df)
 			df[column] = df[column].apply(lambda x: round(x, decimals))
-		else:
-			df.drop([column], axis = 1, inplace = True)
 		return signalframes
+
+	def update_confidence_level(self, df):
+		rsi = round(df['RSI'].iloc[0],2)
+		bbandsl = round(df['BBands-L'].iloc[0],2)
+		bbandsu = round(df['BBands-U'].iloc[0],2)
+		ema = round(df['EMA(9)'].iloc[0],2)
+		macdsignal = round(df['macdsignal(9)'].iloc[0],2)
+		macd12 = round(df['macd(12)'].iloc[0],2)
+		macd26 = round(df['macdhist(26)'].iloc[0],2)
+		mom = round(df['MOM'].iloc[0],2)
+		signal = df['Signal'].iloc[0]
+		ltp = df['LTP'].iloc[0]
+		confidence = 0
+		if signal == 'BUY':
+			if rsi >=60:
+				confidence = confidence + 20
+			elif self.indicator == 'rsi':
+				confidence = confidence + 10
+			if mom > 0:
+				confidence = confidence + 20
+			if macd12 > macdsignal and macd12 > 0:
+				confidence = confidence + 20
+			elif macd12 > macdsignal and macd12 <= 0 or self.indicator == 'macd' or self.indicator == 'all':
+				confidence = confidence + 10
+			if ltp <= bbandsl:
+				confidence = confidence + 20
+			elif ltp - bbandsl <= .1 or self.indicator == 'bbands' or self.indicator == 'all':
+				confidence = confidence + 10
+			if ltp >= ema:
+				confidence = confidence + 10
+			elif self.indicator == 'emac':
+				confidence = confidence + 10
+		elif signal == 'SELL':
+			if rsi <=40:
+				confidence = confidence + 20
+			elif self.indicator == 'rsi':
+				confidence = confidence + 10
+			if mom < 0:
+				confidence = confidence + 20
+			if macd12 < macdsignal and macd12 < 0:
+				confidence = confidence + 20
+			elif macd12 < macdsignal and macd12 >= 0 or self.indicator == 'macd' or self.indicator == 'all':
+				confidence = confidence + 10
+			if ltp >= bbandsu:
+				confidence = confidence + 20
+			elif bbandsu - ltp >= .1 or self.indicator == 'bbands' or self.indicator == 'all':
+				confidence = confidence + 10
+			if ltp <= ema:
+				confidence = confidence + 10
+			elif self.indicator == 'emac':
+				confidence = confidence + 10
+		df['Confidence'].iloc[0] = ' >> {} %  <<'.format(confidence) if confidence >=80 else '{} %'.format(confidence)
+		return df
+
+	def trim_columns(self, df):
+		columns = {'bbands':['BBands-L', 'BBands-U'], 
+			'rsi': ['RSI'], 
+			'emac': ['EMA(9)'], 
+			'macd': ['macdsignal(9)', 'macd(12)', 'macdhist(26)']}
+		for indicator in columns.keys():
+			if self.indicator != indicator and self.indicator != 'all':
+				for key in columns[indicator]:
+					if key in df.keys():
+						df.drop([key], axis = 1, inplace = True)
+		df.drop(['MOM'], axis = 1, inplace = True)
 
 	# def buy_solid():
 		# OBV trending upwards

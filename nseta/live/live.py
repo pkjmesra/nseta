@@ -30,10 +30,10 @@ FUTURES_HEADERS = ["Instrument", "Underlying", "Expiry Date", "Option Type", "St
 FUTURES_INDEX = "Expiry Date"
 
 NAME_KEYS = ['symbol','companyName', 'isinCode']
-QUOTE_KEYS = ['previousClose', 'lastPrice', 'change', 'pChange', 'averagePrice', 'pricebandupper', 'pricebandlower']
+QUOTE_KEYS = ['previousClose', 'lastPrice', 'change', 'pChange', 'averagePrice', 'pricebandupper', 'pricebandlower', 'basePrice']
 OHLC_KEYS = ['open', 'dayHigh', 'dayLow', 'closePrice']
 WK52_KEYS = ['high52', 'low52']
-VOLUME_KEYS = ['quantityTraded', 'totalTradedVolume', 'totalTradedValue', 'deliveryQuantity', 'deliveryToTradedQuantity']
+VOLUME_KEYS = ['quantityTraded', 'totalTradedVolume', 'totalTradedValue', 'deliveryQuantity', 'deliveryToTradedQuantity', 'totalBuyQuantity', 'totalSellQuantity']
 
 
 eq_quote_referer = "https://www1.nseindia.com/live_market/dynaContent/live_watch/get_quote/GetQuote.jsp?symbol={}&illiquid=0&smeFlag=0&itpFlag=0"
@@ -183,7 +183,15 @@ def get_data_list(orgdata, keys=[]):
 	if len(keys) > 0:
 		primary = [time]
 		for key in keys:
-			primary.append(data[key])
+			if key in data.keys():
+				primary.append(data[key])
+			elif key == 'BuySellDiffQty':
+				try:
+					totalBuyQuantity = float((data['totalBuyQuantity']).replace(' ','').replace(',',''))
+					totalSellQuantity = float((data['totalSellQuantity']).replace(' ','').replace(',',''))
+					primary.append(float(totalBuyQuantity - totalSellQuantity))
+				except Exception:
+					primary.append('NA')
 		return [primary], name_data, quote_data, ohlc_data, wk52_data, volume_data, pipeline_data
 	else:
 		primary = []
@@ -213,6 +221,9 @@ def get_data_list(orgdata, keys=[]):
 		for key in VOLUME_KEYS:
 			value = (data[key]).replace(' ','').replace(',','')
 			volume_data.append(float(value))
+		totalBuyQuantity = float((data['totalBuyQuantity']).replace(' ','').replace(',',''))
+		totalSellQuantity = float((data['totalSellQuantity']).replace(' ','').replace(',',''))
+		volume_data.append(float(totalBuyQuantity - totalSellQuantity))
 		volume_data = [volume_data]
 
 		for x in range(1,5):
@@ -225,4 +236,10 @@ def get_data_list(orgdata, keys=[]):
 			for column in columns:
 				row.append(data[column] + "  ")
 			pipeline_data.append(row)
+		row = []
+		row.append('Total Buy Quantity:')
+		row.append('{}'.format(str(totalBuyQuantity)))
+		row.append('Total Sell Quantity:')
+		row.append('{}'.format(str(totalSellQuantity)))
+		pipeline_data.append(row)
 		return [primary], name_data, quote_data, ohlc_data, wk52_data, volume_data, pipeline_data

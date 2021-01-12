@@ -13,10 +13,10 @@ from datetime import datetime, date
 __all__ = ['live_quote', 'scan', 'scan_live', 'scan_intraday']
 
 NAME_LIST = ['Symbol', 'Name', 'ISIN']
-QUOTE_LIST = ['Last Updated', 'Prev Close', 'Last Trade Price','Change','% Change', 'Avg. Price', 'Upper Band','Lower Band']
+QUOTE_LIST = ['Last Updated', 'Prev Close', 'Last Trade Price','Change','% Change', 'Avg. Price', 'Upper Band','Lower Band', 'Adjusted Price']
 OHLC_LIST = ['Open', 'High', 'Low', 'Close']
 WK52_LIST = ['52 Wk High', '52 Wk Low']
-VOLUME_LIST = ['Quantity Traded', 'Total Traded Volume', 'Total Traded Value', 'Delivery Volume', '% Delivery']
+VOLUME_LIST = ['Quantity Traded', 'Total Traded Volume', 'Total Traded Value', 'Delivery Volume', '% Delivery', 'Total Buy Qty.', 'Total Sell Qty.', 'Buy - Sell']
 PIPELINE_LIST = ['Bid Quantity', 'Bid Price', 'Offer_Quantity', 'Offer_Price']
 
 RUN_IN_BACKGROUND = True
@@ -76,7 +76,7 @@ def scan(stocks, live, intraday, swing, indicator, clear, background):
 		stocks = []
 	global RUN_IN_BACKGROUND
 	try:
-		clear_cache(clear, background, indicator, intraday, live, swing)
+		clear_cache(clear, background, indicator, intraday, live, swing, force_clear = current_datetime_in_ist_trading_time_range())
 		if live:
 			scan_live(stocks, indicator, background)
 		elif intraday:
@@ -123,6 +123,8 @@ def scan_live(stocks, indicator, background):
 def scan_live_results(df, signaldf, indicator, should_cache=True):
 	if df is not None and len(df) > 0:
 		save_scan_results_archive(df, signaldf, ResponseType.Quote, indicator, should_cache)
+		df = df.sort_values(by='% Delivery',ascending=False)
+		print("\nAll Stocks LTP and Signals:\n" + df.to_string(index=False))
 		default_logger().debug("\nAll Stocks LTP and Signals:\n" + df.to_string(index=False))
 	else:
 		print('Nothing to show here.')
@@ -149,6 +151,7 @@ def scan_intraday_results(df, signaldf, indicator, should_cache=True):
 	else:
 		print('Nothing to show here.')
 	if signaldf is not None and len(signaldf) > 0:
+		signaldf = signaldf.sort_values(by='Signal',ascending=True)
 		print("\nWe recommend taking the following BUY/SELL positions for day trading. Intraday Signals:\n" + signaldf.to_string(index=False))
 	else:
 		print('No signals to show here.')
@@ -217,7 +220,7 @@ def formatted_dataframe(list_data, column_names, indices=True):
 		df = pd.DataFrame(list_data, columns = columns)
 	return df
 
-def clear_cache(clear, background, indicator, intraday = True, live = False, swing = False):
+def clear_cache(clear, background, indicator, intraday = True, live = False, swing = False, force_clear = False):
 	response_type = ResponseType.Default
 	response_type = ResponseType.Intraday if intraday else response_type
 	response_type = ResponseType.Quote if live else response_type
@@ -226,9 +229,9 @@ def clear_cache(clear, background, indicator, intraday = True, live = False, swi
 		arch = archiver()
 		df_file_name = 'df_Scan_Results.{}'.format(indicator)
 		signaldf_file_name = 'signaldf_Scan_Results.{}'.format(indicator)
-		arch.clearcache(df_file_name, response_type, force_clear=False)
-		arch.clearcache(signaldf_file_name, response_type, force_clear=False)
-		arch.clearcache(response_type=response_type, force_clear=False)
+		arch.clearcache(df_file_name, response_type, force_clear=force_clear)
+		arch.clearcache(signaldf_file_name, response_type, force_clear=force_clear)
+		arch.clearcache(response_type=response_type, force_clear=force_clear)
 
 def live_quote_background(symbol, general, ohlc, wk52, volume, orderbook, terminate_after_iter=0, wait_time=60):
 	global RUN_IN_BACKGROUND
