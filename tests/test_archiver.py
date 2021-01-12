@@ -14,7 +14,7 @@ class TestArchiver(unittest.TestCase):
 	def test_get_path_default(self):
 		a = archiver()
 		result = a.get_path('SomeSymbol', ResponseType.Default)
-		self.assertIn('/nseta/archives/SOMESYMBOL', result)
+		self.assertIn('/nseta/archives/run/SOMESYMBOL', result)
 
 	def test_get_directory_default(self):
 		a = archiver()
