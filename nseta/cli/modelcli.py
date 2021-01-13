@@ -35,7 +35,7 @@ def create_cdl_model(symbol, start, end, file_name, steps, clear, format):
 		df = historyinstance.daily_ohlc_history(symbol, sd, ed, type=ResponseType.History)
 		df.set_index('Date', inplace=True)
 		df = model_candlestick(df, steps)
-		click.echo(df.head())
+		click.echo(df.to_string(index=False))
 	except Exception as e:
 		default_logger().error(e, exc_info=True)
 		click.secho('Failed to create candlestick model', fg='red', nl=True)
