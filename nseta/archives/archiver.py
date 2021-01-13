@@ -15,7 +15,8 @@ class ResponseType(enum.Enum):
 	Intraday = 1
 	History = 2
 	Quote = 3
-	Default = 4
+	Volume = 4
+	Default = 5
 
 class archiver:
 
@@ -56,6 +57,13 @@ class archiver:
 		except OSError as e:
 			default_logger().debug("Exception in archiver while creating DIR:{}.".format(self._quote_dir))
 			default_logger().debug(e, exc_info=True)
+		try:
+			self._volume_dir = os.path.join(self.run_directory, 'volume')
+			if not os.path.exists(self._volume_dir):
+				os.makedirs(self._volume_dir)
+		except OSError as e:
+			default_logger().debug("Exception in archiver while creating DIR:{}.".format(self._volume_dir))
+			default_logger().debug(e, exc_info=True)
 
 	@property
 	def archival_directory(self):
@@ -81,6 +89,10 @@ class archiver:
 	def quote_directory(self):
 		return self._quote_dir
 
+	@property
+	def volume_directory(self):
+		return self._volume_dir
+
 	@tracelog
 	def get_path(self, symbol, response_type=ResponseType.History):
 		if response_type == ResponseType.Intraday:
@@ -89,6 +101,8 @@ class archiver:
 			return os.path.join(self.history_directory, symbol.upper())
 		elif response_type == ResponseType.Quote:
 			return os.path.join(self.quote_directory, symbol.upper())
+		elif response_type == ResponseType.Volume:
+			return os.path.join(self.volume_directory, symbol.upper())
 		else:
 			return os.path.join(self.run_directory, symbol.upper())
 
@@ -100,6 +114,8 @@ class archiver:
 			return self.history_directory
 		elif response_type == ResponseType.Quote:
 			return self.quote_directory
+		elif response_type == ResponseType.Volume:
+			return self.volume_directory
 		else:
 			return self.run_directory
 
@@ -153,11 +169,7 @@ class archiver:
 				# shutil.rmtree(dir_path) # For some reason even if it succeeds, many a time, the directory remains there.
 				# # Let's iterate and remove each individual file.
 				# default_logger().debug("Directory removed:{}".format(dir_path))
-				directory = os.fsencode(dir_path)
-				for file in os.listdir(directory):
-					filename = os.fsdecode(file)
-					dir_file_path = os.path.join(dir_path, filename)
-					self.remove_cached_file(dir_file_path, force_clear)
+				self.remove_dir(dir_path, force_clear)
 		except OSError as e:
 			default_logger().debug("Exception in clearcache.")
 			default_logger().debug(e, exc_info=True)
@@ -171,8 +183,18 @@ class archiver:
 		last_modified_aware = pytz.utc.localize(last_modified_unaware)
 		should_clear = datetime_in_ist_trading_time_range(last_modified_aware)
 		if should_clear or force_clear:
-			os.remove(file_path)
+			if os.path.isdir(file_path):
+				self.remove_dir(file_path, force_clear)
+			else:
+				os.remove(file_path)
 			default_logger().debug("File removed:{}".format(file_path))
 		else:
 			default_logger().debug("\nFetching from server will get the same data. If you want to force clear, use 'force_clear=True' option.")
 			default_logger().debug("\nFile NOT removed:{}.\n Last Modified:{}".format(file_path, str(last_modified_aware)))
+
+	def remove_dir(self, dir_path, force_clear=False):
+		directory = os.fsencode(dir_path)
+		for file in os.listdir(directory):
+			filename = os.fsdecode(file)
+			dir_file_path = os.path.join(dir_path, filename)
+			self.remove_cached_file(dir_file_path, force_clear)

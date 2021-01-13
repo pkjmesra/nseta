@@ -29,7 +29,7 @@ def history(symbol, start, end, file_name, index, clear, format): #, futures, ex
 			arch = archiver()
 			arch.clearcache(response_type=ResponseType.History, force_clear=False)
 		historyinstance = historicaldata()
-		df = historyinstance.daily_ohlc_history(symbol, sd, ed)
+		df = historyinstance.daily_ohlc_history(symbol, sd, ed, type=ResponseType.History)
 		default_logger().debug(df.to_string(index=False))
 		click.echo("History for symbol:{}\n{}\n".format(symbol, df.head()))
 	except Exception as e:

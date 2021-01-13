@@ -43,7 +43,7 @@ def plot_ta(symbol, start, end, clear, plot_type="ALL"):
 			arch = archiver()
 			arch.clearcache(response_type=ResponseType.History, force_clear=False)
 		historyinstance = historicaldata()
-		df = historyinstance.daily_ohlc_history(symbol, sd, ed)
+		df = historyinstance.daily_ohlc_history(symbol, sd, ed, type=ResponseType.History)
 		df['dt'] = df['Date']
 		df.set_index('Date', inplace=True)
 		plot_type = plot_type.upper()

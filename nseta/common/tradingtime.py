@@ -52,5 +52,5 @@ def trade_begin_datetime_ist():
 def trade_end_datetime_ist():
 	delhi_now = IST_datetime()
 	tz = pytz.timezone(IST_TIMEZONE)
-	end_dt = datetime(delhi_now.year, delhi_now.month, delhi_now.day, 15, 30, tzinfo = tz)
+	end_dt = datetime(delhi_now.year, delhi_now.month, delhi_now.day, 16, 0, tzinfo = tz)
 	return end_dt

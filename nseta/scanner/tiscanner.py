@@ -3,6 +3,7 @@ import numpy as np
 import os.path
 import pandas as pd
 import talib as ta
+import numpy as np
 import datetime
 import sys
 
@@ -20,6 +21,9 @@ __all__ = ['KEY_MAPPING', 'scanner', 'TECH_INDICATOR_KEYS']
 TYPE_LIVE = 'live'
 TYPE_INTRADAY = 'intraday'
 TYPE_SWING = 'swing'
+TYPE_VOLUME = 'volume'
+VOLUME_PERIOD = 7
+SWING_PERIOD = 90
 
 KEY_MAPPING = {
 	'dt': 'Date',
@@ -31,6 +35,7 @@ KEY_MAPPING = {
 }
 
 TECH_INDICATOR_KEYS = ['rsi', 'smac', 'emac', 'macd', 'bbands', 'all']
+VOLUME_KEYS = ['Symbol', 'Date', 'LTP', 'VWAP', 'Yest-%Deliverable', '7DayAvgVolume', 'YestVs7Day(%)', 'TodaysVolume','TodayVsYest(%)', 'TodayVs7Day(%)', 'Today%Deliverable', 'TodaysBuy-SelllDiff']
 
 INTRADAY_KEYS_MAPPING = {
 	'Symbol': 'Symbol',
@@ -64,7 +69,7 @@ class scanner:
 			indicator = 'all'
 		self._indicator = indicator
 		self._stocksdict = {}
-		self._keys = ['symbol','previousClose', 'lastPrice', 'deliveryToTradedQuantity', 'BuySellDiffQty']
+		self._keys = ['symbol','previousClose', 'lastPrice', 'deliveryToTradedQuantity', 'BuySellDiffQty', 'totalTradedVolume']
 		self._scanner_dir = os.path.dirname(os.path.realpath(__file__))
 
 	@property
@@ -90,7 +95,8 @@ class scanner:
 			return self.scan_intraday_quanta
 		elif kind==TYPE_SWING:
 			return self.scan_swing_quanta
-
+		elif kind==TYPE_VOLUME:
+			return self.scan_volume_quanta
 	@tracelog
 	def scan_live(self, stocks=[]):
 		start_time = time()
@@ -134,6 +140,21 @@ class scanner:
 		end_time = time()
 		time_spent = end_time-start_time
 		print("\nThis run of swing scan took {:.1f} sec".format(time_spent))
+		return list_returned.pop(0), list_returned.pop(0)
+
+	@tracelog
+	def scan_volume(self, stocks=[]):
+		start_time = time()
+		file_path = "stocks.py"
+		if not os.path.exists(file_path):
+			file_path = os.path.join(self.scanner_directory, file_path)
+		# If stocks array is empty, pull stock list from stocks.txt file
+		stocks = stocks if len(stocks) > 0 else [
+			line.rstrip() for line in open(file_path, "r")]
+		list_returned = self.scan_internal(stocks, TYPE_VOLUME)
+		end_time = time()
+		time_spent = end_time-start_time
+		print("\nThis run of volume scan took {:.1f} sec".format(time_spent))
 		return list_returned.pop(0), list_returned.pop(0)
 
 	@tracelog
@@ -184,7 +205,7 @@ class scanner:
 				sys.stdout.flush()
 				result, primary = get_live_quote(stock, keys = self.keys)
 				if primary is not None and len(primary) > 0:
-					row = pd.DataFrame(primary, columns = ['Updated', 'Symbol', 'Close', 'LTP', '% Delivery', 'Buy - Sell'], index = [''])
+					row = pd.DataFrame(primary, columns = ['Updated', 'Symbol', 'Close', 'LTP', '% Delivery', 'Buy - Sell', 'TotalTradedVolume'], index = [''])
 					value = (row['LTP'][0]).replace(' ','').replace(',','')
 					if stock in self.stocksdict:
 						(self.stocksdict[stock]).append(float(value))
@@ -257,13 +278,13 @@ class scanner:
 		tiinstance = ti()
 		historyinstance = historicaldata()
 		# Time frame you want to pull data from
-		start_date = datetime.datetime.now()-datetime.timedelta(days=90)
+		start_date = datetime.datetime.now()-datetime.timedelta(days=SWING_PERIOD)
 		end_date = datetime.datetime.now()
 		for symbol in stocks:
 			try:
 				sys.stdout.write("\rFetching for {}".ljust(25).format(symbol))
 				sys.stdout.flush()
-				df = historyinstance.daily_ohlc_history(symbol, start_date, end_date)
+				df = historyinstance.daily_ohlc_history(symbol, start_date, end_date, type=ResponseType.History)
 				if df is not None and len(df) > 0:
 					df = tiinstance.update_ti(df)
 					df = df.sort_values(by='Date',ascending=True)
@@ -293,6 +314,40 @@ class scanner:
 		return [df, signaldf]
 
 	@tracelog
+	def scan_volume_quanta(self, stocks):
+		frames = []
+		signalframes = []
+		df = None
+		signaldf = None
+		tiinstance = ti()
+		historyinstance = historicaldata()
+		# Time frame you want to pull data from
+		start_date = datetime.datetime.now()-datetime.timedelta(days=VOLUME_PERIOD)
+		end_date = datetime.datetime.now()
+		for symbol in stocks:
+			try:
+				sys.stdout.write("\rFetching for {}".ljust(25).format(symbol))
+				sys.stdout.flush()
+				df = historyinstance.daily_ohlc_history(symbol, start_date, end_date, type=ResponseType.Volume)
+				default_logger().debug(df.to_string(index=False))
+				result, primary = get_live_quote(symbol, keys = self.keys)
+				if (primary is not None and len(primary) > 0) and (df is not None and len(df) > 0):
+					df_today = pd.DataFrame(primary, columns = ['Updated', 'Symbol', 'Close', 'LTP', 'Today%Deliverable', 'TodaysBuy-SelllDiff', 'TotalTradedVolume'], index = [''])
+					df, df_today, signalframes = self.format_scan_volume_df(df, df_today, signalframes)
+					frames.append(df)
+			except Exception as e:
+				default_logger().debug("Exception encountered for " + symbol)
+				default_logger().debug(e, exc_info=True)
+				continue
+			except SystemExit:
+				sys.exit(1)
+		if len(frames) > 0:
+			df = pd.concat(frames)
+		if len(signalframes) > 0:
+			signaldf = pd.concat(signalframes)
+		return [df, signaldf]
+
+	@tracelog
 	def ohlc_intraday_history(self, symbol):
 		df = None
 		try:
@@ -300,7 +355,7 @@ class scanner:
 			arch = archiver()
 			df = arch.restore(symbol, ResponseType.Intraday)
 			if df is None or len(df) == 0:
-				df = historyinstance.daily_ohlc_history(symbol, start=datetime.date.today(), end = datetime.date.today(), intraday=True)
+				df = historyinstance.daily_ohlc_history(symbol, start=datetime.date.today(), end = datetime.date.today(), intraday=True, type=ResponseType.Intraday)
 			if df is not None and len(df) > 0:
 				# default_logger().debug("Dataframe for " + symbol + "\n" + str(df))
 				df = self.map_keys(df, symbol)
@@ -445,6 +500,48 @@ class scanner:
 					if key in df.keys():
 						df.drop([key], axis = 1, inplace = True)
 		df.drop(['MOM'], axis = 1, inplace = True)
+
+	def format_scan_volume_df(self, df, df_today, signalframes=[]):
+		default_logger().debug(df_today.to_string(index=False))
+		df_today = df_today.tail(1)
+		df = df.sort_values(by='Date',ascending=True)
+		# Get the 7 day average volume
+		total_7day_volume = df['Volume'].sum()
+		avg_volume = round(total_7day_volume/7,2)
+		df = df.tail(1)
+		# 'Symbol', 'Date', 'LTP', 'VWAP', 'TodayVsYest', 'TodayVs7Day', 'YestVs7Day', 'Yest-%Deliverable', '
+		# Today%Deliverable', '7DayAvgVolume', 'TodaysVolume', 'TodaysBuy-SelllDiff'
+		df['LTP']=np.nan
+		df['TodayVsYest(%)']= np.nan
+		df['TodayVs7Day(%)'] = np.nan
+		df['YestVs7Day(%)']= np.nan
+		df['Yest-%Deliverable'] = df['%Deliverable'].apply(lambda x: round(x*100, 2))
+		df['Today%Deliverable']= np.nan
+		df['7DayAvgVolume']= avg_volume
+		df['TodaysVolume']= np.nan
+		df['TodaysBuy-SelllDiff']= np.nan
+		
+		volume_yest = df['Volume'].iloc[0]
+		today_volume = df_today['TotalTradedVolume'].iloc[0]
+		today_vs_yest = round((100* (float(today_volume.replace(',','')) - volume_yest)/volume_yest))
+		df['Date'].iloc[0] = df_today['Updated'].iloc[0]
+		df['LTP'].iloc[0] = df_today['LTP'].iloc[0]
+		df['TodayVsYest(%)'].iloc[0] = today_vs_yest
+		df['TodayVs7Day(%)'].iloc[0] = round((100* (float(today_volume.replace(',','')) - avg_volume)/avg_volume))
+		df['YestVs7Day(%)'].iloc[0] = round((100 * (volume_yest - avg_volume)/avg_volume))
+		df['Today%Deliverable'].iloc[0] = df_today['Today%Deliverable'].iloc[0]
+		df['TodaysVolume'].iloc[0] = today_volume
+		df['TodaysBuy-SelllDiff'].iloc[0] = df_today['TodaysBuy-SelllDiff'].iloc[0]
+
+		default_logger().debug(df.to_string(index=False))
+		for key in df.keys():
+			# Symbol Series       Date  Prev Close     Open     High      Low     Last    Close     VWAP    Volume      Turnover  Trades  Deliverable Volume  %Deliverable
+			if not key in VOLUME_KEYS:
+				df.drop([key], axis = 1, inplace = True)
+		default_logger().debug(df.to_string(index=False))
+		if today_vs_yest > 100:
+			signalframes.append(df)
+		return df, df_today, signalframes
 
 	# def buy_solid():
 		# OBV trending upwards

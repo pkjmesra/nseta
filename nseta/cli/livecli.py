@@ -18,7 +18,7 @@ OHLC_LIST = ['Open', 'High', 'Low', 'Close']
 WK52_LIST = ['52 Wk High', '52 Wk Low']
 VOLUME_LIST = ['Quantity Traded', 'Total Traded Volume', 'Total Traded Value', 'Delivery Volume', '% Delivery', 'Total Buy Qty.', 'Total Sell Qty.', 'Buy - Sell']
 PIPELINE_LIST = ['Bid Quantity', 'Bid Price', 'Offer_Quantity', 'Offer_Price']
-
+ORDER_BY_KEYS = ['intraday', 'momentum']
 RUN_IN_BACKGROUND = True
 
 @click.command(help='Get live price quote of a security')
@@ -54,19 +54,22 @@ def live_quote(symbol, general, ohlc, wk52, volume, orderbook, background):
 @click.option('--stocks', '-S', default=[], help='Comma separated security codes(Optional. When skipped, all stocks configured in stocks.py will be scanned.)')
 @click.option('--live', '-l', default=False, is_flag=True, help='Scans (every min.) the live-quote and lists those that meet the signal criteria. Works best with --background.')
 @click.option('--intraday', '-i', default=False, is_flag=True, help='Scans (every 10 sec) the intraday price history and lists those that meet the signal criteria')
-@click.option('--swing', '-s', default=False, is_flag=True, help='Scans (every 10 sec) the past 365 days price history and lists those that meet the signal criteria')
+@click.option('--swing', '-s', default=False, is_flag=True, help='Scans (every 10 sec) the past 90 days price history and lists those that meet the signal criteria')
+@click.option('--volume', '-v', default=False, is_flag=True, help='Scans (every 10 sec) the past 7 days price history and lists those that meet the signal criteria')
 @click.option('--indicator', '-t', default='all', type=click.Choice(TECH_INDICATOR_KEYS),
 	help=', '.join(TECH_INDICATOR_KEYS) + ". Choose one.")
+@click.option('--orderby', '-o', default='intraday', type=click.Choice(ORDER_BY_KEYS),
+	help=', '.join(ORDER_BY_KEYS) + ". Choose one.")
 @click.option('--clear', '-c', default=False, is_flag=True, help='Clears the cached data for the given options.')
 @click.option('--background', '-r', default=False, is_flag=True, help='Keep running the process in the background (Optional)')
 @tracelog
-def scan(stocks, live, intraday, swing, indicator, clear, background):
-	if (live and intraday) or ( live and swing) or (intraday and swing):
-		click.secho('Choose only one of --live, --intraday or --swing options.', fg='red', nl=True)
+def scan(stocks, live, intraday, swing, volume, indicator, orderby, clear, background):
+	if (live and intraday) or ( live and swing) or (intraday and swing) or (live and volume) or (intraday and volume) or (swing and volume):
+		click.secho('Choose only one of --live, --intraday, --swing or --volume options.', fg='red', nl=True)
 		print_help_msg(scan)
 		return
-	elif not live and not intraday and not swing:
-		click.secho('Choose at least one of the --live, --intraday (recommended) or --swing options.', fg='red', nl=True)
+	elif not live and not intraday and not swing and not volume:
+		click.secho('Choose at least one of the --live, --intraday (recommended) , --volume or --swing options.', fg='red', nl=True)
 		print_help_msg(scan)
 		return
 
@@ -76,13 +79,15 @@ def scan(stocks, live, intraday, swing, indicator, clear, background):
 		stocks = []
 	global RUN_IN_BACKGROUND
 	try:
-		clear_cache(clear, background, indicator, intraday, live, swing, force_clear = current_datetime_in_ist_trading_time_range())
+		clear_cache(clear, background, indicator, intraday, live, swing, volume, force_clear = current_datetime_in_ist_trading_time_range())
 		if live:
 			scan_live(stocks, indicator, background)
 		elif intraday:
 			scan_intraday(stocks, indicator, background)
 		elif swing:
 			scan_swing(stocks, indicator, background)
+		elif volume:
+			scan_volume(stocks, indicator, background, orderby)
 	except Exception as e:
 		RUN_IN_BACKGROUND = False
 		default_logger().debug(e, exc_info=True)
@@ -106,9 +111,12 @@ def save_scan_results_archive(df, signaldf, response_type, indicator, should_cac
 	if should_cache or not current_datetime_in_ist_trading_time_range():
 		df_file_name , signaldf_file_name = scan_results_file_names(indicator)
 		arch = archiver()
-		arch.archive(df, df_file_name, response_type)
-		arch.archive(signaldf, signaldf_file_name, response_type)
-		default_logger().debug('Saved to: {} and {}'.format(df_file_name, signaldf_file_name))
+		if df is not None and len(df) > 0:
+			arch.archive(df, df_file_name, response_type)
+			default_logger().debug('Saved to: {}'.format(df_file_name))
+		if signaldf is not None and len(signaldf) > 0:
+			arch.archive(signaldf, signaldf_file_name, response_type)
+			default_logger().debug('Saved to: {}'.format(signaldf_file_name))
 
 def scan_live(stocks, indicator, background):
 	df, signaldf = load_archived_scan_results(indicator, ResponseType.Quote)
@@ -177,10 +185,34 @@ def scan_swing_results(df, signaldf, indicator, should_cache=True):
 	else:
 		print('Nothing to show here.')
 	if signaldf is not None and len(signaldf) > 0:
-		print("\nWe recommend taking the following BUY/SELL positions for swingh trading. Swing Signals:\n" + signaldf.to_string(index=False))
+		print("\nWe recommend taking the following BUY/SELL positions for swing trading. Swing Signals:\n" + signaldf.to_string(index=False))
 	else:
 		print('No signals to show here.')
 	click.secho('Swing scanning finished.', fg='green', nl=True)
+
+def scan_volume(stocks, indicator, background, orderby):
+	if background:
+		default_logger().info('Background running not supported yet. Stay tuned. Executing just once...')
+	df, signaldf = load_archived_scan_results(indicator, ResponseType.Volume)
+	if df is None or len(df) == 0:
+		s = scanner(indicator=indicator)
+		df, signaldf = s.scan_volume(stocks=stocks)
+	scan_volume_results(df, signaldf, indicator, orderby)
+
+def scan_volume_results(df, signaldf, indicator, orderby, should_cache=True):
+	if df is not None and len(df) > 0:
+		save_scan_results_archive(df, signaldf,ResponseType.Volume, indicator, should_cache)
+		df = df.sort_values(by='TodayVs7Day(%)' if orderby == 'momentum' else 'TodayVsYest(%)',ascending=False)
+		default_logger().debug("\nAll Stocks LTP and Signals:\n" + df.to_string(index=False))
+		print("\nVolume Data:\n" + df.to_string(index=False))
+	else:
+		print('Nothing to show here.')
+	if signaldf is not None and len(signaldf) > 0:
+		signaldf = signaldf.sort_values(by='TodayVs7Day(%)' if orderby == 'momentum' else 'TodayVsYest(%)',ascending=False)
+		print("\nVolume Signals:\n" + signaldf.to_string(index=False))
+	else:
+		print('No signals to show here.')
+	click.secho('Volume scanning finished.', fg='green', nl=True)
 
 def format_beautified(orgdata, general, ohlc, wk52, volume, orderbook):
 	primary, name_data, quote_data, ohlc_data, wk52_data, volume_data, pipeline_data = get_data_list(orgdata)
@@ -220,11 +252,12 @@ def formatted_dataframe(list_data, column_names, indices=True):
 		df = pd.DataFrame(list_data, columns = columns)
 	return df
 
-def clear_cache(clear, background, indicator, intraday = True, live = False, swing = False, force_clear = False):
+def clear_cache(clear, background, indicator, intraday = True, live = False, swing = False, volume = False, force_clear = False):
 	response_type = ResponseType.Default
 	response_type = ResponseType.Intraday if intraday else response_type
 	response_type = ResponseType.Quote if live else response_type
 	response_type = ResponseType.History if swing else response_type
+	response_type = ResponseType.Volume if volume else response_type
 	if clear or background:
 		arch = archiver()
 		df_file_name = 'df_Scan_Results.{}'.format(indicator)
@@ -257,7 +290,7 @@ def scan_live_background(scannerinstance, stocks, indicator, terminate_after_ite
 		if terminate_after_iter > 0 and iteration >= terminate_after_iter:
 			RUN_IN_BACKGROUND = False
 			break
-		clear_cache(True, True, indicator, False, True, False)
+		clear_cache(True, True, indicator, False, True, False, False)
 		df, signaldf = scannerinstance.scan_live(stocks=stocks)
 		scan_live_results(df, signaldf, indicator, should_cache=False)
 		time.sleep(wait_time)
@@ -273,7 +306,7 @@ def scan_intraday_background(scannerinstance, stocks, indicator, terminate_after
 		if terminate_after_iter > 0 and iteration >= terminate_after_iter:
 			RUN_IN_BACKGROUND = False
 			break
-		clear_cache(True, True, indicator, True, False, False)
+		clear_cache(True, True, indicator, True, False, False, False)
 		df, signaldf = scannerinstance.scan_intraday(stocks=stocks)
 		scan_intraday_results(df, signaldf, indicator, should_cache= False)
 		time.sleep(wait_time)

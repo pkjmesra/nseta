@@ -102,7 +102,7 @@ class historicaldata:
 
 	@tracelog
 	def daily_ohlc_history(self, symbol, start, end, index=False, futures=False, option_type="",
-					expiry_date=None, strike_price="", series='EQ', intraday=False):
+					expiry_date=None, strike_price="", series='EQ', intraday=False, type=ResponseType.Default):
 		"""This is the function to get the historical prices of any security (index,
 			stocks, derviatives, VIX) etc.
 
@@ -173,8 +173,8 @@ class historicaldata:
 		symbol = kwargs['symbol']
 		start = kwargs['start']
 		end = kwargs['end']
-		intraday = kwargs['intraday']
-		df = self.unarchive_history(symbol, start, end, intraday)
+		response_type = kwargs['type']
+		df = self.unarchive_history(symbol, start, end, response_type)
 		if df is not None and len (df) > 0:
 			return df
 		try:
@@ -199,7 +199,7 @@ class historicaldata:
 						headers=headers, scaling=scaling, csvnode=csvnode)
 		except Exception as e:
 			default_logger().debug(e, exc_info=True)
-		self.archive_history(df, symbol, start, end, intraday)
+		self.archive_history(df, symbol, start, end, response_type)
 		return df
 
 
@@ -220,7 +220,7 @@ class historicaldata:
 
 	@tracelog
 	def validate_params(self, symbol, start, end, index=False, futures=False, option_type="",
-						expiry_date=None, strike_price="", series='EQ', intraday=False):
+						expiry_date=None, strike_price="", series='EQ', intraday=False, type=ResponseType.Default):
 		"""
 					symbol = "SBIN" (stock name, index name and VIX)
 					start = date(yyyy,mm,dd)
@@ -395,14 +395,14 @@ class historicaldata:
 		return df
 	'''
 	@tracelog
-	def archive_history(self, df, symbol, start_date, end_date, intraday=False):
-		symbol = symbol if intraday else '{}_{}_{}'.format(symbol, start_date.strftime('%d-%m-%Y'), end_date.strftime('%d-%m-%Y'))
+	def archive_history(self, df, symbol, start_date, end_date, response_type=ResponseType.Default):
+		symbol = symbol if response_type == ResponseType.Intraday else '{}_{}_{}'.format(symbol, start_date.strftime('%d-%m-%Y'), end_date.strftime('%d-%m-%Y'))
 		arch = archiver()
-		arch.archive(df, symbol, ResponseType.Intraday if intraday else ResponseType.History)
+		arch.archive(df, symbol, response_type)
 
 	@tracelog
-	def unarchive_history(self, symbol, start_date, end_date, intraday = False):
-		symbol = symbol if intraday else '{}_{}_{}'.format(symbol, start_date.strftime('%d-%m-%Y'), end_date.strftime('%d-%m-%Y'))
+	def unarchive_history(self, symbol, start_date, end_date, response_type=ResponseType.Default):
+		symbol = symbol if response_type == ResponseType.Intraday else '{}_{}_{}'.format(symbol, start_date.strftime('%d-%m-%Y'), end_date.strftime('%d-%m-%Y'))
 		arch = archiver()
-		df = arch.restore(symbol, ResponseType.Intraday if intraday else ResponseType.History)
+		df = arch.restore(symbol, response_type)
 		return df

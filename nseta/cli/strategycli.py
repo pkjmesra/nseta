@@ -208,7 +208,7 @@ def test_intraday_signals(df, lower, upper, strategy):
 
 def get_historical_dataframe(symbol, sd, ed):
 	historyinstance = historicaldata()
-	df = historyinstance.daily_ohlc_history(symbol, sd, ed)
+	df = historyinstance.daily_ohlc_history(symbol, sd, ed, type=ResponseType.History)
 	df['datetime'] = df['Date']
 	return df
 

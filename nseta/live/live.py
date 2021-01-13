@@ -194,6 +194,7 @@ def get_data_list(orgdata, keys=[]):
 				except Exception:
 					primary.append(np.nan)
 					continue
+		default_logger().debug('\nPrimary:\n{}'.format(primary))
 		return [primary], name_data, quote_data, ohlc_data, wk52_data, volume_data, pipeline_data
 	else:
 		primary = []

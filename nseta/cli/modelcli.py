@@ -32,7 +32,7 @@ def create_cdl_model(symbol, start, end, file_name, steps, clear, format):
 			arch = archiver()
 			arch.clearcache(response_type=ResponseType.History, force_clear=False)
 		historyinstance = historicaldata()
-		df = historyinstance.daily_ohlc_history(symbol, sd, ed)
+		df = historyinstance.daily_ohlc_history(symbol, sd, ed, type=ResponseType.History)
 		df.set_index('Date', inplace=True)
 		df = model_candlestick(df, steps)
 		click.echo(df.head())
