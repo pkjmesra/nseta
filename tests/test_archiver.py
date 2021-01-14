@@ -133,7 +133,7 @@ class TestArchiver(unittest.TestCase):
 		df_non_empty.to_csv(a.get_path(symbol, ResponseType.Volume), index=False)
 		result = a.restore(symbol, ResponseType.Volume)
 		self.assertTrue(result['A'].iloc[0] == symbol)
-		self.assertIn('***** Fetched RANDOM_TEST_RESTORE from the disk cache. *****.', self.capturedOutput.getvalue())
+		self.assertIn('Fetched RANDOM_TEST_RESTORE from the disk cache.', self.capturedOutput.getvalue())
 
 	def test_restore_from_path(self):
 		a = archiver()

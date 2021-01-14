@@ -517,20 +517,23 @@ class scanner:
 		df['YestVs7Day(%)']= np.nan
 		df['Yest-%Deliverable'] = df['%Deliverable'].apply(lambda x: round(x*100, 2))
 		df['Today%Deliverable']= np.nan
-		df['7DayAvgVolume']= avg_volume
-		df['TodaysVolume']= np.nan
+		# df['7DayAvgVolume']= avg_volume
+		# df['TodaysVolume']= np.nan
 		df['TodaysBuy-SelllDiff']= np.nan
 		
 		volume_yest = df['Volume'].iloc[0]
+		vwap = df['VWAP'].iloc[0]
+		ltp = (df_today['LTP'].iloc[0]).replace(',','')
+		ltp = float(ltp)
 		today_volume = df_today['TotalTradedVolume'].iloc[0]
 		today_vs_yest = round((100* (float(today_volume.replace(',','')) - volume_yest)/volume_yest))
 		df['Date'].iloc[0] = df_today['Updated'].iloc[0]
-		df['LTP'].iloc[0] = df_today['LTP'].iloc[0]
+		df['LTP'].iloc[0] = ltp
 		df['TodayVsYest(%)'].iloc[0] = today_vs_yest
 		df['TodayVs7Day(%)'].iloc[0] = round((100* (float(today_volume.replace(',','')) - avg_volume)/avg_volume))
 		df['YestVs7Day(%)'].iloc[0] = round((100 * (volume_yest - avg_volume)/avg_volume))
 		df['Today%Deliverable'].iloc[0] = df_today['Today%Deliverable'].iloc[0]
-		df['TodaysVolume'].iloc[0] = today_volume
+		# df['TodaysVolume'].iloc[0] = today_volume
 		df['TodaysBuy-SelllDiff'].iloc[0] = df_today['TodaysBuy-SelllDiff'].iloc[0]
 
 		default_logger().debug(df.to_string(index=False))
@@ -539,7 +542,7 @@ class scanner:
 			if not key in VOLUME_KEYS:
 				df.drop([key], axis = 1, inplace = True)
 		default_logger().debug(df.to_string(index=False))
-		if today_vs_yest > 100:
+		if today_vs_yest > 100 or ltp >= vwap:
 			signalframes.append(df)
 		return df, df_today, signalframes
 

@@ -156,11 +156,12 @@ def scan_intraday_results(df, signaldf, indicator, should_cache=True):
 	if df is not None and len(df) > 0:
 		save_scan_results_archive(df, signaldf, ResponseType.Intraday, indicator, should_cache)
 		default_logger().debug("\nAll Stocks LTP and Signals:\n" + df.to_string(index=False))
+		print("\n\nIntraday results\n\n" + df.to_string(index=False))
 	else:
 		print('Nothing to show here.')
 	if signaldf is not None and len(signaldf) > 0:
 		signaldf = signaldf.sort_values(by='Signal',ascending=True)
-		print("\nWe recommend taking the following BUY/SELL positions for day trading. Intraday Signals:\n" + signaldf.to_string(index=False))
+		print("\n\nWe recommend taking the following BUY/SELL positions for day trading. Intraday Signals:\n\n" + signaldf.to_string(index=False))
 	else:
 		print('No signals to show here.')
 	click.secho('Intraday scanning finished.', fg='green', nl=True)
@@ -204,15 +205,18 @@ def scan_volume_results(df, signaldf, indicator, orderby, should_cache=True):
 		save_scan_results_archive(df, signaldf,ResponseType.Volume, indicator, should_cache)
 		df = df.sort_values(by='TodayVs7Day(%)' if orderby == 'momentum' else 'TodayVsYest(%)',ascending=False)
 		default_logger().debug("\nAll Stocks LTP and Signals:\n" + df.to_string(index=False))
-		print("\nVolume Data:\n" + df.to_string(index=False))
+		print("\n\nVolume Data:\n\n" + df.to_string(index=False))
 	else:
 		print('Nothing to show here.')
 	if signaldf is not None and len(signaldf) > 0:
 		signaldf = signaldf.sort_values(by='TodayVs7Day(%)' if orderby == 'momentum' else 'TodayVsYest(%)',ascending=False)
-		print("\nVolume Signals:\n" + signaldf.to_string(index=False))
+		signal_stocks_list = signaldf['Symbol'].tolist()
+		str_signal_stocks_list = '{}'.format(signal_stocks_list)
+		print("\n\nVolume Signals: {}\n\n".format(str_signal_stocks_list.replace('[','').replace(']','').replace("'",'').replace(' ','')) + signaldf.to_string(index=False))
 	else:
 		print('No signals to show here.')
 	click.secho('Volume scanning finished.', fg='green', nl=True)
+	scan_intraday(signal_stocks_list, indicator, False)
 
 def format_beautified(orgdata, general, ohlc, wk52, volume, orderbook):
 	primary, name_data, quote_data, ohlc_data, wk52_data, volume_data, pipeline_data = get_data_list(orgdata)
