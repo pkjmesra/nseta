@@ -3,7 +3,6 @@ import numpy as np
 import os.path
 import pandas as pd
 import talib as ta
-import numpy as np
 import datetime
 import sys
 
@@ -15,6 +14,7 @@ from nseta.common.history import historicaldata
 from nseta.common.log import tracelog, default_logger
 from nseta.common.ti import ti
 from nseta.live.live import get_live_quote
+from nseta.common.tradingtime import *
 
 __all__ = ['KEY_MAPPING', 'scanner', 'TECH_INDICATOR_KEYS']
 
@@ -35,7 +35,7 @@ KEY_MAPPING = {
 }
 
 TECH_INDICATOR_KEYS = ['rsi', 'smac', 'emac', 'macd', 'bbands', 'all']
-VOLUME_KEYS = ['Symbol', 'Date', 'LTP', 'VWAP', 'Yest-%Deliverable', '7DayAvgVolume', 'YestVs7Day(%)', 'TodaysVolume','TodayVsYest(%)', 'TodayVs7Day(%)', 'Today%Deliverable', 'TodaysBuy-SelllDiff']
+VOLUME_KEYS = ['Remarks','PPoint', 'SS1', 'SS2', 'SS3', 'RR1', 'RR2', 'RR3','Symbol', 'Date', 'LTP', 'VWAP', 'Yest-%Deliverable', '7DayAvgVolume', 'YestVs7Day(%)', 'TodaysVolume','TodayVsYest(%)', 'TodayVs7Day(%)', 'Today%Deliverable', 'TodaysBuy-SelllDiff', '%Change']
 
 INTRADAY_KEYS_MAPPING = {
 	'Symbol': 'Symbol',
@@ -69,7 +69,7 @@ class scanner:
 			indicator = 'all'
 		self._indicator = indicator
 		self._stocksdict = {}
-		self._keys = ['symbol','previousClose', 'lastPrice', 'deliveryToTradedQuantity', 'BuySellDiffQty', 'totalTradedVolume']
+		self._keys = ['symbol','previousClose', 'lastPrice', 'deliveryToTradedQuantity', 'BuySellDiffQty', 'totalTradedVolume', 'pChange']
 		self._scanner_dir = os.path.dirname(os.path.realpath(__file__))
 
 	@property
@@ -205,7 +205,7 @@ class scanner:
 				sys.stdout.flush()
 				result, primary = get_live_quote(stock, keys = self.keys)
 				if primary is not None and len(primary) > 0:
-					row = pd.DataFrame(primary, columns = ['Updated', 'Symbol', 'Close', 'LTP', '% Delivery', 'Buy - Sell', 'TotalTradedVolume'], index = [''])
+					row = pd.DataFrame(primary, columns = ['Updated', 'Symbol', 'Close', 'LTP', '% Delivery', 'Buy - Sell', 'TotalTradedVolume', 'pChange'], index = [''])
 					value = (row['LTP'][0]).replace(' ','').replace(',','')
 					if stock in self.stocksdict:
 						(self.stocksdict[stock]).append(float(value))
@@ -329,10 +329,11 @@ class scanner:
 				sys.stdout.write("\rFetching for {}".ljust(25).format(symbol))
 				sys.stdout.flush()
 				df = historyinstance.daily_ohlc_history(symbol, start_date, end_date, type=ResponseType.Volume)
+				df = tiinstance.update_ti(df)
 				default_logger().debug(df.to_string(index=False))
 				result, primary = get_live_quote(symbol, keys = self.keys)
 				if (primary is not None and len(primary) > 0) and (df is not None and len(df) > 0):
-					df_today = pd.DataFrame(primary, columns = ['Updated', 'Symbol', 'Close', 'LTP', 'Today%Deliverable', 'TodaysBuy-SelllDiff', 'TotalTradedVolume'], index = [''])
+					df_today = pd.DataFrame(primary, columns = ['Updated', 'Symbol', 'Close', 'LTP', 'Today%Deliverable', 'TodaysBuy-SelllDiff', 'TotalTradedVolume','pChange'], index = [''])
 					df, df_today, signalframes = self.format_scan_volume_df(df, df_today, signalframes)
 					frames.append(df)
 			except Exception as e:
@@ -503,6 +504,7 @@ class scanner:
 
 	def format_scan_volume_df(self, df, df_today, signalframes=[]):
 		default_logger().debug(df_today.to_string(index=False))
+		signalframescopy = signalframes
 		df_today = df_today.tail(1)
 		df = df.sort_values(by='Date',ascending=True)
 		# Get the 7 day average volume
@@ -512,15 +514,26 @@ class scanner:
 		# 'Symbol', 'Date', 'LTP', 'VWAP', 'TodayVsYest', 'TodayVs7Day', 'YestVs7Day', 'Yest-%Deliverable', '
 		# Today%Deliverable', '7DayAvgVolume', 'TodaysVolume', 'TodaysBuy-SelllDiff'
 		df['LTP']=np.nan
+		df['%Change'] = np.nan
 		df['TodayVsYest(%)']= np.nan
 		df['TodayVs7Day(%)'] = np.nan
+		df['Remarks']='NA'
 		df['YestVs7Day(%)']= np.nan
 		df['Yest-%Deliverable'] = df['%Deliverable'].apply(lambda x: round(x*100, 2))
 		df['Today%Deliverable']= np.nan
+		df['PPoint']= df['PP']
+		df['SS1']= df['S1']
+		df['RR1']= df['R1']
+		df['SS2']= df['S2']
+		df['RR2']= df['R2']
+		df['SS3']= df['S3']
+		df['RR3']= df['R3']
 		# df['7DayAvgVolume']= avg_volume
 		# df['TodaysVolume']= np.nan
-		df['TodaysBuy-SelllDiff']= np.nan
-		
+		if current_datetime_in_ist_trading_time_range():
+			df['TodaysBuy-SelllDiff']= np.nan
+			df['TodaysBuy-SelllDiff'].iloc[0] = df_today['TodaysBuy-SelllDiff'].iloc[0]
+
 		volume_yest = df['Volume'].iloc[0]
 		vwap = df['VWAP'].iloc[0]
 		ltp = (df_today['LTP'].iloc[0]).replace(',','')
@@ -528,13 +541,33 @@ class scanner:
 		today_volume = df_today['TotalTradedVolume'].iloc[0]
 		today_vs_yest = round((100* (float(today_volume.replace(',','')) - volume_yest)/volume_yest))
 		df['Date'].iloc[0] = df_today['Updated'].iloc[0]
+		df['%Change'].iloc[0] = df_today['pChange'].iloc[0]
 		df['LTP'].iloc[0] = ltp
 		df['TodayVsYest(%)'].iloc[0] = today_vs_yest
 		df['TodayVs7Day(%)'].iloc[0] = round((100* (float(today_volume.replace(',','')) - avg_volume)/avg_volume))
 		df['YestVs7Day(%)'].iloc[0] = round((100 * (volume_yest - avg_volume)/avg_volume))
 		df['Today%Deliverable'].iloc[0] = df_today['Today%Deliverable'].iloc[0]
 		# df['TodaysVolume'].iloc[0] = today_volume
-		df['TodaysBuy-SelllDiff'].iloc[0] = df_today['TodaysBuy-SelllDiff'].iloc[0]
+		if ltp >= df['PP'].iloc[0]:
+			df['Remarks'].iloc[0]='LTP >= PP'
+			if ltp >= df['R3'].iloc[0]:
+				df['Remarks'].iloc[0]='LTP >= R3'
+			elif ltp >= df['R2'].iloc[0]:
+				df['Remarks'].iloc[0]='LTP >= R2'
+			elif ltp >= df['R1'].iloc[0]:
+				df['Remarks'].iloc[0]='LTP >= R1'
+			elif ltp < df['R1'].iloc[0]:
+				df['Remarks'].iloc[0]='LTP < R1'
+		else:
+			df['Remarks'].iloc[0]='LTP < PP'
+			if ltp >= df['S1'].iloc[0]:
+				df['Remarks'].iloc[0]='LTP >= S1'
+			elif ltp >= df['S2'].iloc[0]:
+				df['Remarks'].iloc[0]='LTP >= S2'
+			elif ltp >= df['S3'].iloc[0]:
+				df['Remarks'].iloc[0]='LTP >= S3'
+			elif ltp < df['S3'].iloc[0]:
+				df['Remarks'].iloc[0]='LTP < S3'
 
 		default_logger().debug(df.to_string(index=False))
 		for key in df.keys():
@@ -542,9 +575,9 @@ class scanner:
 			if not key in VOLUME_KEYS:
 				df.drop([key], axis = 1, inplace = True)
 		default_logger().debug(df.to_string(index=False))
-		if today_vs_yest > 100 or ltp >= vwap:
-			signalframes.append(df)
-		return df, df_today, signalframes
+		if today_vs_yest > 0 or ltp >= vwap:
+			signalframescopy.append(df)
+		return df, df_today, signalframescopy
 
 	# def buy_solid():
 		# OBV trending upwards

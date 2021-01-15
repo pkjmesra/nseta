@@ -216,7 +216,7 @@ def scan_volume_results(df, signaldf, indicator, orderby, should_cache=True):
 	else:
 		print('No signals to show here.')
 	click.secho('Volume scanning finished.', fg='green', nl=True)
-	scan_intraday(signal_stocks_list, indicator, False)
+	# scan_intraday(signal_stocks_list, indicator, False)
 
 def format_beautified(orgdata, general, ohlc, wk52, volume, orderbook):
 	primary, name_data, quote_data, ohlc_data, wk52_data, volume_data, pipeline_data = get_data_list(orgdata)
