@@ -2,23 +2,16 @@ import pandas as pd
 from nseta.common.log import tracelog, default_logger
 from nseta.common.commons import Direction
 from nseta.strategy.simulatedorder import simulatedorder, OrderType
+from nseta.strategy.basesignalstrategy import basesignalstrategy
 
 __all__ = ['rsiSignalStrategy']
 
-class rsiSignalStrategy:
+class rsiSignalStrategy(basesignalstrategy):
 	def __init__(self, strict=False):
+		super().__init__()
 		self._strict = strict
-		self._pat = Direction.Neutral
-		self._dir = Direction.Neutral
-		self._p1 = 0
-		self._p2 = 0
-		self._p3 = 0
-		self._n1 = 0
-		self._n2 = 0
-		self._n3 = 0
 		self._prc = 0
 		self._profit = 0
-		self._ts = ''
 		self._buytriggerred = False
 		self._lower = 25
 		self._upper = 75
@@ -50,11 +43,8 @@ class rsiSignalStrategy:
 	@tracelog
 	def index(self, rsi, price, timestamp):
 		if rsi > 0:
-			self.n3 = rsi
 			self.price = price
-			self.timestamp = timestamp
-			if self.p3 > 0:
-				self.update_direction()
+			super().index(rsi, timestamp)
 
 	@property
 	def strict(self):
@@ -75,24 +65,6 @@ class rsiSignalStrategy:
 	@property
 	def lower(self):
 		return self._lower
-	
-	@property
-	def pdelta(self):
-		if self.pattern == Direction.InvertedV:
-			return 100 *(self.p1 - self.p3)/self.p3
-		else:
-			return 100 *(self.p3 - self.p1)/self.p3
-
-	@property
-	def ndelta(self):
-		if self.pattern == Direction.InvertedV:
-			return 100 *(self.n1 - self.n3)/self.n1
-		else:
-			return 100 *(self.n3 - self.n1)/self.n1
-
-	@property
-	def basedelta(self):
-		return 100 * (self.p3 - self.n3)/self.p3
 
 	@property
 	def upper(self):
@@ -114,116 +86,31 @@ class rsiSignalStrategy:
 	def price(self, prc):
 		self._prc = prc
 
-	@property
-	def timestamp(self):
-		return self._ts
-
-	@timestamp.setter
-	def timestamp(self, ts):
-		self._ts = ts
-
-	@property
-	def pattern(self):
-		return self._pat
-
-	@pattern.setter
-	def pattern(self, pat):
-		self._pat = pat
-
-	@property
-	def direction(self):
-		return self._dir
-
-	@direction.setter
-	def direction(self, dir):
-		self._dir = dir
-
-	@property
-	def p1(self):
-		return self._p1
-
-	@p1.setter
-	def p1(self, previous1):
-		self.p2 = self._p1
-		self._p1 = previous1
-
-	@property
-	def p2(self):
-		 return self._p2
-
-	@p2.setter
-	def p2(self, previous2):
-		self.p3 = self._p2
-		self._p2 = previous2
-
-	@property
-	def p3(self):
-		return self._p3
-
-	@p3.setter
-	def p3(self, previous3):
-		self._p3 = previous3
-
-	@property
-	def n1(self):
-		return self._n1
-
-	@n1.setter
-	def n1(self, next1):
-		self.p1 = self._n1
-		self._n1 = next1
-
-	@property
-	def n2(self):
-		return self._n2
-
-	@n2.setter
-	def n2(self, next2):
-		self.n1 = self._n2
-		self._n2 = next2
-
-	@property
-	def n3(self):
-		return self._n3
-
-	@n3.setter
-	def n3(self, next3):
-		self.n2 = self._n3
-		self._n3 = next3
-
 	def update_direction(self):
-		if (self.n1 > self.n2) and (self.n2 > self.n3): # The last 3 values fell
-			self.direction = Direction.Down
-			if (self.p1 > self.p2) and (self.p2 > self.p3): # The last 6th, 5th and 4th values were rising
-				self.pattern = Direction.InvertedV
-				# if self.ndelta >= 15: # RSI fell > 15%
-				if not self.strict:
-					self.sell_signal()
-			elif (self.p1 < self.p2) and (self.p2 < self.p3): # All last 6 values fell
-				self.pattern = Direction.LowerLow
-				if not self.strict:
-					self.sell_signal()
 		if self.n3 >= self.upper:
 			self.direction = Direction.Up
 			self.pattern = Direction.OverBought
 			self.sell_signal()
 
-		if (self.n1 < self.n2) and (self.n2 < self.n3):
-			self.direction = Direction.Up
-			if (self.p1 < self.p2) and (self.p2 < self.p3):
-				self.pattern = Direction.V
-				# if self.ndelta >= 15: # RSI rose > 15%
-				if not self.strict:
-					self.buy_signal()
-			elif (self.p1 > self.p2) and (self.p2 > self.p3):
-				self.pattern = Direction.HigherHigh
-				if not self.strict:
-					self.buy_signal()
 		if self.n3 <= self.lower:
 			self.direction = Direction.Down
 			self.pattern = Direction.OverSold
 			self.buy_signal()
+		super().update_direction()
 
+	def v_pattern(self):
+		self.buy_signal()
+
+	def invertedv_pattern(self):
+		self.sell_signal()
+
+	def higherhigh_pattern(self):
+		if not self.strict:
+			self.buy_signal()
+
+	def lowerlow_direction(self):
+		if not self.strict:
+			self.sell_signal()
 
 	def buy_signal(self):
 		self.buytriggerred = True

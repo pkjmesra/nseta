@@ -502,7 +502,7 @@ class scanner:
 						df.drop([key], axis = 1, inplace = True)
 		df.drop(['MOM'], axis = 1, inplace = True)
 
-	def format_scan_volume_df(self, df, df_today, signalframes=[]):
+	def format_scan_volume_df(self, df, df_today, signalframes):
 		default_logger().debug(df_today.to_string(index=False))
 		signalframescopy = signalframes
 		df_today = df_today.tail(1)

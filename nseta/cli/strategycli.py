@@ -202,7 +202,7 @@ def test_intraday_signals(df, lower, upper, strategy):
 		print("\n{}\n".format(results.to_string(index=False)))
 		(plot_rsi(df)).show()
 	elif strategy.lower() == 'bbands':
-		bbandsSignal = bbandsSignalStrategy()
+		bbandsSignal = bbandsSignalStrategy(strict=False)
 		results = bbandsSignal.test_strategy(df)
 		print("\n{}\n".format(results.to_string(index=False)))
 

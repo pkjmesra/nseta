@@ -2,11 +2,14 @@ import pandas as pd
 from nseta.common.log import tracelog, default_logger
 from nseta.common.commons import Direction
 from nseta.strategy.simulatedorder import simulatedorder, OrderType
+from nseta.strategy.basesignalstrategy import basesignalstrategy
 
 __all__ = ['bbandsSignalStrategy']
 
-class bbandsSignalStrategy:
-	def __init__(self):
+class bbandsSignalStrategy(basesignalstrategy):
+	def __init__(self, strict=False):
+		super().__init__()
+		self._strict = strict
 		self._pat = Direction.Neutral
 		self._dir = Direction.Neutral
 		self._prc = 0
@@ -35,7 +38,6 @@ class bbandsSignalStrategy:
 	@tracelog
 	def index(self, lower_bband, upper_bband, price, timestamp):
 		self.price = price
-		self.timestamp = timestamp
 		if lower_bband is not None and lower_bband > 0:
 			self.bbands_l = lower_bband
 		if upper_bband is not None and upper_bband > 0:
@@ -44,6 +46,11 @@ class bbandsSignalStrategy:
 			self.sell_signal()
 		if self.price <= lower_bband:
 			self.buy_signal()
+		super().index(price, timestamp)
+
+	@property
+	def strict(self):
+		return self._strict
 
 	@property
 	def order_queue(self):
@@ -89,30 +96,6 @@ class bbandsSignalStrategy:
 	def price(self, prc):
 		self._prc = prc
 
-	@property
-	def timestamp(self):
-		return self._ts
-
-	@timestamp.setter
-	def timestamp(self, ts):
-		self._ts = ts
-
-	@property
-	def pattern(self):
-		return self._pat
-
-	@pattern.setter
-	def pattern(self, pat):
-		self._pat = pat
-
-	@property
-	def direction(self):
-		return self._dir
-
-	@direction.setter
-	def direction(self, dir):
-		self._dir = dir
-
 	def buy_signal(self):
 		self.buytriggerred = True
 		holding_size = self.order_queue.holdings_size
@@ -128,6 +111,14 @@ class bbandsSignalStrategy:
 		if holding_size != self.order_queue.holdings_size:
 			self.update_ledger('SELL')
 		default_logger().debug("\n{}".format(pd.DataFrame(self.ledger)))
+
+	def v_pattern(self):
+		if not self.strict:
+			self.buy_signal()
+
+	def invertedv_pattern(self):
+		if not self.strict:
+			self.sell_signal()
 
 	@tracelog
 	def update_ledger(self, signal):

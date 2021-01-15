@@ -19,7 +19,6 @@ import threading
 import six
 
 import numpy as np
-import re
 
 from six.moves.urllib.parse import urlparse
 

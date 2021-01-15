@@ -76,7 +76,7 @@ class simulatedorder:
 
 	@property
 	def portfolio_value(self):
-		return self.funds + self.stock_value
+		return self.funds + self.stock_value * self.margin
 
 	def buy(self, price):
 		self.stock_price = price
