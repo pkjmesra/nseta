@@ -203,13 +203,13 @@ def scan_volume(stocks, indicator, background, orderby):
 def scan_volume_results(df, signaldf, indicator, orderby, should_cache=True):
 	if df is not None and len(df) > 0:
 		save_scan_results_archive(df, signaldf,ResponseType.Volume, indicator, should_cache)
-		df = df.sort_values(by='TodayVs7Day(%)' if orderby == 'momentum' else 'TodayVsYest(%)',ascending=False)
+		df = df.sort_values(by='T0-7(%)' if orderby == 'momentum' else 'T0(%)',ascending=False)
 		default_logger().debug("\nAll Stocks LTP and Signals:\n" + df.to_string(index=False))
 		print("\n\nVolume Data:\n\n" + df.to_string(index=False))
 	else:
 		print('Nothing to show here.')
 	if signaldf is not None and len(signaldf) > 0:
-		signaldf = signaldf.sort_values(by='TodayVs7Day(%)' if orderby == 'momentum' else 'TodayVsYest(%)',ascending=False)
+		signaldf = signaldf.sort_values(by='T0-7(%)' if orderby == 'momentum' else 'T0(%)',ascending=False)
 		signal_stocks_list = signaldf['Symbol'].tolist()
 		str_signal_stocks_list = '{}'.format(signal_stocks_list)
 		print("\n\nVolume Signals: {}\n\n".format(str_signal_stocks_list.replace('[','').replace(']','').replace("'",'').replace(' ','')) + signaldf.to_string(index=False))

@@ -35,7 +35,7 @@ KEY_MAPPING = {
 }
 
 TECH_INDICATOR_KEYS = ['rsi', 'smac', 'emac', 'macd', 'bbands', 'all']
-VOLUME_KEYS = ['Remarks','PPoint', 'SS1', 'SS2', 'SS3', 'RR1', 'RR2', 'RR3','Symbol', 'Date', 'LTP', 'VWAP', 'Yest-%Deliverable', '7DayAvgVolume', 'YestVs7Day(%)', 'TodaysVolume','TodayVsYest(%)', 'TodayVs7Day(%)', 'Today%Deliverable', 'TodaysBuy-SelllDiff', '%Change']
+VOLUME_KEYS = ['Remarks','PPoint', 'S1/S2/S3/R1/R2/R3','Symbol', 'Date', 'LTP', 'VWAP', 'T-1%Del', '7DayAvgVolume', 'T-1-7(%)', 'TodaysVolume','T0(%)', 'T0-7(%)', 'T0%Del', 'T0BuySellDiff', '%Change']
 
 INTRADAY_KEYS_MAPPING = {
 	'Symbol': 'Symbol',
@@ -333,7 +333,7 @@ class scanner:
 				default_logger().debug(df.to_string(index=False))
 				result, primary = get_live_quote(symbol, keys = self.keys)
 				if (primary is not None and len(primary) > 0) and (df is not None and len(df) > 0):
-					df_today = pd.DataFrame(primary, columns = ['Updated', 'Symbol', 'Close', 'LTP', 'Today%Deliverable', 'TodaysBuy-SelllDiff', 'TotalTradedVolume','pChange'], index = [''])
+					df_today = pd.DataFrame(primary, columns = ['Updated', 'Symbol', 'Close', 'LTP', 'T0%Del', 'T0BuySellDiff', 'TotalTradedVolume','pChange'], index = [''])
 					df, df_today, signalframes = self.format_scan_volume_df(df, df_today, signalframes)
 					frames.append(df)
 			except Exception as e:
@@ -511,28 +511,19 @@ class scanner:
 		total_7day_volume = df['Volume'].sum()
 		avg_volume = round(total_7day_volume/7,2)
 		df = df.tail(1)
-		# 'Symbol', 'Date', 'LTP', 'VWAP', 'TodayVsYest', 'TodayVs7Day', 'YestVs7Day', 'Yest-%Deliverable', '
-		# Today%Deliverable', '7DayAvgVolume', 'TodaysVolume', 'TodaysBuy-SelllDiff'
 		df['LTP']=np.nan
 		df['%Change'] = np.nan
-		df['TodayVsYest(%)']= np.nan
-		df['TodayVs7Day(%)'] = np.nan
+		df['T0(%)']= np.nan
+		df['T0-7(%)'] = np.nan
 		df['Remarks']='NA'
-		df['YestVs7Day(%)']= np.nan
-		df['Yest-%Deliverable'] = df['%Deliverable'].apply(lambda x: round(x*100, 2))
-		df['Today%Deliverable']= np.nan
+		df['T-1-7(%)']= np.nan
+		df['T-1%Del'] = df['%Deliverable'].apply(lambda x: round(x*100, 2))
+		df['T0%Del']= np.nan
 		df['PPoint']= df['PP']
-		df['SS1']= df['S1']
-		df['RR1']= df['R1']
-		df['SS2']= df['S2']
-		df['RR2']= df['R2']
-		df['SS3']= df['S3']
-		df['RR3']= df['R3']
-		# df['7DayAvgVolume']= avg_volume
-		# df['TodaysVolume']= np.nan
+		df['S1/S2/S3/R1/R2/R3']= np.nan
 		if current_datetime_in_ist_trading_time_range():
-			df['TodaysBuy-SelllDiff']= np.nan
-			df['TodaysBuy-SelllDiff'].iloc[0] = df_today['TodaysBuy-SelllDiff'].iloc[0]
+			df['T0BuySellDiff']= np.nan
+			df['T0BuySellDiff'].iloc[0] = df_today['T0BuySellDiff'].iloc[0]
 
 		volume_yest = df['Volume'].iloc[0]
 		vwap = df['VWAP'].iloc[0]
@@ -543,31 +534,40 @@ class scanner:
 		df['Date'].iloc[0] = df_today['Updated'].iloc[0]
 		df['%Change'].iloc[0] = df_today['pChange'].iloc[0]
 		df['LTP'].iloc[0] = ltp
-		df['TodayVsYest(%)'].iloc[0] = today_vs_yest
-		df['TodayVs7Day(%)'].iloc[0] = round((100* (float(today_volume.replace(',','')) - avg_volume)/avg_volume))
-		df['YestVs7Day(%)'].iloc[0] = round((100 * (volume_yest - avg_volume)/avg_volume))
-		df['Today%Deliverable'].iloc[0] = df_today['Today%Deliverable'].iloc[0]
-		# df['TodaysVolume'].iloc[0] = today_volume
+		df['T0(%)'].iloc[0] = today_vs_yest
+		df['T0-7(%)'].iloc[0] = round((100* (float(today_volume.replace(',','')) - avg_volume)/avg_volume))
+		df['T-1-7(%)'].iloc[0] = round((100 * (volume_yest - avg_volume)/avg_volume))
+		df['T0%Del'].iloc[0] = df_today['T0%Del'].iloc[0]
 		if ltp >= df['PP'].iloc[0]:
 			df['Remarks'].iloc[0]='LTP >= PP'
+			df['S1/S2/S3/R1/R2/R3'].iloc[0] = df['PP'].iloc[0]
 			if ltp >= df['R3'].iloc[0]:
 				df['Remarks'].iloc[0]='LTP >= R3'
+				df['S1/S2/S3/R1/R2/R3'].iloc[0] = df['R3'].iloc[0]
 			elif ltp >= df['R2'].iloc[0]:
 				df['Remarks'].iloc[0]='LTP >= R2'
+				df['S1/S2/S3/R1/R2/R3'].iloc[0] = df['R2'].iloc[0]
 			elif ltp >= df['R1'].iloc[0]:
 				df['Remarks'].iloc[0]='LTP >= R1'
+				df['S1/S2/S3/R1/R2/R3'].iloc[0] = df['R1'].iloc[0]
 			elif ltp < df['R1'].iloc[0]:
 				df['Remarks'].iloc[0]='LTP < R1'
+				df['S1/S2/S3/R1/R2/R3'].iloc[0] = df['R1'].iloc[0]
 		else:
 			df['Remarks'].iloc[0]='LTP < PP'
+			df['S1/S2/S3/R1/R2/R3'].iloc[0] = df['PP'].iloc[0]
 			if ltp >= df['S1'].iloc[0]:
 				df['Remarks'].iloc[0]='LTP >= S1'
+				df['S1/S2/S3/R1/R2/R3'].iloc[0] = df['S1'].iloc[0]
 			elif ltp >= df['S2'].iloc[0]:
 				df['Remarks'].iloc[0]='LTP >= S2'
+				df['S1/S2/S3/R1/R2/R3'].iloc[0] = df['S2'].iloc[0]
 			elif ltp >= df['S3'].iloc[0]:
 				df['Remarks'].iloc[0]='LTP >= S3'
+				df['S1/S2/S3/R1/R2/R3'].iloc[0] = df['S3'].iloc[0]
 			elif ltp < df['S3'].iloc[0]:
 				df['Remarks'].iloc[0]='LTP < S3'
+				df['S1/S2/S3/R1/R2/R3'].iloc[0] = df['S3'].iloc[0]
 
 		default_logger().debug(df.to_string(index=False))
 		for key in df.keys():
