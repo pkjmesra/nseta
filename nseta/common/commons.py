@@ -23,7 +23,7 @@ import re
 
 from six.moves.urllib.parse import urlparse
 
-__all__ = ['months','Direction','concatenated_dataframe','is_index','is_index_derivative', 'StrDate', 'ParseTables', 'unzip_str', 'ThreadReturns', 'URLFetch', 'byte_adaptor', 'js_adaptor']
+__all__ = ['months','Direction','concatenated_dataframe','is_index','is_index_derivative', 'StrDate', 'ParseTables', 'unzip_str', 'ThreadReturns', 'URLFetch']
 
 class Direction(enum.Enum):
 	Down = 1
@@ -234,36 +234,6 @@ class URLFetch:
 
 	def update_headers(self, headers):
 		self.session.headers.update(headers)
-
-def byte_adaptor(fbuffer):
-	""" provides py3 compatibility by converting byte based
-	file stream to string based file stream
-	Arguments:
-		fbuffer: file like objects containing bytes
-	Returns:
-		string buffer
-	"""
-	if six.PY3:
-		strings = fbuffer.read().decode('utf-8')
-		fbuffer = six.StringIO(strings)
-		return fbuffer
-	else:
-		return fbuffer
-
-
-def js_adaptor(buffer):
-	""" convert javascript objects like true, none, NaN etc. to
-	quoted word.
-	Arguments:
-		buffer: string to be converted
-	Returns:
-		string after conversion
-	"""
-	buffer = re.sub('true', 'True', buffer)
-	buffer = re.sub('false', 'False', buffer)
-	buffer = re.sub('none', 'None', buffer)
-	buffer = re.sub('NaN', '"NaN"', buffer)
-	return buffer
 
 def concatenated_dataframe(df1, df2):
 	if df1 is not None and len(df1) > 0:

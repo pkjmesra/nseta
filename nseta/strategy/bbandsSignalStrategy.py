@@ -1,8 +1,7 @@
 import pandas as pd
 from nseta.common.log import tracelog, default_logger
 from nseta.common.commons import Direction
-from nseta.strategy.simulatedorder import simulatedorder
-from nseta.strategy.simulatedorder import simulatedorder
+from nseta.strategy.simulatedorder import simulatedorder, OrderType
 
 __all__ = ['bbandsSignalStrategy']
 
@@ -16,7 +15,7 @@ class bbandsSignalStrategy:
 		self._buytriggerred = False
 		self._bbands_u = 0
 		self._bbands_l = 0
-		self._order_queue = simulatedorder()
+		self._order_queue = simulatedorder(OrderType.MIS)
 		self._ledger = {'DateTime':[],'Signal':[],'Price':[],'Funds':[], 'Order_Size':[], 'Holdings_Size':[], 'Portfolio_Value':[], 'BBands-U':[], 'BBands-L':[]}
 
 	def test_strategy(self, df):
@@ -116,13 +115,18 @@ class bbandsSignalStrategy:
 
 	def buy_signal(self):
 		self.buytriggerred = True
-		self.order_queue.buy(self.price, allow_square_off_at_EOD=True)
-		self.update_ledger('BUY')
+		holding_size = self.order_queue.holdings_size
+		self.order_queue.buy(self.price)
+		# Last request was honoured
+		if holding_size != self.order_queue.holdings_size:
+			self.update_ledger('BUY')
 		default_logger().debug("\n{}".format(pd.DataFrame(self.ledger)))
 
 	def sell_signal(self):
-		self.order_queue.sell(self.price, allow_square_off_at_EOD=True)
-		self.update_ledger('SELL')
+		holding_size = self.order_queue.holdings_size
+		self.order_queue.sell(self.price)
+		if holding_size != self.order_queue.holdings_size:
+			self.update_ledger('SELL')
 		default_logger().debug("\n{}".format(pd.DataFrame(self.ledger)))
 
 	@tracelog

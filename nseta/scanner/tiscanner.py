@@ -35,7 +35,7 @@ KEY_MAPPING = {
 }
 
 TECH_INDICATOR_KEYS = ['rsi', 'smac', 'emac', 'macd', 'bbands', 'all']
-VOLUME_KEYS = ['Remarks','PPoint', 'S1/S2/S3/R1/R2/R3','Symbol', 'Date', 'LTP', 'VWAP', 'T-1%Del', '7DayAvgVolume', 'T-1-7(%)', 'TodaysVolume','T0(%)', 'T0-7(%)', 'T0%Del', 'T0BuySellDiff', '%Change']
+VOLUME_KEYS = ['Remarks','PPoint', 'S1-R3','Symbol', 'Date', 'LTP', 'VWAP', 'T-1%Del', '7DayAvgVolume', 'T-1-7(%)', 'TodaysVolume','T0(%)', 'T0-7(%)', 'T0%Del', 'T0BuySellDiff', '%Change']
 
 INTRADAY_KEYS_MAPPING = {
 	'Symbol': 'Symbol',
@@ -520,7 +520,7 @@ class scanner:
 		df['T-1%Del'] = df['%Deliverable'].apply(lambda x: round(x*100, 2))
 		df['T0%Del']= np.nan
 		df['PPoint']= df['PP']
-		df['S1/S2/S3/R1/R2/R3']= np.nan
+		df['S1-R3']= np.nan
 		if current_datetime_in_ist_trading_time_range():
 			df['T0BuySellDiff']= np.nan
 			df['T0BuySellDiff'].iloc[0] = df_today['T0BuySellDiff'].iloc[0]
@@ -540,34 +540,34 @@ class scanner:
 		df['T0%Del'].iloc[0] = df_today['T0%Del'].iloc[0]
 		if ltp >= df['PP'].iloc[0]:
 			df['Remarks'].iloc[0]='LTP >= PP'
-			df['S1/S2/S3/R1/R2/R3'].iloc[0] = df['PP'].iloc[0]
+			df['S1-R3'].iloc[0] = df['PP'].iloc[0]
 			if ltp >= df['R3'].iloc[0]:
 				df['Remarks'].iloc[0]='LTP >= R3'
-				df['S1/S2/S3/R1/R2/R3'].iloc[0] = df['R3'].iloc[0]
+				df['S1-R3'].iloc[0] = df['R3'].iloc[0]
 			elif ltp >= df['R2'].iloc[0]:
 				df['Remarks'].iloc[0]='LTP >= R2'
-				df['S1/S2/S3/R1/R2/R3'].iloc[0] = df['R2'].iloc[0]
+				df['S1-R3'].iloc[0] = df['R2'].iloc[0]
 			elif ltp >= df['R1'].iloc[0]:
 				df['Remarks'].iloc[0]='LTP >= R1'
-				df['S1/S2/S3/R1/R2/R3'].iloc[0] = df['R1'].iloc[0]
+				df['S1-R3'].iloc[0] = df['R1'].iloc[0]
 			elif ltp < df['R1'].iloc[0]:
 				df['Remarks'].iloc[0]='LTP < R1'
-				df['S1/S2/S3/R1/R2/R3'].iloc[0] = df['R1'].iloc[0]
+				df['S1-R3'].iloc[0] = df['R1'].iloc[0]
 		else:
 			df['Remarks'].iloc[0]='LTP < PP'
-			df['S1/S2/S3/R1/R2/R3'].iloc[0] = df['PP'].iloc[0]
+			df['S1-R3'].iloc[0] = df['PP'].iloc[0]
 			if ltp >= df['S1'].iloc[0]:
 				df['Remarks'].iloc[0]='LTP >= S1'
-				df['S1/S2/S3/R1/R2/R3'].iloc[0] = df['S1'].iloc[0]
+				df['S1-R3'].iloc[0] = df['S1'].iloc[0]
 			elif ltp >= df['S2'].iloc[0]:
 				df['Remarks'].iloc[0]='LTP >= S2'
-				df['S1/S2/S3/R1/R2/R3'].iloc[0] = df['S2'].iloc[0]
+				df['S1-R3'].iloc[0] = df['S2'].iloc[0]
 			elif ltp >= df['S3'].iloc[0]:
 				df['Remarks'].iloc[0]='LTP >= S3'
-				df['S1/S2/S3/R1/R2/R3'].iloc[0] = df['S3'].iloc[0]
+				df['S1-R3'].iloc[0] = df['S3'].iloc[0]
 			elif ltp < df['S3'].iloc[0]:
 				df['Remarks'].iloc[0]='LTP < S3'
-				df['S1/S2/S3/R1/R2/R3'].iloc[0] = df['S3'].iloc[0]
+				df['S1-R3'].iloc[0] = df['S3'].iloc[0]
 
 		default_logger().debug(df.to_string(index=False))
 		for key in df.keys():

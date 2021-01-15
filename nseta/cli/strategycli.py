@@ -196,7 +196,7 @@ def test_intraday_signals(df, lower, upper, strategy):
 	tiinstance = ti()
 	df = tiinstance.update_ti(df)
 	if strategy.lower() == 'rsi':
-		rsisignal = rsiSignalStrategy()
+		rsisignal = rsiSignalStrategy(strict=True)
 		rsisignal.set_limits(lower, upper)
 		results = rsisignal.test_strategy(df)
 		print("\n{}\n".format(results.to_string(index=False)))

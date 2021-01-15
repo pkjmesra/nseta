@@ -1,12 +1,13 @@
 import pandas as pd
 from nseta.common.log import tracelog, default_logger
 from nseta.common.commons import Direction
-from nseta.strategy.simulatedorder import simulatedorder
+from nseta.strategy.simulatedorder import simulatedorder, OrderType
 
 __all__ = ['rsiSignalStrategy']
 
 class rsiSignalStrategy:
-	def __init__(self):
+	def __init__(self, strict=False):
+		self._strict = strict
 		self._pat = Direction.Neutral
 		self._dir = Direction.Neutral
 		self._p1 = 0
@@ -21,7 +22,7 @@ class rsiSignalStrategy:
 		self._buytriggerred = False
 		self._lower = 25
 		self._upper = 75
-		self._order_queue = simulatedorder()
+		self._order_queue = simulatedorder(OrderType.MIS)
 		self._ledger = {'DateTime':[],'Signal':[],'Price':[],'Pattern':[],'Direction':[], 'Funds':[], 'Order_Size':[], 'Holdings_Size':[], 'Portfolio_Value':[], 'P3':[], 'P2':[], 'P1':[], 'N1':[], 'N2':[], 'N3':[],'P-delta':[], 'N-delta':[], 'Base-delta':[]}
 
 	@tracelog
@@ -54,6 +55,10 @@ class rsiSignalStrategy:
 			self.timestamp = timestamp
 			if self.p3 > 0:
 				self.update_direction()
+
+	@property
+	def strict(self):
+		return self._strict
 
 	@property
 	def order_queue(self):
@@ -192,10 +197,12 @@ class rsiSignalStrategy:
 			if (self.p1 > self.p2) and (self.p2 > self.p3): # The last 6th, 5th and 4th values were rising
 				self.pattern = Direction.InvertedV
 				# if self.ndelta >= 15: # RSI fell > 15%
-				self.sell_signal()
+				if not self.strict:
+					self.sell_signal()
 			elif (self.p1 < self.p2) and (self.p2 < self.p3): # All last 6 values fell
 				self.pattern = Direction.LowerLow
-				self.sell_signal()
+				if not self.strict:
+					self.sell_signal()
 		if self.n3 >= self.upper:
 			self.direction = Direction.Up
 			self.pattern = Direction.OverBought
@@ -206,10 +213,12 @@ class rsiSignalStrategy:
 			if (self.p1 < self.p2) and (self.p2 < self.p3):
 				self.pattern = Direction.V
 				# if self.ndelta >= 15: # RSI rose > 15%
-				self.buy_signal()
+				if not self.strict:
+					self.buy_signal()
 			elif (self.p1 > self.p2) and (self.p2 > self.p3):
 				self.pattern = Direction.HigherHigh
-				self.buy_signal()
+				if not self.strict:
+					self.buy_signal()
 		if self.n3 <= self.lower:
 			self.direction = Direction.Down
 			self.pattern = Direction.OverSold
@@ -218,13 +227,18 @@ class rsiSignalStrategy:
 
 	def buy_signal(self):
 		self.buytriggerred = True
-		self.order_queue.buy(self.price, allow_square_off_at_EOD=True)
-		self.update_ledger('BUY')
+		holding_size = self.order_queue.holdings_size
+		self.order_queue.buy(self.price)
+		# Last request was honoured
+		if holding_size != self.order_queue.holdings_size:
+			self.update_ledger('BUY')
 		default_logger().debug("\n{}".format(pd.DataFrame(self.ledger)))
 
 	def sell_signal(self):
-		self.order_queue.sell(self.price, allow_square_off_at_EOD=True)
-		self.update_ledger('SELL')
+		holding_size = self.order_queue.holdings_size
+		self.order_queue.sell(self.price)
+		if holding_size != self.order_queue.holdings_size:
+			self.update_ledger('SELL')
 		default_logger().debug("\n{}".format(pd.DataFrame(self.ledger)))
 
 	@tracelog

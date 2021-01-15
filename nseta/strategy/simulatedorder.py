@@ -1,7 +1,13 @@
+import enum
+
 __all__ = ['simulatedorder']
 
+class OrderType(enum.Enum):
+	MIS = 1
+	Delivery = 2
+
 class simulatedorder:
-	def __init__(self):
+	def __init__(self, order_type=OrderType.Delivery):
 		self._buy_prop = 1
 		self._sell_prop = 1
 		self._commission = 0
@@ -9,6 +15,16 @@ class simulatedorder:
 		self._stock_price = 0
 		self._holdings_size = 0
 		self._order_size = 0
+		self._order_type = order_type
+		self._margin = 0.2 if self.order_type == OrderType.MIS else 1 # Only 20% margin is assumed to be required
+
+	@property
+	def order_type(self):
+		return self._order_type
+
+	@property
+	def margin(self):
+		return self._margin
 
 	@property
 	def buy_prop(self):
@@ -62,53 +78,57 @@ class simulatedorder:
 	def portfolio_value(self):
 		return self.funds + self.stock_value
 
-	def buy(self, price, allow_square_off_at_EOD=False, square_off=False):
+	def buy(self, price):
 		self.stock_price = price
-		if self.funds >= price:
-			afforded_size = int(
-				self.funds
-				/ (self.stock_price * (1 + self.commission))
-			)
-			buy_prop_size = int(afforded_size * self.buy_prop)
-			final_size = min(buy_prop_size, afforded_size)
-			self.order_size = final_size
-			self.holdings_size = self.holdings_size + self.order_size
-			self.funds = self.funds - final_size * (self.stock_price * (1 + self.commission))
-		elif allow_square_off_at_EOD:
-			if square_off:
-				self.order_size = self.holdings_size
-				self.holdings_size = 0
-				self.funds = self.funds + self.order_size * (self.stock_price * (1 + self.commission))
-			else:
-				self.order_size = self.buy_prop
+		available_funds = self.funds / self.margin
+		if self.holdings_size == 0:
+			# This is a normal delivery order.
+			if available_funds > price:
+				afforded_size = int(
+					available_funds
+					/ (self.stock_price * (1 + self.commission))
+				)
+				buy_prop_size = int(afforded_size * self.buy_prop)
+				final_size = min(buy_prop_size, afforded_size)
+				self.order_size = final_size
 				self.holdings_size = self.holdings_size + self.order_size
-				self.funds = self.funds + self.holdings_size * (self.stock_price * (1 + self.commission))
-		else:
-			self.order_size = 0
-
-	def sell(self, price, allow_square_off_at_EOD=False, square_off=False):
-		self.stock_price = price
-		if self.holdings_size > 0:
+				used_funds = available_funds - final_size * (self.stock_price * (1 + self.commission))
+				self.funds = self.funds - (available_funds - used_funds) * self.margin
+		elif self.holdings_size < 0:
+			# This is an MIS order and we have to square off
 			self.order_size = self.holdings_size
-			self.funds = self.funds + self.order_size * (self.stock_price * (1 + self.commission))
+			self.holdings_size = 0
+			available_funds = available_funds - self.order_size * (self.stock_price * (1 - self.commission))
+			self.funds = available_funds * self.margin
+		
+	def sell(self, price):
+		self.stock_price = price
+		available_funds = self.funds / self.margin
+		if self.holdings_size > 0:
+			# Assuming a buy order preceded this sell order, so holdings are +ve
+			self.order_size = self.holdings_size
+			available_funds = available_funds + self.order_size * (self.stock_price * (1 - self.commission))
 			self.holdings_size = self.holdings_size - self.order_size
-		elif allow_square_off_at_EOD:
-			if square_off:
-				self.order_size = self.holdings_size
-				self.holdings_size = 0
-				self.funds = self.funds + self.order_size * (self.stock_price * (1 + self.commission))
-			else:
-				self.order_size = self.sell_prop
-				self.holdings_size = self.holdings_size - self.order_size
-				self.funds = self.funds + self.order_size * (self.stock_price * (1 + self.commission))
-		else:
-			self.order_size = 0
+			self.funds = available_funds * self.margin
+		elif self.holdings_size == 0:
+			# Must square off later in the day. This is an MIS order
+			available_funds = self.funds / self.margin
+			afforded_size = int(
+					available_funds
+					/ (self.stock_price * (1 + self.commission))
+				)
+			sell_prop_size = int(afforded_size * self.sell_prop)
+			final_size = min(sell_prop_size, afforded_size)
+			self.order_size = final_size
+			available_funds = available_funds - self.order_size * (self.stock_price * (1 + self.commission))
+			self.holdings_size = self.holdings_size - self.order_size
+			self.funds = available_funds * self.margin
 
 	def square_off(self, price):
 		if self.holdings_size == 0:
 			self.order_size = 0
 			return
 		elif self.holdings_size > 0:
-			self.sell(price, allow_square_off_at_EOD= True, square_off = True)
+			self.sell(price)
 		elif self.holdings_size < 0:
-			self.buy(price, allow_square_off_at_EOD= True, square_off = True)
+			self.buy(price)
