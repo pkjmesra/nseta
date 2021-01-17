@@ -52,10 +52,10 @@ def live_quote(symbol, general, ohlc, wk52, volume, orderbook, background):
 
 @click.command(help='Scan live and intraday for prices and signals.')
 @click.option('--stocks', '-S', default=[], help='Comma separated security codes(Optional. When skipped, all stocks configured in stocks.py will be scanned.)')
-@click.option('--live', '-l', default=False, is_flag=True, help='Scans (every min.) the live-quote and lists those that meet the signal criteria. Works best with --background.')
-@click.option('--intraday', '-i', default=False, is_flag=True, help='Scans (every 10 sec) the intraday price history and lists those that meet the signal criteria')
-@click.option('--swing', '-s', default=False, is_flag=True, help='Scans (every 10 sec) the past 90 days price history and lists those that meet the signal criteria')
-@click.option('--volume', '-v', default=False, is_flag=True, help='Scans (every 10 sec) the past 7 days price history and lists those that meet the signal criteria')
+@click.option('--live', '-l', default=False, is_flag=True, help='Scans (every min. when in background) the live-quote and lists those that meet the signal criteria. Works best with --background.')
+@click.option('--intraday', '-i', default=False, is_flag=True, help='Scans (every 10 sec when in background) the intraday price history and lists those that meet the signal criteria')
+@click.option('--swing', '-s', default=False, is_flag=True, help='Scans (every 10 sec when in background) the past 90 days price history and lists those that meet the signal criteria')
+@click.option('--volume', '-v', default=False, is_flag=True, help='Scans (every 10 sec when in background) the past 7 days price history and lists those that meet the signal criteria')
 @click.option('--indicator', '-t', default='all', type=click.Choice(TECH_INDICATOR_KEYS),
 	help=', '.join(TECH_INDICATOR_KEYS) + ". Choose one.")
 @click.option('--orderby', '-o', default='intraday', type=click.Choice(ORDER_BY_KEYS),
@@ -203,13 +203,13 @@ def scan_volume(stocks, indicator, background, orderby):
 def scan_volume_results(df, signaldf, indicator, orderby, should_cache=True):
 	if df is not None and len(df) > 0:
 		save_scan_results_archive(df, signaldf,ResponseType.Volume, indicator, should_cache)
-		df = df.sort_values(by='T0-7(%)' if orderby == 'momentum' else 'T0(%)',ascending=False)
+		df = df.sort_values(by='7DVol(%)' if orderby == 'momentum' else 'TDYVol(%)',ascending=False)
 		default_logger().debug("\nAll Stocks LTP and Signals:\n" + df.to_string(index=False))
 		print("\n\nVolume Data:\n\n" + df.to_string(index=False))
 	else:
 		print('Nothing to show here.')
 	if signaldf is not None and len(signaldf) > 0:
-		signaldf = signaldf.sort_values(by='T0-7(%)' if orderby == 'momentum' else 'T0(%)',ascending=False)
+		signaldf = signaldf.sort_values(by='7DVol(%)' if orderby == 'momentum' else 'TDYVol(%)',ascending=False)
 		signal_stocks_list = signaldf['Symbol'].tolist()
 		str_signal_stocks_list = '{}'.format(signal_stocks_list)
 		print("\n\nVolume Signals: {}\n\n".format(str_signal_stocks_list.replace('[','').replace(']','').replace("'",'').replace(' ','')) + signaldf.to_string(index=False))

@@ -144,3 +144,4 @@ nseta/archives/history/
 nseta/archives/intraday/
 nseta/archives/quote/
 *.pkl
+.idea/

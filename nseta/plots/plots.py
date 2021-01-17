@@ -136,10 +136,13 @@ def plot_dmi(df):
 
 @tracelog
 def plot_macd(df):
+	fig, axs = plt.subplots(1,1, sharex=True)
 	tiinstance = ti()
-	tiinstance.get_macd_df(df).plot()
-	plt.title('MACD(12, 26)')
-	plt.grid(True)
+	axs.plot(tiinstance.get_macd_df(df))
+	axs.bar(df['dt'], df['macdhist'])
+	axs.legend(['MACD(12,26)', 'EMA(9)', 'Divergence'], loc='upper left', fontsize='x-small')
+	fig.suptitle('Moving Average Convergence Divergence for ' + df['Symbol'][0])
+	fig.align_labels()
 	return plt
 
 '''

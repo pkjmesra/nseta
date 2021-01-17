@@ -1,4 +1,6 @@
+import logging
 import pandas as pd
+
 from nseta.common.log import tracelog, default_logger
 from nseta.common.commons import Direction
 from nseta.strategy.simulatedorder import simulatedorder, OrderType
@@ -7,22 +9,24 @@ from nseta.strategy.basesignalstrategy import basesignalstrategy
 __all__ = ['rsiSignalStrategy']
 
 class rsiSignalStrategy(basesignalstrategy):
-	def __init__(self, strict=False):
+	def __init__(self, strict=False, intraday=False):
 		super().__init__()
 		self._strict = strict
 		self._prc = 0
-		self._profit = 0
-		self._buytriggerred = False
 		self._lower = 25
 		self._upper = 75
-		self._order_queue = simulatedorder(OrderType.MIS)
-		self._ledger = {'DateTime':[],'Signal':[],'Price':[],'Pattern':[],'Direction':[], 'Funds':[], 'Order_Size':[], 'Holdings_Size':[], 'Portfolio_Value':[], 'P3':[], 'P2':[], 'P1':[], 'N1':[], 'N2':[], 'N3':[],'P-delta':[], 'N-delta':[], 'Base-delta':[]}
+		self._order_queue = simulatedorder(OrderType.MIS if intraday else OrderType.Delivery)
+		if default_logger().level == logging.DEBUG:
+			self._ledger = {'DateTime':[],'Signal':[],'Price':[],'Pattern':[],'Direction':[], 'Funds':[], 'Order_Size':[], 'Holdings_Size':[], 'Portfolio_Value':[], 'P3':[], 'P2':[], 'P1':[], 'N1':[], 'N2':[], 'N3':[],'P-delta':[], 'N-delta':[], 'Base-delta':[]}
+		else:
+			self._ledger = {'DateTime':[],'Signal':[],'Price':[],'Pattern':[],'Direction':[], 'Funds':[], 'Order_Size':[], 'Holdings_Size':[], 'Portfolio_Value':[]}
 
 	@tracelog
 	def set_limits(self, lower, upper):
 		self._lower = lower
 		self._upper = upper
 
+	@tracelog
 	def test_strategy(self, df):
 		# TODO: What if keys are in lowercase or dt/datetime is used instead of date/Date
 		try:
@@ -33,12 +37,20 @@ class rsiSignalStrategy(basesignalstrategy):
 					ts =(df.iloc[rowindex])['Date']
 					self.index(rsi, price, ts)
 				rowindex = rowindex + 1
-			buy_sell = 'BUY' if self.order_queue.holdings_size < 0 else 'SELL'
+			if self.order_queue.holdings_size < 0:
+				buy_sell = 'BUY'
+			elif self.order_queue.holdings_size > 0:
+			 	buy_sell = 'SELL'
+			else:
+			 	buy_sell = 'SQR-OFF'
 			self.order_queue.square_off(self.price)
 			self.update_ledger(buy_sell)
+			self.pnl = self.order_queue.pnl
+			df_summary_dict = {'Symbol':[df['Symbol'].iloc[0]], 'Strategy':['RSI'], 'PnL':[self.pnl]}
+			df_summary = pd.DataFrame(df_summary_dict)
 		except Exception as e:
 			default_logger().debug(e, exc_info=True)
-		return self.report
+		return self.report, df_summary
 
 	@tracelog
 	def index(self, rsi, price, timestamp):
@@ -71,14 +83,6 @@ class rsiSignalStrategy(basesignalstrategy):
 		return self._upper
 
 	@property
-	def buytriggerred(self):
-		return self._buytriggerred
-
-	@buytriggerred.setter
-	def buytriggerred(self, buyt):
-		self._buytriggerred = buyt
-
-	@property
 	def price(self):
 		return self._prc
 
@@ -98,22 +102,21 @@ class rsiSignalStrategy(basesignalstrategy):
 			self.buy_signal()
 		super().update_direction()
 
-	def v_pattern(self):
+	def v_pattern(self, prev_pattern=Direction.Neutral):
 		self.buy_signal()
 
-	def invertedv_pattern(self):
+	def invertedv_pattern(self, prev_pattern=Direction.Neutral):
 		self.sell_signal()
 
-	def higherhigh_pattern(self):
+	def higherhigh_pattern(self, prev_pattern=Direction.Neutral):
 		if not self.strict:
 			self.buy_signal()
 
-	def lowerlow_direction(self):
+	def lowerlow_direction(self, prev_pattern=Direction.Neutral):
 		if not self.strict:
 			self.sell_signal()
 
 	def buy_signal(self):
-		self.buytriggerred = True
 		holding_size = self.order_queue.holdings_size
 		self.order_queue.buy(self.price)
 		# Last request was honoured
@@ -139,12 +142,13 @@ class rsiSignalStrategy(basesignalstrategy):
 		(self.ledger['Order_Size']).append(str(round(self.order_queue.order_size,2)))
 		(self.ledger['Holdings_Size']).append(str(round(self.order_queue.holdings_size,2)))
 		(self.ledger['Portfolio_Value']).append(str(round(self.order_queue.portfolio_value,2)))
-		(self.ledger['P3']).append(str(round(self.p3,2)))
-		(self.ledger['P2']).append(str(round(self.p2,2)))
-		(self.ledger['P1']).append(str(round(self.p1,2)))
-		(self.ledger['N1']).append(str(round(self.n1,2)))
-		(self.ledger['N2']).append(str(round(self.n2,2)))
-		(self.ledger['N3']).append(str(round(self.n3,2)))
-		(self.ledger['P-delta']).append(str(round(self.pdelta,2)))
-		(self.ledger['N-delta']).append(str(round(self.ndelta,2)))
-		(self.ledger['Base-delta']).append(str(round(self.basedelta,2)))
+		if default_logger().level == logging.DEBUG:
+			(self.ledger['P3']).append(str(round(self.p3,2)))
+			(self.ledger['P2']).append(str(round(self.p2,2)))
+			(self.ledger['P1']).append(str(round(self.p1,2)))
+			(self.ledger['N1']).append(str(round(self.n1,2)))
+			(self.ledger['N2']).append(str(round(self.n2,2)))
+			(self.ledger['N3']).append(str(round(self.n3,2)))
+			(self.ledger['P-delta']).append(str(round(self.pdelta,2)))
+			(self.ledger['N-delta']).append(str(round(self.ndelta,2)))
+			(self.ledger['Base-delta']).append(str(round(self.basedelta,2)))

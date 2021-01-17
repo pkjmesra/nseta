@@ -14,69 +14,69 @@ __VERBOSE__ = default_logger().level == logging.DEBUG
 __all__ = ['backtest_custom_strategy', 'backtest_smac_strategy', 'backtest_emac_strategy', 'backtest_rsi_strategy', 'backtest_macd_strategy', 'backtest_bbands_strategy', 'backtest_multi_strategy', 'daily_forecast']
 
 @tracelog
-def backtest_smac_strategy(df, fast_period=10, slow_period=50):
+def backtest_smac_strategy(df, fast_period=10, slow_period=50, plot=False):
 	if __VERBOSE__:
-		result = backtest('smac', df.dropna(), fast_period=fast_period, slow_period=slow_period, verbose=__VERBOSE__)
+		result = backtest('smac', df.dropna(), fast_period=fast_period, slow_period=slow_period, verbose=__VERBOSE__, plot=plot)
 	else:
 		with suppress_stdout_stderr():
-			result = backtest('smac', df.dropna(), fast_period=fast_period, slow_period=slow_period, verbose=__VERBOSE__)
+			result = backtest('smac', df.dropna(), fast_period=fast_period, slow_period=slow_period, verbose=__VERBOSE__, plot=plot)
 	print("\n{}".format(result[['fast_period', 'slow_period', 'init_cash', 'final_value', 'pnl']].head()))
 	return result
 
 @tracelog
-def backtest_emac_strategy(df, fast_period=10, slow_period=50):
+def backtest_emac_strategy(df, fast_period=10, slow_period=50, plot=False):
 	if __VERBOSE__:
-		result = backtest('emac', df.dropna(), fast_period=fast_period, slow_period=slow_period, verbose=__VERBOSE__)
+		result = backtest('emac', df.dropna(), fast_period=fast_period, slow_period=slow_period, verbose=__VERBOSE__, plot=plot)
 	else:
 		with suppress_stdout_stderr():
-			result = backtest('emac', df.dropna(), fast_period=fast_period, slow_period=slow_period, verbose=__VERBOSE__)
+			result = backtest('emac', df.dropna(), fast_period=fast_period, slow_period=slow_period, verbose=__VERBOSE__, plot=plot)
 	print("\n{}".format(result[['fast_period', 'slow_period', 'init_cash', 'final_value', 'pnl']].head()))
 	return result
 
 @tracelog
-def backtest_rsi_strategy(df, rsi_period=14, rsi_lower=30, rsi_upper=70):
+def backtest_rsi_strategy(df, rsi_period=14, rsi_lower=30, rsi_upper=70, plot=False):
 	if __VERBOSE__:
-		result = backtest('rsi', df.dropna(), rsi_period=rsi_period, rsi_upper=rsi_upper, rsi_lower=rsi_lower, verbose=__VERBOSE__)
+		result = backtest('rsi', df.dropna(), rsi_period=rsi_period, rsi_upper=rsi_upper, rsi_lower=rsi_lower, verbose=__VERBOSE__, plot=plot)
 	else:
 		with suppress_stdout_stderr():
-			result = backtest('rsi', df.dropna(), rsi_period=rsi_period, rsi_upper=rsi_upper, rsi_lower=rsi_lower, verbose=__VERBOSE__)
+			result = backtest('rsi', df.dropna(), rsi_period=rsi_period, rsi_upper=rsi_upper, rsi_lower=rsi_lower, verbose=__VERBOSE__, plot=plot)
 	print("\n{}".format(result[['rsi_period', 'rsi_upper', 'rsi_lower', 'init_cash', 'final_value', 'pnl']].head()))
 	return result
 
 @tracelog
-def backtest_macd_strategy(df, fast_period=12, slow_period=26):
+def backtest_macd_strategy(df, fast_period=12, slow_period=26, plot=False):
 	if __VERBOSE__:
 		result = backtest('macd', df.dropna(), fast_period=fast_period, slow_period=slow_period, signal_period=9, 
-		sma_period=30, dir_period=10, verbose=__VERBOSE__)
+		sma_period=30, dir_period=10, verbose=__VERBOSE__, plot=plot)
 	else:
 		with suppress_stdout_stderr():
 			result = backtest('macd', df.dropna(), fast_period=fast_period, slow_period=slow_period, signal_period=9, 
-				sma_period=30, dir_period=10, verbose=__VERBOSE__)
+				sma_period=30, dir_period=10, verbose=__VERBOSE__, plot=plot)
 	print("\n{}".format(result[['fast_period', 'slow_period', 'signal_period', 'init_cash', 'final_value', 'pnl']].head()))
 	return result
 
 @tracelog
-def backtest_bbands_strategy(df, period=20, devfactor=2.0):
+def backtest_bbands_strategy(df, period=20, devfactor=2.0, plot=False):
 	if __VERBOSE__:
-		result = backtest('bbands', df.dropna(), period=period, devfactor=devfactor, verbose=__VERBOSE__)
+		result = backtest('bbands', df.dropna(), period=period, devfactor=devfactor, verbose=__VERBOSE__, plot=plot)
 	else:
 		with suppress_stdout_stderr():
-			result = backtest('bbands', df.dropna(), period=period, devfactor=devfactor, verbose=__VERBOSE__)
+			result = backtest('bbands', df.dropna(), period=period, devfactor=devfactor, verbose=__VERBOSE__, plot=plot)
 	print("\n{}".format(result[['period', 'devfactor', 'init_cash', 'final_value', 'pnl']].head()))
 	return result
 
 @tracelog
-def backtest_multi_strategy(df, strats=None):
+def backtest_multi_strategy(df, strats=None, plot=False):
 	if strats is None:
 		strats = {
 			"smac": {"fast_period": 10, "slow_period": [40, 50]},
 			"rsi": {"rsi_lower": [15, 30], "rsi_upper": 70},
 		}
 	if __VERBOSE__:
-		result = backtest("multi", df.dropna(), strats=strats, verbose=__VERBOSE__)
+		result = backtest("multi", df.dropna(), strats=strats, verbose=__VERBOSE__, plot=plot)
 	else:
 		with suppress_stdout_stderr():
-			result = backtest("multi", df.dropna(), strats=strats, verbose=__VERBOSE__)
+			result = backtest("multi", df.dropna(), strats=strats, verbose=__VERBOSE__, plot=plot)
 	return result
 
 STRATEGY_FORECAST_MAPPING = {
@@ -90,8 +90,8 @@ STRATEGY_FORECAST_MAPPING = {
 
 STRATEGY_FORECAST_MAPPING_KEYS = list(STRATEGY_FORECAST_MAPPING.keys())
 
-def backtest_custom_strategy(df, symbol, strategy, lower_limit=1.5, upper_limit=1.5):
-	plt, result = daily_forecast(df, symbol, strategy, upper_limit=float(upper_limit), lower_limit=float(lower_limit), periods=7)
+def backtest_custom_strategy(df, symbol, strategy, lower_limit=1.5, upper_limit=1.5, plot=False):
+	plt, result = daily_forecast(df, symbol, strategy, upper_limit=float(upper_limit), lower_limit=float(lower_limit), periods=7, plot=plot)
 	return result
 
 '''
@@ -110,7 +110,7 @@ on in-sample time series forecasts. The forecasts are generated using
 Facebook's Prophet package.
 '''
 @tracelog
-def daily_forecast(df, symbol, strategy, upper_limit=1.5, lower_limit=1.5, periods=0):
+def daily_forecast(df, symbol, strategy, upper_limit=1.5, lower_limit=1.5, periods=0, plot=False):
 	train_size = int(0.75 * len(df)) - periods              # Use 3 years of data as train set. Note there are about 252 trading days in a year
 	val_size = int(0.25 * len(df))                  # Use 1 year of data as validation set
 	train_val_size = train_size + val_size # Size of train+validation set
@@ -143,10 +143,10 @@ def daily_forecast(df, symbol, strategy, upper_limit=1.5, lower_limit=1.5, perio
 	plt = plot_forecast(m,forecast, symbol, strategy, df, train_val_size, periods)
 
 	if __VERBOSE__:
-		result = predict_buy_sell_1day_returns(df, forecast, strategy, upper_limit, lower_limit)
+		result = predict_buy_sell_1day_returns(df, forecast, strategy, upper_limit, lower_limit, plot=plot)
 	else:
 		with suppress_stdout_stderr():
-			result = predict_buy_sell_1day_returns(df, forecast, strategy, upper_limit, lower_limit)
+			result = predict_buy_sell_1day_returns(df, forecast, strategy, upper_limit, lower_limit, plot=plot)
 	print("\n{}".format(result[['init_cash', 'final_value', 'pnl']].head()))
 	# get_error_metrics(ts, periods, train_size, val_size, 2.5, 10, None)
 
@@ -245,7 +245,7 @@ def plot_forecast(m, forecast, symbol, strategy, df, train_val_size, periods):
 	return plt
 
 @tracelog
-def predict_buy_sell_1day_returns(df, forecast, strategy, upper_limit, lower_limit):
+def predict_buy_sell_1day_returns(df, forecast, strategy, upper_limit, lower_limit, plot=False):
 	# Convert predictions to expected 1 day returns
 	expected_1day_return = forecast.set_index("ds").yhat.pct_change().shift(-1).multiply(100)
 
@@ -254,9 +254,9 @@ def predict_buy_sell_1day_returns(df, forecast, strategy, upper_limit, lower_lim
 	df[strategy] = expected_1day_return.multiply(-1)
 	if strategy == 'custom':
 		# forecast['datetime'] = forecast['ds']
-		result = backtest(strategy, df, upper_limit=upper_limit, lower_limit=-lower_limit, custom_column=strategy)
+		result = backtest(strategy, df, upper_limit=upper_limit, lower_limit=-lower_limit, custom_column=strategy, plot=plot)
 	else:
 		if strategy in STRATEGY_FORECAST_MAPPING_KEYS:
-			result = STRATEGY_FORECAST_MAPPING[strategy](df)
+			result = STRATEGY_FORECAST_MAPPING[strategy](df, plot=plot)
 	return result
 

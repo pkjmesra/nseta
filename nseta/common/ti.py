@@ -74,5 +74,7 @@ class ti:
 		S3 = pd.Series(df['Low'] - 2 * (df['High'] - PP))
 		psr = {'PP':round(PP,2), 'R1':round(R1,2), 'S1':round(S1,2), 'R2':round(R2,2), 'S2':round(S2,2), 'R3':round(R3,2), 'S3':round(S3,2)}
 		PSR = pd.DataFrame(psr)
-		df = df.join(PSR)
+		keys = ['PP','R1','R2','R3','S1','S2','S3']
+		for key in keys:
+			df[key] = PSR[key]
 		return df

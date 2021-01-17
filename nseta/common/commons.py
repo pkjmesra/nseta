@@ -34,6 +34,8 @@ class Direction(enum.Enum):
 	HigherHigh = 7
 	OverBought = 8
 	OverSold = 9
+	PossibleReversalUpward = 10
+	PossibleReversalDownward = 11
 
 def is_index(index):
 	return index in NSE_INDICES

@@ -35,7 +35,7 @@ KEY_MAPPING = {
 }
 
 TECH_INDICATOR_KEYS = ['rsi', 'smac', 'emac', 'macd', 'bbands', 'all']
-VOLUME_KEYS = ['Remarks','PPoint', 'S1-R3','Symbol', 'Date', 'LTP', 'VWAP', 'T-1%Del', '7DayAvgVolume', 'T-1-7(%)', 'TodaysVolume','T0(%)', 'T0-7(%)', 'T0%Del', 'T0BuySellDiff', '%Change']
+VOLUME_KEYS = ['Remarks','PPoint', 'S1-R3','Symbol', 'Date', 'LTP', 'VWAP', 'Yst%Del', '7DayAvgVolume', 'Yst7DVol(%)', 'TodaysVolume','TDYVol(%)', '7DVol(%)', 'Tdy%Del', 'T0BuySellDiff', '%Change']
 
 INTRADAY_KEYS_MAPPING = {
 	'Symbol': 'Symbol',
@@ -97,15 +97,21 @@ class scanner:
 			return self.scan_swing_quanta
 		elif kind==TYPE_VOLUME:
 			return self.scan_volume_quanta
+	
 	@tracelog
-	def scan_live(self, stocks=[]):
-		start_time = time()
+	def stocks_list(self, stocks=[]):
 		file_path = "stocks.py"
 		if not os.path.exists(file_path):
 			file_path = os.path.join(self.scanner_directory, file_path)
 		# If stocks array is empty, pull stock list from stocks.txt file
-		stocks = stocks if len(stocks) > 0 else [
+		stocks = stocks if stocks is not None and len(stocks) > 0 else [
 			line.rstrip() for line in open(file_path, "r")]
+		return stocks
+
+	@tracelog
+	def scan_live(self, stocks=[]):
+		start_time = time()
+		stocks = self.stocks_list(stocks)
 		list_returned = self.scan_internal(stocks, TYPE_LIVE)
 		end_time = time()
 		time_spent = end_time-start_time
@@ -115,12 +121,7 @@ class scanner:
 	@tracelog
 	def scan_intraday(self, stocks=[]):
 		start_time = time()
-		file_path = "stocks.py"
-		if not os.path.exists(file_path):
-			file_path = os.path.join(self.scanner_directory, file_path)
-		# If stocks array is empty, pull stock list from stocks.txt file
-		stocks = stocks if len(stocks) > 0 else [
-			line.rstrip() for line in open(file_path, "r")]
+		stocks = self.stocks_list(stocks)
 		list_returned = self.scan_internal(stocks, TYPE_INTRADAY)
 		end_time = time()
 		time_spent = end_time-start_time
@@ -130,12 +131,7 @@ class scanner:
 	@tracelog
 	def scan_swing(self, stocks=[]):
 		start_time = time()
-		file_path = "stocks.py"
-		if not os.path.exists(file_path):
-			file_path = os.path.join(self.scanner_directory, file_path)
-		# If stocks array is empty, pull stock list from stocks.txt file
-		stocks = stocks if len(stocks) > 0 else [
-			line.rstrip() for line in open(file_path, "r")]
+		stocks = self.stocks_list(stocks)
 		list_returned = self.scan_internal(stocks, TYPE_SWING)
 		end_time = time()
 		time_spent = end_time-start_time
@@ -145,12 +141,7 @@ class scanner:
 	@tracelog
 	def scan_volume(self, stocks=[]):
 		start_time = time()
-		file_path = "stocks.py"
-		if not os.path.exists(file_path):
-			file_path = os.path.join(self.scanner_directory, file_path)
-		# If stocks array is empty, pull stock list from stocks.txt file
-		stocks = stocks if len(stocks) > 0 else [
-			line.rstrip() for line in open(file_path, "r")]
+		stocks = self.stocks_list(stocks)
 		list_returned = self.scan_internal(stocks, TYPE_VOLUME)
 		end_time = time()
 		time_spent = end_time-start_time
@@ -333,7 +324,7 @@ class scanner:
 				default_logger().debug(df.to_string(index=False))
 				result, primary = get_live_quote(symbol, keys = self.keys)
 				if (primary is not None and len(primary) > 0) and (df is not None and len(df) > 0):
-					df_today = pd.DataFrame(primary, columns = ['Updated', 'Symbol', 'Close', 'LTP', 'T0%Del', 'T0BuySellDiff', 'TotalTradedVolume','pChange'], index = [''])
+					df_today = pd.DataFrame(primary, columns = ['Updated', 'Symbol', 'Close', 'LTP', 'Tdy%Del', 'T0BuySellDiff', 'TotalTradedVolume','pChange'], index = [''])
 					df, df_today, signalframes = self.format_scan_volume_df(df, df_today, signalframes)
 					frames.append(df)
 			except Exception as e:
@@ -513,12 +504,12 @@ class scanner:
 		df = df.tail(1)
 		df['LTP']=np.nan
 		df['%Change'] = np.nan
-		df['T0(%)']= np.nan
-		df['T0-7(%)'] = np.nan
+		df['TDYVol(%)']= np.nan
+		df['7DVol(%)'] = np.nan
 		df['Remarks']='NA'
-		df['T-1-7(%)']= np.nan
-		df['T-1%Del'] = df['%Deliverable'].apply(lambda x: round(x*100, 2))
-		df['T0%Del']= np.nan
+		df['Yst7DVol(%)']= np.nan
+		df['Yst%Del'] = df['%Deliverable'].apply(lambda x: round(x*100, 2))
+		df['Tdy%Del']= np.nan
 		df['PPoint']= df['PP']
 		df['S1-R3']= np.nan
 		if current_datetime_in_ist_trading_time_range():
@@ -534,10 +525,10 @@ class scanner:
 		df['Date'].iloc[0] = df_today['Updated'].iloc[0]
 		df['%Change'].iloc[0] = df_today['pChange'].iloc[0]
 		df['LTP'].iloc[0] = ltp
-		df['T0(%)'].iloc[0] = today_vs_yest
-		df['T0-7(%)'].iloc[0] = round((100* (float(today_volume.replace(',','')) - avg_volume)/avg_volume))
-		df['T-1-7(%)'].iloc[0] = round((100 * (volume_yest - avg_volume)/avg_volume))
-		df['T0%Del'].iloc[0] = df_today['T0%Del'].iloc[0]
+		df['TDYVol(%)'].iloc[0] = today_vs_yest
+		df['7DVol(%)'].iloc[0] = round((100* (float(today_volume.replace(',','')) - avg_volume)/avg_volume))
+		df['Yst7DVol(%)'].iloc[0] = round((100 * (volume_yest - avg_volume)/avg_volume))
+		df['Tdy%Del'].iloc[0] = df_today['Tdy%Del'].iloc[0]
 		if ltp >= df['PP'].iloc[0]:
 			df['Remarks'].iloc[0]='LTP >= PP'
 			df['S1-R3'].iloc[0] = df['PP'].iloc[0]

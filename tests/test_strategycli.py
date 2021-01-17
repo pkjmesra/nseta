@@ -7,7 +7,7 @@ import time
 
 from click.testing import CliRunner
 
-from nseta.cli.strategycli import test_trading_strategy, forecast_strategy
+from nseta.cli.strategycli import test_trading_strategy, forecast_strategy, scan_trading_strategy
 from nseta.common import urls
 
 class TestStrategycli(unittest.TestCase):
@@ -19,6 +19,48 @@ class TestStrategycli(unittest.TestCase):
 		result = runner.invoke(test_trading_strategy, args=['--start', '2020-08-01', '--end', '2021-01-01'])
 		self.assertEqual(result.exit_code , 0)
 		self.assertIn("Please provide security/index code", result.output, str(result.output))
+
+	@patch('matplotlib.pyplot.show')
+	def test_scan_trading_strategy_historical_bbands(self, mock_pyplot):
+		runner = CliRunner()
+		result = runner.invoke(scan_trading_strategy, args=['--symbol', 'BANDHANBNK,BANKBARODA', '--start', '2020-08-01', '--end', '2021-01-01', '--strategy', 'bbands'])
+		self.assertEqual(result.exit_code , 0)
+		self.assertIn("PnL", result.output, str(result.output))
+
+	@patch('matplotlib.pyplot.show')
+	def test_scan_trading_strategy_intraday_bbands(self, mock_pyplot):
+		runner = CliRunner()
+		result = runner.invoke(scan_trading_strategy, args=['--symbol', 'BANDHANBNK,BANKBARODA', '--intraday','--strategy', 'bbands'])
+		self.assertEqual(result.exit_code , 0)
+		self.assertIn("PnL", result.output, str(result.output))
+
+	@patch('matplotlib.pyplot.show')
+	def test_scan_trading_strategy_intraday_macd(self, mock_pyplot):
+		runner = CliRunner()
+		result = runner.invoke(scan_trading_strategy, args=['--symbol', 'BANDHANBNK,BANKBARODA', '--intraday','--strategy', 'macd'])
+		self.assertEqual(result.exit_code , 0)
+		self.assertIn("PnL", result.output, str(result.output))
+
+	@patch('matplotlib.pyplot.show')
+	def test_scan_trading_strategy_intraday_rsi(self, mock_pyplot):
+		runner = CliRunner()
+		result = runner.invoke(scan_trading_strategy, args=['--symbol', 'BANDHANBNK,BANKBARODA', '--intraday','--strategy', 'rsi'])
+		self.assertEqual(result.exit_code , 0)
+		self.assertIn("PnL", result.output, str(result.output))
+
+	@patch('matplotlib.pyplot.show')
+	def test_scan_trading_strategy_historical_rsi(self, mock_pyplot):
+		runner = CliRunner()
+		result = runner.invoke(scan_trading_strategy, args=['--symbol', 'BANDHANBNK,BANKBARODA', '--start', '2020-08-01', '--end', '2021-01-01', '--strategy', 'rsi'])
+		self.assertEqual(result.exit_code , 0)
+		self.assertIn("PnL", result.output, str(result.output))
+
+	@patch('matplotlib.pyplot.show')
+	def test_scan_trading_strategy_historical_macd(self, mock_pyplot):
+		runner = CliRunner()
+		result = runner.invoke(scan_trading_strategy, args=['--symbol', 'BANDHANBNK,BANKBARODA', '--start', '2020-08-01', '--end', '2021-01-01', '--strategy', 'macd'])
+		self.assertEqual(result.exit_code , 0)
+		self.assertIn("PnL", result.output, str(result.output))
 
 	@patch('matplotlib.pyplot.show')
 	def test_test_trading_strategy_historical_bbands(self, mock_pyplot):
@@ -135,9 +177,23 @@ class TestStrategycli(unittest.TestCase):
 		self.assertIn("pnl", result.output, str(result.output))
 
 	@patch('matplotlib.pyplot.show')
-	def test_test_trading_strategy_intraday_signals(self, mock_pyplot):
+	def test_test_trading_strategy_intraday_signals_rsi(self, mock_pyplot):
 		runner = CliRunner()
-		result = runner.invoke(test_trading_strategy, args=['--symbol', 'PNB', '--strategy', 'rsi', '--clear', '--intraday'])
+		result = runner.invoke(test_trading_strategy, args=['--symbol', 'PNB', '--strategy', 'rsi', '--intraday'])
+		self.assertEqual(result.exit_code , 0)
+		self.assertIn("Portfolio_Value", result.output, str(result.output))
+
+	@patch('matplotlib.pyplot.show')
+	def test_test_trading_strategy_intraday_signals_bbands(self, mock_pyplot):
+		runner = CliRunner()
+		result = runner.invoke(test_trading_strategy, args=['--symbol', 'PNB', '--strategy', 'bbands', '--clear', '--intraday'])
+		self.assertEqual(result.exit_code , 0)
+		self.assertIn("Portfolio_Value", result.output, str(result.output))
+
+	@patch('matplotlib.pyplot.show')
+	def test_test_trading_strategy_intraday_signals_macd(self, mock_pyplot):
+		runner = CliRunner()
+		result = runner.invoke(test_trading_strategy, args=['--symbol', 'PNB', '--strategy', 'macd', '--intraday'])
 		self.assertEqual(result.exit_code , 0)
 		self.assertIn("Portfolio_Value", result.output, str(result.output))
 	

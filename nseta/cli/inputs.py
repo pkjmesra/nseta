@@ -15,7 +15,7 @@ STRATEGY_DAYS_MAPPING = {
 }
 
 @tracelog
-def validate_inputs(start, end,symbol, strategy=None):
+def validate_inputs(start, end,symbol, strategy=None, skip_symbol=False):
 	try:
 		sd = datetime.strptime(start, "%Y-%m-%d").date()
 		ed = datetime.strptime(end, "%Y-%m-%d").date()
@@ -29,7 +29,7 @@ def validate_inputs(start, end,symbol, strategy=None):
 		return False
 	except SystemExit:
 		pass
-	return validate_symbol(symbol)
+	return True if skip_symbol else validate_symbol(symbol)
 
 @tracelog
 def print_help_msg(command):

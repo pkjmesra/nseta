@@ -1,3 +1,5 @@
+import numpy as np
+import pandas as pd
 
 from nseta.common.log import tracelog, default_logger
 from nseta.common.commons import Direction
@@ -8,19 +10,29 @@ class basesignalstrategy:
 	def __init__(self):
 		self._pat = Direction.Neutral
 		self._dir = Direction.Neutral
-		self._p1 = 0
-		self._p2 = 0
-		self._p3 = 0
-		self._n1 = 0
-		self._n2 = 0
-		self._n3 = 0
+		self._p1 = np.nan
+		self._p2 = np.nan
+		self._p3 = np.nan
+		self._n1 = np.nan
+		self._n2 = np.nan
+		self._n3 = np.nan
 		self._ts = ''
+		self._pnl = 0
+		self._baseledger = {'DateTime':[],'P3':[], 'P2':[], 'P1':[], 'N1':[], 'N2':[], 'N3':[]}
+
+	@property
+	def baseledger(self):
+		return self._baseledger
+
+	@property
+	def basereport(self):
+		return pd.DataFrame(self.baseledger)
 
 	@tracelog
 	def index(self, index, timestamp):
 		self.n3 = index
 		self.timestamp = timestamp
-		if self.p3 > 0:
+		if self.p3 != np.nan:
 			self.update_direction()
 	
 	@property
@@ -50,6 +62,14 @@ class basesignalstrategy:
 		self._ts = ts
 
 	@property
+	def pnl(self):
+		return self._pnl
+
+	@pnl.setter
+	def pnl(self, pnl):
+		self._pnl = pnl
+
+	@property
 	def pattern(self):
 		return self._pat
 
@@ -66,85 +86,124 @@ class basesignalstrategy:
 		self._dir = dir
 
 	@property
-	def p1(self):
-		return self._p1
+	def p3(self):
+		return self._p3
 
-	@p1.setter
-	def p1(self, previous1):
-		self.p2 = self._p1
-		self._p1 = previous1
+	@p3.setter
+	def p3(self, p2):
+		self._p3 = p2
 
 	@property
 	def p2(self):
 		 return self._p2
 
 	@p2.setter
-	def p2(self, previous2):
-		self.p3 = self._p2
-		self._p2 = previous2
+	def p2(self, p1):
+		if self._p2 != np.nan:
+			self.p3 = self._p2
+		self._p2 = p1
 
 	@property
-	def p3(self):
-		return self._p3
+	def p1(self):
+		return self._p1
 
-	@p3.setter
-	def p3(self, previous3):
-		self._p3 = previous3
+	@p1.setter
+	def p1(self, n1):
+		if self._p1 != np.nan:
+			self.p2 = self._p1
+		self._p1 = n1
 
 	@property
 	def n1(self):
 		return self._n1
 
 	@n1.setter
-	def n1(self, next1):
-		self.p1 = self._n1
-		self._n1 = next1
+	def n1(self, n2):
+		if self._n1 != np.nan:
+			self.p1 = self._n1
+		self._n1 = n2
 
 	@property
 	def n2(self):
 		return self._n2
 
 	@n2.setter
-	def n2(self, next2):
-		self.n1 = self._n2
-		self._n2 = next2
+	def n2(self, n3):
+		if self._n2 != np.nan:
+			self.n1 = self._n2
+		self._n2 = n3
 
 	@property
 	def n3(self):
 		return self._n3
 
 	@n3.setter
-	def n3(self, next3):
-		self.n2 = self._n3
-		self._n3 = next3
+	def n3(self, current):
+		if self._n3 != np.nan:
+			self.n2 = self._n3
+		self._n3 = current
 
+	@tracelog
 	def update_direction(self):
+		(self.baseledger['DateTime']).append(self.timestamp)
+		(self.baseledger['P3']).append(str(round(self.p3,2)))
+		(self.baseledger['P2']).append(str(round(self.p2,2)))
+		(self.baseledger['P1']).append(str(round(self.p1,2)))
+		(self.baseledger['N1']).append(str(round(self.n1,2)))
+		(self.baseledger['N2']).append(str(round(self.n2,2)))
+		(self.baseledger['N3']).append(str(round(self.n3,2)))
+
+		prev_pattern = self.pattern
+		if (self.n1 > self.n2) and (self.n3 > self.n2): # The last 3rd and 2nd values fell and last one reversed in direction
+			if (self.p1 < self.p2) and (self.p2 < self.p3): # All previous values were falling.
+				self.pattern = Direction.PossibleReversalUpward
+				self.possibleReversalUpward_pattern(prev_pattern=prev_pattern)
+		if (self.n1 < self.n2) and (self.n3 < self.n2): # The last 3rd and 2nd values fell and last one reversed in direction
+			if (self.p1 > self.p2) and (self.p2 > self.p3): # All previous values were falling.
+				self.pattern = Direction.PossibleReversalDownward
+				self.possibleReversalDownward_pattern(prev_pattern=prev_pattern)
+
 		if (self.n1 > self.n2) and (self.n2 > self.n3): # The last 3 values fell
 			self.direction = Direction.Down
-			if (self.p1 > self.p2) and (self.p2 > self.p3): # The last 6th, 5th and 4th values were rising
+			self.possible_lowerlow_direction(prev_pattern=prev_pattern)
+			self.lowerlow_direction(prev_pattern=prev_pattern)
+			if ((self.p1 > self.p2) and (self.p2 > self.p3)) or ((self.p1 > self.p2) and (self.p1 > self.p3)): # The last 6th, 5th and 4th values were rising
 				self.pattern = Direction.InvertedV
-				self.invertedv_pattern()
-			elif (self.p1 < self.p2) and (self.p2 < self.p3): # All last 6 values fell
+				self.invertedv_pattern(prev_pattern=prev_pattern)
+			elif (self.p1 < self.p2) or (self.p1 < self.p3): # All last 5/6 values fell
 				self.pattern = Direction.LowerLow
-				self.lowerlow_direction()
+				self.lowerlow_direction(prev_pattern=prev_pattern)
 
 		if (self.n1 < self.n2) and (self.n2 < self.n3):
 			self.direction = Direction.Up
-			if (self.p1 < self.p2) and (self.p2 < self.p3):
+			self.possible_higherhigh_pattern(prev_pattern=prev_pattern)
+			if ((self.p1 < self.p2) and (self.p2 < self.p3)) or ((self.p1 < self.p2) and (self.p1 < self.p3)):
 				self.pattern = Direction.V
-				self.v_pattern()
-			elif (self.p1 > self.p2) and (self.p2 > self.p3):
+				self.v_pattern(prev_pattern=prev_pattern)
+			elif (self.p1 > self.p2) or (self.p1 > self.p3):
 				self.pattern = Direction.HigherHigh
-				self.higherhigh_pattern()
+				self.higherhigh_pattern(prev_pattern=prev_pattern)
 
-	def v_pattern(self):
+	def possible_higherhigh_pattern(self, prev_pattern=Direction.Neutral):
 		default_logger().debug("\n{}".format(self.pattern))
 
-	def invertedv_pattern(self):
+	def possible_lowerlow_direction(self, prev_pattern=Direction.Neutral):
 		default_logger().debug("\n{}".format(self.pattern))
 
-	def higherhigh_pattern(self):
+	def possibleReversalUpward_pattern(self, prev_pattern=Direction.Neutral):
 		default_logger().debug("\n{}".format(self.pattern))
 
-	def lowerlow_direction(self):
+	def possibleReversalDownward_pattern(self, prev_pattern=Direction.Neutral):
+		default_logger().debug("\n{}".format(self.pattern))
+
+	def v_pattern(self, prev_pattern=Direction.Neutral):
+		default_logger().debug("\n{}".format(self.pattern))
+
+	def invertedv_pattern(self, prev_pattern=Direction.Neutral):
+		default_logger().debug("\n{}".format(self.pattern))
+
+	def higherhigh_pattern(self, prev_pattern=Direction.Neutral):
+		default_logger().debug("\n{}".format(self.pattern))
+
+	def lowerlow_direction(self, prev_pattern=Direction.Neutral):
 		default_logger().debug("\n{}".format(self.pattern))

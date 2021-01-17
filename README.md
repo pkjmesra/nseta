@@ -635,6 +635,381 @@ Volume scanning finished.
 - BUY : When LTP < lower BBand
 - SELL : When LTP > higher BBand
 
+- Scanning and measuring PnL for a specific trading strategy
+```python
+nseta scan-trading-strategy -s 2020-06-01 -e 2021-01-17 --strategy macd
+     Symbol Strategy        PnL
+        ABB     MACD   20872.60
+      ABFRL     MACD   30435.55
+        ACC     MACD   12013.20
+   ADANIENT     MACD   80550.45
+ APOLLOTYRE     MACD   17806.75
+     ASHOKA     MACD   83436.70
+   ASHOKLEY     MACD   43338.70
+  AMBUJACEM     MACD   25194.55
+     ARVIND     MACD   31915.25
+ ASIANPAINT     MACD   11657.95
+       ATUL     MACD    4857.30
+ AUROPHARMA     MACD    2989.20
+   AXISBANK     MACD   21038.30
+ BAJFINANCE     MACD   34446.10
+ BANDHANBNK     MACD   -4542.00
+  BANKINDIA     MACD   32309.60
+ BANKBARODA     MACD   19733.65
+  BATAINDIA     MACD   12822.60
+        BEL     MACD   21450.45
+       BEML     MACD   32654.95
+ BERGEPAINT     MACD   23705.10
+ BHARATFORG     MACD   31721.15
+ BHARTIARTL     MACD    9626.95
+       BHEL     MACD   31404.60
+     BIOCON     MACD    4582.10
+  BOMDYEING     MACD   -8950.80
+       BPCL     MACD  -12436.60
+  BRITANNIA     MACD     233.95
+   CADILAHC     MACD   24261.40
+ CASTROLIND     MACD   20391.75
+ CENTURYTEX     MACD    9182.05
+ CHAMBLFERT     MACD   12977.00
+      CIPLA     MACD    7624.20
+     CONCOR     MACD   -2469.55
+   CROMPTON     MACD   11714.40
+ CUMMINSIND     MACD   28751.55
+      DABUR     MACD   -1913.30
+    DCBBANK     MACD   37922.05
+        DLF     MACD   22538.40
+    DRREDDY     MACD   30566.95
+  EICHERMOT     MACD   31716.85
+    ESCORTS     MACD   10337.75
+   EVEREADY     MACD   45995.60
+   EXIDEIND     MACD   11972.75
+        FCL     MACD   38800.30
+ FEDERALBNK     MACD    2213.45
+     FORTIS     MACD   19794.90
+        FSL     MACD   38322.30
+       GAIL     MACD   25255.80
+      GLAND     MACD       0.00
+   GLENMARK     MACD   -4359.40
+   GMRINFRA     MACD   -9999.10
+   GODREJCP     MACD   14678.70
+  GODREJIND     MACD   21429.80
+ GODREJPROP     MACD    1315.25
+   GOODYEAR     MACD    5865.00
+   GRAPHITE     MACD   60779.80
+        HAL     MACD    6131.25
+    HAVELLS     MACD    8157.90
+    HCLTECH     MACD   29272.50
+       HDFC     MACD   11412.25
+   HDFCBANK     MACD   25864.10
+ HEROMOTOCO     MACD   13396.35
+   HINDALCO     MACD   17708.35
+ HINDUNILVR     MACD   -4230.35
+  HINDPETRO     MACD  -10507.75
+  ICICIBANK     MACD   11866.40
+       IDBI     MACD     732.05
+ IDFCFIRSTB     MACD   17466.45
+        IGL     MACD    2397.30
+   INDIACEM     MACD   11737.00
+     INDIGO     MACD    6517.70
+     INDOCO     MACD   32519.45
+ INDUSINDBK     MACD   34631.80
+   INFRATEL     MACD   11225.50
+        IOC     MACD    1309.35
+      IRCTC     MACD  -20473.00
+        ITC     MACD    5600.20
+ JINDALSTEL     MACD   36702.30
+  JKLAKSHMI     MACD   11350.60
+     JKTYRE     MACD   18180.60
+   JSWSTEEL     MACD   52773.25
+ KAJARIACER     MACD   15712.40
+  KOTAKBANK     MACD   28569.05
+       INFY     MACD   29785.70
+  LICHSGFIN     MACD   10250.80
+         LT     MACD   19256.15
+        LTI     MACD   28679.65
+      LUPIN     MACD   24670.20
+     MARUTI     MACD    6284.70
+ MCDOWELL-N     MACD   -8786.80
+        MCX     MACD   11295.15
+       MFSL     MACD   11407.65
+        MGL     MACD   -1508.80
+   MINDTREE     MACD   29167.35
+       MOIL     MACD    3383.75
+    MPHASIS     MACD   26060.00
+        MRF     MACD       0.00
+ MUTHOOTFIN     MACD   -5394.70
+        M&M     MACD   13413.55
+  NESTLEIND     MACD   -9398.45
+       NMDC     MACD   14495.60
+       NTPC     MACD    3423.20
+       ONGC     MACD   18047.35
+        PEL     MACD  -19022.85
+        PFC     MACD   35832.75
+ PIDILITIND     MACD    8380.60
+        PNB     MACD   31335.15
+  POWERGRID     MACD    7184.85
+    PRAJIND     MACD   36877.10
+     RADICO     MACD  -16972.55
+    RBLBANK     MACD    4123.55
+   RELIANCE     MACD   -3521.40
+  REPCOHOME     MACD   27195.25
+       SAIL     MACD   44876.65
+    SBILIFE     MACD    1915.70
+       SBIN     MACD    4255.70
+    SIEMENS     MACD    2711.65
+      SPARC     MACD   -9381.10
+        SRF     MACD    7573.80
+ SRTRANSFIN     MACD   35118.95
+  SUNPHARMA     MACD    3568.35
+   SYMPHONY     MACD   -5981.95
+   TATACHEM     MACD   55305.70
+ TATACONSUM     MACD    9566.75
+  TATAELXSI     MACD   83517.95
+ TATAMOTORS     MACD   92873.20
+  TATASTEEL     MACD   48819.75
+        TCS     MACD   18190.70
+  TEAMLEASE     MACD    -501.45
+      TECHM     MACD    2085.85
+      TITAN     MACD    1354.80
+ TORNTPHARM     MACD   16931.80
+ TORNTPOWER     MACD    4451.40
+ TRITURBINE     MACD   30637.05
+   TVSMOTOR     MACD    2687.80
+ ULTRACEMCO     MACD    8666.40
+        UPL     MACD   -8312.20
+       VEDL     MACD   57579.85
+     VOLTAS     MACD    6356.35
+      WIPRO     MACD   27728.35
+ WOCKPHARMA     MACD  111416.80
+       ZEEL     MACD   42323.85
+```
+- Scanning and measuring PnL for a specific trading strategy intraday
+```python
+nseta scan-trading-strategy -i --strategy macd
+
+     Symbol Strategy      PnL
+        ABB     MACD  -713.85
+      ABFRL     MACD  -808.50
+        ACC     MACD   -21.35
+   ADANIENT     MACD   203.35
+ APOLLOTYRE     MACD -1098.20
+     ASHOKA     MACD   501.90
+   ASHOKLEY     MACD  2411.40
+  AMBUJACEM     MACD    85.75
+     ARVIND     MACD -1426.60
+ ASIANPAINT     MACD  -716.90
+       ATUL     MACD    90.20
+ AUROPHARMA     MACD  -655.20
+   AXISBANK     MACD  -166.75
+ BAJFINANCE     MACD    26.30
+ BANDHANBNK     MACD  1381.00
+  BANKINDIA     MACD -1476.65
+ BANKBARODA     MACD -1407.40
+  BATAINDIA     MACD  -826.50
+        BEL     MACD  -875.35
+       BEML     MACD -1997.85
+ BERGEPAINT     MACD -1486.90
+ BHARATFORG     MACD    -7.20
+ BHARTIARTL     MACD  -111.30
+       BHEL     MACD -1435.00
+     BIOCON     MACD  -892.95
+  BOMDYEING     MACD -1220.95
+       BPCL     MACD  -685.15
+  BRITANNIA     MACD  -858.35
+   CADILAHC     MACD -1234.65
+ CASTROLIND     MACD  -423.20
+ CENTURYTEX     MACD   -80.20
+ CHAMBLFERT     MACD -1418.75
+      CIPLA     MACD -1160.50
+     CONCOR     MACD  -381.05
+   CROMPTON     MACD   283.45
+ CUMMINSIND     MACD  -537.10
+      DABUR     MACD   388.15
+    DCBBANK     MACD -2050.10
+        DLF     MACD   273.90
+    DRREDDY     MACD  -232.75
+  EICHERMOT     MACD   396.50
+    ESCORTS     MACD  -901.35
+   EVEREADY     MACD -2653.60
+   EXIDEIND     MACD  1448.85
+        FCL     MACD -1885.20
+ FEDERALBNK     MACD -1352.30
+     FORTIS     MACD -1972.85
+        FSL     MACD  -965.40
+       GAIL     MACD  -950.95
+      GLAND     MACD  2852.60
+   GLENMARK     MACD  -109.85
+   GMRINFRA     MACD -1728.45
+   GODREJCP     MACD  -802.90
+  GODREJIND     MACD -2218.75
+ GODREJPROP     MACD -1124.50
+   GOODYEAR     MACD -1827.70
+   GRAPHITE     MACD  -823.45
+        HAL     MACD   685.75
+    HAVELLS     MACD -2386.80
+    HCLTECH     MACD -2345.20
+       HDFC     MACD    10.30
+   HDFCBANK     MACD   312.85
+ HEROMOTOCO     MACD   681.75
+   HINDALCO     MACD -1190.10
+ HINDUNILVR     MACD  -330.05
+  HINDPETRO     MACD  -470.05
+  ICICIBANK     MACD -1072.55
+       IDBI     MACD  -733.15
+ IDFCFIRSTB     MACD  3636.25
+        IGL     MACD -2109.05
+   INDIACEM     MACD -1855.15
+     INDIGO     MACD -1338.65
+     INDOCO     MACD   123.80
+ INDUSINDBK     MACD  1379.90
+ INDUSTOWER     MACD   635.85
+        IOC     MACD   489.05
+      IRCTC     MACD -1230.30
+        ITC     MACD  1301.55
+ JINDALSTEL     MACD    58.50
+  JKLAKSHMI     MACD -1119.05
+     JKTYRE     MACD   201.20
+   JSWSTEEL     MACD -1732.15
+ KAJARIACER     MACD -1796.40
+  KOTAKBANK     MACD  -299.65
+       INFY     MACD -1374.00
+  LICHSGFIN     MACD  -815.10
+         LT     MACD   168.10
+        LTI     MACD  -264.00
+      LUPIN     MACD   988.30
+     MARUTI     MACD  -228.50
+ MCDOWELL-N     MACD -1026.45
+        MCX     MACD -1817.40
+       MFSL     MACD  -975.35
+        MGL     MACD  -876.00
+   MINDTREE     MACD -1221.60
+       MOIL     MACD -1758.00
+    MPHASIS     MACD   219.35
+        MRF     MACD     0.00
+ MUTHOOTFIN     MACD -2764.90
+        M&M     MACD  -880.80
+  NESTLEIND     MACD  -634.05
+       NMDC     MACD -2078.75
+       NTPC     MACD -1301.55
+       ONGC     MACD -1991.80
+        PEL     MACD  1484.20
+        PFC     MACD -1058.30
+ PIDILITIND     MACD  -602.45
+        PNB     MACD -2444.15
+  POWERGRID     MACD  -227.20
+    PRAJIND     MACD   -71.75
+        PVR     MACD   455.00
+     RADICO     MACD -1372.10
+    RBLBANK     MACD   990.80
+   RELIANCE     MACD  -501.80
+  REPCOHOME     MACD  2263.05
+       SAIL     MACD  2844.90
+    SBILIFE     MACD  -936.15
+       SBIN     MACD -1015.25
+    SIEMENS     MACD  -910.50
+      SPARC     MACD  -492.00
+        SRF     MACD -1024.45
+ SRTRANSFIN     MACD  -312.55
+  SUNPHARMA     MACD -1050.20
+   SYMPHONY     MACD -1454.65
+   TATACHEM     MACD -1615.30
+ TATACONSUM     MACD   777.35
+  TATAELXSI     MACD -3287.15
+ TATAMOTORS     MACD  3454.80
+  TATASTEEL     MACD -1065.65
+        TCS     MACD   -42.80
+  TEAMLEASE     MACD -1967.20
+      TECHM     MACD -1806.35
+      TITAN     MACD  -682.65
+ TORNTPHARM     MACD  -604.10
+ TORNTPOWER     MACD -3910.40
+ TRITURBINE     MACD -2657.65
+   TVSMOTOR     MACD   282.70
+ ULTRACEMCO     MACD  -267.35
+        UPL     MACD  -616.05
+       VEDL     MACD   -14.60
+     VOLTAS     MACD -2398.05
+      WIPRO     MACD -2831.85
+ WOCKPHARMA     MACD -2918.15
+       ZEEL     MACD -1279.65
+```
+- Scanning for buy/sell signals and measuring those(backtesting) for a specific security
+```python
+nseta test-trading-strategy -S TATAMOTORS -s 2020-06-01 -e 2021-01-17 --strategy macd
+# Using fastquant:
+   fast_period  slow_period  signal_period  init_cash    final_value       pnl
+0           12           26              9     100000  131719.153375  31719.15
+
+# Using this nseta lib:
+
+   DateTime Signal   Price                             Pattern       Direction      Funds Order_Size Holdings_Size Portfolio_Value
+ 2020-07-20    BUY  105.05                   Direction.Neutral    Direction.Up   50101.25        475           475        100000.0
+ 2020-07-21    BUY  108.45                   Direction.Neutral    Direction.Up   25157.75        230           705        101615.0
+ 2020-07-23   SELL  106.05                   Direction.Neutral  Direction.Down    99923.0        705             0         99923.0
+ 2020-07-31    BUY  104.65    Direction.PossibleReversalUpward  Direction.Down   50004.95        477           477         99923.0
+ 2020-08-03    BUY  113.05    Direction.PossibleReversalUpward    Direction.Up    25020.9        221           698        103929.8
+ 2020-08-03    BUY  113.05                         Direction.V    Direction.Up    12585.4        110           808        103929.8
+ 2020-08-06    BUY   116.8                         Direction.V    Direction.Up     6395.0         53           861        106959.8
+ 2020-08-07    BUY   119.1                Direction.HigherHigh    Direction.Up     3298.4         26           887        108940.1
+ 2020-08-10    BUY  123.85                Direction.HigherHigh    Direction.Up    1688.35         13           900       113153.35
+ 2020-08-11    BUY   122.3                Direction.HigherHigh    Direction.Up     954.55          6           906       111758.35
+ 2020-08-12    BUY  125.35                Direction.HigherHigh    Direction.Up      578.5          3           909       114521.65
+ 2020-08-13    BUY  131.15                Direction.HigherHigh    Direction.Up      316.2          2           911       119793.85
+ 2020-08-14    BUY   124.6                Direction.HigherHigh    Direction.Up      191.6          1           912        113826.8
+ 2020-08-21   SELL   120.9  Direction.PossibleReversalDownward    Direction.Up   110452.4        912             0        110452.4
+ 2020-08-27    BUY  144.25                 Direction.InvertedV    Direction.Up    55348.9        382           382        110452.4
+ 2020-08-27    BUY  144.25                         Direction.V    Direction.Up   27797.15        191           573        110452.4
+ 2020-08-28    BUY   142.8                         Direction.V    Direction.Up   13945.55         97           670       109621.55
+ 2020-08-28    BUY   142.8                         Direction.V    Direction.Up    7091.15         48           718       109621.55
+ 2020-09-01   SELL   143.8                         Direction.V  Direction.Down  110339.55        718             0       110339.55
+ 2020-09-03    BUY  151.85                 Direction.InvertedV    Direction.Up    55218.0        363           363       110339.55
+ 2020-09-03    BUY  151.85                         Direction.V    Direction.Up   27733.15        181           544       110339.55
+ 2020-09-04    BUY   147.8                         Direction.V    Direction.Up   13987.75         93           637       108136.35
+ 2020-09-04    BUY   147.8                         Direction.V    Direction.Up    7041.15         47           684       108136.35
+ 2020-09-07    BUY   149.4                         Direction.V    Direction.Up    3604.95         23           707       109230.75
+ 2020-09-08    BUY   142.3                Direction.HigherHigh    Direction.Up    1897.35         12           719       104211.05
+ 2020-09-09    BUY   140.1                Direction.HigherHigh    Direction.Up    1056.75          6           725       102629.25
+ 2020-09-10    BUY   143.3                Direction.HigherHigh    Direction.Up     626.85          3           728       104949.25
+ 2020-09-11   SELL   144.3  Direction.PossibleReversalDownward    Direction.Up  105677.25        728             0       105677.25
+ 2020-10-08    BUY  140.95    Direction.PossibleReversalUpward  Direction.Down   52961.95        374           374       105677.25
+ 2020-10-09    BUY  138.45    Direction.PossibleReversalUpward    Direction.Up    26518.0        191           565       104742.25
+ 2020-10-09    BUY  138.45                         Direction.V    Direction.Up   13365.25         95           660       104742.25
+ 2020-10-12    BUY   135.9                         Direction.V    Direction.Up    6706.15         49           709       103059.25
+ 2020-10-12    BUY   135.9                         Direction.V    Direction.Up    3444.55         24           733       103059.25
+ 2020-10-13    BUY   134.1                         Direction.V    Direction.Up    1835.35         12           745       101739.85
+ 2020-10-14    BUY   130.7                Direction.HigherHigh    Direction.Up     920.45          7           752        99206.85
+ 2020-10-15    BUY  126.95                Direction.HigherHigh    Direction.Up      539.6          3           755        96386.85
+ 2020-10-16    BUY  127.75                Direction.HigherHigh    Direction.Up      284.1          2           757        96990.85
+ 2020-10-19    BUY  128.25                Direction.HigherHigh    Direction.Up     155.85          1           758        97369.35
+ 2020-10-22   SELL   133.5  Direction.PossibleReversalDownward    Direction.Up  101348.85        758             0       101348.85
+ 2020-10-28    BUY   134.8  Direction.PossibleReversalDownward    Direction.Up   50798.85        375           375       101348.85
+ 2020-11-02    BUY  132.85                Direction.HigherHigh    Direction.Up    25424.5        191           566        100617.6
+ 2020-11-03    BUY   134.1                Direction.HigherHigh    Direction.Up    12819.1         94           660        101325.1
+ 2020-11-03    BUY   134.1                         Direction.V    Direction.Up     6516.4         47           707        101325.1
+ 2020-11-04    BUY   135.9                         Direction.V    Direction.Up     3390.7         23           730        102597.7
+ 2020-11-05    BUY  137.65                Direction.HigherHigh    Direction.Up     1738.9         12           742        103875.2
+ 2020-11-06    BUY   139.0                Direction.HigherHigh    Direction.Up      904.9          6           748        104876.9
+ 2020-11-09    BUY   141.0                Direction.HigherHigh    Direction.Up      481.9          3           751        106372.9
+ 2020-11-10    BUY   146.0                Direction.HigherHigh    Direction.Up      335.9          1           752        110127.9
+ 2020-11-11    BUY  150.95                Direction.HigherHigh    Direction.Up     184.95          1           753        113850.3
+ 2020-12-07   SELL  183.55  Direction.PossibleReversalDownward    Direction.Up   138398.1        753             0        138398.1
+ 2020-12-31    BUY  183.85    Direction.PossibleReversalUpward  Direction.Down    69270.5        376           376        138398.1
+ 2021-01-01    BUY   186.5    Direction.PossibleReversalUpward    Direction.Up    34768.0        185           561        139394.5
+ 2021-01-01    BUY   186.5                         Direction.V    Direction.Up    17423.5         93           654        139394.5
+ 2021-01-06    BUY   195.4                         Direction.V    Direction.Up     8825.9         44           698        145215.1
+ 2021-01-07    BUY  196.75                Direction.HigherHigh    Direction.Up     4497.4         22           720        146157.4
+ 2021-01-08    BUY  198.15                Direction.HigherHigh    Direction.Up    2317.75         11           731        147165.4
+ 2021-01-11    BUY  220.65                Direction.HigherHigh    Direction.Up     1214.5          5           736        163612.9
+ 2021-01-12    BUY   237.8                Direction.HigherHigh    Direction.Up      738.9          2           738        176235.3
+ 2021-01-13    BUY   242.6                Direction.HigherHigh    Direction.Up      496.3          1           739        179777.7
+ 2021-01-14    BUY   245.1                Direction.HigherHigh    Direction.Up      251.2          1           740        181625.2
+ 2021-01-15   SELL   260.3                Direction.HigherHigh    Direction.Up   192873.2        740             0        192873.2
+
+
+     Symbol Strategy      PnL
+ TATAMOTORS     MACD  92873.2
+```
+
 ### Submit patches
 
 If you have fixed an issue or added a new feature, please fork this repository, make your changes and submit a pull request. [Here's good article on how to do this.](https://code.tutsplus.com/tutorials/how-to-collaborate-on-github--net-34267) 

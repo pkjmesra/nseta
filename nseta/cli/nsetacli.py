@@ -7,7 +7,7 @@ import nseta
 from nseta.cli.historycli import history, pe_history
 from nseta.cli.modelcli import create_cdl_model
 from nseta.cli.plotscli import plot_ta
-from nseta.cli.strategycli import test_trading_strategy, forecast_strategy
+from nseta.cli.strategycli import test_trading_strategy, forecast_strategy, scan_trading_strategy
 from nseta.cli.livecli import live_quote, scan
 from nseta.common import log
 from nseta.archives.archiver import archiver
@@ -40,6 +40,7 @@ nsetacli.add_command(pe_history)
 nsetacli.add_command(plot_ta)
 nsetacli.add_command(scan)
 nsetacli.add_command(test_trading_strategy)
+nsetacli.add_command(scan_trading_strategy)
 
 def sigint_handler(signum, frame):
 	warnings.filterwarnings("ignore")

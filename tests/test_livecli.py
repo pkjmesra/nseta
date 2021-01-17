@@ -65,7 +65,7 @@ class TestLivecli(unittest.TestCase):
 		result = runner.invoke(scan, args=['--stocks', 'BANDHANBNK', '--volume', '--clear'])
 		self.assertEqual(result.exit_code , 0)
 		self.assertIn("Volume scanning finished.", result.output, str(result.output))
-		self.assertIn("T0(%)", result.output, str(result.output))
+		self.assertIn("TDYVol(%)", result.output, str(result.output))
 
 	def test_live_quote_inputs(self):
 		runner = CliRunner()
