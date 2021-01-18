@@ -32,6 +32,17 @@ def nsetacli(debug, version, trace):
 	if version:
 		click.echo('nseta ' + nseta.__version__)
 
+@click.command(help='Force clears log files, downloaded contents etc. As good as a fresh install (with --deepclean option.)')
+@click.option('--deepclean','-d', default=False, is_flag=True, help='--deepclean if you want all files removed.')
+def clear(deepclean):
+	arch = archiver()
+	arch.clear_all(deep_clean=deepclean)
+	if deepclean:
+		click.secho('Removed all log files, contents and downloaded/saved files.', fg='green', nl=True)
+	else:
+		click.secho('Removed top-level results that were saved earlier.', fg='yellow', nl=True)
+
+nsetacli.add_command(clear)
 nsetacli.add_command(create_cdl_model)
 nsetacli.add_command(forecast_strategy)
 nsetacli.add_command(history)
@@ -41,6 +52,7 @@ nsetacli.add_command(plot_ta)
 nsetacli.add_command(scan)
 nsetacli.add_command(test_trading_strategy)
 nsetacli.add_command(scan_trading_strategy)
+
 
 def sigint_handler(signum, frame):
 	warnings.filterwarnings("ignore")

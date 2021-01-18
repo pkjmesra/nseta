@@ -2,7 +2,7 @@ import numpy as np
 import pandas as pd
 
 from nseta.common.log import tracelog, default_logger
-from nseta.common.commons import Direction
+from nseta.common.commons import Direction, Recommendation
 
 __all__ = ['basesignalstrategy']
 
@@ -19,6 +19,7 @@ class basesignalstrategy:
 		self._ts = ''
 		self._pnl = 0
 		self._baseledger = {'DateTime':[],'P3':[], 'P2':[], 'P1':[], 'N1':[], 'N2':[], 'N3':[]}
+		self._reco = Recommendation.Unknown
 
 	@property
 	def baseledger(self):
@@ -33,6 +34,7 @@ class basesignalstrategy:
 		self.n3 = index
 		self.timestamp = timestamp
 		if self.p3 != np.nan:
+			self.recommendation = Recommendation.Unknown
 			self.update_direction()
 	
 	@property
@@ -143,6 +145,14 @@ class basesignalstrategy:
 			self.n2 = self._n3
 		self._n3 = current
 
+	@property
+	def recommendation(self):
+		return self._reco
+
+	@recommendation.setter
+	def recommendation(self, reco):
+		self._reco = reco
+
 	@tracelog
 	def update_direction(self):
 		(self.baseledger['DateTime']).append(self.timestamp)
@@ -157,31 +167,38 @@ class basesignalstrategy:
 		if (self.n1 > self.n2) and (self.n3 > self.n2): # The last 3rd and 2nd values fell and last one reversed in direction
 			if (self.p1 < self.p2) and (self.p2 < self.p3): # All previous values were falling.
 				self.pattern = Direction.PossibleReversalUpward
+				self.recommendation = Recommendation.Buy
 				self.possibleReversalUpward_pattern(prev_pattern=prev_pattern)
 		if (self.n1 < self.n2) and (self.n3 < self.n2): # The last 3rd and 2nd values fell and last one reversed in direction
 			if (self.p1 > self.p2) and (self.p2 > self.p3): # All previous values were falling.
 				self.pattern = Direction.PossibleReversalDownward
+				self.recommendation = Recommendation.Sell
 				self.possibleReversalDownward_pattern(prev_pattern=prev_pattern)
 
 		if (self.n1 > self.n2) and (self.n2 > self.n3): # The last 3 values fell
 			self.direction = Direction.Down
+			self.recommendation = Recommendation.Sell
 			self.possible_lowerlow_direction(prev_pattern=prev_pattern)
-			self.lowerlow_direction(prev_pattern=prev_pattern)
 			if ((self.p1 > self.p2) and (self.p2 > self.p3)) or ((self.p1 > self.p2) and (self.p1 > self.p3)): # The last 6th, 5th and 4th values were rising
 				self.pattern = Direction.InvertedV
+				self.recommendation = Recommendation.Sell
 				self.invertedv_pattern(prev_pattern=prev_pattern)
 			elif (self.p1 < self.p2) or (self.p1 < self.p3): # All last 5/6 values fell
 				self.pattern = Direction.LowerLow
+				self.recommendation = Recommendation.Sell
 				self.lowerlow_direction(prev_pattern=prev_pattern)
 
 		if (self.n1 < self.n2) and (self.n2 < self.n3):
 			self.direction = Direction.Up
 			self.possible_higherhigh_pattern(prev_pattern=prev_pattern)
+			self.recommendation = Recommendation.Hold
 			if ((self.p1 < self.p2) and (self.p2 < self.p3)) or ((self.p1 < self.p2) and (self.p1 < self.p3)):
 				self.pattern = Direction.V
+				self.recommendation = Recommendation.Buy
 				self.v_pattern(prev_pattern=prev_pattern)
 			elif (self.p1 > self.p2) or (self.p1 > self.p3):
 				self.pattern = Direction.HigherHigh
+				self.recommendation = Recommendation.Buy
 				self.higherhigh_pattern(prev_pattern=prev_pattern)
 
 	def possible_higherhigh_pattern(self, prev_pattern=Direction.Neutral):

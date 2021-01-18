@@ -9,6 +9,7 @@ import sys
 from time import time
 
 from nseta.common.commons import *
+from nseta.common.multithreadedScanner import multithreaded_scan
 from nseta.archives.archiver import *
 from nseta.common.history import historicaldata
 from nseta.common.log import tracelog, default_logger
@@ -88,6 +89,12 @@ class scanner:
 	def stocksdict(self):
 		return self._stocksdict
 
+	def multithreadedScanner_callback(self, **kwargs):
+		kind = kwargs['kind']
+		del(kwargs['kind'])
+		callback_func = self.get_func_name(kind)
+		return callback_func(**kwargs)
+
 	def get_func_name(self, kind):
 		if kind==TYPE_LIVE:
 			return self.scan_live_quanta
@@ -112,7 +119,14 @@ class scanner:
 	def scan_live(self, stocks=[]):
 		start_time = time()
 		stocks = self.stocks_list(stocks)
-		list_returned = self.scan_internal(stocks, TYPE_LIVE)
+		frame = inspect.currentframe()
+		args, _, _, kwargs = inspect.getargvalues(frame)
+		del(kwargs['frame'])
+		del(kwargs['self'])
+		kwargs['kind'] = TYPE_LIVE
+		kwargs['callbackInstance'] = self
+		kwargs['stocks'] = stocks
+		list_returned = multithreaded_scan(**kwargs)
 		end_time = time()
 		time_spent = end_time-start_time
 		print("\nThis run of live scan took {:.1f} sec".format(time_spent))
@@ -122,7 +136,14 @@ class scanner:
 	def scan_intraday(self, stocks=[]):
 		start_time = time()
 		stocks = self.stocks_list(stocks)
-		list_returned = self.scan_internal(stocks, TYPE_INTRADAY)
+		frame = inspect.currentframe()
+		args, _, _, kwargs = inspect.getargvalues(frame)
+		del(kwargs['frame'])
+		del(kwargs['self'])
+		kwargs['kind'] = TYPE_INTRADAY
+		kwargs['callbackInstance'] = self
+		kwargs['stocks'] = stocks
+		list_returned = multithreaded_scan(**kwargs)
 		end_time = time()
 		time_spent = end_time-start_time
 		print("\nThis run of intraday scan took {:.1f} sec".format(time_spent))
@@ -132,7 +153,14 @@ class scanner:
 	def scan_swing(self, stocks=[]):
 		start_time = time()
 		stocks = self.stocks_list(stocks)
-		list_returned = self.scan_internal(stocks, TYPE_SWING)
+		frame = inspect.currentframe()
+		args, _, _, kwargs = inspect.getargvalues(frame)
+		del(kwargs['frame'])
+		del(kwargs['self'])
+		kwargs['kind'] = TYPE_SWING
+		kwargs['callbackInstance'] = self
+		kwargs['stocks'] = stocks
+		list_returned = multithreaded_scan(**kwargs)
 		end_time = time()
 		time_spent = end_time-start_time
 		print("\nThis run of swing scan took {:.1f} sec".format(time_spent))
@@ -142,50 +170,22 @@ class scanner:
 	def scan_volume(self, stocks=[]):
 		start_time = time()
 		stocks = self.stocks_list(stocks)
-		list_returned = self.scan_internal(stocks, TYPE_VOLUME)
+		frame = inspect.currentframe()
+		args, _, _, kwargs = inspect.getargvalues(frame)
+		del(kwargs['frame'])
+		del(kwargs['self'])
+		kwargs['kind'] = TYPE_VOLUME
+		kwargs['callbackInstance'] = self
+		kwargs['stocks'] = stocks
+		list_returned = multithreaded_scan(**kwargs)
 		end_time = time()
 		time_spent = end_time-start_time
 		print("\nThis run of volume scan took {:.1f} sec".format(time_spent))
 		return list_returned.pop(0), list_returned.pop(0)
 
 	@tracelog
-	def scan_internal(self, stocks, kind):
-		frame = inspect.currentframe()
-		args, _, _, kwargs = inspect.getargvalues(frame)
-		del(kwargs['frame'])
-		del(kwargs['self'])
-		stocks_segment = kwargs['stocks']
-		n = 3 # Max number of stocks to be processed at a time by a thread
-		if len(stocks_segment) > n:
-			kwargs1 = dict(kwargs)
-			kwargs2 = dict(kwargs)
-			first_n = stocks[:n]
-			remaining_stocks = stocks[n:]
-			# n_segmented_stocks = [stocks_segment[i * n:(i + 1) * n] for i in range((len(stocks_segment) + n - 1) // n )]
-			kwargs1['stocks'] = first_n
-			kwargs2['stocks'] = remaining_stocks
-			t1 = ThreadReturns(target=self.scan_internal, kwargs=kwargs1)
-			t2 = ThreadReturns(target=self.scan_internal, kwargs=kwargs2)
-			t1.start()
-			t2.start()
-			t1.join()
-			t2.join()
-			list1 = t1.result
-			list2 = t2.result
-			df1 = list1.pop(0)
-			df2 = list2.pop(0)
-			signaldf1 = list1.pop(0)
-			signaldf2 = list2.pop(0)
-			df = concatenated_dataframe(df1, df2)
-			signaldf = concatenated_dataframe(signaldf1, signaldf2)
-			return [df, signaldf]
-		else:
-			del(kwargs['kind'])
-			func_execute = self.get_func_name(kind)
-			return func_execute(**kwargs)
-
-	@tracelog
-	def scan_live_quanta(self, stocks):
+	def scan_live_quanta(self, **kwargs):
+		stocks = kwargs['stocks']
 		frames = []
 		signalframes = []
 		df = None
@@ -224,7 +224,8 @@ class scanner:
 		return [df, signaldf]
 
 	@tracelog
-	def scan_intraday_quanta(self, stocks):
+	def scan_intraday_quanta(self, **kwargs):
+		stocks = kwargs['stocks']
 		frames = []
 		signalframes = []
 		df = None
@@ -261,7 +262,8 @@ class scanner:
 		return [df, signaldf]
 
 	@tracelog
-	def scan_swing_quanta(self, stocks):
+	def scan_swing_quanta(self, **kwargs):
+		stocks = kwargs['stocks']
 		frames = []
 		signalframes = []
 		df = None
@@ -305,7 +307,8 @@ class scanner:
 		return [df, signaldf]
 
 	@tracelog
-	def scan_volume_quanta(self, stocks):
+	def scan_volume_quanta(self, **kwargs):
+		stocks = kwargs['stocks']
 		frames = []
 		signalframes = []
 		df = None

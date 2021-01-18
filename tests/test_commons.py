@@ -266,6 +266,7 @@ class TestURLFetch(unittest.TestCase):
 
 	def tearDown(self):
 		urls.session.close()
+		self.session.close()
 		t = time.time() - self.startTime
 		print('%s: %.3f' % (self.id().ljust(100), t))
 

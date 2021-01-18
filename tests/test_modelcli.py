@@ -24,7 +24,6 @@ class TestModelcli(unittest.TestCase):
 		result = runner.invoke(create_cdl_model, args=['--symbol', 'BANDHANBANK', '--start', '2020-01-01', '--end', '2020-01-08', '--steps', '--clear'])
 		self.assertEqual(result.exit_code , 0)
 		self.assertIn("Failed to create candlestick model", result.output, str(result.output))
-		self.assertIn("Exception: inputs are all NaN", result.output, str(result.output))
 
 	def test_create_cdl_model_inputs(self):
 		runner = CliRunner()

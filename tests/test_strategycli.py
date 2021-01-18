@@ -28,6 +28,13 @@ class TestStrategycli(unittest.TestCase):
 		self.assertIn("PnL", result.output, str(result.output))
 
 	@patch('matplotlib.pyplot.show')
+	def test_scan_trading_strategy_historical_More_than_3_codes(self, mock_pyplot):
+		runner = CliRunner()
+		result = runner.invoke(scan_trading_strategy, args=['--symbol', 'BANDHANBNK,BANKBARODA,HDFC,ABB', '--start', '2020-08-01', '--end', '2021-01-01'])
+		self.assertEqual(result.exit_code , 0)
+		self.assertIn("PnL", result.output, str(result.output))
+
+	@patch('matplotlib.pyplot.show')
 	def test_scan_trading_strategy_intraday_bbands(self, mock_pyplot):
 		runner = CliRunner()
 		result = runner.invoke(scan_trading_strategy, args=['--symbol', 'BANDHANBNK,BANKBARODA', '--intraday','--strategy', 'bbands'])
@@ -84,23 +91,9 @@ class TestStrategycli(unittest.TestCase):
 		self.assertIn("pnl", result.output, str(result.output))
 
 	@patch('matplotlib.pyplot.show')
-	def test_test_trading_strategy_historical_rsi_autosearch(self, mock_pyplot):
-		runner = CliRunner()
-		result = runner.invoke(test_trading_strategy, args=['--symbol', 'BANDHANBNK', '--start', '2020-08-01', '--end', '2021-01-01', '--strategy', 'rsi', '--autosearch'])
-		self.assertEqual(result.exit_code , 0)
-		self.assertIn("pnl", result.output, str(result.output))
-
-	@patch('matplotlib.pyplot.show')
 	def test_test_trading_strategy_historical_macd(self, mock_pyplot):
 		runner = CliRunner()
 		result = runner.invoke(test_trading_strategy, args=['--symbol', 'BANDHANBNK', '--start', '2020-08-01', '--end', '2021-01-01', '--strategy', 'macd', '--clear'])
-		self.assertEqual(result.exit_code , 0)
-		self.assertIn("pnl", result.output, str(result.output))
-
-	@patch('matplotlib.pyplot.show')
-	def test_test_trading_strategy_historical_macd_autosearch(self, mock_pyplot):
-		runner = CliRunner()
-		result = runner.invoke(test_trading_strategy, args=['--symbol', 'BANDHANBNK', '--start', '2020-08-01', '--end', '2021-01-01', '--strategy', 'macd', '--autosearch'])
 		self.assertEqual(result.exit_code , 0)
 		self.assertIn("pnl", result.output, str(result.output))
 
@@ -111,26 +104,10 @@ class TestStrategycli(unittest.TestCase):
 		self.assertEqual(result.exit_code , 0)
 		self.assertIn("pnl", result.output, str(result.output))
 
-	# TODO: Takes 121 seconds to run
-	@patch('matplotlib.pyplot.show')
-	def test_test_trading_strategy_historical_smac_autosearch(self, mock_pyplot):
-		runner = CliRunner()
-		result = runner.invoke(test_trading_strategy, args=['--symbol', 'BANDHANBNK', '--start', '2020-08-01', '--end', '2021-01-01', '--strategy', 'smac', '--autosearch'])
-		self.assertEqual(result.exit_code , 0)
-		self.assertIn("pnl", result.output, str(result.output))
-
 	@patch('matplotlib.pyplot.show')
 	def test_test_trading_strategy_historical_emac(self, mock_pyplot):
 		runner = CliRunner()
 		result = runner.invoke(test_trading_strategy, args=['--symbol', 'BANDHANBNK', '--start', '2020-08-01', '--end', '2021-01-01', '--strategy', 'emac', '--clear'])
-		self.assertEqual(result.exit_code , 0)
-		self.assertIn("pnl", result.output, str(result.output))
-
-	# TODO: Takes 118 seconds to run
-	@patch('matplotlib.pyplot.show')
-	def test_test_trading_strategy_historical_emac_autosearch(self, mock_pyplot):
-		runner = CliRunner()
-		result = runner.invoke(test_trading_strategy, args=['--symbol', 'BANDHANBNK', '--start', '2020-08-01', '--end', '2021-01-01', '--strategy', 'emac', '--autosearch'])
 		self.assertEqual(result.exit_code , 0)
 		self.assertIn("pnl", result.output, str(result.output))
 
@@ -142,23 +119,9 @@ class TestStrategycli(unittest.TestCase):
 		self.assertIn("pnl", result.output, str(result.output))
 
 	@patch('matplotlib.pyplot.show')
-	def test_test_trading_strategy_historical_multi_autosearch(self, mock_pyplot):
-		runner = CliRunner()
-		result = runner.invoke(test_trading_strategy, args=['--symbol', 'BANDHANBNK', '--start', '2020-08-01', '--end', '2021-01-01', '--strategy', 'multi', '--autosearch'])
-		self.assertEqual(result.exit_code , 0)
-		self.assertIn("pnl", result.output, str(result.output))
-
-	@patch('matplotlib.pyplot.show')
 	def test_test_trading_strategy_historical_custom(self, mock_pyplot):
 		runner = CliRunner()
 		result = runner.invoke(test_trading_strategy, args=['--symbol', 'BANDHANBNK', '--start', '2020-08-01', '--end', '2021-01-01', '--strategy', 'custom', '-l', '1.5', '-u', '1.5', '--clear'])
-		self.assertEqual(result.exit_code , 0)
-		self.assertIn("pnl", result.output, str(result.output))
-
-	@patch('matplotlib.pyplot.show')
-	def test_test_trading_strategy_historical_bbands_autosearch(self, mock_pyplot):
-		runner = CliRunner()
-		result = runner.invoke(test_trading_strategy, args=['--symbol', 'BANDHANBNK', '--start', '2020-08-01', '--end', '2021-01-01', '--strategy', 'bbands','--autosearch'])
 		self.assertEqual(result.exit_code , 0)
 		self.assertIn("pnl", result.output, str(result.output))
 
@@ -170,32 +133,25 @@ class TestStrategycli(unittest.TestCase):
 		self.assertIn("pnl", result.output, str(result.output))
 
 	@patch('matplotlib.pyplot.show')
-	def test_test_trading_strategy_intraday_autosearch(self, mock_pyplot):
-		runner = CliRunner()
-		result = runner.invoke(test_trading_strategy, args=['--symbol', 'PNB', '--strategy', 'bbands', '--intraday', '--autosearch'])
-		self.assertEqual(result.exit_code , 0)
-		self.assertIn("pnl", result.output, str(result.output))
-
-	@patch('matplotlib.pyplot.show')
 	def test_test_trading_strategy_intraday_signals_rsi(self, mock_pyplot):
 		runner = CliRunner()
 		result = runner.invoke(test_trading_strategy, args=['--symbol', 'PNB', '--strategy', 'rsi', '--intraday'])
 		self.assertEqual(result.exit_code , 0)
-		self.assertIn("Portfolio_Value", result.output, str(result.output))
+		self.assertIn("pnl", result.output, str(result.output))
 
 	@patch('matplotlib.pyplot.show')
 	def test_test_trading_strategy_intraday_signals_bbands(self, mock_pyplot):
 		runner = CliRunner()
 		result = runner.invoke(test_trading_strategy, args=['--symbol', 'PNB', '--strategy', 'bbands', '--clear', '--intraday'])
 		self.assertEqual(result.exit_code , 0)
-		self.assertIn("Portfolio_Value", result.output, str(result.output))
+		self.assertIn("pnl", result.output, str(result.output))
 
 	@patch('matplotlib.pyplot.show')
 	def test_test_trading_strategy_intraday_signals_macd(self, mock_pyplot):
 		runner = CliRunner()
 		result = runner.invoke(test_trading_strategy, args=['--symbol', 'PNB', '--strategy', 'macd', '--intraday'])
 		self.assertEqual(result.exit_code , 0)
-		self.assertIn("Portfolio_Value", result.output, str(result.output))
+		self.assertIn("pnl", result.output, str(result.output))
 	
 	def test_forecast_strategy_inputs(self):
 		runner = CliRunner()

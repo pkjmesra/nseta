@@ -199,7 +199,8 @@ class historicaldata:
 						headers=headers, scaling=scaling, csvnode=csvnode)
 		except Exception as e:
 			default_logger().debug(e, exc_info=True)
-		self.archive_history(df, symbol, start, end, response_type)
+		if df is not None and len(df) > 0:
+			self.archive_history(df, symbol, start, end, response_type)
 		return df
 
 

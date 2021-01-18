@@ -2,7 +2,7 @@ import logging
 import pandas as pd
 
 from nseta.common.log import tracelog, default_logger
-from nseta.common.commons import Direction
+from nseta.common.commons import Direction, Recommendation
 from nseta.strategy.simulatedorder import simulatedorder, OrderType
 from nseta.strategy.basesignalstrategy import basesignalstrategy
 
@@ -41,7 +41,7 @@ class bbandsSignalStrategy(basesignalstrategy):
 			self.order_queue.square_off(self.price)
 			self.update_ledger(buy_sell)
 			self.pnl = self.order_queue.pnl
-			df_summary_dict = {'Symbol':[df['Symbol'].iloc[0]], 'Strategy':['BBands'], 'PnL':[self.pnl]}
+			df_summary_dict = {'Symbol':[df['Symbol'].iloc[0]], 'Strategy':['BBands'], 'PnL':[self.pnl], 'Recommendation': [str(self.recommendation)]}
 			df_summary = pd.DataFrame(df_summary_dict)
 		except Exception as e:
 			default_logger().debug(e, exc_info=True)

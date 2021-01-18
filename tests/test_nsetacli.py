@@ -5,7 +5,7 @@ import time
 
 from click.testing import CliRunner
 
-from nseta.cli.nsetacli import nsetacli
+from nseta.cli.nsetacli import nsetacli, clear
 import nseta
 
 class TestNSEtacli(unittest.TestCase):
@@ -30,6 +30,18 @@ class TestNSEtacli(unittest.TestCase):
 		result = runner.invoke(nsetacli, args=['--version'])
 		self.assertEqual(result.exit_code , 0)
 		self.assertIn('nseta ' + nseta.__version__ , result.output, str(result.output))
+
+	def test_nsetacli_clear_deepclean(self):
+		runner = CliRunner()
+		result = runner.invoke(clear, args=['--deepclean'])
+		self.assertEqual(result.exit_code , 0)
+		self.assertIn('Removed all log files, contents and downloaded/saved files.', result.output, str(result.output))
+
+	def test_nsetacli_clear(self):
+		runner = CliRunner()
+		result = runner.invoke(clear, args=[])
+		self.assertEqual(result.exit_code , 0)
+		self.assertIn('Removed top-level results that were saved earlier.', result.output, str(result.output))
 
 	def tearDown(self):
 		t = time.time() - self.startTime

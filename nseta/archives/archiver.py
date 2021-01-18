@@ -3,7 +3,7 @@ import os
 import pandas as pd
 # import shutil
 import sys
-from datetime import datetime, time
+from datetime import datetime, time, timezone
 import pytz
 
 from nseta.common.log import tracelog, default_logger
@@ -135,7 +135,7 @@ class archiver:
 			df = pd.read_csv(file_path)
 			if df is not None and len(df) > 0:
 				df = df.reset_index(drop=True)
-				last_modified = self.get_last_modified_datetime(file_path)
+				last_modified = self.utc_to_local(self.get_last_modified_datetime(file_path))
 				if current_datetime_in_ist_trading_time_range():
 					cache_warn = 'Last Modified:{}. Fetched {} from the disk cache. You may wish to clear cache (nseta [command] --clear).'.format(str(last_modified), symbol)
 					sys.stdout.write("\r{}".format(cache_warn))
@@ -154,6 +154,11 @@ class archiver:
 		if os.path.exists(file_path):
 			df = pd.read_csv(file_path)
 		return df
+
+	@tracelog
+	def clear_all(self, deep_clean=True):
+		self.remove_cached_file(self.run_directory, force_clear=deep_clean, prefix= None if deep_clean else 'DF_')
+		self.remove_cached_file(self.logs_directory, force_clear=True)
 
 	@tracelog
 	def clearcache(self, symbol=None, response_type=ResponseType.Default, force_clear=False):
@@ -177,24 +182,28 @@ class archiver:
 	def get_last_modified_datetime(self, file_path):
 		last_modified = datetime.utcfromtimestamp(os.path.getmtime(file_path))
 		return last_modified
+	
+	def utc_to_local(self, utc_dt):
+		return pytz.utc.localize(utc_dt).replace(tzinfo=timezone.utc).astimezone(tz=None)
 
-	def remove_cached_file(self, file_path, force_clear=False):
+	@tracelog
+	def remove_cached_file(self, file_path, force_clear=False, prefix=None):
 		last_modified_unaware = self.get_last_modified_datetime(file_path)
 		last_modified_aware = pytz.utc.localize(last_modified_unaware)
 		should_clear = datetime_in_ist_trading_time_range(last_modified_aware)
-		if should_clear or force_clear:
+		if should_clear or force_clear or prefix is not None:
 			if os.path.isdir(file_path):
-				self.remove_dir(file_path, force_clear)
-			else:
+				self.remove_dir(file_path, force_clear, prefix=prefix)
+			elif should_clear or force_clear:
 				os.remove(file_path)
-			default_logger().debug("File removed:{}".format(file_path))
+				default_logger().debug("File removed:{}".format(file_path))
 		else:
 			default_logger().debug("\nFetching from server will get the same data. If you want to force clear, use 'force_clear=True' option.")
 			default_logger().debug("\nFile NOT removed:{}.\n Last Modified:{}".format(file_path, str(last_modified_aware)))
 
-	def remove_dir(self, dir_path, force_clear=False):
+	def remove_dir(self, dir_path, force_clear=False, prefix=None):
 		directory = os.fsencode(dir_path)
 		for file in os.listdir(directory):
 			filename = os.fsdecode(file)
 			dir_file_path = os.path.join(dir_path, filename)
-			self.remove_cached_file(dir_file_path, force_clear)
+			self.remove_cached_file(dir_file_path, force_clear=True if prefix is not None and filename.startswith(prefix) else force_clear, prefix=prefix)

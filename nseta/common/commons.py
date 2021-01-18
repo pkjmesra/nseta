@@ -22,7 +22,7 @@ import numpy as np
 
 from six.moves.urllib.parse import urlparse
 
-__all__ = ['months','Direction','concatenated_dataframe','is_index','is_index_derivative', 'StrDate', 'ParseTables', 'unzip_str', 'ThreadReturns', 'URLFetch']
+__all__ = ['Recommendation','months','Direction','concatenated_dataframe','is_index','is_index_derivative', 'StrDate', 'ParseTables', 'unzip_str', 'ThreadReturns', 'URLFetch']
 
 class Direction(enum.Enum):
 	Down = 1
@@ -36,6 +36,12 @@ class Direction(enum.Enum):
 	OverSold = 9
 	PossibleReversalUpward = 10
 	PossibleReversalDownward = 11
+
+class Recommendation(enum.Enum):
+	Unknown = 1
+	Buy = 2
+	Sell = 3
+	Hold = 4
 
 def is_index(index):
 	return index in NSE_INDICES

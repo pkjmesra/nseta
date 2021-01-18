@@ -38,7 +38,7 @@ def create_cdl_model(symbol, start, end, file_name, steps, clear, format):
 		df = model_candlestick(df, steps)
 		click.echo(df.to_string(index=False))
 	except Exception as e:
-		default_logger().error(e, exc_info=True)
+		default_logger().debug(e, exc_info=True)
 		click.secho('Failed to create candlestick model', fg='red', nl=True)
 		return
 	except SystemExit:
@@ -57,7 +57,7 @@ def create_cdl_model(symbol, start, end, file_name, steps, clear, format):
 		plot_candlestick(df, symbol, 'Candlestick Pattern Model Recognition for ' + symbol)
 		click.secho('Candlestick pattern model plot saved to: {}'.format(symbol +'_candles.html'), fg='green', nl=True)	
 	except Exception as e:
-		default_logger().error(e, exc_info=True)
+		default_logger().debug(e, exc_info=True)
 		click.secho('Failed to plot candlestick pattern for the model', fg='red', nl=True)
 		return
 	except SystemExit:

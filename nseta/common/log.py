@@ -32,12 +32,14 @@ def setup_custom_logger(name, levelname=logging.DEBUG, trace=False, log_file_pat
 	filehandler.setFormatter(trace_formatter)
 	filehandler.setLevel(logging.DEBUG)
 
+	if levelname == logging.DEBUG:
+		logger.addHandler(filehandler)
+		logger.debug('Logging started')
+
 	if trace:
 		logger.debug('Tracing started')
 		tracelogger.addHandler(consolehandler)
-	logger.addHandler(filehandler)
-	tracelogger.addHandler(filehandler)
-	logger.debug('Logging started')
+		tracelogger.addHandler(filehandler)
 	# Turn off pystan warnings
 	warnings.simplefilter("ignore", DeprecationWarning)
 	warnings.simplefilter("ignore", FutureWarning)

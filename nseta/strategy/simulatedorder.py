@@ -114,7 +114,7 @@ class simulatedorder:
 		
 	def sell(self, price):
 		self.stock_price = price
-		available_funds = self.funds * self.single_tran_multiplier / self.margin
+		# available_funds = self.funds * self.single_tran_multiplier / self.margin
 		if self.holdings_size > 0:
 			# Assuming a buy order preceded this sell order, so holdings are +ve
 			self.order_size = self.holdings_size
