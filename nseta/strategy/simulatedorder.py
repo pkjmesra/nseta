@@ -1,6 +1,6 @@
 import enum
 
-__all__ = ['simulatedorder']
+__all__ = ['simulatedorder', 'OrderType', 'INITIAL_FUNDS']
 
 INITIAL_FUNDS = 100000
 
@@ -103,8 +103,8 @@ class simulatedorder:
 				final_size = min(buy_prop_size, afforded_size)
 				self.order_size = final_size
 				self.holdings_size = self.holdings_size + self.order_size
-				used_funds = available_funds - final_size * (self.stock_price * (1 + self.commission))
-				self.funds = self.funds - (available_funds - used_funds) * self.margin
+				used_funds = final_size * (self.stock_price * (1 + self.commission))
+				self.funds = self.funds - used_funds * self.margin
 		elif self.holdings_size < 0 and self.order_type == OrderType.MIS:
 			# This is an MIS order and we have to square off
 			self.order_size = self.holdings_size
@@ -114,7 +114,6 @@ class simulatedorder:
 		
 	def sell(self, price):
 		self.stock_price = price
-		# available_funds = self.funds * self.single_tran_multiplier / self.margin
 		if self.holdings_size > 0:
 			# Assuming a buy order preceded this sell order, so holdings are +ve
 			self.order_size = self.holdings_size
@@ -131,9 +130,9 @@ class simulatedorder:
 			sell_prop_size = int(afforded_size * self.sell_prop)
 			final_size = min(sell_prop_size, afforded_size)
 			self.order_size = final_size
-			used_funds = available_funds - self.order_size * (self.stock_price * (1 + self.commission))
+			used_funds = self.order_size * (self.stock_price * (1 + self.commission))
 			self.holdings_size = self.holdings_size - self.order_size
-			self.funds = self.funds - (available_funds - used_funds) * self.margin
+			self.funds = self.funds - (used_funds) * self.margin
 
 	def square_off(self, price):
 		if self.holdings_size == 0:
