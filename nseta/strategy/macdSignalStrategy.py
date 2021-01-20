@@ -2,7 +2,7 @@ import pandas as pd
 import numpy as np
 
 from nseta.common.log import tracelog, default_logger
-from nseta.common.commons import Direction, Recommendation
+from nseta.common.commons import Direction
 from nseta.strategy.simulatedorder import simulatedorder, OrderType
 from nseta.strategy.basesignalstrategy import basesignalstrategy
 

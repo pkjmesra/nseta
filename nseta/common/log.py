@@ -14,32 +14,29 @@ __trace__ = False
 def setup_custom_logger(name, levelname=logging.DEBUG, trace=False, log_file_path='logs.log'):
 	trace_formatter = logging.Formatter(fmt='%(asctime)s - %(name)s - %(levelname)s - %(filename)s - %(module)s - %(funcName)s - %(lineno)d\n%(message)s\n')
 	console_info_formatter = logging.Formatter(fmt='%(levelname)s - %(filename)s(%(funcName)s - %(lineno)d)\n%(message)s\n')
+	__trace__ = trace
 
 	logger = logging.getLogger(name)
 	logger.setLevel(levelname)
 
-	tracelogger = logging.getLogger('nseta_file_logger')
-	tracelogger.setLevel(levelname)
-	
-	# if levelname == logging.DEBUG:
 	consolehandler = logging.StreamHandler()
 	consolehandler.setFormatter(console_info_formatter if levelname == logging.INFO else trace_formatter)
 	consolehandler.setLevel(levelname)
 	logger.addHandler(consolehandler)
-	__trace__ = trace
-
-	filehandler = logging.FileHandler(log_file_path)
-	filehandler.setFormatter(trace_formatter)
-	filehandler.setLevel(logging.DEBUG)
 
 	if levelname == logging.DEBUG:
+		filehandler = logging.FileHandler(log_file_path)
+		filehandler.setFormatter(trace_formatter)
+		filehandler.setLevel(levelname)
 		logger.addHandler(filehandler)
 		logger.debug('Logging started')
 
 	if trace:
-		logger.debug('Tracing started')
+		tracelogger = logging.getLogger('nseta_file_logger')
+		tracelogger.setLevel(levelname)
 		tracelogger.addHandler(consolehandler)
 		tracelogger.addHandler(filehandler)
+		logger.debug('Tracing started')
 	# Turn off pystan warnings
 	warnings.simplefilter("ignore", DeprecationWarning)
 	warnings.simplefilter("ignore", FutureWarning)

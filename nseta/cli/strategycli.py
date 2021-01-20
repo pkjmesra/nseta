@@ -1,11 +1,8 @@
-import pandas as pd
-import numpy as np
 
 from time import time
 
 from nseta.strategy.strategy import *
 from nseta.common.history import *
-from nseta.common.ti import ti
 from nseta.common.log import tracelog, default_logger
 from nseta.cli.inputs import *
 from nseta.archives.archiver import *

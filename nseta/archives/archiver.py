@@ -158,10 +158,12 @@ class archiver:
 	@tracelog
 	def clear_all(self, deep_clean=True):
 		self.remove_cached_file(self.run_directory, force_clear=deep_clean, prefix= None if deep_clean else 'DF_')
+		self.remove_cached_file(self.run_directory, force_clear=deep_clean, prefix= None if deep_clean else 'SIGNALDF_')
 		self.remove_cached_file(self.logs_directory, force_clear=True)
 
 	@tracelog
 	def clearcache(self, symbol=None, response_type=ResponseType.Default, force_clear=False):
+		self.clear_all(deep_clean=False)
 		try:
 			if symbol is not None:
 				file_path = self.get_path(symbol, response_type)
@@ -206,4 +208,4 @@ class archiver:
 		for file in os.listdir(directory):
 			filename = os.fsdecode(file)
 			dir_file_path = os.path.join(dir_path, filename)
-			self.remove_cached_file(dir_file_path, force_clear=True if prefix is not None and filename.startswith(prefix) else force_clear, prefix=prefix)
+			self.remove_cached_file(dir_file_path, force_clear=True if prefix is not None and filename.upper().startswith(prefix) else force_clear, prefix=prefix)

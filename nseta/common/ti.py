@@ -7,6 +7,8 @@ __all__ = ['ti']
 class ti:
 
 	def update_ti(self, df):
+		if df is None or len(df) == 0:
+			return df
 		try:
 			df['RSI'] = self.get_rsi_df(df)
 			df['MOM'] = self.get_mom_df(df)
