@@ -207,28 +207,28 @@ class TestTIScanner(unittest.TestCase):
 
 	def test_format_scan_volume_df_ltp_R3(self):
 		s = scanner()
-		df = pd.DataFrame({'Date': ['2021-01-15'], 'Volume':[7777] , '%Deliverable':[0.28], 'PP': [104], 'VWAP': [101.04],'S1': [103], 'S2': [102],'S3': [101],'R1': [105],'R2': [106],'R3': [107]})
+		df = pd.DataFrame({'Date': ['2021-01-15','2021-01-16'], 'Volume':[7777,7777] , '%Deliverable':[0.28,0.28], 'PP': [104,104], 'VWAP': [101.04,101.04],'S1': [103,103], 'S2': [102,102],'S3': [101,101],'R1': [105,105],'R2': [106,106],'R3': [107,107]})
 		df_today = pd.DataFrame({'TotalTradedVolume': ['8888'], 'Updated': ['2021-01-15'], 'pChange': [.25], 'T0BuySellDiff': [2000.00], 'LTP':['107'] , 'Tdy%Del':[0.28]})
 		df_result, df_today_result, signalframes = s.format_scan_volume_df(df, df_today, [])
 		self.assertEqual(df_result['S1-R3'].iloc[0], df['R3'].iloc[0])
 
 	def test_format_scan_volume_df_ltp_R2(self):
 		s = scanner()
-		df = pd.DataFrame({'Date': ['2021-01-15'], 'Volume':[7777] , '%Deliverable':[0.28], 'PP': [104], 'VWAP': [101.04],'S1': [103], 'S2': [102],'S3': [101],'R1': [105],'R2': [106],'R3': [107]})
+		df = pd.DataFrame({'Date': ['2021-01-15','2021-01-16'], 'Volume':[7777,7777] , '%Deliverable':[0.28,0.28], 'PP': [104,104], 'VWAP': [101.04,101.04],'S1': [103,103], 'S2': [102,102],'S3': [101,101],'R1': [105,105],'R2': [106,106],'R3': [107,107]})
 		df_today = pd.DataFrame({'TotalTradedVolume': ['8888'], 'Updated': ['2021-01-15'], 'pChange': [.25], 'T0BuySellDiff': [2000.00], 'LTP':['106'] , 'Tdy%Del':[0.28]})
 		df_result, df_today_result, signalframes = s.format_scan_volume_df(df, df_today,[])
 		self.assertEqual(df_result['S1-R3'].iloc[0], df['R2'].iloc[0])
 
 	def test_format_scan_volume_df_ltp_R1(self):
 		s = scanner()
-		df = pd.DataFrame({'Date': ['2021-01-15'], 'Volume':[7777] , '%Deliverable':[0.28], 'PP': [104], 'VWAP': [101.04],'S1': [103], 'S2': [102],'S3': [101],'R1': [105],'R2': [106],'R3': [107]})
+		df = pd.DataFrame({'Date': ['2021-01-15','2021-01-16'], 'Volume':[7777,7777] , '%Deliverable':[0.28,0.28], 'PP': [104,104], 'VWAP': [101.04,101.04],'S1': [103,103], 'S2': [102,102],'S3': [101,101],'R1': [105,105],'R2': [106,106],'R3': [107,107]})
 		df_today = pd.DataFrame({'TotalTradedVolume': ['8888'], 'Updated': ['2021-01-15'], 'pChange': [.25], 'T0BuySellDiff': [2000.00], 'LTP':['105'] , 'Tdy%Del':[0.28]})
 		df_result, df_today_result, signalframes = s.format_scan_volume_df(df, df_today,[])
 		self.assertEqual(df_result['S1-R3'].iloc[0], df['R1'].iloc[0])
 
 	def test_format_scan_volume_df_ltp_PP_R1(self):
 		s = scanner()
-		df = pd.DataFrame({'Date': ['2021-01-15'], 'Volume':[7777] , '%Deliverable':[0.28], 'PP': [104], 'VWAP': [101.04],'S1': [103], 'S2': [102],'S3': [101],'R1': [105],'R2': [106],'R3': [107]})
+		df = pd.DataFrame({'Date': ['2021-01-15','2021-01-16'], 'Volume':[7777,7777] , '%Deliverable':[0.28,0.28], 'PP': [104,104], 'VWAP': [101.04,101.04],'S1': [103,103], 'S2': [102,102],'S3': [101,101],'R1': [105,105],'R2': [106,106],'R3': [107,107]})
 		df_today = pd.DataFrame({'TotalTradedVolume': ['8888'], 'Updated': ['2021-01-15'], 'pChange': [.25], 'T0BuySellDiff': [2000.00], 'LTP':['104.5'] , 'Tdy%Del':[0.28]})
 		df_result, df_today_result, signalframes = s.format_scan_volume_df(df, df_today,[])
 		self.assertEqual(df_result['S1-R3'].iloc[0], df['R1'].iloc[0])
@@ -236,28 +236,28 @@ class TestTIScanner(unittest.TestCase):
 
 	def test_format_scan_volume_df_ltp_S1(self):
 		s = scanner()
-		df = pd.DataFrame({'Date': ['2021-01-15'], 'Volume':[7777] , '%Deliverable':[0.28], 'PP': [104], 'VWAP': [101.04],'S1': [103], 'S2': [102],'S3': [101],'R1': [105],'R2': [106],'R3': [107]})
+		df = pd.DataFrame({'Date': ['2021-01-15','2021-01-16'], 'Volume':[7777,7777] , '%Deliverable':[0.28,0.28], 'PP': [104,104], 'VWAP': [101.04,101.04],'S1': [103,103], 'S2': [102,102],'S3': [101,101],'R1': [105,105],'R2': [106,106],'R3': [107,107]})
 		df_today = pd.DataFrame({'TotalTradedVolume': ['8888'], 'Updated': ['2021-01-15'], 'pChange': [.25], 'T0BuySellDiff': [2000.00], 'LTP':['103.5'] , 'Tdy%Del':[0.28]})
 		df_result, df_today_result, signalframes = s.format_scan_volume_df(df, df_today,[])
 		self.assertEqual(df_result['S1-R3'].iloc[0], df['S1'].iloc[0])
 
 	def test_format_scan_volume_df_ltp_S2(self):
 		s = scanner()
-		df = pd.DataFrame({'Date': ['2021-01-15'], 'Volume':[7777] , '%Deliverable':[0.28], 'PP': [104], 'VWAP': [101.04],'S1': [103], 'S2': [102],'S3': [101],'R1': [105],'R2': [106],'R3': [107]})
+		df = pd.DataFrame({'Date': ['2021-01-15','2021-01-16'], 'Volume':[7777,7777] , '%Deliverable':[0.28,0.28], 'PP': [104,104], 'VWAP': [101.04,101.04],'S1': [103,103], 'S2': [102,102],'S3': [101,101],'R1': [105,105],'R2': [106,106],'R3': [107,107]})
 		df_today = pd.DataFrame({'TotalTradedVolume': ['8888'], 'Updated': ['2021-01-15'], 'pChange': [.25], 'T0BuySellDiff': [2000.00], 'LTP':['102.5'] , 'Tdy%Del':[0.28]})
 		df_result, df_today_result, signalframes = s.format_scan_volume_df(df, df_today,[])
 		self.assertEqual(df_result['S1-R3'].iloc[0], df['S2'].iloc[0])
 
 	def test_format_scan_volume_df_ltp_S3(self):
 		s = scanner()
-		df = pd.DataFrame({'Date': ['2021-01-15'], 'Volume':[7777] , '%Deliverable':[0.28], 'PP': [104], 'VWAP': [101.04],'S1': [103], 'S2': [102],'S3': [101],'R1': [105],'R2': [106],'R3': [107]})
-		df_today = pd.DataFrame({'TotalTradedVolume': ['8888'], 'Updated': ['2021-01-15'], 'pChange': [.25], 'T0BuySellDiff': [2000.00], 'LTP':['101.5'] , 'Tdy%Del':[0.28]})
+		df = pd.DataFrame({'Date': ['2021-01-15','2021-01-16'], 'Volume':[7777,7777] , '%Deliverable':[0.28,0.28], 'PP': [104,104], 'VWAP': [101.04,101.04],'S1': [103,103], 'S2': [102,102],'S3': [101,101],'R1': [105,105],'R2': [106,106],'R3': [107,107]})
+		df_today = pd.DataFrame({'TotalTradedVolume': ['8888'], 'Updated': ['2021-01-16'], 'pChange': [.25], 'T0BuySellDiff': [2000.00], 'LTP':['101.5'] , 'Tdy%Del':[0.28]})
 		df_result, df_today_result, signalframes = s.format_scan_volume_df(df, df_today,[])
 		self.assertEqual(df_result['S1-R3'].iloc[0], df['S3'].iloc[0])
 
 	def test_format_scan_volume_df_ltp_PP_S3(self):
 		s = scanner()
-		df = pd.DataFrame({'Date': ['2021-01-15'], 'Volume':[7777] , '%Deliverable':[0.28], 'PP': [104], 'VWAP': [101.04],'S1': [103], 'S2': [102],'S3': [101],'R1': [105],'R2': [106],'R3': [107]})
+		df = pd.DataFrame({'Date': ['2021-01-15','2021-01-16'], 'Volume':[7777,7777] , '%Deliverable':[0.28,0.28], 'PP': [104,104], 'VWAP': [101.04,101.04],'S1': [103,103], 'S2': [102,102],'S3': [101,101],'R1': [105,105],'R2': [106,106],'R3': [107,107]})
 		df_today = pd.DataFrame({'TotalTradedVolume': ['8888'], 'Updated': ['2021-01-15'], 'pChange': [.25], 'T0BuySellDiff': [2000.00], 'LTP':['100'] , 'Tdy%Del':[0.28]})
 		df_result, df_today_result, signalframes = s.format_scan_volume_df(df, df_today,[])
 		self.assertEqual(df_result['S1-R3'].iloc[0], df['S3'].iloc[0])
