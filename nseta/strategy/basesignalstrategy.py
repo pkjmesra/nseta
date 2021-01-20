@@ -7,7 +7,7 @@ from nseta.common.commons import Direction, Recommendation
 __all__ = ['basesignalstrategy']
 
 class basesignalstrategy:
-	def __init__(self):
+	def __init__(self, requires_ledger=False):
 		self._pat = Direction.Neutral
 		self._dir = Direction.Neutral
 		self._p1 = np.nan
@@ -18,8 +18,13 @@ class basesignalstrategy:
 		self._n3 = np.nan
 		self._ts = ''
 		self._pnl = 0
+		self._requires_ledger = requires_ledger
 		self._baseledger = {'DateTime':[],'P3':[], 'P2':[], 'P1':[], 'N1':[], 'N2':[], 'N3':[]}
 		self._reco = Recommendation.Unknown
+
+	@property
+	def requires_ledger(self):
+		return self._requires_ledger
 
 	@property
 	def baseledger(self):
@@ -155,27 +160,33 @@ class basesignalstrategy:
 
 	@tracelog
 	def update_direction(self):
-		(self.baseledger['DateTime']).append(self.timestamp)
-		(self.baseledger['P3']).append(str(round(self.p3,2)))
-		(self.baseledger['P2']).append(str(round(self.p2,2)))
-		(self.baseledger['P1']).append(str(round(self.p1,2)))
-		(self.baseledger['N1']).append(str(round(self.n1,2)))
-		(self.baseledger['N2']).append(str(round(self.n2,2)))
-		(self.baseledger['N3']).append(str(round(self.n3,2)))
-
+		if self.requires_ledger:
+			(self.baseledger['DateTime']).append(self.timestamp)
+			(self.baseledger['P3']).append(str(round(self.p3,2)))
+			(self.baseledger['P2']).append(str(round(self.p2,2)))
+			(self.baseledger['P1']).append(str(round(self.p1,2)))
+			(self.baseledger['N1']).append(str(round(self.n1,2)))
+			(self.baseledger['N2']).append(str(round(self.n2,2)))
+			(self.baseledger['N3']).append(str(round(self.n3,2)))
+		n1gtn2 = True if self.n1 > self.n2 else False
+		n2ltn3 = True if self.n2 < self.n3 else False
+		n1ltn2 = True if self.n1 < self.n2 else False
+		n2ltn3 = True if self.n2 < self.n3 else False
+		n2gtn3 = True if self.n2 > self.n3 else False
+		n3ltn2 = True if self.n3 < self.n2 else False
 		prev_pattern = self.pattern
-		if (self.n1 > self.n2) and (self.n3 > self.n2): # The last 3rd and 2nd values fell and last one reversed in direction
+		if n1gtn2 and n2ltn3: # The last 3rd and 2nd values fell and last one reversed in direction
 			if (self.p1 < self.p2) and (self.p2 < self.p3): # All previous values were falling.
 				self.pattern = Direction.PossibleReversalUpward
 				self.recommendation = Recommendation.Buy
 				self.possibleReversalUpward_pattern(prev_pattern=prev_pattern)
-		if (self.n1 < self.n2) and (self.n3 < self.n2): # The last 3rd and 2nd values fell and last one reversed in direction
+		if n1ltn2 and n3ltn2: # The last 3rd and 2nd values fell and last one reversed in direction
 			if (self.p1 > self.p2) and (self.p2 > self.p3): # All previous values were falling.
 				self.pattern = Direction.PossibleReversalDownward
 				self.recommendation = Recommendation.Sell
 				self.possibleReversalDownward_pattern(prev_pattern=prev_pattern)
 
-		if (self.n1 > self.n2) and (self.n2 > self.n3): # The last 3 values fell
+		if n1gtn2 and n2gtn3: # The last 3 values fell
 			self.direction = Direction.Down
 			self.recommendation = Recommendation.Sell
 			self.possible_lowerlow_direction(prev_pattern=prev_pattern)
@@ -188,7 +199,7 @@ class basesignalstrategy:
 				self.recommendation = Recommendation.Sell
 				self.lowerlow_direction(prev_pattern=prev_pattern)
 
-		if (self.n1 < self.n2) and (self.n2 < self.n3):
+		if n1ltn2 and n2ltn3:
 			self.direction = Direction.Up
 			self.possible_higherhigh_pattern(prev_pattern=prev_pattern)
 			self.recommendation = Recommendation.Hold

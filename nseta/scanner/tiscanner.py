@@ -123,8 +123,9 @@ class scanner:
 		del(kwargs['frame'])
 		del(kwargs['self'])
 		kwargs['kind'] = TYPE_LIVE
-		kwargs['callbackInstance'] = self
-		kwargs['stocks'] = stocks
+		kwargs['callbackMethod'] = self.multithreadedScanner_callback
+		kwargs['items'] = stocks
+		kwargs['max_per_thread'] = 3
 		list_returned = multithreaded_scan(**kwargs)
 		end_time = time()
 		time_spent = end_time-start_time
@@ -140,8 +141,9 @@ class scanner:
 		del(kwargs['frame'])
 		del(kwargs['self'])
 		kwargs['kind'] = TYPE_INTRADAY
-		kwargs['callbackInstance'] = self
-		kwargs['stocks'] = stocks
+		kwargs['callbackMethod'] = self.multithreadedScanner_callback
+		kwargs['items'] = stocks
+		kwargs['max_per_thread'] = 3
 		list_returned = multithreaded_scan(**kwargs)
 		end_time = time()
 		time_spent = end_time-start_time
@@ -157,8 +159,9 @@ class scanner:
 		del(kwargs['frame'])
 		del(kwargs['self'])
 		kwargs['kind'] = TYPE_SWING
-		kwargs['callbackInstance'] = self
-		kwargs['stocks'] = stocks
+		kwargs['callbackMethod'] = self.multithreadedScanner_callback
+		kwargs['items'] = stocks
+		kwargs['max_per_thread'] = 3
 		list_returned = multithreaded_scan(**kwargs)
 		end_time = time()
 		time_spent = end_time-start_time
@@ -174,8 +177,9 @@ class scanner:
 		del(kwargs['frame'])
 		del(kwargs['self'])
 		kwargs['kind'] = TYPE_VOLUME
-		kwargs['callbackInstance'] = self
-		kwargs['stocks'] = stocks
+		kwargs['callbackMethod'] = self.multithreadedScanner_callback
+		kwargs['items'] = stocks
+		kwargs['max_per_thread'] = 3
 		list_returned = multithreaded_scan(**kwargs)
 		end_time = time()
 		time_spent = end_time-start_time
@@ -184,7 +188,7 @@ class scanner:
 
 	@tracelog
 	def scan_live_quanta(self, **kwargs):
-		stocks = kwargs['stocks']
+		stocks = kwargs['items']
 		frames = []
 		signalframes = []
 		df = None
@@ -224,7 +228,7 @@ class scanner:
 
 	@tracelog
 	def scan_intraday_quanta(self, **kwargs):
-		stocks = kwargs['stocks']
+		stocks = kwargs['items']
 		frames = []
 		signalframes = []
 		df = None
@@ -262,7 +266,7 @@ class scanner:
 
 	@tracelog
 	def scan_swing_quanta(self, **kwargs):
-		stocks = kwargs['stocks']
+		stocks = kwargs['items']
 		frames = []
 		signalframes = []
 		df = None
@@ -307,7 +311,7 @@ class scanner:
 
 	@tracelog
 	def scan_volume_quanta(self, **kwargs):
-		stocks = kwargs['stocks']
+		stocks = kwargs['items']
 		frames = []
 		signalframes = []
 		signaldf = None

@@ -132,7 +132,7 @@ def scan_live_results(df, signaldf, indicator, should_cache=True):
 	if df is not None and len(df) > 0:
 		save_scan_results_archive(df, signaldf, ResponseType.Quote, indicator, should_cache)
 		df = df.sort_values(by='% Delivery',ascending=False)
-		print("\nAll Stocks LTP and Signals:\n" + df.to_string(index=False))
+		# print("\nAll Stocks LTP and Signals:\n" + df.to_string(index=False))
 		default_logger().debug("\nAll Stocks LTP and Signals:\n" + df.to_string(index=False))
 	else:
 		print('Nothing to show here.')
@@ -156,7 +156,7 @@ def scan_intraday_results(df, signaldf, indicator, should_cache=True):
 	if df is not None and len(df) > 0:
 		save_scan_results_archive(df, signaldf, ResponseType.Intraday, indicator, should_cache)
 		default_logger().debug("\nAll Stocks LTP and Signals:\n" + df.to_string(index=False))
-		print("\n\nIntraday results\n\n" + df.to_string(index=False))
+		# print("\n\nIntraday results\n\n" + df.to_string(index=False))
 	else:
 		print('Nothing to show here.')
 	if signaldf is not None and len(signaldf) > 0:
@@ -205,7 +205,7 @@ def scan_volume_results(df, signaldf, indicator, orderby, should_cache=True):
 		save_scan_results_archive(df, signaldf,ResponseType.Volume, indicator, should_cache)
 		df = df.sort_values(by='7DVol(%)' if orderby == 'momentum' else 'TDYVol(%)',ascending=False)
 		default_logger().debug("\nAll Stocks LTP and Signals:\n" + df.to_string(index=False))
-		print("\n\nVolume Data:\n\n" + df.to_string(index=False))
+		# print("\n\nVolume Data:\n\n" + df.to_string(index=False))
 	else:
 		print('Nothing to show here.')
 	if signaldf is not None and len(signaldf) > 0:

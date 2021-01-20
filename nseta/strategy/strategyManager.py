@@ -1,7 +1,9 @@
 import inspect
 import pandas as pd
 import numpy as np
+import sys
 from datetime import datetime
+import threading, time
 
 from nseta.strategy.strategy import *
 from nseta.strategy.rsiSignalStrategy import *
@@ -16,6 +18,9 @@ from nseta.common.history import *
 from nseta.plots.plots import plot_rsi
 
 __all__ = ['STRATEGY_MAPPING', 'strategyManager']
+
+CONCURRENT_STOCK_COUNT = 3
+CONCURRENT_STRATEGY_COUNT = 3
 
 @tracelog
 def smac_strategy(df,  lower, upper, plot=False):
@@ -61,39 +66,36 @@ STRATEGY_MAPPING = {
 
 class strategyManager:
 
+	@tracelog
 	def multithreadedScanner_callback(self, **kwargs):
 		start = kwargs['start']
 		end = kwargs['end']
-		strategy = kwargs['strategy']
 		upper = kwargs['upper']
 		lower = kwargs['lower']
 		intraday = kwargs['intraday']
 		stocks = kwargs['stocks']
+		strategies = kwargs['items']
 
 		if start is not None:
 			sd = datetime.strptime(start, "%Y-%m-%d").date()
 		if end is not None:
 			ed = datetime.strptime(end, "%Y-%m-%d").date()
-		strategies = ['rsi', 'macd', 'bbands']
-		if strategy is not None and strategy in strategies:
-			strategies = [strategy]
 		frames = []
+		instance = scanner('all') if intraday else historicaldata()
 		for stock in stocks:
-			df_summary_dict = {'Symbol':['?'], 'MACD-PnL':[np.nan], 'RSI-PnL':[np.nan], 'BBANDS-PnL':[np.nan], 'Recommendation':['?']}
+			df_summary_dict = {'Symbol':['?'], 'RSI-PnL':[np.nan],'MACD-PnL':[np.nan], 'BBANDS-PnL':[np.nan], 'Reco-RSI':[np.nan], 'Reco-MACD':[np.nan], 'Reco-BBANDS':[np.nan]}
 			df_summary = pd.DataFrame(df_summary_dict)
-			for s in strategies:
+			for strategy in strategies:
 				try:
-					if intraday:
-						summary = self.test_intraday_trading_strategy(stock, s, lower, upper, backtest_lib=False)
-					else:
-						summary = self.test_historical_trading_strategy(stock, sd, ed, s, lower, upper, backtest_lib=False)
+					df = instance.ohlc_intraday_history(stock) if intraday else instance.daily_ohlc_history(stock, sd, ed, type=ResponseType.History)
+					summary = self.test_signals(df, lower, upper, strategy, plot=False, show_detail=False)
 					if summary is not None and len(summary) > 0:
 						df_summary['Symbol'].iloc[0] = stock
-						df_summary['{}-PnL'.format(s.upper())].iloc[0] = summary['PnL'].iloc[0]
-						df_summary['Recommendation'].iloc[0] = summary['Recommendation'].iloc[0]
+						df_summary['{}-PnL'.format(strategy.upper())].iloc[0] = summary['PnL'].iloc[0]
+						df_summary['Reco-{}'.format(strategy.upper())].iloc[0] = summary['Recommendation'].iloc[0]
 				except Exception as e:
 					default_logger().debug(e, exc_info=True)
-					click.secho('Failed to test trading strategy for symbol: {}.'.format(stock), fg='red', nl=True)
+					default_logger().debug('Failed to test trading strategy for symbol: {}.'.format(stock))
 					continue
 			if df_summary is not None and len(df_summary) > 0:
 				frames.append(df_summary)
@@ -113,11 +115,65 @@ class strategyManager:
 		del(kwargs['frame'])
 		del(kwargs['self'])
 		del(kwargs['symbol'])
-		kwargs['callbackInstance'] = self
-		kwargs['stocks'] = stocks
+		del(kwargs['symbols'])
+		del(kwargs['scn'])
+		kwargs1=dict(kwargs)
+		kwargs1['stocks'] = stocks
+		kwargs1['terminate_after_iter'] = 1
+		wait_time = 10
+		kwargs1['wait_time'] = wait_time
+		b = threading.Thread(name='download_background', target=self.download_background, args=[kwargs1], daemon=True)
+		b.start()
+		kwargs['callbackMethod'] = self.scan_trading_strategy_segmented
+		kwargs['items'] = stocks
+		kwargs['max_per_thread'] = CONCURRENT_STOCK_COUNT
+		
 		list_returned = multithreaded_scan(**kwargs)
-		full_summary = list_returned.pop(0)
-		return full_summary
+		summary = list_returned.pop(0)
+		summary = summary.groupby('Symbol').first()
+		summary.reset_index(inplace=True)
+		return summary
+
+	@tracelog
+	def scan_trading_strategy_segmented(self, **args):
+		frame = inspect.currentframe()
+		gargs, _, _, kwargs_main = inspect.getargvalues(frame)
+		del(kwargs_main['frame'])
+		del(kwargs_main['self'])
+		kwargs = kwargs_main['args']
+		strategy = kwargs['strategy']
+		if strategy is not None and len(strategy) > 0:
+			strategies = [x.strip() for x in strategy.split(',')]
+		else:
+			strategies = ['rsi', 'macd', 'bbands']
+		del(kwargs['strategy'])
+		kwargs['stocks'] = kwargs['items']
+		kwargs['callbackMethod'] = self.multithreadedScanner_callback
+		kwargs['items'] = strategies
+		kwargs['max_per_thread'] = CONCURRENT_STRATEGY_COUNT
+		list_returned = multithreaded_scan(**kwargs)
+		summary = list_returned.pop(0)
+		return [summary, None]
+
+	@tracelog
+	def download_stock_data(self, **kwargs):
+		start = kwargs['start']
+		end = kwargs['end']
+		intraday = kwargs['intraday']
+		stocks = kwargs['items']
+		if start is not None:
+			sd = datetime.strptime(start, "%Y-%m-%d").date()
+		if end is not None:
+			ed = datetime.strptime(end, "%Y-%m-%d").date()
+		instance = scanner('all') if intraday else historicaldata()
+		for stock in stocks:
+			try:
+				summary = instance.ohlc_intraday_history(stock) if intraday else instance.daily_ohlc_history(stock, sd, ed, type=ResponseType.History)
+			except Exception as e:
+				default_logger().debug(e, exc_info=True)
+				default_logger().debug('Failed to download data for symbol: {}.'.format(stock))
+				continue
+		return [None, None]
 
 	def test_historical_trading_strategy(self, symbol, sd, ed, strategy, lower, upper, plot=False, backtest_lib=True):
 		df = self.get_historical_dataframe(symbol, sd, ed)
@@ -169,12 +225,14 @@ class strategyManager:
 		tiinstance = ti()
 		df = tiinstance.update_ti(df)
 		df = df.sort_values(by='Date',ascending=True)
+		symbol = df['Symbol'].iloc[0]
 		results = None
 		summary = None
+		sys.stdout.write('\rTesting {} trading strategy for {}'.format(strategy,symbol))
 		if strategy.lower() == 'rsi':
 			df_rsi_dict = {'Symbol':df['Symbol'], 'Date':df['Date'], 'RSI':df['RSI'], 'Close':df['Close']}
 			df_rsi = pd.DataFrame(df_rsi_dict)
-			rsisignal = rsiSignalStrategy(strict=True, intraday=False)
+			rsisignal = rsiSignalStrategy(strict=True, intraday=False, requires_ledger=show_detail)
 			rsisignal.set_limits(lower, upper)
 			results, summary = rsisignal.test_strategy(df_rsi)
 			if plot:
@@ -182,13 +240,14 @@ class strategyManager:
 		elif strategy.lower() == 'bbands':
 			df_bbands_dict = {'Symbol':df['Symbol'], 'Date':df['Date'], 'BBands-U':df['BBands-U'], 'BBands-M':df['BBands-M'], 'BBands-L':df['BBands-L'], 'Close':df['Close']}
 			df_bbands = pd.DataFrame(df_bbands_dict)
-			bbandsSignal = bbandsSignalStrategy(strict=False, intraday=False)
+			bbandsSignal = bbandsSignalStrategy(strict=False, intraday=False, requires_ledger=show_detail)
 			results, summary = bbandsSignal.test_strategy(df_bbands)
 		elif strategy.lower() == 'macd':
 			df_macd_dict = {'Symbol':df['Symbol'], 'Date':df['Date'], 'macd(12)':df['macd(12)'], 'macdsignal(9)':df['macdsignal(9)'], 'macdhist(26)':df['macdhist(26)'], 'Close':df['Close']}
 			df_macd = pd.DataFrame(df_macd_dict)
-			macdSignal = macdSignalStrategy(strict=False, intraday=False)
+			macdSignal = macdSignalStrategy(strict=False, intraday=False, requires_ledger=show_detail)
 			results, summary = macdSignal.test_strategy(df_macd)
+		sys.stdout.write('\rFinished testing {} trading strategy for {}'.format(strategy,symbol))
 		if results is not None and show_detail:
 			print("\n{}\n".format(results.to_string(index=False)))
 		if summary is not None and show_detail:
@@ -205,3 +264,31 @@ class strategyManager:
 	def reset_date_index(self, df):
 		df.set_index('dt', inplace=True)
 		return df
+
+	@tracelog
+	def download_background(self, args):
+		run_background = True
+		iteration = 0
+		default_logger().debug(args)
+		frame = inspect.currentframe()
+		args, _, _, main_args = inspect.getargvalues(frame)
+		default_logger().debug(main_args)
+		kwargs = main_args['args']
+		default_logger().debug(kwargs)
+		terminate_after_iter = kwargs['terminate_after_iter']
+		wait_time = kwargs['wait_time']
+		stocks = kwargs['stocks']
+		del(kwargs['stocks'])
+		del(kwargs['terminate_after_iter'])
+		del(kwargs['wait_time'])
+		while run_background:
+			iteration = iteration + 1
+			kwargs['callbackMethod'] = self.download_stock_data
+			kwargs['items'] = stocks
+			kwargs['max_per_thread'] = CONCURRENT_STOCK_COUNT
+			multithreaded_scan(**kwargs)
+			if terminate_after_iter > 0 and iteration >= terminate_after_iter:
+				run_background = False
+				break
+		default_logger().debug('Finished downloading for all stocks.')
+		return iteration

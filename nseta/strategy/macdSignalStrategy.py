@@ -9,8 +9,8 @@ from nseta.strategy.basesignalstrategy import basesignalstrategy
 __all__ = ['macdSignalStrategy']
 
 class macdSignalStrategy(basesignalstrategy):
-	def __init__(self, strict=False, intraday=False):
-		super().__init__()
+	def __init__(self, strict=False, intraday=False, requires_ledger=False):
+		super().__init__(requires_ledger=requires_ledger)
 		# Cross over above zero line for buy or below zero line for sell
 		self._strict = strict
 		self._prc = 0
@@ -127,6 +127,8 @@ class macdSignalStrategy(basesignalstrategy):
 
 	@tracelog
 	def update_ledger(self, signal):
+		if not self.requires_ledger:
+			return
 		(self.ledger['DateTime']).append(self.timestamp)
 		(self.ledger['Signal']).append(signal)
 		(self.ledger['Price']).append(str(self.price))

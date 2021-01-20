@@ -9,7 +9,7 @@ from inspect import getcallargs, getfullargspec
 from collections import OrderedDict, Iterable
 from itertools import *
 
-__all__ = ['setup_custom_logger', 'default_logger', 'log_to', 'tracelog', 'suppress_stdout_stderr']
+__all__ = ['setup_custom_logger', 'default_logger', 'log_to', 'tracelog', 'suppress_stdout_stderr','timeit']
 __trace__ = False
 def setup_custom_logger(name, levelname=logging.DEBUG, trace=False, log_file_path='logs.log'):
 	trace_formatter = logging.Formatter(fmt='%(asctime)s - %(name)s - %(levelname)s - %(filename)s - %(module)s - %(funcName)s - %(lineno)d\n%(message)s\n')
@@ -105,6 +105,20 @@ def log_to(logger_func):
 	return decorator
 
 tracelog = log_to(trace_log)
+
+def timeit(method):
+    def timed(*args, **kw):
+        ts = time.time()
+        result = method(*args, **kw)
+        te = time.time()
+        if 'log_time' in kw:
+            name = kw.get('log_name', method.__name__.upper())
+            kw['log_time'][name] = int((te - ts) * 1000)
+        else:
+            print ('%r  %2.2f ms' % \
+                  (method.__name__, (te - ts) * 1000))
+        return result
+    return timed
 
 class suppress_stdout_stderr(object):
 	'''

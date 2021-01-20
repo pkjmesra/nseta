@@ -8,17 +8,17 @@ def multithreaded_scan(**args):
 	args, _, _, kwargs_main = inspect.getargvalues(frame)
 	del(kwargs_main['frame'])
 	kwargs = kwargs_main['args']
-	stocks_segment = kwargs['stocks']
-	stocks = stocks_segment
-	n = 3 # Max number of stocks to be processed at a time by a thread
-	if len(stocks_segment) > n:
+	items_segment = kwargs['items']
+	# Max number of items to be processed at a time by a thread
+	n = kwargs['max_per_thread']
+	if len(items_segment) > n:
 		kwargs1 = dict(kwargs)
 		kwargs2 = dict(kwargs)
-		first_n = stocks[:n]
-		remaining_stocks = stocks[n:]
-		# n_segmented_stocks = [stocks_segment[i * n:(i + 1) * n] for i in range((len(stocks_segment) + n - 1) // n )]
-		kwargs1['stocks'] = first_n
-		kwargs2['stocks'] = remaining_stocks
+		first_n = items_segment[:n]
+		remaining_items = items_segment[n:]
+		# n_segmented_items = [items_segment[i * n:(i + 1) * n] for i in range((len(items_segment) + n - 1) // n )]
+		kwargs1['items'] = first_n
+		kwargs2['items'] = remaining_items
 		t1 = ThreadReturns(target=multithreaded_scan, kwargs=kwargs1)
 		t2 = ThreadReturns(target=multithreaded_scan, kwargs=kwargs2)
 		t1.start()
@@ -35,6 +35,6 @@ def multithreaded_scan(**args):
 		signaldf = concatenated_dataframe(signaldf1, signaldf2)
 		return [df, signaldf]
 	else:
-		callbackInstance = kwargs['callbackInstance']
-		del(kwargs['callbackInstance'])
-		return callbackInstance.multithreadedScanner_callback(**kwargs)
+		callbackMethod = kwargs['callbackMethod']
+		del(kwargs['callbackMethod'])
+		return callbackMethod(**kwargs)

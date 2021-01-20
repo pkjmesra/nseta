@@ -111,7 +111,7 @@ class simulatedorder:
 			self.holdings_size = 0
 			money_made = 0 - self.order_size * (self.stock_price * (1 - self.commission))
 			self.funds = self.funds + money_made * self.margin
-		
+	
 	def sell(self, price):
 		self.stock_price = price
 		if self.holdings_size > 0:

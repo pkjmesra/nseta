@@ -80,7 +80,7 @@ def scan_trading_strategy(symbol, start, end, strategy, upper, lower, clear, ord
 		if full_summary is not None and len(full_summary) > 0:
 			full_summary= full_summary.dropna()
 			if orderby == 'recommendation':
-				full_summary = full_summary.sort_values(by='Recommendation',ascending=True)
+				full_summary = full_summary.sort_values(by='Reco-RSI',ascending=True)
 			print("\n{}\n".format(full_summary.to_string(index=False)))
 	except Exception as e:
 		default_logger().debug(e, exc_info=True)
