@@ -156,14 +156,15 @@ class archiver:
 		return df
 
 	@tracelog
-	def clear_all(self, deep_clean=True):
-		self.remove_cached_file(self.run_directory, force_clear=deep_clean, prefix= None if deep_clean else 'DF_')
-		self.remove_cached_file(self.run_directory, force_clear=deep_clean, prefix= None if deep_clean else 'SIGNALDF_')
+	def clear_all(self, deep_clean=True,response_type=ResponseType.Default):
+		directory = self.get_directory(response_type)
+		self.remove_cached_file(directory, force_clear=deep_clean, prefix= None if deep_clean else 'DF_')
+		self.remove_cached_file(directory, force_clear=deep_clean, prefix= None if deep_clean else 'SIGNALDF_')
 		self.remove_cached_file(self.logs_directory, force_clear=True)
 
 	@tracelog
 	def clearcache(self, symbol=None, response_type=ResponseType.Default, force_clear=False):
-		self.clear_all(deep_clean=False)
+		self.clear_all(deep_clean=False, response_type=response_type)
 		try:
 			if symbol is not None:
 				file_path = self.get_path(symbol, response_type)
