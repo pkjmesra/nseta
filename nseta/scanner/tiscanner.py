@@ -12,6 +12,10 @@ from nseta.common.commons import *
 from nseta.common.multithreadedScanner import multithreaded_scan
 from nseta.archives.archiver import *
 from nseta.common.history import historicaldata
+from nseta.strategy.rsiSignalStrategy import rsiSignalStrategy
+from nseta.strategy.bbandsSignalStrategy import bbandsSignalStrategy
+from nseta.strategy.macdSignalStrategy import macdSignalStrategy
+from nseta.common.commons import Recommendation
 from nseta.common.log import tracelog, default_logger
 from nseta.common.ti import ti
 from nseta.live.live import get_live_quote
@@ -234,6 +238,7 @@ class scanner:
 		df = None
 		signaldf = None
 		tiinstance = ti()
+		tailed_df = None
 		for symbol in stocks:
 			try:
 				sys.stdout.write("\rFetching for {}".ljust(25).format(symbol))
@@ -241,7 +246,6 @@ class scanner:
 				df = self.ohlc_intraday_history(symbol)
 				if df is not None and len(df) > 0:
 					df = tiinstance.update_ti(df)
-					df = df.tail(1)
 					for key in df.keys():
 						if not key in INTRADAY_KEYS_MAPPING.keys():
 							df.drop([key], axis = 1, inplace = True)
@@ -251,18 +255,19 @@ class scanner:
 								if searchkey not in df.keys():
 									df[searchkey] = df[key]
 								df.drop([key], axis = 1, inplace = True)
-					frames.append(df)
-					signalframes = self.update_signals(signalframes, df)
+					tailed_df = df.tail(1)
+					frames.append(tailed_df)
+					signalframes = self.update_signals(signalframes, tailed_df, df)
 			except Exception as e:
 				default_logger().debug("Exception encountered for " + symbol)
 				default_logger().debug(e, exc_info=True)
 			except SystemExit:
 				sys.exit(1)
 		if len(frames) > 0:
-			df = pd.concat(frames)
+			tailed_df = pd.concat(frames)
 		if len(signalframes) > 0:
 			signaldf = pd.concat(signalframes)
-		return [df, signaldf]
+		return [tailed_df, signaldf]
 
 	@tracelog
 	def scan_swing_quanta(self, **kwargs):
@@ -273,6 +278,7 @@ class scanner:
 		signaldf = None
 		tiinstance = ti()
 		historyinstance = historicaldata()
+		tailed_df = None
 		# Time frame you want to pull data from
 		start_date = datetime.datetime.now()-datetime.timedelta(days=SWING_PERIOD)
 		end_date = datetime.datetime.now()
@@ -284,7 +290,6 @@ class scanner:
 				if df is not None and len(df) > 0:
 					df = tiinstance.update_ti(df)
 					df = df.sort_values(by='Date',ascending=True)
-					df = df.tail(1)
 					default_logger().debug(df.to_string(index=False))
 					for key in df.keys():
 						# Symbol Series       Date  Prev Close     Open     High      Low     Last    Close     VWAP    Volume      Turnover  Trades  Deliverable Volume  %Deliverable
@@ -295,19 +300,20 @@ class scanner:
 							if key != searchkey:
 								df[searchkey] = df[key]
 								df.drop([key], axis = 1, inplace = True)
-					default_logger().debug(df.to_string(index=False))
-					frames.append(df)
-					signalframes = self.update_signals(signalframes, df)
+					tailed_df = df.tail(1)
+					default_logger().debug(tailed_df.to_string(index=False))
+					frames.append(tailed_df)
+					signalframes = self.update_signals(signalframes, tailed_df, df)
 			except Exception as e:
 				default_logger().debug("Exception encountered for " + symbol)
 				default_logger().debug(e, exc_info=True)
 			except SystemExit:
 				sys.exit(1)
 		if len(frames) > 0:
-			df = pd.concat(frames)
+			tailed_df = pd.concat(frames)
 		if len(signalframes) > 0:
 			signaldf = pd.concat(signalframes)
-		return [df, signaldf]
+		return [tailed_df, signaldf]
 
 	@tracelog
 	def scan_volume_quanta(self, **kwargs):
@@ -398,7 +404,7 @@ class scanner:
 		return df
 
 	@tracelog
-	def update_signals(self, signalframes, df):
+	def update_signals(self, signalframes, df, full_df=None):
 		if (df is None) or (len(df) < 1) or (not 'RSI' in df.keys() and not 'EMA(9)' in df.keys()):
 			return signalframes
 		try:
@@ -407,19 +413,22 @@ class scanner:
 			df['Confidence'] = 'NA'
 			decimals = 2
 			ltp = df['LTP'].iloc[0]
-			signalframes = self.update_signal_indicator(df, signalframes, 'bbands', 'BBands-L', 0.05, ltp, '<=', 'BUY', '[LTP < BBands-L]', 'BUY', '[LTP ~ BBands-L]')
-			signalframes = self.update_signal_indicator(df, signalframes, 'bbands', 'BBands-U', 0.05, ltp, '<=', 'SELL', '[LTP ~ BBands-U]', 'SELL', '[LTP > BBands-U]')
-			signalframes = self.update_signal_indicator(df, signalframes, 'rsi', 'RSI', 25, 75, '><', 'SELL', '[RSI >= 75]', 'BUY', '[RSI <= 25]')
+			bbands_reco = self.get_quick_recommendation(full_df, 'bbands')
+			signalframes = self.update_signal_indicator(df, signalframes, 'bbands', 'BBands-L', 0.05, ltp, '<=', 'BUY', '[LTP < BBands-L].{}'.format(bbands_reco), 'BUY', '[LTP ~ BBands-L].{}'.format(bbands_reco))
+			signalframes = self.update_signal_indicator(df, signalframes, 'bbands', 'BBands-U', 0.05, ltp, '<=', 'SELL', '[LTP ~ BBands-U].{}'.format(bbands_reco), 'SELL', '[LTP > BBands-U].{}'.format(bbands_reco))
+			rsi_reco = self.get_quick_recommendation(full_df, 'rsi')
+			signalframes = self.update_signal_indicator(df, signalframes, 'rsi', 'RSI', 25, 75, '><', 'SELL', '[RSI >= 75].{}'.format(rsi_reco), 'BUY', '[RSI <= 25].{}'.format(rsi_reco))
 			signalframes = self.update_signal_indicator(df, signalframes, 'emac', 'EMA(9)', 0.1, ltp, '>=', 'BUY', '[LTP > EMA(9)]', 'SELL', '[LTP < EMA(9)]')
 			macd12 = df['macd(12)'].iloc[0]
-			signalframes = self.update_signal_indicator(df, signalframes, 'macd', 'macdsignal(9)', 0.05, macd12, '>=', 'BUY', '[MACD > EMA]', 'SELL', '[MACD < EMA]')
+			macd_reco = self.get_quick_recommendation(full_df, 'macd')
+			signalframes = self.update_signal_indicator(df, signalframes, 'macd', 'macdsignal(9)', 0.05, macd12, '>=', 'BUY', '[MACD > EMA].{}'.format(macd_reco), 'SELL', '[MACD < EMA].{}'.format(macd_reco))
 			if self.indicator == 'macd' or self.indicator == 'all':
 				df['macd(12)'] = df['macd(12)'].apply(lambda x: round(x, decimals))
 				df['macdhist(26)'] = df['macdhist(26)'].apply(lambda x: round(x, decimals))
 			self.trim_columns(df)
 		except Exception as e:
 			default_logger().debug(e, exc_info=True)
-			return
+			return signalframes
 		return signalframes
 
 	def update_signal_indicator(self, df, signalframes, indicator, column, margin, comparator_value, ltp_label_comparator, true_type, true_remarks, false_type, false_remarks):
@@ -434,7 +443,7 @@ class scanner:
 					default_logger().debug(df.to_string(index=False))
 					signalframes.append(df)
 			else:
-				if (value is not None) and abs(value-comparator_value) <= margin:
+				if (value is not None) and (abs(value-comparator_value) >= margin) and (abs(value-comparator_value) <= 2*margin):
 					if ltp_label_comparator == '<=':
 						df['Remarks'].iloc[0] = true_remarks if comparator_value - value <=0 else false_remarks
 						df['Signal'].iloc[0] = true_type if comparator_value - value <=0 else false_type
@@ -446,6 +455,38 @@ class scanner:
 					signalframes.append(df)
 			df[column] = df[column].apply(lambda x: round(x, decimals))
 		return signalframes
+
+	def get_quick_recommendation(self, df, indicator):
+		if indicator not in ['rsi', 'bbands', 'macd']:
+			return 'Unknown'
+		sm = None
+		tiny_df = None
+		limited_df = df.tail(7)
+		if indicator == 'macd':
+			tiny_df = pd.DataFrame({'Symbol':limited_df['Symbol'],'Date':limited_df['Date'],'macd(12)':limited_df['macd(12)'],'Close':limited_df['LTP']})
+			sm = macdSignalStrategy(strict=True, intraday=False, requires_ledger=False)
+		elif indicator == 'rsi':
+			tiny_df = pd.DataFrame({'Symbol':limited_df['Symbol'],'Date':limited_df['Date'],'RSI':limited_df['RSI'],'Close':limited_df['LTP']})
+			sm = rsiSignalStrategy(strict=True, intraday=False, requires_ledger=False)
+			sm.set_limits(25, 75)
+		elif indicator == 'bbands':
+			tiny_df = pd.DataFrame({'Symbol':limited_df['Symbol'],'Date':limited_df['Date'],'BBands-L':limited_df['BBands-L'], 'BBands-U':limited_df['BBands-U'], 'Close':limited_df['LTP']})
+			sm = bbandsSignalStrategy(strict=True, intraday=False, requires_ledger=False)
+
+		results, summary = sm.test_strategy(tiny_df)
+		if summary is None and len(summary) > 0:
+			last_row = summary.tail(1)
+			reco = last_row['Recommendation'].iloc[0]
+			if reco == Recommendation.Buy:
+				return 'Buy'
+			elif reco == Recommendation.Sell:
+				return 'Sell'
+			elif reco == Recommendation.Hold:
+				return 'Hold'
+			else:
+				return 'Unknown'
+		else:
+			return 'Unknown'
 
 	def update_confidence_level(self, df):
 		rsi = round(df['RSI'].iloc[0],2)

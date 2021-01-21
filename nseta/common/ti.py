@@ -42,7 +42,7 @@ class ti:
 		return df['DMI']
 
 	def get_macd_df(self, df):
-		df['macd'], df['macdsignal'], df['macdhist'] = ta.MACDEXT(df['Close'], fastperiod=12, fastmatype=0, slowperiod=26, slowmatype=0, signalperiod=9, signalmatype=0)
+		df['macd'], df['macdsignal'], df['macdhist'] = ta.MACD(df['Close'], fastperiod=12, slowperiod=26, signalperiod=9)
 		return df[['macd','macdsignal', 'macdhist']]
 
 	def get_sma_df(self, df):
