@@ -171,7 +171,6 @@ class basesignalstrategy:
 		n1gtn2 = True if self.n1 > self.n2 else False
 		n2ltn3 = True if self.n2 < self.n3 else False
 		n1ltn2 = True if self.n1 < self.n2 else False
-		n2ltn3 = True if self.n2 < self.n3 else False
 		n2gtn3 = True if self.n2 > self.n3 else False
 		n3ltn2 = True if self.n3 < self.n2 else False
 		prev_pattern = self.pattern

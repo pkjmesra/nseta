@@ -1,6 +1,5 @@
 import inspect
 import numpy as np
-import os.path
 import pandas as pd
 import talib as ta
 import datetime
@@ -12,6 +11,7 @@ from nseta.common.commons import *
 from nseta.common.multithreadedScanner import multithreaded_scan
 from nseta.archives.archiver import *
 from nseta.common.history import historicaldata
+from nseta.resources.resources import resources
 from nseta.strategy.rsiSignalStrategy import rsiSignalStrategy
 from nseta.strategy.bbandsSignalStrategy import bbandsSignalStrategy
 from nseta.strategy.macdSignalStrategy import macdSignalStrategy
@@ -74,15 +74,10 @@ class scanner:
 		self._indicator = indicator
 		self._stocksdict = {}
 		self._keys = ['symbol','previousClose', 'lastPrice', 'deliveryToTradedQuantity', 'BuySellDiffQty', 'totalTradedVolume', 'pChange']
-		self._scanner_dir = os.path.dirname(os.path.realpath(__file__))
 
 	@property
 	def keys(self):
 		return self._keys
-
-	@property
-	def scanner_directory(self):
-		return self._scanner_dir
 
 	@property
 	def indicator(self):
@@ -110,12 +105,8 @@ class scanner:
 	
 	@tracelog
 	def stocks_list(self, stocks=[]):
-		file_path = "stocks.txt"
-		if not os.path.exists(file_path):
-			file_path = os.path.join(self.scanner_directory, file_path)
 		# If stocks array is empty, pull stock list from stocks.txt file
-		stocks = stocks if stocks is not None and len(stocks) > 0 else [
-			line.rstrip() for line in open(file_path, "r")]
+		stocks = stocks if stocks is not None and len(stocks) > 0 else resources.default_stocks()
 		return stocks
 
 	@tracelog

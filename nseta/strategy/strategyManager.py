@@ -3,7 +3,7 @@ import pandas as pd
 import numpy as np
 import sys
 from datetime import datetime
-import threading, time
+import threading
 
 from nseta.strategy.strategy import *
 from nseta.strategy.rsiSignalStrategy import *
@@ -168,7 +168,7 @@ class strategyManager:
 		instance = scanner('all') if intraday else historicaldata()
 		for stock in stocks:
 			try:
-				summary = instance.ohlc_intraday_history(stock) if intraday else instance.daily_ohlc_history(stock, sd, ed, type=ResponseType.History)
+				instance.ohlc_intraday_history(stock) if intraday else instance.daily_ohlc_history(stock, sd, ed, type=ResponseType.History)
 			except Exception as e:
 				default_logger().debug(e, exc_info=True)
 				default_logger().debug('Failed to download data for symbol: {}.'.format(stock))
@@ -267,7 +267,6 @@ class strategyManager:
 
 	@tracelog
 	def download_background(self, args):
-		run_background = True
 		iteration = 0
 		default_logger().debug(args)
 		frame = inspect.currentframe()
@@ -276,19 +275,17 @@ class strategyManager:
 		kwargs = main_args['args']
 		default_logger().debug(kwargs)
 		terminate_after_iter = kwargs['terminate_after_iter']
-		wait_time = kwargs['wait_time']
 		stocks = kwargs['stocks']
 		del(kwargs['stocks'])
 		del(kwargs['terminate_after_iter'])
 		del(kwargs['wait_time'])
-		while run_background:
+		while True:
 			iteration = iteration + 1
 			kwargs['callbackMethod'] = self.download_stock_data
 			kwargs['items'] = stocks
 			kwargs['max_per_thread'] = CONCURRENT_STOCK_COUNT
 			multithreaded_scan(**kwargs)
 			if terminate_after_iter > 0 and iteration >= terminate_after_iter:
-				run_background = False
 				break
 		default_logger().debug('Finished downloading for all stocks.')
 		return iteration
