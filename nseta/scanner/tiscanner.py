@@ -4,7 +4,7 @@ import pandas as pd
 import talib as ta
 import datetime
 import sys
-
+import threading
 from time import time
 
 from nseta.common.commons import *
@@ -22,6 +22,7 @@ from nseta.live.live import get_live_quote
 from nseta.common.tradingtime import *
 
 __all__ = ['KEY_MAPPING', 'scanner', 'TECH_INDICATOR_KEYS']
+global __scan_counter__
 
 TYPE_LIVE = 'live'
 TYPE_INTRADAY = 'intraday'
@@ -80,6 +81,10 @@ class scanner:
 		return self._keys
 
 	@property
+	def total_counter(self):
+		return self._total_counter
+
+	@property
 	def indicator(self):
 		return self._indicator
 
@@ -105,8 +110,11 @@ class scanner:
 	
 	@tracelog
 	def stocks_list(self, stocks=[]):
+		global __scan_counter__
+		__scan_counter__ = 0
 		# If stocks array is empty, pull stock list from stocks.txt file
 		stocks = stocks if stocks is not None and len(stocks) > 0 else resources.default_stocks()
+		self._total_counter = len(stocks)
 		return stocks
 
 	@tracelog
@@ -124,6 +132,8 @@ class scanner:
 		list_returned = multithreaded_scan(**kwargs)
 		end_time = time()
 		time_spent = end_time-start_time
+		sys.stdout.write("\rDone.".ljust(120))
+		sys.stdout.flush()
 		print("\nThis run of live scan took {:.1f} sec".format(time_spent))
 		return list_returned.pop(0), list_returned.pop(0)
 
@@ -142,6 +152,8 @@ class scanner:
 		list_returned = multithreaded_scan(**kwargs)
 		end_time = time()
 		time_spent = end_time-start_time
+		sys.stdout.write("\rDone.".ljust(120))
+		sys.stdout.flush()
 		print("\nThis run of intraday scan took {:.1f} sec".format(time_spent))
 		return list_returned.pop(0), list_returned.pop(0)
 
@@ -160,6 +172,8 @@ class scanner:
 		list_returned = multithreaded_scan(**kwargs)
 		end_time = time()
 		time_spent = end_time-start_time
+		sys.stdout.write("\rDone.".ljust(120))
+		sys.stdout.flush()
 		print("\nThis run of swing scan took {:.1f} sec".format(time_spent))
 		return list_returned.pop(0), list_returned.pop(0)
 
@@ -178,6 +192,8 @@ class scanner:
 		list_returned = multithreaded_scan(**kwargs)
 		end_time = time()
 		time_spent = end_time-start_time
+		sys.stdout.write("\rDone.".ljust(120))
+		sys.stdout.flush()
 		print("\nThis run of volume scan took {:.1f} sec".format(time_spent))
 		return list_returned.pop(0), list_returned.pop(0)
 
@@ -190,7 +206,10 @@ class scanner:
 		signaldf = None
 		for stock in stocks:
 			try:
-				sys.stdout.write("\rFetching for {}".ljust(25).format(stock))
+				global __scan_counter__
+				with threading.Lock():
+					__scan_counter__ += 1
+				sys.stdout.write("\r{}/{}. Fetching for {}".ljust(120).format(__scan_counter__, self.total_counter, stock))
 				sys.stdout.flush()
 				result, primary = get_live_quote(stock, keys = self.keys)
 				if primary is not None and len(primary) > 0:
@@ -232,7 +251,10 @@ class scanner:
 		tailed_df = None
 		for symbol in stocks:
 			try:
-				sys.stdout.write("\rFetching for {}".ljust(25).format(symbol))
+				global __scan_counter__
+				with threading.Lock():
+					__scan_counter__ += 1
+				sys.stdout.write("\r{}/{}. Fetching for {}".ljust(120).format(__scan_counter__, self.total_counter, symbol))
 				sys.stdout.flush()
 				df = self.ohlc_intraday_history(symbol)
 				if df is not None and len(df) > 0:
@@ -275,7 +297,10 @@ class scanner:
 		end_date = datetime.datetime.now()
 		for symbol in stocks:
 			try:
-				sys.stdout.write("\rFetching for {}".ljust(25).format(symbol))
+				global __scan_counter__
+				with threading.Lock():
+					__scan_counter__ += 1
+				sys.stdout.write("\r{}/{}. Fetching for {}".ljust(120).format(__scan_counter__, self.total_counter, symbol))
 				sys.stdout.flush()
 				df = historyinstance.daily_ohlc_history(symbol, start_date, end_date, type=ResponseType.History)
 				if df is not None and len(df) > 0:
@@ -323,7 +348,10 @@ class scanner:
 			primary = None
 			df = None
 			try:
-				sys.stdout.write("\rFetching for {}".ljust(25).format(symbol))
+				global __scan_counter__
+				with threading.Lock():
+					__scan_counter__ += 1
+				sys.stdout.write("\r{}/{}. Fetching for {}".ljust(120).format(__scan_counter__, self.total_counter, symbol))
 				sys.stdout.flush()
 				df = historyinstance.daily_ohlc_history(symbol, start_date, end_date, type=ResponseType.Volume)
 				if df is not None and len(df) > 0:
@@ -422,29 +450,32 @@ class scanner:
 			return signalframes
 		return signalframes
 
+	@tracelog
 	def update_signal_indicator(self, df, signalframes, indicator, column, margin, comparator_value, ltp_label_comparator, true_type, true_remarks, false_type, false_remarks):
+		deep_df = df.copy(deep=True)
 		if self.indicator == indicator or self.indicator == 'all':
 			decimals = 2
-			value = round(df[column].iloc[0],2)
+			value = round(deep_df[column].iloc[0],2)
 			if ltp_label_comparator == '><':
 				if (value is not None) and (value > comparator_value or value < margin):
-					df['Remarks'].iloc[0] = true_remarks if value > comparator_value else false_remarks
-					df['Signal'].iloc[0] = true_type if value > comparator_value else false_type
-					df= self.update_confidence_level(df)
-					default_logger().debug(df.to_string(index=False))
-					signalframes.append(df)
+					deep_df['Remarks'].iloc[0] = true_remarks if value > comparator_value else false_remarks
+					deep_df['Signal'].iloc[0] = true_type if value > comparator_value else false_type
+					deep_df = self.update_confidence_level(deep_df)
+					default_logger().debug(deep_df.to_string(index=False))
+					signalframes.append(deep_df)
 			else:
 				if (value is not None) and (abs(value-comparator_value) >= margin):
 					if ltp_label_comparator == '<=':
-						df['Remarks'].iloc[0] = true_remarks if comparator_value - value <=0 else false_remarks
-						df['Signal'].iloc[0] = true_type if comparator_value - value <=0 else false_type
+						deep_df['Remarks'].iloc[0] = true_remarks if comparator_value - value <=0 else false_remarks
+						deep_df['Signal'].iloc[0] = true_type if comparator_value - value <=0 else false_type
 					elif ltp_label_comparator == '>=':
-						df['Remarks'].iloc[0] = true_remarks if comparator_value - value >=0 else false_remarks
-						df['Signal'].iloc[0] = true_type if comparator_value - value >=0 else false_type
-					df = self.update_confidence_level(df)
-					default_logger().debug(df.to_string(index=False))
-					signalframes.append(df)
+						deep_df['Remarks'].iloc[0] = true_remarks if comparator_value - value >=0 else false_remarks
+						deep_df['Signal'].iloc[0] = true_type if comparator_value - value >=0 else false_type
+					deep_df = self.update_confidence_level(deep_df)
+					default_logger().debug(deep_df.to_string(index=False))
+					signalframes.append(deep_df)
 			df[column] = df[column].apply(lambda x: round(x, decimals))
+			deep_df[column] = deep_df[column].apply(lambda x: round(x, decimals))
 		return signalframes
 
 	def get_quick_recommendation(self, df, indicator):
@@ -465,14 +496,15 @@ class scanner:
 			sm = bbandsSignalStrategy(strict=True, intraday=False, requires_ledger=False)
 
 		results, summary = sm.test_strategy(tiny_df)
-		if summary is None and len(summary) > 0:
+		default_logger().debug(summary.to_string(index=False))
+		if summary is not None and len(summary) > 0:
 			last_row = summary.tail(1)
 			reco = last_row['Recommendation'].iloc[0]
-			if reco == Recommendation.Buy:
+			if reco == str(Recommendation.Buy):
 				return 'Buy'
-			elif reco == Recommendation.Sell:
+			elif reco == str(Recommendation.Sell):
 				return 'Sell'
-			elif reco == Recommendation.Hold:
+			elif reco == str(Recommendation.Hold):
 				return 'Hold'
 			else:
 				return 'Unknown'

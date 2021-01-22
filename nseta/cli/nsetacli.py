@@ -18,7 +18,8 @@ __all__ = ['nsetacli']
 @click.option('--debug/--no-debug', default=False, help='--debug to turn debugging on. Default is off')
 @click.option('--version', is_flag=True, help='Shows the version of this library')
 @click.option('--trace/--no-trace', default=False, help='--trace to turn tracing on (works only with --debug). Default is off.')
-def nsetacli(debug, version, trace):
+@click.option('--filter','-f', default=None, help='--filter <TEXT> to show only logs that match the filter text. Works only with --debug')
+def nsetacli(debug, version, trace, filter):
 	signal.signal(signal.SIGINT, sigint_handler)
 	arch = archiver()
 	log_file_path = os.path.join(arch.logs_directory,'logs.log')
@@ -26,7 +27,7 @@ def nsetacli(debug, version, trace):
 		click.echo('Debug mode is %s' % ('on' if debug else 'off'))
 		if trace:
 			click.echo('Tracing mode is %s' % ('on' if trace else 'off'))
-		log.setup_custom_logger('nseta', logging.DEBUG, trace, log_file_path=log_file_path)
+		log.setup_custom_logger('nseta', logging.DEBUG, trace, log_file_path=log_file_path, filter=filter)
 	else:
 		log.setup_custom_logger('nseta', logging.INFO, log_file_path=log_file_path)
 	if version:

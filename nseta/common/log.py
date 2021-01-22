@@ -2,7 +2,7 @@ import logging
 import os
 # import sys
 import warnings
-# import pandas as pd
+import inspect
 
 from functools import wraps
 from inspect import getcallargs, getfullargspec
@@ -10,10 +10,65 @@ from collections import OrderedDict, Iterable
 from itertools import *
 
 __all__ = ['setup_custom_logger', 'default_logger', 'log_to', 'tracelog', 'suppress_stdout_stderr','timeit']
+global __trace__ 
 __trace__ = False
-def setup_custom_logger(name, levelname=logging.DEBUG, trace=False, log_file_path='logs.log'):
+global __filter__ 
+__filter__ = None
+global __DEBUG__
+__DEBUG__ = False
+
+class filterlogger:
+	def __init__(self, logger=None):
+		self._logger = logger
+
+	@property
+	def logger(self):
+		return self._logger
+
+	@property
+	def level(self):
+		return self.logger.level
+
+	@staticmethod
+	def getlogger(logger):
+		global __filter__
+		if __filter__ is not None:
+			return filterlogger(logger=logger)
+		else:
+			return logger
+
+	def debug(self, e, exc_info=False):
+		global __filter__
+		line = str(e)
+		global __DEBUG__
+		if __DEBUG__:
+			frame = inspect.stack()[1]
+			filename = (frame[0].f_code.co_filename).rsplit('/', 1)[1]
+			components = str(frame).split(',')
+			line = '{} - {} - {}\n{}'.format(filename, components[5],components[6] , line)
+			if __filter__ in line:
+				self.logger.debug(line, exc_info=exc_info)
+
+	def info(self, line):
+		global __filter__
+		if __filter__ in line:
+			self.logger.info(line)
+	
+	def warn(self, line):
+		global __filter__
+		if __filter__ in line:
+			self.logger.warn(line)
+
+	def error(self, line):
+		self.logger.error(line)
+	
+	def critical(self, line):
+		self.logger.critical(line)
+
+def setup_custom_logger(name, levelname=logging.DEBUG, trace=False, log_file_path='logs.log', filter=None):
 	trace_formatter = logging.Formatter(fmt='%(asctime)s - %(name)s - %(levelname)s - %(filename)s - %(module)s - %(funcName)s - %(lineno)d\n%(message)s\n')
 	console_info_formatter = logging.Formatter(fmt='%(levelname)s - %(filename)s(%(funcName)s - %(lineno)d)\n%(message)s\n')
+	global __trace__
 	__trace__ = trace
 
 	logger = logging.getLogger(name)
@@ -29,7 +84,11 @@ def setup_custom_logger(name, levelname=logging.DEBUG, trace=False, log_file_pat
 		filehandler.setFormatter(trace_formatter)
 		filehandler.setLevel(levelname)
 		logger.addHandler(filehandler)
-		logger.debug('Logging started')
+		global __filter__
+		__filter__ = filter
+		global __DEBUG__
+		__DEBUG__ = True
+		logger.debug('Logging started. Filter:{}'.format(__filter__))
 
 	if trace:
 		tracelogger = logging.getLogger('nseta_file_logger')
@@ -44,12 +103,13 @@ def setup_custom_logger(name, levelname=logging.DEBUG, trace=False, log_file_pat
 	return logger
 
 def default_logger():
-	return logging.getLogger('nseta')
+	return filterlogger.getlogger(logging.getLogger('nseta'))
 
 def file_logger():
-	return logging.getLogger('nseta_file_logger')
+	return filterlogger.getlogger(logging.getLogger('nseta_file_logger'))
 
 def trace_log(line):
+	global __trace__
 	if __trace__:
 		default_logger().info(line)
 	else:
@@ -94,10 +154,15 @@ def log_to(logger_func):
 		def decorator(func):
 			@wraps(func)
 			def wrapper(*args, **kwargs):
-				description = ""
-				for line in describe_call(func, *args, **kwargs):
-					description = description + "\n" + line
-				logger_func(description)
+				global __DEBUG__
+				if __DEBUG__:
+					frame = inspect.stack()[1]
+					filename = (frame[0].f_code.co_filename).rsplit('/', 1)[1]
+					components = str(frame).split(',')
+					description = '{} - {} - {}'.format(filename, components[5],components[6])
+					for line in describe_call(func, *args, **kwargs):
+						description = description + "\n" + line
+					logger_func(description)
 				return func(*args, **kwargs)
 			return wrapper
 	else:

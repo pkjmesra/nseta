@@ -122,8 +122,13 @@ class archiver:
 	@tracelog
 	def archive(self, df, symbol, response_type=ResponseType.Default):
 		if df is not None and len(df) > 0:
-			df = df.reset_index(drop=True)
-			df.to_csv(self.get_path(symbol, response_type), index=False)
+			try:
+				df = df.reset_index(drop=True)
+				df.to_csv(self.get_path(symbol, response_type), index=False)
+			except Exception as e:
+				default_logger().debug("Exception in archiving for {} in {}.\n{}".format(symbol, response_type,df))
+				default_logger().debug(e, exc_info=True)
+				return None
 		else:
 			default_logger().debug("Empty DataFrame cannot be saved for symbol:{} and ResponseType:{}".format(symbol, response_type))
 
@@ -132,7 +137,12 @@ class archiver:
 		df = None
 		file_path = self.get_path(symbol, response_type)
 		if os.path.exists(file_path):
-			df = pd.read_csv(file_path)
+			try:
+				df = pd.read_csv(file_path)
+			except Exception as e:
+				default_logger().debug("Exception in restore for {} in {}.".format(symbol, response_type))
+				default_logger().debug(e, exc_info=True)
+				return None
 			if df is not None and len(df) > 0:
 				df = df.reset_index(drop=True)
 				last_modified = self.utc_to_local(self.get_last_modified_datetime(file_path))
@@ -152,7 +162,12 @@ class archiver:
 	def restore_from_path(self, file_path):
 		df = None
 		if os.path.exists(file_path):
-			df = pd.read_csv(file_path)
+			try:
+				df = pd.read_csv(file_path)
+			except Exception as e:
+				default_logger().debug("Exception in restore for {}.".format(file_path))
+				default_logger().debug(e, exc_info=True)
+				return None
 		return df
 
 	@tracelog
