@@ -141,7 +141,7 @@ class TestTIScanner(unittest.TestCase):
 	
 	def test_update_signal_indicator_bbands(self):
 		s = scanner('bbands')
-		df = pd.DataFrame({'RSI': [35], 'MOM': [-1], 'macd(12)':[1] , 'macdsignal(9)':[2], 'LTP': [101], 'BBands-L': [101.04],'BBands-U': [105.1], 'EMA(9)': [104], 'Signal': ['SELL'], 'Remarks': ['NA'], 'Confidence': ['NA']})
+		df = pd.DataFrame({'RSI': [35], 'MOM': [-1], 'macd(12)':[1] , 'macdsignal(9)':[2], 'LTP': [101], 'BBands-L': [101.1],'BBands-U': [105.1], 'EMA(9)': [104], 'Signal': ['SELL'], 'Remarks': ['NA'], 'Confidence': ['NA']})
 		signalframes = s.update_signal_indicator(df, [], 'bbands', 'BBands-L', 0.05, 101, '<=', 'BUY', '[LTP < BBands-L]', 'BUY', '[LTP ~ BBands-L]')
 		df = pd.concat(signalframes)
 		self.assertEqual(df['Signal'].iloc[0], 'BUY')
@@ -150,7 +150,7 @@ class TestTIScanner(unittest.TestCase):
 	def test_update_signal_indicator_bbands_alternate(self):
 		s = scanner('bbands')
 		df = pd.DataFrame({'RSI': [35], 'MOM': [-1], 'macd(12)':[1] , 'macdsignal(9)':[2], 'LTP': [101.04], 'BBands-L': [101],'BBands-U': [105.1], 'EMA(9)': [104], 'Signal': ['SELL'], 'Remarks': ['NA'], 'Confidence': ['NA']})
-		signalframes = s.update_signal_indicator(df, [], 'bbands', 'BBands-L', 0.05, 101.04, '<=', 'BUY', '[LTP < BBands-L]', 'BUY', '[LTP ~ BBands-L]')
+		signalframes = s.update_signal_indicator(df, [], 'bbands', 'BBands-L', 0.05, 101.1, '<=', 'BUY', '[LTP < BBands-L]', 'BUY', '[LTP ~ BBands-L]')
 		df = pd.concat(signalframes)
 		self.assertEqual(df['Signal'].iloc[0], 'BUY')
 		self.assertEqual(df['Remarks'].iloc[0], '[LTP ~ BBands-L]')
@@ -174,14 +174,14 @@ class TestTIScanner(unittest.TestCase):
 	def test_update_signal_indicator_emac_true_value(self):
 		s = scanner('emac')
 		df = pd.DataFrame({'RSI': [85], 'MOM': [-1], 'macd(12)':[1] , 'macdsignal(9)':[2], 'LTP': [101], 'BBands-L': [101.04],'BBands-U': [105.1], 'EMA(9)': [104], 'Signal': ['SELL'], 'Remarks': ['NA'], 'Confidence': ['NA']})
-		signalframes = s.update_signal_indicator(df, [], 'emac', 'EMA(9)', 0.1, 104.05, '>=', 'BUY', '[LTP > EMA(9)]', 'SELL', '[LTP < EMA(9)]')
+		signalframes = s.update_signal_indicator(df, [], 'emac', 'EMA(9)', 0.1, 104.2, '>=', 'BUY', '[LTP > EMA(9)]', 'SELL', '[LTP < EMA(9)]')
 		df = pd.concat(signalframes)
 		self.assertEqual(df['Signal'].iloc[0], 'BUY')
 		self.assertEqual(df['Remarks'].iloc[0], '[LTP > EMA(9)]')
 
 	def test_update_signal_indicator_emac_false_value(self):
 		s = scanner('emac')
-		df = pd.DataFrame({'RSI': [85], 'MOM': [-1], 'macd(12)':[1] , 'macdsignal(9)':[2], 'LTP': [101], 'BBands-L': [101.04],'BBands-U': [105.1], 'EMA(9)': [104.05], 'Signal': ['SELL'], 'Remarks': ['NA'], 'Confidence': ['NA']})
+		df = pd.DataFrame({'RSI': [85], 'MOM': [-1], 'macd(12)':[1] , 'macdsignal(9)':[2], 'LTP': [101], 'BBands-L': [101.04],'BBands-U': [105.1], 'EMA(9)': [104.2], 'Signal': ['SELL'], 'Remarks': ['NA'], 'Confidence': ['NA']})
 		signalframes = s.update_signal_indicator(df, [], 'emac', 'EMA(9)', 0.1, 104, '>=', 'BUY', '[LTP > EMA(9)]', 'SELL', '[LTP < EMA(9)]')
 		df = pd.concat(signalframes)
 		self.assertEqual(df['Signal'].iloc[0], 'SELL')
@@ -189,7 +189,7 @@ class TestTIScanner(unittest.TestCase):
 
 	def test_update_signal_indicator_no_label_comparator_value(self):
 		s = scanner('emac')
-		df = pd.DataFrame({'RSI': [85], 'MOM': [-1], 'macd(12)':[1] , 'macdsignal(9)':[2], 'LTP': [101], 'BBands-L': [101.04],'BBands-U': [105.1], 'EMA(9)': [104.05], 'Signal': ['NA'], 'Remarks': ['NA'], 'Confidence': ['NA']})
+		df = pd.DataFrame({'RSI': [85], 'MOM': [-1], 'macd(12)':[1] , 'macdsignal(9)':[2], 'LTP': [101], 'BBands-L': [101.04],'BBands-U': [105.1], 'EMA(9)': [104.2], 'Signal': ['NA'], 'Remarks': ['NA'], 'Confidence': ['NA']})
 		signalframes = s.update_signal_indicator(df, [], 'emac', 'EMA(9)', 0.1, 104, '==', 'BUY', '[LTP > EMA(9)]', 'SELL', '[LTP < EMA(9)]')
 		df = pd.concat(signalframes)
 		self.assertEqual(df['Signal'].iloc[0], 'NA')

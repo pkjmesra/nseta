@@ -439,18 +439,18 @@ class scanner:
 				if (value is not None) and (value > comparator_value or value < margin):
 					df['Remarks'].iloc[0] = true_remarks if value > comparator_value else false_remarks
 					df['Signal'].iloc[0] = true_type if value > comparator_value else false_type
-					self.update_confidence_level(df)
+					df= self.update_confidence_level(df)
 					default_logger().debug(df.to_string(index=False))
 					signalframes.append(df)
 			else:
-				if (value is not None) and (abs(value-comparator_value) >= margin) and (abs(value-comparator_value) <= 2*margin):
+				if (value is not None) and (abs(value-comparator_value) >= margin):
 					if ltp_label_comparator == '<=':
 						df['Remarks'].iloc[0] = true_remarks if comparator_value - value <=0 else false_remarks
 						df['Signal'].iloc[0] = true_type if comparator_value - value <=0 else false_type
 					elif ltp_label_comparator == '>=':
 						df['Remarks'].iloc[0] = true_remarks if comparator_value - value >=0 else false_remarks
 						df['Signal'].iloc[0] = true_type if comparator_value - value >=0 else false_type
-					self.update_confidence_level(df)
+					df = self.update_confidence_level(df)
 					default_logger().debug(df.to_string(index=False))
 					signalframes.append(df)
 			df[column] = df[column].apply(lambda x: round(x, decimals))
