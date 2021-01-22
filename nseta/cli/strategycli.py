@@ -53,7 +53,7 @@ def test_trading_strategy(symbol, start, end, strategy, upper, lower, clear, plo
 		pass
 
 @click.command(help='Test/Measure the performance of your trading strategy for multiple stocks')
-@click.option('--symbol', '-S',  help='Comma separated security codes. Skip/Leave empty for scanning all stocks in stocks.py.')
+@click.option('--symbol', '-S',  help='Comma separated security codes. Skip/Leave empty for scanning all stocks in stocks.txt.')
 @click.option('--start', '-s', help='Start date in yyyy-mm-dd format')
 @click.option('--end', '-e', help='End date in yyyy-mm-dd format')
 @click.option('--strategy', help=', '.join(STRATEGY_MAPPING_KEYS) + ". Choose one. Leavy empty for scanning through all strategies.")

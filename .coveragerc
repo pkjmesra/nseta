@@ -15,4 +15,4 @@ exclude_lines =
 ignore_errors = True
 omit =
     tests/*
-    nseta/scanner/stocks.py
+    nseta/scanner/stocks.txt

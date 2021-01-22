@@ -322,7 +322,7 @@ nseta scan -S HDFC,ABB
  30-DEC-2020 16:00:00   HDFC  2,518.95  2,521.70
  30-DEC-2020 16:00:00    ABB  1,203.05  1,205.30
 ```
-- Scan live quotes of a bunch of securities listed in a resource file(stocks.py)
+- Scan live quotes of a bunch of securities listed in a resource file(stocks.txt under scanner folder)
 ```python
 nseta scan -l
  All Stocks LTP and Signals:
@@ -493,7 +493,7 @@ Usage: nseta scan [OPTIONS]
 Options:
   -S, --stocks TEXT               Comma separated security codes(Optional.
                                   When skipped, all stocks configured in
-                                  stocks.py will be scanned.)
+                                  stocks.txt will be scanned.)
   -l, --live                      Scans (every min.) the live-quote and lists
                                   those that meet the signal criteria. Works
                                   best with --background.

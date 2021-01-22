@@ -37,6 +37,10 @@ DIST_DIR = 'dist/'
 setup(
 	name = 'nseta',
 	packages=setuptools.find_packages(where="./", exclude=["docs", "tests"]),
+	include_package_data = True,    # include everything in source control
+	package_data={'nseta.scanner': ['stocks.txt']},
+	# ...but exclude README.txt from all packages
+    exclude_package_data = { '': ['*.yml'] },
 	version = nseta.__version__,
 	description = 'Library to analyse and predict financial data from National Stock Exchange (NSE - India) in pandas dataframe ',
 	long_description = long_description,

@@ -110,7 +110,7 @@ class scanner:
 	
 	@tracelog
 	def stocks_list(self, stocks=[]):
-		file_path = "stocks.py"
+		file_path = "stocks.txt"
 		if not os.path.exists(file_path):
 			file_path = os.path.join(self.scanner_directory, file_path)
 		# If stocks array is empty, pull stock list from stocks.txt file
