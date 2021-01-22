@@ -65,11 +65,20 @@ class filterlogger:
 	def critical(self, line):
 		self.logger.critical(line)
 
+	def addHandler(self, hdl):
+		self.logger.addHandler(hdl)
+
+	def removeHandler(self, hdl):
+		self.logger.removeHandler(hdl)
+
 def setup_custom_logger(name, levelname=logging.DEBUG, trace=False, log_file_path='logs.log', filter=None):
 	trace_formatter = logging.Formatter(fmt='%(asctime)s - %(name)s - %(levelname)s - %(filename)s - %(module)s - %(funcName)s - %(lineno)d\n%(message)s\n')
 	console_info_formatter = logging.Formatter(fmt='%(levelname)s - %(filename)s(%(funcName)s - %(lineno)d)\n%(message)s\n')
 	global __trace__
 	__trace__ = trace
+
+	global __filter__
+	__filter__ = filter
 
 	logger = logging.getLogger(name)
 	logger.setLevel(levelname)
@@ -84,8 +93,6 @@ def setup_custom_logger(name, levelname=logging.DEBUG, trace=False, log_file_pat
 		filehandler.setFormatter(trace_formatter)
 		filehandler.setLevel(levelname)
 		logger.addHandler(filehandler)
-		global __filter__
-		__filter__ = filter
 		global __DEBUG__
 		__DEBUG__ = True
 		logger.debug('Logging started. Filter:{}'.format(__filter__))
@@ -94,7 +101,8 @@ def setup_custom_logger(name, levelname=logging.DEBUG, trace=False, log_file_pat
 		tracelogger = logging.getLogger('nseta_file_logger')
 		tracelogger.setLevel(levelname)
 		tracelogger.addHandler(consolehandler)
-		tracelogger.addHandler(filehandler)
+		if levelname == logging.DEBUG:
+			tracelogger.addHandler(filehandler)
 		logger.debug('Tracing started')
 	# Turn off pystan warnings
 	warnings.simplefilter("ignore", DeprecationWarning)

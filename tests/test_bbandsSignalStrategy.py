@@ -14,7 +14,7 @@ class TestBbandsSignalStrategy(unittest.TestCase):
 
 	def test_update_ledger_debug(self):
 		default_logger().setLevel(logging.DEBUG)
-		bbands = bbandsSignalStrategy()
+		bbands = bbandsSignalStrategy(requires_ledger=True)
 		bbands.index(100,100,100,'2021-01-18')
 		report = bbands.report.to_string(index=False)
 		self.assertIn('BBands-U',report,report)

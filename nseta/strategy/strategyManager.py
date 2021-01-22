@@ -315,8 +315,8 @@ class strategyManager:
 			kwargs['max_per_thread'] = CONCURRENT_STOCK_COUNT
 			multithreaded_scan(**kwargs)
 			if terminate_after_iter > 0 and iteration >= terminate_after_iter:
+				sys.stdout.write("\rDownload Finished.".ljust(120))
+				sys.stdout.flush()
 				break
-			sys.stdout.write("\rDownload Finished.".ljust(120))
-			sys.stdout.flush()
 		default_logger().debug('Finished downloading for all stocks.')
 		return iteration

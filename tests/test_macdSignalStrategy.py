@@ -5,20 +5,19 @@ import time
 import logging
 
 from nseta.common.log import default_logger
-from nseta.strategy.rsiSignalStrategy import rsiSignalStrategy
+from nseta.strategy.macdSignalStrategy import macdSignalStrategy
 from nseta.common import urls
 
-class TestRSISignalStrategy(unittest.TestCase):
+class TestMACDSignalStrategy(unittest.TestCase):
 	def setUp(self):
 		self.startTime = time.time()
 
 	def test_update_ledger_debug(self):
 		default_logger().setLevel(logging.DEBUG)
-		rsi = rsiSignalStrategy(requires_ledger=True)
-		for i in [80,81,82,83,84,85,86,87,86,85,84,83,82,81,80]:
-			rsi.index(i,i,'2021-01-18')
-		report = rsi.report.to_string(index=False)
-		self.assertIn('Base-delta',report,report)
+		macd = macdSignalStrategy(requires_ledger=True)
+		macd.index(100,100,'2021-01-18')
+		report = macd.report.to_string(index=False)
+		self.assertTrue(len(report) > 0)
 
 	def tearDown(self):
 		urls.session.close()
@@ -28,7 +27,7 @@ class TestRSISignalStrategy(unittest.TestCase):
 
 if __name__ == '__main__':
 
-	suite = unittest.TestLoader().loadTestsFromTestCase(TestRSISignalStrategy)
+	suite = unittest.TestLoader().loadTestsFromTestCase(TestMACDSignalStrategy)
 	result = unittest.TextTestRunner(verbosity=2).run(suite)
 	if six.PY2:
 		if result.wasSuccessful():
