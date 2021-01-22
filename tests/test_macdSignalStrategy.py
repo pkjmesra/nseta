@@ -16,6 +16,12 @@ class TestMACDSignalStrategy(unittest.TestCase):
 		default_logger().setLevel(logging.DEBUG)
 		macd = macdSignalStrategy(requires_ledger=True)
 		macd.index(100,100,'2021-01-18')
+		macd.index(101,100,'2021-01-18')
+		macd.index(102,100,'2021-01-18')
+		macd.index(103,100,'2021-01-18')
+		macd.index(102,100,'2021-01-18')
+		macd.index(101,100,'2021-01-18')
+		macd.index(100,100,'2021-01-18')
 		report = macd.report.to_string(index=False)
 		self.assertTrue(len(report) > 0)
 
