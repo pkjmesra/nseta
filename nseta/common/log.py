@@ -9,7 +9,7 @@ from inspect import getcallargs, getfullargspec
 from collections import OrderedDict, Iterable
 from itertools import *
 
-__all__ = ['setup_custom_logger', 'default_logger', 'log_to', 'tracelog', 'suppress_stdout_stderr','timeit']
+__all__ = ['setup_custom_logger', 'default_logger', 'log_to', 'tracelog', 'suppress_stdout_stderr']
 global __trace__ 
 __trace__ = False
 global __filter__ 
@@ -179,19 +179,19 @@ def log_to(logger_func):
 
 tracelog = log_to(trace_log)
 
-def timeit(method):
-    def timed(*args, **kw):
-        ts = time.time()
-        result = method(*args, **kw)
-        te = time.time()
-        if 'log_time' in kw:
-            name = kw.get('log_name', method.__name__.upper())
-            kw['log_time'][name] = int((te - ts) * 1000)
-        else:
-            print ('%r  %2.2f ms' % \
-                  (method.__name__, (te - ts) * 1000))
-        return result
-    return timed
+# def timeit(method):
+#     def timed(*args, **kw):
+#         ts = time.time()
+#         result = method(*args, **kw)
+#         te = time.time()
+#         if 'log_time' in kw:
+#             name = kw.get('log_name', method.__name__.upper())
+#             kw['log_time'][name] = int((te - ts) * 1000)
+#         else:
+#             print ('%r  %2.2f ms' % \
+#                   (method.__name__, (te - ts) * 1000))
+#         return result
+#     return timed
 
 class suppress_stdout_stderr(object):
 	'''
