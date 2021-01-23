@@ -1,13 +1,13 @@
 # -*- coding: utf-8 -*-
 import pdb
 import unittest
-import time
 
-from nseta.resources.resources import resources
+from nseta.resources.resources import *
+from baseUnitTest import baseUnitTest
 
 class TestResources(unittest.TestCase):
 	def setUp(self):
-		self.startTime = time.time()
+		super().setUp()
 
 	def test_default_config(self):
 		r = resources()
@@ -39,9 +39,18 @@ class TestResources(unittest.TestCase):
 		result = resources.default_stocks()
 		self.assertTrue(len(result) > 0)
 
+	def test_rsi_config(self):
+		self.assertEqual(resources.rsi().lower, int(resources().config_valueforkey('RSI',"Lower")))
+		self.assertEqual(resources.rsi().upper, int(resources().config_valueforkey('RSI',"Upper")))
+
+	def test_forecast_config(self):
+		self.assertEqual(resources.forecast().lower, float(resources().config_valueforkey('FORECAST',"Lower")))
+		self.assertEqual(resources.forecast().upper, float(resources().config_valueforkey('FORECAST',"Upper")))
+		self.assertEqual(resources.forecast().training_percent, float(resources().config_valueforkey('FORECAST',"Training_percent")))
+		self.assertEqual(resources.forecast().test_percent, float(resources().config_valueforkey('FORECAST',"Test_percent")))
+
 	def tearDown(self):
-		t = time.time() - self.startTime
-		print('%s: %.3f' % (self.id().ljust(100), t))
+		super().tearDown()
 
 if __name__ == '__main__':
 

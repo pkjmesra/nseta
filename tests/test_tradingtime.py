@@ -7,10 +7,11 @@ import time
 
 from datetime import datetime
 from nseta.common.tradingtime import *
+from baseUnitTest import baseUnitTest
 
-class TestTradingTime(unittest.TestCase):
+class TestTradingTime(baseUnitTest):
 	def setUp(self):
-		self.startTime = time.time()
+		super().setUp()
 
 	def test_ist_time(self):
 		t = IST_time()
@@ -32,8 +33,7 @@ class TestTradingTime(unittest.TestCase):
 		self.assertTrue(is_datetime_between(b, e, c))
 
 	def tearDown(self):
-		t = time.time() - self.startTime
-		print('%s: %.3f' % (self.id().ljust(100), t))
+		super().tearDown()
 
 if __name__ == '__main__':
 

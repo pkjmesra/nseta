@@ -12,6 +12,7 @@ from tests import htmls
 import json
 import requests
 from six.moves.urllib.parse import urlparse
+from baseUnitTest import baseUnitTest
 
 import six
 
@@ -50,9 +51,9 @@ def text_to_list(text, schema):
 	return lists
 
 
-class TestCommons(unittest.TestCase):
+class TestCommons(baseUnitTest):
 	def setUp(self):
-		self.startTime = time.time()
+		super().setUp()
 
 	def test_is_index(self):
 		for i in NSE_INDICES:
@@ -160,13 +161,11 @@ class TestCommons(unittest.TestCase):
 		self.assertEqual(df_actual['B'].iloc[1], df_expected['B'].iloc[1])
 
 	def tearDown(self):
-		urls.session.close()
-		t = time.time() - self.startTime
-		print('%s: %.3f' % (self.id().ljust(100), t))
+		super().tearDown()
 
-class TestURLFetch(unittest.TestCase):
+class TestURLFetch(baseUnitTest):
 	def setUp(self):
-		self.startTime = time.time()
+		super().setUp()
 		self.proxy_on = False
 		self.session = requests.Session()
 		if self.proxy_on:
@@ -265,10 +264,8 @@ class TestURLFetch(unittest.TestCase):
 		self.assertEqual(json['headers']['User-Agent'], 'Testing')
 
 	def tearDown(self):
-		urls.session.close()
 		self.session.close()
-		t = time.time() - self.startTime
-		print('%s: %.3f' % (self.id().ljust(100), t))
+		super().tearDown()
 
 
 if __name__ == '__main__':

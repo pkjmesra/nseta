@@ -1,16 +1,16 @@
 # -*- coding: utf-8 -*-
 import pdb
 import unittest
-import time
 import logging
 
 from nseta.common.log import default_logger
 from nseta.strategy.rsiSignalStrategy import rsiSignalStrategy
 from nseta.common import urls
+from baseUnitTest import baseUnitTest
 
-class TestRSISignalStrategy(unittest.TestCase):
+class TestRSISignalStrategy(baseUnitTest):
 	def setUp(self):
-		self.startTime = time.time()
+		super().setUp()
 
 	def test_update_ledger_debug(self):
 		default_logger().setLevel(logging.DEBUG)
@@ -21,10 +21,8 @@ class TestRSISignalStrategy(unittest.TestCase):
 		self.assertIn('Base-delta',report,report)
 
 	def tearDown(self):
-		urls.session.close()
 		default_logger().setLevel(logging.INFO)
-		t = time.time() - self.startTime
-		print('%s: %.3f' % (self.id().ljust(100), t))
+		super().tearDown()
 
 if __name__ == '__main__':
 

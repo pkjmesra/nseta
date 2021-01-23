@@ -6,10 +6,11 @@ import pandas as pd
 
 from nseta.scanner.tiscanner import scanner
 from nseta.common import urls
+from baseUnitTest import baseUnitTest
 
-class TestTIScanner(unittest.TestCase):
+class TestTIScanner(baseUnitTest):
 	def setUp(self):
-		self.startTime = time.time()
+		super().setUp()
 
 	def test_default_indicator(self):
 		s = scanner('NA')
@@ -264,9 +265,7 @@ class TestTIScanner(unittest.TestCase):
 		self.assertEqual(df_result['Remarks'].iloc[0], 'LTP < S3')
 
 	def tearDown(self):
-		urls.session.close()
-		t = time.time() - self.startTime
-		print('%s: %.3f' % (self.id().ljust(100), t))
+		super().tearDown()
 
 if __name__ == '__main__':
 

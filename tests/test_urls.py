@@ -18,11 +18,11 @@ import six
 from nseta.common.urls import *
 import nseta.common.urls as urls
 from six.moves.urllib.parse import urlparse
+from baseUnitTest import baseUnitTest
 
-
-class TestUrls(unittest.TestCase):
+class TestUrls(baseUnitTest):
     def setUp(self):
-        self.startTime = time.time()
+        super().setUp()
         proxy_on = False
         if proxy_on:
             urls.session.proxies.update({'http': 'proxy1.wipro.com:8080'})
@@ -117,9 +117,7 @@ class TestUrls(unittest.TestCase):
         csv = unzip_str(resp.content)
 
     def tearDown(self):
-        urls.session.close()
-        t = time.time() - self.startTime
-        print('%s: %.3f' % (self.id().ljust(100), t))
+        super().tearDown()
 
 if __name__ == '__main__':
 

@@ -7,10 +7,11 @@ import logging
 from nseta.common.log import default_logger
 from nseta.strategy.macdSignalStrategy import macdSignalStrategy
 from nseta.common import urls
+from baseUnitTest import baseUnitTest
 
-class TestMACDSignalStrategy(unittest.TestCase):
+class TestMACDSignalStrategy(baseUnitTest):
 	def setUp(self):
-		self.startTime = time.time()
+		super().setUp()
 
 	def test_update_ledger_debug(self):
 		default_logger().setLevel(logging.DEBUG)
@@ -26,10 +27,7 @@ class TestMACDSignalStrategy(unittest.TestCase):
 		self.assertTrue(len(report) > 0)
 
 	def tearDown(self):
-		urls.session.close()
-		default_logger().setLevel(logging.INFO)
-		t = time.time() - self.startTime
-		print('%s: %.3f' % (self.id().ljust(100), t))
+		super().tearDown()
 
 if __name__ == '__main__':
 

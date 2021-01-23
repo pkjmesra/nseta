@@ -8,16 +8,12 @@ import time
 import logging
 from nseta.common import log
 from nseta.common.log import *
+from baseUnitTest import baseUnitTest
 
-
-class TestLog(unittest.TestCase):
+class TestLog(baseUnitTest):
 	def setUp(self):
-		self.startTime = time.time()
-		capturedOutput = io.StringIO()                  # Create StringIO object
-		sys.stdout = capturedOutput                     #  and redirect stdout.
-		self.stream_handler = logging.StreamHandler(sys.stdout)
-		default_logger().addHandler(self.stream_handler)
-		self.capturedOutput = capturedOutput
+		super().setUp(redirect_logs=False)
+		logging.disable(logging.NOTSET)
 
 	def test_debug_log(self):
 		log.setup_custom_logger('nseta', logging.DEBUG, False, filter=None)
@@ -52,11 +48,8 @@ class TestLog(unittest.TestCase):
 		self.assertIn('test_debug_log_filter_critical', self.capturedOutput.getvalue())
 
 	def tearDown(self):
-		default_logger().removeHandler(self.stream_handler)
-		sys.stdout = sys.__stdout__                     # Reset redirect.
 		log.setup_custom_logger('nseta', logging.INFO, False, filter=None)
-		t = time.time() - self.startTime
-		print('%s: %.3f' % (self.id().ljust(100), t))
+		super().tearDown()
 
 if __name__ == '__main__':
 

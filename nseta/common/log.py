@@ -29,6 +29,10 @@ class filterlogger:
 	def level(self):
 		return self.logger.level
 
+	@level.setter
+	def level(self, level):
+		return self.logger.setlevel(level)
+
 	@staticmethod
 	def getlogger(logger):
 		global __filter__
@@ -61,6 +65,9 @@ class filterlogger:
 
 	def error(self, line):
 		self.logger.error(line)
+
+	def setLevel(self, level):
+		self.logger.setLevel(level)
 	
 	def critical(self, line):
 		self.logger.critical(line)

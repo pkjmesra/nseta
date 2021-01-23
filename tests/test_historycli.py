@@ -3,14 +3,14 @@ import pdb
 import unittest
 
 from click.testing import CliRunner
-import time
 
 from nseta.cli.historycli import history, pe_history
 import nseta.common.urls as urls
+from baseUnitTest import baseUnitTest
 
-class TestHistorycli(unittest.TestCase):
+class TestHistorycli(baseUnitTest):
 	def setUp(self):
-		self.startTime = time.time()
+		super().setUp()
 
 	def test_history(self):
 		runner = CliRunner()
@@ -58,9 +58,7 @@ class TestHistorycli(unittest.TestCase):
 		self.assertIn("Saved to: BANDHANBNK.pkl", result.output, str(result.output))
 
 	def tearDown(self):
-		urls.session.close()
-		t = time.time() - self.startTime
-		print('%s: %.3f' % (self.id().ljust(100), t))
+		super().tearDown()
 
 
 if __name__ == '__main__':

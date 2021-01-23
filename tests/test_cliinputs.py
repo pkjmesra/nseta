@@ -3,17 +3,14 @@ import pdb
 import unittest
 import io
 import sys
-import time
 
 from nseta.cli.inputs import *
 from nseta.cli.livecli import live_quote
+from baseUnitTest import baseUnitTest
 
-class TestCliInputs(unittest.TestCase):
+class TestCliInputs(baseUnitTest):
 	def setUp(self):
-		self.startTime = time.time()
-		capturedOutput = io.StringIO()                  # Create StringIO object
-		sys.stdout = capturedOutput                     #  and redirect stdout.
-		self.capturedOutput = capturedOutput
+		super().setUp()
 
 	def test_validate_inputs(self):
 		result = validate_inputs('2020-01-01', '2021-01-08', 'SOMESYMBOL', strategy='rsi')
@@ -42,9 +39,7 @@ class TestCliInputs(unittest.TestCase):
 		self.assertIn('Please provide security/index code', self.capturedOutput.getvalue())
 
 	def tearDown(self):
-		sys.stdout = sys.__stdout__                     # Reset redirect.
-		t = time.time() - self.startTime
-		print('%s: %.3f' % (self.id().ljust(100), t))
+		super().tearDown()
 
 if __name__ == '__main__':
 

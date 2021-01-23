@@ -5,6 +5,7 @@ from nseta.strategy.strategy import *
 from nseta.common.history import *
 from nseta.common.log import tracelog, default_logger
 from nseta.cli.inputs import *
+from nseta.resources.resources import *
 from nseta.archives.archiver import *
 from nseta.strategy.strategyManager import *
 
@@ -21,8 +22,8 @@ STRATEGY_MAPPING_KEYS = list(STRATEGY_MAPPING.keys()) + ['custom']
 @click.option('--end', '-e', help='End date in yyyy-mm-dd format')
 @click.option('--strategy', default='rsi', type=click.Choice(STRATEGY_MAPPING_KEYS),
 	help=', '.join(STRATEGY_MAPPING_KEYS) + ". Choose one.")
-@click.option('--upper', '-u', default=75, type=float, help='Used as upper limit, for example, for RSI. Only when strategy is "custom", we buy the security when the predicted next day return is > +{upper} %')
-@click.option('--lower', '-l', default=25, type=float, help='Used as lower limit, for example, for RSI. Only when strategy is "custom", we sell the security when the predicted next day return is < -{lower} %')
+@click.option('--upper', '-u', default=resources.rsi().upper, type=float, help='Used as upper limit, for example, for RSI. Default is {}. Only when strategy is "custom", we buy the security when the predicted next day return is > + upper %'.format(str(resources.rsi().upper)))
+@click.option('--lower', '-l', default=resources.rsi().lower, type=float, help='Used as lower limit, for example, for RSI. Default is {}. Only when strategy is "custom", we sell the security when the predicted next day return is < - lower %'.format(str(resources.rsi().lower)))
 @click.option('--clear', '-c', default=False, is_flag=True, help='Clears the cached data for the given options.')
 @click.option('--plot', '-p', default=False, is_flag=True, help='By default(False). --plot, if you would like the results to be plotted.')
 @click.option('--intraday', '-i', is_flag=True, help='Test trading strategy for the current intraday price history (Optional)')
@@ -57,8 +58,8 @@ def test_trading_strategy(symbol, start, end, strategy, upper, lower, clear, plo
 @click.option('--start', '-s', help='Start date in yyyy-mm-dd format')
 @click.option('--end', '-e', help='End date in yyyy-mm-dd format')
 @click.option('--strategy', help=', '.join(STRATEGY_MAPPING_KEYS) + ". Choose one. Leavy empty for scanning through all strategies.")
-@click.option('--upper', '-u', default=75, help='Used as upper limit, for example, for RSI. Only when strategy is "custom", we buy the security when the predicted next day return is > +{upper} %')
-@click.option('--lower', '-l', default=25, help='Used as lower limit, for example, for RSI. Only when strategy is "custom", we sell the security when the predicted next day return is < -{lower} %')
+@click.option('--upper', '-u', default=resources.rsi().upper, type=float, help='Used as upper limit, for example, for RSI. Default is {}. Only when strategy is "custom", we buy the security when the predicted next day return is > + upper %'.format(str(resources.rsi().upper)))
+@click.option('--lower', '-l', default=resources.rsi().lower, type=float, help='Used as lower limit, for example, for RSI. Default is {}. Only when strategy is "custom", we sell the security when the predicted next day return is < - lower %'.format(str(resources.rsi().lower)))
 @click.option('--clear', '-c', default=False, is_flag=True, help='Clears the cached data for the given options.')
 @click.option('--intraday', '-i', is_flag=True, help='Test trading strategy for the current intraday price history (Optional)')
 @click.option('--orderby', '-o', default='recommendation', type=click.Choice(['symbol','recommendation']),
@@ -95,8 +96,8 @@ def scan_trading_strategy(symbol, start, end, strategy, upper, lower, clear, ord
 @click.option('--end', '-e', help='End date in yyyy-mm-dd format')
 @click.option('--strategy', default='rsi', type=click.Choice(STRATEGY_MAPPING_KEYS), 
 	help=', '.join(STRATEGY_MAPPING_KEYS) + ". Choose one.")
-@click.option('--upper', '-u', default=1.5, help='Only when strategy is "custom". We buy the security when the predicted next day return is > +{upper} %')
-@click.option('--lower', '-l', default=1.5, help='Only when strategy is "custom". We sell the security when the predicted next day return is < -{lower} %')
+@click.option('--upper', '-u', default=resources.forecast().upper, help='Only when strategy is "custom". Default is {}. We buy the security when the predicted next day return is > + upper %'.format(resources.forecast().upper))
+@click.option('--lower', '-l', default=resources.forecast().lower, help='Only when strategy is "custom". Default is {}. We sell the security when the predicted next day return is < - lower %'.format(resources.forecast().lower))
 @click.option('--clear', '-c', default=False, is_flag=True, help='Clears the cached data for the given options.')
 @click.option('--plot', '-p', default=False, is_flag=True, help='By default(False). --plot, if you would like the results to be plotted.')
 @tracelog

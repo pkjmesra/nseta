@@ -1,7 +1,43 @@
 import configparser
 import os.path
 
-__all__ = ['resources']
+__all__ = ['resources', 'RSI','Forecast']
+
+class RSI:
+	def __init__(self, lower, upper):
+		self._lower = int(lower)
+		self._upper = int(upper)
+
+	@property
+	def upper(self):
+		return self._upper
+	
+	@property
+	def lower(self):
+		return self._lower
+
+class Forecast:
+	def __init__(self, lower, upper, training_percent, test_percent):
+		self._lower = float(lower)
+		self._upper = float(upper)
+		self._training_percent = float(training_percent)
+		self._test_percent = float(test_percent)
+
+	@property
+	def upper(self):
+		return self._upper
+	
+	@property
+	def lower(self):
+		return self._lower
+
+	@property
+	def training_percent(self):
+		return self._training_percent
+
+	@property
+	def test_percent(self):
+		return self._test_percent
 
 class resources:
 
@@ -47,3 +83,19 @@ class resources:
 		with open(file_path, 'r') as f:
 			stocks = [line.rstrip() for line in f]
 		return stocks
+
+	@classmethod
+	def rsi(cls):
+		r = cls()
+		lower = r.config_valueforkey('RSI',"Lower")
+		upper = r.config_valueforkey('RSI',"Upper")
+		return RSI(lower, upper)
+
+	@classmethod
+	def forecast(cls):
+		r = cls()
+		lower = r.config_valueforkey('FORECAST',"Lower")
+		upper = r.config_valueforkey('FORECAST',"Upper")
+		trg_pc = r.config_valueforkey('FORECAST',"Training_percent")
+		tst_pc = r.config_valueforkey('FORECAST',"Test_percent")
+		return Forecast(lower, upper, trg_pc, tst_pc)

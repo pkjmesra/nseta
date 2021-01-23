@@ -3,18 +3,13 @@ import pdb
 import unittest
 import pandas as pd
 import os
-import io
-import sys
-import time
 
 from nseta.archives.archiver import *
+from baseUnitTest import baseUnitTest
 
-class TestArchiver(unittest.TestCase):
+class TestArchiver(baseUnitTest):
 	def setUp(self):
-		self.startTime = time.time()
-		capturedOutput = io.StringIO()                  # Create StringIO object
-		sys.stdout = capturedOutput                     #  and redirect stdout.
-		self.capturedOutput = capturedOutput
+		super().setUp()
 
 	def test_get_path(self):
 		a = archiver()
@@ -158,9 +153,7 @@ class TestArchiver(unittest.TestCase):
 		self.assertFalse(os.path.exists(file_path))
 
 	def tearDown(self):
-		sys.stdout = sys.__stdout__                     # Reset redirect.
-		t = time.time() - self.startTime
-		print('%s: %.3f' % (self.id().ljust(100), t))
+		super().tearDown()
 
 if __name__ == '__main__':
 

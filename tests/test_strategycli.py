@@ -6,13 +6,14 @@ from unittest.mock import patch
 import time
 
 from click.testing import CliRunner
-
+from nseta.resources.resources import *
 from nseta.cli.strategycli import test_trading_strategy, forecast_strategy, scan_trading_strategy
 from nseta.common import urls
+from baseUnitTest import baseUnitTest
 
-class TestStrategycli(unittest.TestCase):
+class TestStrategycli(baseUnitTest):
 	def setUp(self):
-		self.startTime = time.time()
+		super().setUp()
 
 	def test_test_trading_strategy_inputs(self):
 		runner = CliRunner()
@@ -121,7 +122,7 @@ class TestStrategycli(unittest.TestCase):
 	@patch('matplotlib.pyplot.show')
 	def test_test_trading_strategy_historical_custom(self, mock_pyplot):
 		runner = CliRunner()
-		result = runner.invoke(test_trading_strategy, args=['--symbol', 'BANDHANBNK', '--start', '2020-08-01', '--end', '2021-01-01', '--strategy', 'custom', '-l', '1.5', '-u', '1.5', '--clear'])
+		result = runner.invoke(test_trading_strategy, args=['--symbol', 'BANDHANBNK', '--start', '2020-08-01', '--end', '2021-01-01', '--strategy', 'custom', '-l', str(resources.forecast().lower), '-u', str(resources.forecast().upper), '--clear'])
 		self.assertEqual(result.exit_code , 0)
 		self.assertIn("pnl", result.output, str(result.output))
 
@@ -197,14 +198,12 @@ class TestStrategycli(unittest.TestCase):
 	@patch('matplotlib.pyplot.show')
 	def test_forecast_strategy_custom(self, mock_pyplot):
 		runner = CliRunner()
-		result = runner.invoke(forecast_strategy, args=['--symbol', 'BANDHANBNK', '--start', '2020-08-01', '--end', '2021-01-01', '--strategy', 'custom', '-l', '1.5', '-u', '1.5', '--clear'])
+		result = runner.invoke(forecast_strategy, args=['--symbol', 'BANDHANBNK', '--start', '2020-08-01', '--end', '2021-01-01', '--strategy', 'custom', '-l', str(resources.forecast().lower), '-u', str(resources.forecast().upper), '--clear'])
 		self.assertEqual(result.exit_code , 0)
 		self.assertIn("pnl", result.output, str(result.output))
 
 	def tearDown(self):
-		urls.session.close()
-		t = time.time() - self.startTime
-		print('%s: %.3f' % (self.id().ljust(100), t))
+		super().tearDown()
 
 if __name__ == '__main__':
 

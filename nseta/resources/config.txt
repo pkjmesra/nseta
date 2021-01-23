@@ -1,12 +1,16 @@
 [DEFAULT]
-RSI_Lower = 20
-RSI_Upper = 80
 DefaultStocks = stocks.txt
 Background_Scan_Frequency = 10
 
 [RSI]
-RSI_Lower = 25
-RSI_Upper = 75
+Lower = 25
+Upper = 75
 
 [SCANNER]
 UserStocks = userstocks.txt
+
+[FORECAST]
+Lower = 1.5
+Upper = 1.5
+Training_percent = 0.75
+Test_percent = 0.25

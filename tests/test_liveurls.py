@@ -13,15 +13,16 @@ from datetime import datetime, timedelta
 from tests import htmls
 from nseta.live.liveurls import quote_eq_url, quote_derivative_url, option_chain_url, futures_chain_url, holiday_list_url
 import nseta.common.urls as urls
+from baseUnitTest import baseUnitTest
 from nseta.common.commons import (is_index, is_index_derivative,
 						   NSE_INDICES, INDEX_DERIVATIVES,
 						   ParseTables, StrDate, unzip_str,
 						   ThreadReturns, URLFetch)
 
 LOCAL_TIMEOUT = 60
-class TestLiveUrls(unittest.TestCase):
+class TestLiveUrls(baseUnitTest):
 	def setUp(self):
-		self.startTime = time.time()
+		super().setUp()
 		proxy_on = False
 		if proxy_on:
 			urls.session.proxies.update({'http': 'proxy1.wipro.com:8080'})
@@ -72,9 +73,7 @@ class TestLiveUrls(unittest.TestCase):
 		self.assertGreaterEqual(resp.text.find('Holi'), 0)
 
 	def tearDown(self):
-		urls.session.close()
-		t = time.time() - self.startTime
-		print('%s: %.3f' % (self.id().ljust(100), t))
+		super().tearDown()
 
 	def get_next_expiry_date(self, base_expiry_date):
 		new_expiry_date = base_expiry_date

@@ -11,7 +11,7 @@ from nseta.common.commons import *
 from nseta.common.multithreadedScanner import multithreaded_scan
 from nseta.archives.archiver import *
 from nseta.common.history import historicaldata
-from nseta.resources.resources import resources
+from nseta.resources.resources import *
 from nseta.strategy.rsiSignalStrategy import rsiSignalStrategy
 from nseta.strategy.bbandsSignalStrategy import bbandsSignalStrategy
 from nseta.strategy.macdSignalStrategy import macdSignalStrategy
@@ -226,7 +226,7 @@ class scanner:
 						rsivalue = rsi[index -1]
 						row['RSI'] = rsivalue
 						default_logger().debug(stock + " RSI:" + str(rsi))
-						if rsivalue > 70 or rsivalue < 30:
+						if rsivalue > resources.rsi().upper or rsivalue < resources.rsi().lower:
 							signalframes.append(row)
 					frames.append(row)
 			except Exception as e:
@@ -436,7 +436,7 @@ class scanner:
 			signalframes = self.update_signal_indicator(df, signalframes, 'bbands', 'BBands-L', 0.05, ltp, '<=', 'BUY', '[LTP < BBands-L].{}'.format(bbands_reco), 'BUY', '[LTP ~ BBands-L].{}'.format(bbands_reco))
 			signalframes = self.update_signal_indicator(df, signalframes, 'bbands', 'BBands-U', 0.05, ltp, '<=', 'SELL', '[LTP ~ BBands-U].{}'.format(bbands_reco), 'SELL', '[LTP > BBands-U].{}'.format(bbands_reco))
 			rsi_reco = self.get_quick_recommendation(full_df, 'rsi')
-			signalframes = self.update_signal_indicator(df, signalframes, 'rsi', 'RSI', 25, 75, '><', 'SELL', '[RSI >= 75].{}'.format(rsi_reco), 'BUY', '[RSI <= 25].{}'.format(rsi_reco))
+			signalframes = self.update_signal_indicator(df, signalframes, 'rsi', 'RSI', resources.rsi().lower, resources.rsi().upper, '><', 'SELL', '[RSI >= {}].{}'.format(resources.rsi().upper, rsi_reco), 'BUY', '[RSI <= {}].{}'.format(resources.rsi().lower,rsi_reco))
 			signalframes = self.update_signal_indicator(df, signalframes, 'emac', 'EMA(9)', 0.1, ltp, '>=', 'BUY', '[LTP > EMA(9)]', 'SELL', '[LTP < EMA(9)]')
 			macd12 = df['macd(12)'].iloc[0]
 			macd_reco = self.get_quick_recommendation(full_df, 'macd')
@@ -490,7 +490,7 @@ class scanner:
 		elif indicator == 'rsi':
 			tiny_df = pd.DataFrame({'Symbol':limited_df['Symbol'],'Date':limited_df['Date'],'RSI':limited_df['RSI'],'Close':limited_df['LTP']})
 			sm = rsiSignalStrategy(strict=True, intraday=False, requires_ledger=False)
-			sm.set_limits(25, 75)
+			sm.set_limits(resources.rsi().lower, resources.rsi().upper)
 		elif indicator == 'bbands':
 			tiny_df = pd.DataFrame({'Symbol':limited_df['Symbol'],'Date':limited_df['Date'],'BBands-L':limited_df['BBands-L'], 'BBands-U':limited_df['BBands-U'], 'Close':limited_df['LTP']})
 			sm = bbandsSignalStrategy(strict=True, intraday=False, requires_ledger=False)
@@ -607,9 +607,9 @@ class scanner:
 
 		volume_yest = df['Volume'].iloc[0]
 		vwap = df['VWAP'].iloc[n-1]
-		ltp = (df_today['LTP'].iloc[0]).replace(',','')
+		ltp = str(df_today['LTP'].iloc[0]).replace(',','')
 		ltp = float(ltp)
-		today_volume = float((df_today['TotalTradedVolume'].iloc[0]).replace(',',''))
+		today_volume = float(str(df_today['TotalTradedVolume'].iloc[0]).replace(',',''))
 		today_vs_yest = round(100* (today_volume - volume_yest)/volume_yest)
 		df['Date'].iloc[n-1] = df_today['Updated'].iloc[0]
 		df['%Change'].iloc[n-1] = df_today['pChange'].iloc[0]

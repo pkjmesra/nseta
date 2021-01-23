@@ -1,16 +1,16 @@
 # -*- coding: utf-8 -*-
 import pdb
 import unittest
-import time
 
 from click.testing import CliRunner
 
 from nseta.cli.modelcli import create_cdl_model
 import nseta.common.urls as urls
+from baseUnitTest import baseUnitTest
 
-class TestModelcli(unittest.TestCase):
+class TestModelcli(baseUnitTest):
 	def setUp(self):
-		self.startTime = time.time()
+		super().setUp()
 
 	def test_create_cdl_model(self):
 		runner = CliRunner()
@@ -39,9 +39,7 @@ class TestModelcli(unittest.TestCase):
 		self.assertIn("Candlestick pattern model plot saved to: BANDHANBNK_candles.html", result.output, str(result.output))
 
 	def tearDown(self):
-		urls.session.close()
-		t = time.time() - self.startTime
-		print('%s: %.3f' % (self.id().ljust(100), t))
+		super().tearDown()
 
 if __name__ == '__main__':
 

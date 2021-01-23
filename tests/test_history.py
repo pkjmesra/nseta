@@ -10,6 +10,7 @@ from nseta.common.urls import get_symbol_count
 from nseta.common import urls
 from nseta.common import history
 from nseta.archives.archiver import ResponseType
+from baseUnitTest import baseUnitTest
 import time
 
 import unittest
@@ -18,9 +19,9 @@ import six
 import pdb
 
 
-class TestHistory(unittest.TestCase):
+class TestHistory(baseUnitTest):
 		def setUp(self):
-				self.startTime = time.time()
+				super().setUp()
 				self.start = date(2020, 12, 30)
 				self.end = date(2021, 1, 8)
 				self.historicaldata = historicaldata()
@@ -114,9 +115,7 @@ class TestHistory(unittest.TestCase):
 		# 	print(result)
 
 		def tearDown(self):
-				urls.session.close()
-				t = time.time() - self.startTime
-				print('%s: %.3f' % (self.id().ljust(100), t))
+				super().tearDown()
 
 
 if __name__ == '__main__':

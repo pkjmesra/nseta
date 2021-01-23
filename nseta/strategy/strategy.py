@@ -6,6 +6,7 @@ from fbprophet.plot import add_changepoints_to_plot
 from pylab import rcParams
 
 from matplotlib import pyplot as plt
+from nseta.resources.resources import *
 
 # import matplotlib
 import click, logging
@@ -34,7 +35,7 @@ def backtest_emac_strategy(df, fast_period=10, slow_period=50, plot=False):
 	return result
 
 @tracelog
-def backtest_rsi_strategy(df, rsi_period=14, rsi_lower=30, rsi_upper=70, plot=False):
+def backtest_rsi_strategy(df, rsi_period=14, rsi_lower=resources.rsi().lower, rsi_upper=resources.rsi().upper, plot=False):
 	if __VERBOSE__:
 		result = backtest('rsi', df.dropna(), rsi_period=rsi_period, rsi_upper=rsi_upper, rsi_lower=rsi_lower, verbose=__VERBOSE__, plot=plot)
 	else:
@@ -110,9 +111,9 @@ on in-sample time series forecasts. The forecasts are generated using
 Facebook's Prophet package.
 '''
 @tracelog
-def daily_forecast(df, symbol, strategy, upper_limit=1.5, lower_limit=1.5, periods=0, plot=False):
-	train_size = int(0.75 * len(df)) - periods              # Use 3 years of data as train set. Note there are about 252 trading days in a year
-	val_size = int(0.25 * len(df))                  # Use 1 year of data as validation set
+def daily_forecast(df, symbol, strategy, upper_limit=resources.forecast().upper, lower_limit=resources.forecast().lower, periods=0, plot=False):
+	train_size = int(resources.forecast().training_percent * len(df)) - periods              # Use 3 years of data as train set. Note there are about 252 trading days in a year
+	val_size = int(resources.forecast().test_percent * len(df))                  # Use 1 year of data as validation set
 	train_val_size = train_size + val_size # Size of train+validation set
 
 	# Fit model on closing prices

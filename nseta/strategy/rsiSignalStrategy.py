@@ -3,6 +3,7 @@ import pandas as pd
 
 from nseta.common.log import tracelog, default_logger
 from nseta.common.commons import Direction
+from nseta.resources.resources import *
 from nseta.strategy.simulatedorder import simulatedorder, OrderType
 from nseta.strategy.basesignalstrategy import basesignalstrategy
 
@@ -13,8 +14,8 @@ class rsiSignalStrategy(basesignalstrategy):
 		super().__init__(requires_ledger=requires_ledger)
 		self._strict = strict
 		self._prc = 0
-		self._lower = 25
-		self._upper = 75
+		self._lower = resources.rsi().lower
+		self._upper = resources.rsi().upper
 		self._order_queue = simulatedorder(OrderType.MIS if intraday else OrderType.Delivery)
 		if default_logger().level == logging.DEBUG:
 			self._ledger = {'DateTime':[],'Signal':[],'Price':[],'Pattern':[],'Direction':[], 'Funds':[], 'Order_Size':[], 'Holdings_Size':[], 'Portfolio_Value':[], 'P3':[], 'P2':[], 'P1':[], 'N1':[], 'N2':[], 'N3':[],'P-delta':[], 'N-delta':[], 'Base-delta':[]}

@@ -3,15 +3,15 @@ import pdb
 import unittest
 
 from click.testing import CliRunner
-import time
 
 from nseta.cli.livecli import live_quote, scan, live_quote_background, scan_live_background, scan_intraday_background
 from nseta.common import urls
 from nseta.scanner.tiscanner import scanner
+from baseUnitTest import baseUnitTest
 
-class TestLivecli(unittest.TestCase):
+class TestLivecli(baseUnitTest):
 	def setUp(self):
-		self.startTime = time.time()
+		super().setUp()
 
 	def test_live_quote(self):
 		runner = CliRunner()
@@ -62,7 +62,7 @@ class TestLivecli(unittest.TestCase):
 
 	def test_scan_volume(self):
 		runner = CliRunner()
-		result = runner.invoke(scan, args=['--stocks', 'BANDHANBNK', '--volume', '--clear'])
+		result = runner.invoke(scan, args=['--stocks', 'BANDHANBNK', '--volume', '--clear', '--orderby', 'momentum'])
 		self.assertEqual(result.exit_code , 0)
 		self.assertIn("Volume scanning finished.", result.output, str(result.output))
 		self.assertIn("TDYVol(%)", result.output, str(result.output))
@@ -90,9 +90,7 @@ class TestLivecli(unittest.TestCase):
 		self.assertIn("Usage:  [OPTIONS]", result.output, str(result.output))
 
 	def tearDown(self):
-		urls.session.close()
-		t = time.time() - self.startTime
-		print('%s: %.3f' % (self.id().ljust(100), t))
+		super().tearDown()
 
 
 if __name__ == '__main__':

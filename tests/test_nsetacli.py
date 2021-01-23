@@ -1,16 +1,16 @@
 # -*- coding: utf-8 -*-
 import pdb
 import unittest
-import time
 
 from click.testing import CliRunner
 
 from nseta.cli.nsetacli import nsetacli, clear
 import nseta
+from baseUnitTest import baseUnitTest
 
-class TestNSEtacli(unittest.TestCase):
+class TestNSEtacli(baseUnitTest):
 	def setUp(self):
-		self.startTime = time.time()
+		super().setUp(redirect_logs=False)
 
 	def test_nsetacli_entry(self):
 		runner = CliRunner()
@@ -44,8 +44,7 @@ class TestNSEtacli(unittest.TestCase):
 		self.assertIn('Removed top-level results that were saved earlier.', result.output, str(result.output))
 
 	def tearDown(self):
-		t = time.time() - self.startTime
-		print('%s: %.3f' % (self.id().ljust(100), t))
+		super().tearDown()
 
 if __name__ == '__main__':
 

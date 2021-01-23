@@ -4,10 +4,9 @@ import json
 import pdb
 import requests
 import six
-import time
 
 from bs4 import BeautifulSoup
-
+from baseUnitTest import baseUnitTest
 from tests import htmls
 from nseta.live.liveurls import quote_eq_url, quote_derivative_url, option_chain_url, futures_chain_url
 from nseta.live.live import get_quote, get_futures_chain_table, get_holidays_list, getworkingdays
@@ -17,9 +16,9 @@ from nseta.common.commons import (is_index, is_index_derivative,
 						   ParseTables, StrDate, unzip_str,
 						   ThreadReturns, URLFetch)
 
-class TestLiveUrls(unittest.TestCase):
+class TestLiveUrls(baseUnitTest):
 	def setUp(self):
-		self.startTime = time.time()
+		super().setUp()
 
 	def runTest(self):
 		for key in TestUrls.__dict__.keys():
@@ -86,6 +85,4 @@ class TestLiveUrls(unittest.TestCase):
 		self.assertEqual(len(workingdays), 3)
 		
 	def tearDown(self):
-		urls.session.close()
-		t = time.time() - self.startTime
-		print('%s: %.3f' % (self.id().ljust(100), t))
+		super().tearDown()

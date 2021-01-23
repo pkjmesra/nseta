@@ -9,6 +9,7 @@ from nseta.strategy.strategy import *
 from nseta.strategy.rsiSignalStrategy import *
 from nseta.strategy.bbandsSignalStrategy import *
 from nseta.strategy.macdSignalStrategy import *
+from nseta.resources.resources import *
 from nseta.archives.archiver import *
 from nseta.common.log import tracelog, default_logger
 from nseta.scanner.tiscanner import scanner
@@ -243,7 +244,7 @@ class strategyManager:
 		else:
 			STRATEGY_MAPPING['rsi'](df,  float(upper), float(lower))
 
-	def test_signals(self, df, lower=25, upper=75, strategy='rsi', intraday = False, plot=False, show_detail=True):
+	def test_signals(self, df, lower=resources.rsi().lower, upper=resources.rsi().upper, strategy='rsi', intraday = False, plot=False, show_detail=True):
 		tiinstance = ti()
 		df = tiinstance.update_ti(df)
 		df = df.sort_values(by='Date',ascending=True)

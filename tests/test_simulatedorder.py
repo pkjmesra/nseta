@@ -1,14 +1,14 @@
 # -*- coding: utf-8 -*-
 import pdb
 import unittest
-import time
 
 from nseta.strategy.simulatedorder import simulatedorder, OrderType, INITIAL_FUNDS
 from nseta.common import urls
+from baseUnitTest import baseUnitTest
 
-class TestSimulatedOrder(unittest.TestCase):
+class TestSimulatedOrder(baseUnitTest):
 	def setUp(self):
-		self.startTime = time.time()
+		super().setUp()
 
 	def test_buy_sell_MIS(self):
 		price = 500
@@ -28,9 +28,7 @@ class TestSimulatedOrder(unittest.TestCase):
 		self.assertEqual(s.funds, 2*INITIAL_FUNDS)
 
 	def tearDown(self):
-		urls.session.close()
-		t = time.time() - self.startTime
-		print('%s: %.3f' % (self.id().ljust(100), t))
+		super().tearDown()
 
 if __name__ == '__main__':
 
