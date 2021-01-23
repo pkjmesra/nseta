@@ -50,8 +50,8 @@ def create_cdl_model(symbol, start, end, file_name, steps, clear, format):
 		df.to_csv(file_name)
 	else:
 		df.to_pickle(file_name)
-	default_logger().info('Model saved to: {}'.format(file_name))
-	default_logger().info('Candlestick pattern model plot saved to: {}'.format(symbol +'_candles.html'))
+	default_logger().debug('Model saved to: {}'.format(file_name))
+	default_logger().debug('Candlestick pattern model plot saved to: {}'.format(symbol +'_candles.html'))
 	click.secho('Model saved to: {}'.format(file_name), fg='green', nl=True)
 	try:
 		plot_candlestick(df, symbol, 'Candlestick Pattern Model Recognition for ' + symbol)

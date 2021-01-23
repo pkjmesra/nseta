@@ -22,8 +22,8 @@ STRATEGY_MAPPING_KEYS = list(STRATEGY_MAPPING.keys()) + ['custom']
 @click.option('--end', '-e', help='End date in yyyy-mm-dd format')
 @click.option('--strategy', default='rsi', type=click.Choice(STRATEGY_MAPPING_KEYS),
 	help=', '.join(STRATEGY_MAPPING_KEYS) + ". Choose one.")
-@click.option('--upper', '-u', default=resources.rsi().upper, type=float, help='Used as upper limit, for example, for RSI. Default is {}. Only when strategy is "custom", we buy the security when the predicted next day return is > + upper %'.format(str(resources.rsi().upper)))
-@click.option('--lower', '-l', default=resources.rsi().lower, type=float, help='Used as lower limit, for example, for RSI. Default is {}. Only when strategy is "custom", we sell the security when the predicted next day return is < - lower %'.format(str(resources.rsi().lower)))
+@click.option('--upper', '-u', default=resources.backtest().rsi_upper, type=float, help='Used as upper limit, for example, for RSI. Default is {}. Only when strategy is "custom", we buy the security when the predicted next day return is > + upper %'.format(str(resources.backtest().rsi_upper)))
+@click.option('--lower', '-l', default=resources.backtest().rsi_lower, type=float, help='Used as lower limit, for example, for RSI. Default is {}. Only when strategy is "custom", we sell the security when the predicted next day return is < - lower %'.format(str(resources.backtest().rsi_lower)))
 @click.option('--clear', '-c', default=False, is_flag=True, help='Clears the cached data for the given options.')
 @click.option('--plot', '-p', default=False, is_flag=True, help='By default(False). --plot, if you would like the results to be plotted.')
 @click.option('--intraday', '-i', is_flag=True, help='Test trading strategy for the current intraday price history (Optional)')
@@ -112,7 +112,7 @@ def forecast_strategy(symbol, start, end, strategy, upper, lower, clear, plot):
 		sm = strategyManager()
 		df = sm.get_historical_dataframe(symbol, sd, ed)
 		df = sm.prepare_for_historical_strategy(df, symbol)
-		plt, result = daily_forecast(df, symbol, strategy, upper_limit=float(upper), lower_limit=float(lower), periods=7, plot=plot)
+		plt, result = daily_forecast(df, symbol, strategy, upper_limit=float(upper), lower_limit=float(lower), periods=resources.forecast().period, plot=plot)
 		if plt is not None:
 			plt.show()
 	except Exception as e:

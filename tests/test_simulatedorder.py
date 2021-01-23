@@ -18,14 +18,14 @@ class TestSimulatedOrder(baseUnitTest):
 		self.assertEqual(s.holdings_size, 0)
 		self.assertEqual(s.order_type, OrderType.MIS)
 		s.sell(price)
-		self.assertEqual(s.order_size, int(INITIAL_FUNDS/(price*s.margin)))
-		self.assertEqual(s.holdings_size, 0 - int(INITIAL_FUNDS/(price*s.margin)))
-		self.assertEqual(s.funds, 0)
+		self.assertEqual(s.order_size, 999)
+		self.assertEqual(s.holdings_size, -999)
+		self.assertTrue(s.funds > 32)
 		holdings_size = s.holdings_size
 		s.square_off(2*price)
 		self.assertEqual(s.order_size, holdings_size)
 		self.assertEqual(s.holdings_size, 0)
-		self.assertEqual(s.funds, 2*INITIAL_FUNDS)
+		self.assertTrue(s.funds >= 199697.789413)
 
 	def tearDown(self):
 		super().tearDown()

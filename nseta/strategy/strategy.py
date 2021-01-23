@@ -15,7 +15,7 @@ __VERBOSE__ = default_logger().level == logging.DEBUG
 __all__ = ['backtest_custom_strategy', 'backtest_smac_strategy', 'backtest_emac_strategy', 'backtest_rsi_strategy', 'backtest_macd_strategy', 'backtest_bbands_strategy', 'backtest_multi_strategy', 'daily_forecast']
 
 @tracelog
-def backtest_smac_strategy(df, fast_period=10, slow_period=50, plot=False):
+def backtest_smac_strategy(df, fast_period=resources.backtest().smac_fast_period, slow_period=resources.backtest().smac_slow_period, plot=False):
 	if __VERBOSE__:
 		result = backtest('smac', df.dropna(), fast_period=fast_period, slow_period=slow_period, verbose=__VERBOSE__, plot=plot)
 	else:
@@ -25,7 +25,7 @@ def backtest_smac_strategy(df, fast_period=10, slow_period=50, plot=False):
 	return result
 
 @tracelog
-def backtest_emac_strategy(df, fast_period=10, slow_period=50, plot=False):
+def backtest_emac_strategy(df, fast_period=resources.backtest().emac_fast_period, slow_period=resources.backtest().emac_slow_period, plot=False):
 	if __VERBOSE__:
 		result = backtest('emac', df.dropna(), fast_period=fast_period, slow_period=slow_period, verbose=__VERBOSE__, plot=plot)
 	else:
@@ -35,7 +35,7 @@ def backtest_emac_strategy(df, fast_period=10, slow_period=50, plot=False):
 	return result
 
 @tracelog
-def backtest_rsi_strategy(df, rsi_period=14, rsi_lower=resources.rsi().lower, rsi_upper=resources.rsi().upper, plot=False):
+def backtest_rsi_strategy(df, rsi_period=resources.backtest().rsi_period, rsi_lower=resources.backtest().rsi_lower, rsi_upper=resources.backtest().rsi_upper, plot=False):
 	if __VERBOSE__:
 		result = backtest('rsi', df.dropna(), rsi_period=rsi_period, rsi_upper=rsi_upper, rsi_lower=rsi_lower, verbose=__VERBOSE__, plot=plot)
 	else:
@@ -45,19 +45,19 @@ def backtest_rsi_strategy(df, rsi_period=14, rsi_lower=resources.rsi().lower, rs
 	return result
 
 @tracelog
-def backtest_macd_strategy(df, fast_period=12, slow_period=26, plot=False):
+def backtest_macd_strategy(df, fast_period=resources.backtest().macd_fast_period, slow_period=resources.backtest().macd_slow_period, plot=False):
 	if __VERBOSE__:
-		result = backtest('macd', df.dropna(), fast_period=fast_period, slow_period=slow_period, signal_period=9, 
-		sma_period=30, dir_period=10, verbose=__VERBOSE__, plot=plot)
+		result = backtest('macd', df.dropna(), fast_period=fast_period, slow_period=slow_period, signal_period=resources.backtest().macd_signal_period,
+		sma_period=resources.backtest().macd_sma_period, dir_period=resources.backtest().macd_dir_period, verbose=__VERBOSE__, plot=plot)
 	else:
 		with suppress_stdout_stderr():
-			result = backtest('macd', df.dropna(), fast_period=fast_period, slow_period=slow_period, signal_period=9, 
-				sma_period=30, dir_period=10, verbose=__VERBOSE__, plot=plot)
+			result = backtest('macd', df.dropna(), fast_period=fast_period, slow_period=slow_period, signal_period=resources.backtest().macd_signal_period,
+				sma_period=resources.backtest().macd_sma_period, dir_period=resources.backtest().macd_dir_period, verbose=__VERBOSE__, plot=plot)
 	print("\n{}".format(result[['fast_period', 'slow_period', 'signal_period', 'init_cash', 'final_value', 'pnl']].head()))
 	return result
 
 @tracelog
-def backtest_bbands_strategy(df, period=20, devfactor=2.0, plot=False):
+def backtest_bbands_strategy(df, period=resources.backtest().bbands_period, devfactor=resources.backtest().bbands_devfactor, plot=False):
 	if __VERBOSE__:
 		result = backtest('bbands', df.dropna(), period=period, devfactor=devfactor, verbose=__VERBOSE__, plot=plot)
 	else:
@@ -70,8 +70,8 @@ def backtest_bbands_strategy(df, period=20, devfactor=2.0, plot=False):
 def backtest_multi_strategy(df, strats=None, plot=False):
 	if strats is None:
 		strats = {
-			"smac": {"fast_period": 10, "slow_period": [40, 50]},
-			"rsi": {"rsi_lower": [15, 30], "rsi_upper": 70},
+			"smac": {"fast_period": resources.backtest().multi_smac_fast_period_range, "slow_period": resources.backtest().multi_smac_slow_period_range},
+			"rsi": {"rsi_lower": resources.backtest().multi_rsi_lower_range, "rsi_upper": resources.backtest().multi_rsi_upper_range},
 		}
 	if __VERBOSE__:
 		result = backtest("multi", df.dropna(), strats=strats, verbose=__VERBOSE__, plot=plot)
@@ -91,8 +91,8 @@ STRATEGY_FORECAST_MAPPING = {
 
 STRATEGY_FORECAST_MAPPING_KEYS = list(STRATEGY_FORECAST_MAPPING.keys())
 
-def backtest_custom_strategy(df, symbol, strategy, lower_limit=1.5, upper_limit=1.5, plot=False):
-	plt, result = daily_forecast(df, symbol, strategy, upper_limit=float(upper_limit), lower_limit=float(lower_limit), periods=7, plot=plot)
+def backtest_custom_strategy(df, symbol, strategy, lower_limit=resources.forecast().lower, upper_limit=resources.forecast().upper, plot=False):
+	plt, result = daily_forecast(df, symbol, strategy, upper_limit=float(upper_limit), lower_limit=float(lower_limit), periods=resources.forecast().period, plot=plot)
 	return result
 
 '''
@@ -111,7 +111,7 @@ on in-sample time series forecasts. The forecasts are generated using
 Facebook's Prophet package.
 '''
 @tracelog
-def daily_forecast(df, symbol, strategy, upper_limit=resources.forecast().upper, lower_limit=resources.forecast().lower, periods=0, plot=False):
+def daily_forecast(df, symbol, strategy, upper_limit=resources.forecast().upper, lower_limit=resources.forecast().lower, periods=resources.forecast().period, plot=False):
 	train_size = int(resources.forecast().training_percent * len(df)) - periods              # Use 3 years of data as train set. Note there are about 252 trading days in a year
 	val_size = int(resources.forecast().test_percent * len(df))                  # Use 1 year of data as validation set
 	train_val_size = train_size + val_size # Size of train+validation set
@@ -174,20 +174,20 @@ def init_modeler():
 	# trend more flexible and result in overfitting. Decreasing the 
 	# changepoint_prior_scale will make the trend less flexible and result in 
 	# underfitting. By default, this parameter is set to 0.05.	
-	m = Prophet(growth="linear",
-			seasonality_mode='additive',
-			daily_seasonality=True,
-			weekly_seasonality=False,
-			yearly_seasonality=False,
-			interval_width=0.95, #uncertainty
+	m = Prophet(growth=resources.forecast().growth,
+			seasonality_mode=resources.forecast().seasonality_mode,
+			daily_seasonality=resources.forecast().daily_seasonality,
+			weekly_seasonality=resources.forecast().weekly_seasonality,
+			yearly_seasonality=resources.forecast().yearly_seasonality,
+			interval_width=resources.forecast().interval_width, #uncertainty
 			holidays=None,
-			n_changepoints=20,
-			changepoint_prior_scale=2.5
+			n_changepoints=resources.forecast().n_changepoints,
+			changepoint_prior_scale=resources.forecast().changepoint_prior_scale
 		   )
-	m.add_seasonality(name='monthly', period=21, fourier_order=10)
+	m.add_seasonality(name=resources.forecast().seasonality_name, period=resources.forecast().seasonality_period, fourier_order=resources.forecast().fourier_order)
 	# Turn off fbprophet stdout logger
-	logging.getLogger('fbprophet').setLevel(default_logger().level)
-	m.add_country_holidays(country_name='IN')
+	logging.getLogger('fbprophet').setLevel(resources.forecast().fbprophet_log_level) # default_logger().level
+	m.add_country_holidays(country_name=resources.forecast().country_name)
 	return m
 
 '''
@@ -206,7 +206,7 @@ commonly used as a benchmark against which more sophisticated models can be comp
 def fit_model(m, ts, train_val_size, periods):
 	m.fit(ts[0:train_val_size])
 	ts.head(10)
-	future = m.make_future_dataframe(periods=3*periods, freq='D')
+	future = m.make_future_dataframe(periods=resources.forecast().future_period_factor *periods, freq=resources.forecast().fbprophet_future_dataframe_frequency)
 	# Eliminate weekend from future dataframe
 	future['day'] = future['ds'].dt.weekday
 	future = future[future['day']<=4]
@@ -226,20 +226,20 @@ def plot_forecast(m, forecast, symbol, strategy, df, train_val_size, periods):
 		fig1.axes[0].set_xlabel('Date')
 		fig1.axes[0].set_ylabel('Price')
 		plt.subplot()
-		plt.title(symbol.upper()+' Forecasted Closing Price, trend and strategic points - Strategy:' + strategy.upper(), fontsize=15)
+		plt.title(symbol.upper()+' Forecasted Closing Price, trend and strategic points - Strategy:' + strategy.upper(), fontsize=resources.forecast().plot_font_size)
 		plt.subplots_adjust(top=0.92, bottom=0.08, left=0.10, right=0.90, hspace=0.25,
 							wspace=0.5)
 
 		# Plot the predictions
 		rcParams['figure.figsize'] = 10, 8 # width 10, height 8
-		rcParams.update({'font.size': 14})
+		rcParams.update({'font.size': resources.forecast().plot_font_size})
 
 		ax = df.plot(x='datetime', y='close', style='bx-', grid=True)
 
 		# Plot the predictions
 		preds_list = forecast['yhat'][train_val_size:train_val_size+periods]
 		ax.plot(df['datetime'][train_val_size:train_val_size+periods], preds_list, marker='x')
-			
+
 		ax.set_xlabel("Date")
 		ax.set_ylabel("INR")
 		ax.legend(['Close', 'Predictions'])

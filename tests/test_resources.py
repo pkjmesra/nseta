@@ -16,7 +16,7 @@ class TestResources(unittest.TestCase):
 	def test_config_section(self):
 		r = resources()
 		result = r.config_section('SCANNER')
-		self.assertTrue(result['UserStocks'] is not None)
+		self.assertTrue(result['UserStocksFilePath'] is not None)
 
 	def test_invalid_config_section(self):
 		r = resources()
@@ -25,7 +25,7 @@ class TestResources(unittest.TestCase):
 
 	def test_config_valueforkey(self):
 		r = resources()
-		result = r.config_valueforkey('DEFAULT', 'DefaultStocks')
+		result = r.config_valueforkey('DEFAULT', 'DefaultStocksFilePath')
 		self.assertEqual(result, 'stocks.txt')
 
 	def test_invalid_config_valueforkey(self):
@@ -36,7 +36,7 @@ class TestResources(unittest.TestCase):
 		self.assertEqual(result, None)
 
 	def test_default_stocks(self):
-		result = resources.default_stocks()
+		result = resources.default().stocks
 		self.assertTrue(len(result) > 0)
 
 	def test_rsi_config(self):

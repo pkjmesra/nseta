@@ -16,6 +16,7 @@ from nseta.scanner.tiscanner import scanner
 from nseta.common.multithreadedScanner import multithreaded_scan
 from nseta.common.ti import ti
 from nseta.common.history import *
+from nseta.resources.resources import *
 from nseta.plots.plots import plot_rsi
 
 __all__ = ['STRATEGY_MAPPING', 'strategyManager']
@@ -28,33 +29,31 @@ CONCURRENT_STRATEGY_COUNT = 3
 
 @tracelog
 def smac_strategy(df,  lower, upper, plot=False):
-	backtest_smac_strategy(df, fast_period=10, slow_period=50, plot=plot)
+	backtest_smac_strategy(df, fast_period=resources.backtest().smac_fast_period, slow_period=resources.backtest().smac_slow_period, plot=plot)
 
 @tracelog
 def emac_strategy(df,  lower, upper, plot=False):
-	backtest_emac_strategy(df, fast_period=9, slow_period=50, plot=plot)
+	backtest_emac_strategy(df, fast_period=resources.backtest().emac_fast_period, slow_period=resources.backtest().emac_slow_period, plot=plot)
 
 @tracelog
 def bbands_strategy(df,  lower, upper, plot=False):
-	backtest_bbands_strategy(df, period=20, devfactor=2.0)
+	backtest_bbands_strategy(df, period=resources.backtest().bbands_period, devfactor=resources.backtest().bbands_devfactor)
 
 @tracelog
-def rsi_strategy(df,  lower=30, upper=70, plot=False):
-	if lower is None:
-		lower = 30
-	if upper is None:
-		upper = 70
-	backtest_rsi_strategy(df, rsi_period=14, rsi_lower=lower, rsi_upper=upper, plot=plot)
+def rsi_strategy(df,  lower=resources.backtest().rsi_lower, upper=resources.backtest().rsi_upper, plot=False):
+	lower = resources.backtest().rsi_lower if lower is None else lower
+	upper = resources.backtest().rsi_upper if upper is None else upper
+	backtest_rsi_strategy(df, rsi_period=resources.backtest().rsi_period, rsi_lower=lower, rsi_upper=upper, plot=plot)
 
 @tracelog
 def macd_strategy(df,  lower, upper, plot=False):
-	backtest_macd_strategy(df, fast_period=12, slow_period=26, plot=plot)
+	backtest_macd_strategy(df, fast_period=resources.backtest().macd_fast_period, slow_period=resources.backtest().macd_slow_period, plot=plot)
 
 @tracelog
 def multi_strategy(df,  lower, upper, plot=False):
 	SAMPLE_STRAT_DICT = {
-		"smac": {"fast_period": 10, "slow_period": 50},
-		"rsi": {"rsi_lower": 30, "rsi_upper": 70},
+		"smac": {"fast_period": resources.backtest().multi_smac_fast_period_range, "slow_period": resources.backtest().multi_smac_slow_period_range},
+		"rsi": {"rsi_lower": resources.backtest().multi_rsi_lower_range, "rsi_upper": resources.backtest().multi_rsi_upper_range},
 	}
 	results = backtest_multi_strategy(df, SAMPLE_STRAT_DICT, plot=plot)
 	print(results[['smac.fast_period', 'smac.slow_period', 'rsi.rsi_lower', 'rsi.rsi_upper', 'init_cash', 'final_value', 'pnl']].head())

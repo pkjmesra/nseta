@@ -113,7 +113,7 @@ class scanner:
 		global __scan_counter__
 		__scan_counter__ = 0
 		# If stocks array is empty, pull stock list from stocks.txt file
-		stocks = stocks if stocks is not None and len(stocks) > 0 else resources.default_stocks()
+		stocks = stocks if stocks is not None and len(stocks) > 0 else resources.default().stocks
 		self._total_counter = len(stocks)
 		return stocks
 
@@ -423,10 +423,11 @@ class scanner:
 		return df
 
 	@tracelog
-	def update_signals(self, signalframes, df, full_df=None):
-		if (df is None) or (len(df) < 1) or (not 'RSI' in df.keys() and not 'EMA(9)' in df.keys()):
+	def update_signals(self, signalframes, df_main, full_df=None):
+		if (df_main is None) or (len(df_main) < 1) or (not 'RSI' in df_main.keys() and not 'EMA(9)' in df_main.keys()):
 			return signalframes
 		try:
+			df = df_main.copy(deep=True)
 			df['Signal'] = 'NA'
 			df['Remarks'] = 'NA'
 			df['Confidence'] = 'NA'
@@ -445,6 +446,7 @@ class scanner:
 				df['macd(12)'] = df['macd(12)'].apply(lambda x: round(x, decimals))
 				df['macdhist(26)'] = df['macdhist(26)'].apply(lambda x: round(x, decimals))
 			self.trim_columns(df)
+			df_main = df
 		except Exception as e:
 			default_logger().debug(e, exc_info=True)
 			return signalframes

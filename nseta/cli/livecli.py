@@ -168,7 +168,7 @@ def scan_intraday_results(df, signaldf, indicator, should_cache=True):
 
 def scan_swing(stocks, indicator, background):
 	if background:
-		default_logger().info('Background running not supported yet. Stay tuned. Executing just once...')
+		default_logger().debug('Background running not supported yet. Stay tuned. Executing just once...')
 	df, signaldf = load_archived_scan_results(indicator, ResponseType.History)
 	if df is None or len(df) == 0:
 		s = scanner(indicator=indicator)
@@ -193,7 +193,7 @@ def scan_swing_results(df, signaldf, indicator, should_cache=True):
 
 def scan_volume(stocks, indicator, background, orderby):
 	if background:
-		default_logger().info('Background running not supported yet. Stay tuned. Executing just once...')
+		default_logger().debug('Background running not supported yet. Stay tuned. Executing just once...')
 	df, signaldf = load_archived_scan_results(indicator, ResponseType.Volume)
 	if df is None or len(df) == 0 or signaldf is None or len(signaldf) == 0:
 		s = scanner(indicator=indicator)

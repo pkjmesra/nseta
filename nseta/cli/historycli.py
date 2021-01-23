@@ -45,7 +45,7 @@ def history(symbol, start, end, file_name, index, clear, format): #, futures, ex
 		df.to_csv(file_name)
 	else:
 		df.to_pickle(file_name)
-	default_logger().info('Saved to: {}'.format(file_name))
+	default_logger().debug('Saved to: {}'.format(file_name))
 	click.secho('Saved to: {}'.format(file_name), fg='green', nl=True)
 
 @click.command(help='Get PE history of a security for given dates')
@@ -81,5 +81,5 @@ def pe_history(symbol, start, end, format, file_name):
 		df.to_csv(file_name)
 	else:
 		df.to_pickle(file_name)
-	default_logger().info('Saved to: {}'.format(file_name))
+	default_logger().debug('Saved to: {}'.format(file_name))
 	click.secho('Saved to: {}'.format(file_name) , fg='green', nl=True)

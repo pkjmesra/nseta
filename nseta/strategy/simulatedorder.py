@@ -1,8 +1,9 @@
 import enum
+from nseta.resources.resources import *
 
 __all__ = ['simulatedorder', 'OrderType', 'INITIAL_FUNDS']
 
-INITIAL_FUNDS = 100000
+INITIAL_FUNDS = resources.backtest().init_cash
 
 class OrderType(enum.Enum):
 	MIS = 1
@@ -12,14 +13,14 @@ class simulatedorder:
 	def __init__(self, order_type=OrderType.Delivery):
 		self._buy_prop = 1
 		self._sell_prop = 1
-		self._single_tran_multiplier = 0.5
-		self._commission = 0
+		self._single_tran_multiplier = resources.backtest().max_fund_utilization_per_tran
+		self._commission = resources.backtest().commission
 		self._funds = INITIAL_FUNDS
 		self._stock_price = 0
 		self._holdings_size = 0
 		self._order_size = 0
 		self._order_type = order_type
-		self._margin = 0.2 if self.order_type == OrderType.MIS else 1 # Only 20% margin is assumed to be required
+		self._margin = resources.backtest().intraday_margin if self.order_type == OrderType.MIS else 1 # Only 20% margin is assumed to be required
 
 	@property
 	def single_tran_multiplier(self):

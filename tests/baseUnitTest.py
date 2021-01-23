@@ -31,4 +31,4 @@ class baseUnitTest(unittest.TestCase):
 		default_logger().removeHandler(self.stream_handler)
 		sys.stdout = sys.__stdout__                     # Reset redirect.
 		t = time.time() - self.startTime
-		print('%s: %.3f' % (self.id().ljust(100), t))
+		print('\n%s: %.3f' % (self.id().ljust(100), t))
