@@ -320,8 +320,8 @@ class Forecast:
 
 class resources:
 
-	def __init__(self):
-		self._resources_dir = os.path.dirname(os.path.realpath(__file__))
+	def __init__(self, res_dir=None):
+		self._resources_dir = os.path.dirname(os.path.realpath(__file__)) if res_dir is None else res_dir
 	
 	@property
 	def resources_directory(self):

@@ -21,8 +21,8 @@ class ResponseType(enum.Enum):
 
 class archiver:
 
-	def __init__(self):
-		user_data_dir = resources.default().user_data_dir
+	def __init__(self, data_dir=None):
+		user_data_dir = resources.default().user_data_dir if data_dir is None else data_dir
 		if user_data_dir is not None:
 			try:
 				original_umask = os.umask(0)

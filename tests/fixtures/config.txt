@@ -1,0 +1,63 @@
+[DEFAULT]
+version = 0.6
+DefaultStocksFilePath = stocks.txt
+UserDataDirectory = /Users/Shared/nseta/
+
+[RSI]
+Lower = 25
+Upper = 75
+
+[SCANNER]
+UserStocksFilePath = userstocks.txt
+Background_Scan_Frequency_Intraday = 10
+Background_Scan_Frequency_Live = 60
+Background_Scan_Frequency_Quotes = 60
+Background_Scan_Frequency_Volume = 30
+
+[FORECAST]
+Lower = 1.5
+Upper = 1.5
+Training_percent = 0.75
+Test_percent = 0.25
+period = 7
+growth = linear
+seasonality_mode = additive
+seasonality_name = monthly
+seasonality_period = 21
+fourier_order = 10
+daily_seasonality = yes
+weekly_seasonality = no
+yearly_seasonality = no
+interval_width = 0.95
+holidays_file_path =
+n_changepoints = 20
+changepoint_prior_scale = 2.5
+fbprophet_log_level = INFO
+fbprophet_future_dataframe_frequency = D
+country_name = IN
+future_period_factor = 3
+plot_font_size = 15
+
+[BACKTEST]
+init_cash = 100000
+smac_fast_period = 10
+smac_slow_period = 50
+emac_fast_period = 9
+emac_slow_period = 50
+macd_fast_period = 12
+macd_slow_period = 26
+macd_signal_period = 9
+macd_sma_period = 30
+macd_dir_period = 10
+multi_smac_fast_period_range = 10
+multi_smac_slow_period_range = 10,50
+multi_rsi_lower_range = 15,20
+multi_rsi_upper_range = 75,85
+bbands_period = 20
+bbands_devfactor = 2.0
+rsi_period = 14
+rsi_upper = 75
+rsi_lower = 25
+intraday_margin = 0.2
+max_fund_utilization_per_tran = 0.5
+commission = 0.00067471

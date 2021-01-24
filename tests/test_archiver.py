@@ -5,6 +5,7 @@ import pandas as pd
 import os
 
 from nseta.archives.archiver import *
+from nseta.resources.resources import *
 from baseUnitTest import baseUnitTest
 
 class TestArchiver(baseUnitTest):
@@ -38,7 +39,11 @@ class TestArchiver(baseUnitTest):
 		self.assertIn('/run/volume', result)
 
 	def test_all_directories_created(self):
-		a = archiver()
+		test_dir = os.path.dirname(os.path.realpath(__file__))
+		res_dir = os.path.join(test_dir, 'fixtures')
+		res = resources(res_dir=res_dir)
+		user_dir = res.config_valueforkey('DEFAULT',"UserDataDirectory")
+		a = archiver(data_dir=user_dir)
 		self.assertTrue(os.path.exists(a.archival_directory))
 		self.assertTrue(os.path.exists(a.run_directory))
 		self.assertTrue(os.path.exists(a.logs_directory))
