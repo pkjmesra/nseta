@@ -4,18 +4,23 @@ import os.path
 __all__ = ['resources', 'RSI','Forecast','Backtest','Scanner']
 
 class Default:
-	def __init__(self, defaultstocks_path='stocks.txt',background_scan_frequency=10):
+	def __init__(self, version=0.6, defaultstocks_path='stocks.txt', UserDataDirectory=None):
+		self._version = version
 		self._defaultstocks_filepath = defaultstocks_path
-		self._background_scan_frequency = int(background_scan_frequency)
 		self._resources_dir = os.path.dirname(os.path.realpath(__file__))
+		self._user_data_dir = UserDataDirectory if len(UserDataDirectory) > 0 else None
+
+	@property
+	def version(self):
+		return self._version
 
 	@property
 	def defaultstocks_filepath(self):
 		return self._defaultstocks_filepath
 
 	@property
-	def background_scan_frequency(self):
-		return self._background_scan_frequency
+	def user_data_dir(self):
+		return self._user_data_dir
 
 	@property
 	def resources_directory(self):
@@ -31,12 +36,34 @@ class Default:
 		return stocks
 
 class Scanner:
-	def __init__(self, userstocks_path='userstocks.txt'):
+	def __init__(self, userstocks_path='userstocks.txt',Background_Scan_Frequency_Intraday=10,
+		Background_Scan_Frequency_Live=60,Background_Scan_Frequency_Quotes=60,
+		Background_Scan_Frequency_Volume=30):
 		self._userstocks_filepath = userstocks_path
+		self._Background_Scan_Frequency_Intraday = int(Background_Scan_Frequency_Intraday)
+		self._Background_Scan_Frequency_Live = int(Background_Scan_Frequency_Live)
+		self._Background_Scan_Frequency_Quotes = int(Background_Scan_Frequency_Quotes)
+		self._Background_Scan_Frequency_Volume = int(Background_Scan_Frequency_Volume)
 
 	@property
 	def userstocks_filepath(self):
 		return self._userstocks_filepath
+
+	@property
+	def background_scan_frequency_intraday(self):
+		return self._Background_Scan_Frequency_Intraday
+
+	@property
+	def background_scan_frequency_live(self):
+		return self._Background_Scan_Frequency_Live
+
+	@property
+	def background_scan_frequency_quotes(self):
+		return self._Background_Scan_Frequency_Quotes
+
+	@property
+	def background_scan_frequency_volume(self):
+		return self._Background_Scan_Frequency_Volume
 
 class Backtest:
 	def __init__(self, init_cash=100000, smac_fast_period=10,smac_slow_period=50,
@@ -329,9 +356,10 @@ class resources:
 	@classmethod #@staticmethod
 	def default(cls):
 		r = cls()
+		version = r.config_valueforkey('DEFAULT',"version")
 		file_path = r.config_valueforkey('DEFAULT',"DefaultStocksFilePath")
-		freq = r.config_valueforkey('DEFAULT',"Background_Scan_Frequency")
-		return Default(file_path, freq)
+		user_dir = r.config_valueforkey('DEFAULT',"UserDataDirectory")
+		return Default(version, file_path,user_dir)
 
 	@classmethod
 	def rsi(cls):
@@ -409,4 +437,9 @@ class resources:
 	@classmethod
 	def scanner(cls):
 		r = cls()
-		return Scanner(r.config_valueforkey('SCANNER',"UserStocksFilePath"))
+		usfp = r.config_valueforkey('SCANNER',"UserStocksFilePath")
+		bsfi = r.config_valueforkey('SCANNER',"Background_Scan_Frequency_Intraday")
+		bsfl = r.config_valueforkey('SCANNER',"Background_Scan_Frequency_Live")
+		bsfq = r.config_valueforkey('SCANNER',"Background_Scan_Frequency_Quotes")
+		bsfv = r.config_valueforkey('SCANNER',"Background_Scan_Frequency_Volume")
+		return Scanner(usfp, bsfi, bsfl,bsfq, bsfv)

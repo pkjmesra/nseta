@@ -4,7 +4,7 @@ import unittest
 
 from click.testing import CliRunner
 
-from nseta.cli.livecli import live_quote, scan, live_quote_background, scan_live_background, scan_intraday_background
+from nseta.cli.livecli import live_quote, scan, live_quote_background, scan_live_background, scan_intraday_background, scan_volume_background
 from nseta.common import urls
 from nseta.scanner.tiscanner import scanner
 from baseUnitTest import baseUnitTest
@@ -66,6 +66,11 @@ class TestLivecli(baseUnitTest):
 		self.assertEqual(result.exit_code , 0)
 		self.assertIn("Volume scanning finished.", result.output, str(result.output))
 		self.assertIn("TDYVol(%)", result.output, str(result.output))
+	
+	def test_scan_volume_background(self):
+		s = scanner('emac')
+		result = scan_volume_background(s, ['HDFC'], 'emac', 'momentum', terminate_after_iter=2, wait_time=2)
+		self.assertEqual(result , 2)
 
 	def test_live_quote_inputs(self):
 		runner = CliRunner()

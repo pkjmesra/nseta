@@ -8,6 +8,7 @@ from nseta.archives.archiver import *
 from nseta.cli.inputs import *
 from nseta.common.tradingtime import *
 from nseta.common.log import tracelog, default_logger
+from nseta.resources.resources import *
 from datetime import datetime, date
 
 __all__ = ['live_quote', 'scan', 'scan_live', 'scan_intraday']
@@ -36,11 +37,13 @@ def live_quote(symbol, general, ohlc, wk52, volume, orderbook, background):
 		return
 	global RUN_IN_BACKGROUND
 	try:
-		orgdata, df = get_live_quote(symbol, general, ohlc, wk52, volume, orderbook)
-		format_beautified(orgdata, general, ohlc, wk52, volume, orderbook)
 		if background:
-			b = threading.Thread(name='live_quote_background', target=live_quote_background, args=[symbol, general, ohlc, wk52, volume, orderbook])
+			b = threading.Thread(name='live_quote_background', target=live_quote_background, args=[symbol, general, ohlc, wk52, volume, orderbook], daemon=True)
 			b.start()
+			b.join()
+		else:
+			orgdata, df = get_live_quote(symbol, general, ohlc, wk52, volume, orderbook)
+			format_beautified(orgdata, general, ohlc, wk52, volume, orderbook)
 	except Exception as e:
 		RUN_IN_BACKGROUND = False
 		default_logger().debug(e, exc_info=True)
@@ -119,14 +122,16 @@ def save_scan_results_archive(df, signaldf, response_type, indicator, should_cac
 			default_logger().debug('Saved to: {}'.format(signaldf_file_name))
 
 def scan_live(stocks, indicator, background):
-	df, signaldf = load_archived_scan_results(indicator, ResponseType.Quote)
-	s = scanner(indicator=indicator)
-	if df is None or len(df) == 0:
-		df, signaldf = s.scan_live(stocks=stocks)
-	scan_live_results(df, signaldf, indicator)
 	if background:
-		b = threading.Thread(name='scan_live_background', target=scan_live_background, args=[s, stocks, indicator])
+		b = threading.Thread(name='scan_live_background', target=scan_live_background, args=[s, stocks, indicator], daemon=True)
 		b.start()
+		b.join()
+	else:
+		df, signaldf = load_archived_scan_results(indicator, ResponseType.Quote)
+		s = scanner(indicator=indicator)
+		if df is None or len(df) == 0:
+			df, signaldf = s.scan_live(stocks=stocks)
+		scan_live_results(df, signaldf, indicator)
 
 def scan_live_results(df, signaldf, indicator, should_cache=True):
 	if df is not None and len(df) > 0:
@@ -143,14 +148,16 @@ def scan_live_results(df, signaldf, indicator, should_cache=True):
 	click.secho('Live scanning finished.', fg='green', nl=True)
 
 def scan_intraday(stocks, indicator, background):
-	df, signaldf = load_archived_scan_results(indicator, ResponseType.Intraday)
-	s = scanner(indicator=indicator)
-	if df is None or len(df) == 0:
-		df, signaldf = s.scan_intraday(stocks=stocks)
-	scan_intraday_results(df, signaldf, indicator)
 	if background:
-		b = threading.Thread(name='scan_intraday_background', target=scan_intraday_background, args=[s, stocks, indicator])
+		b = threading.Thread(name='scan_intraday_background', target=scan_intraday_background, args=[s, stocks, indicator], daemon=True)
 		b.start()
+		b.join()
+	else:
+		df, signaldf = load_archived_scan_results(indicator, ResponseType.Intraday)
+		s = scanner(indicator=indicator)
+		if df is None or len(df) == 0:
+			df, signaldf = s.scan_intraday(stocks=stocks)
+		scan_intraday_results(df, signaldf, indicator)
 
 def scan_intraday_results(df, signaldf, indicator, should_cache=True):
 	if df is not None and len(df) > 0:
@@ -193,12 +200,15 @@ def scan_swing_results(df, signaldf, indicator, should_cache=True):
 
 def scan_volume(stocks, indicator, background, orderby):
 	if background:
-		default_logger().debug('Background running not supported yet. Stay tuned. Executing just once...')
-	df, signaldf = load_archived_scan_results(indicator, ResponseType.Volume)
-	if df is None or len(df) == 0 or signaldf is None or len(signaldf) == 0:
-		s = scanner(indicator=indicator)
-		df, signaldf = s.scan_volume(stocks=stocks)
-	scan_volume_results(df, signaldf, indicator, orderby)
+		b = threading.Thread(name='scan_volume_background', target=scan_volume_background, args=[s, stocks, indicator, orderby], daemon=True)
+		b.start()
+		b.join()
+	else:
+		df, signaldf = load_archived_scan_results(indicator, ResponseType.Volume)
+		if df is None or len(df) == 0 or signaldf is None or len(signaldf) == 0:
+			s = scanner(indicator=indicator)
+			df, signaldf = s.scan_volume(stocks=stocks)
+		scan_volume_results(df, signaldf, indicator, orderby)
 
 def scan_volume_results(df, signaldf, indicator, orderby, should_cache=True):
 	order_key = '7DVol(%)' if orderby == 'momentum' else 'TDYVol(%)'
@@ -271,7 +281,7 @@ def clear_cache(clear, background, indicator, intraday = True, live = False, swi
 		arch.clearcache(signaldf_file_name, response_type, force_clear=force_clear)
 		arch.clearcache(response_type=response_type, force_clear=force_clear)
 
-def live_quote_background(symbol, general, ohlc, wk52, volume, orderbook, terminate_after_iter=0, wait_time=60):
+def live_quote_background(symbol, general, ohlc, wk52, volume, orderbook, terminate_after_iter=0, wait_time=resources.scanner().background_scan_frequency_quotes):
 	global RUN_IN_BACKGROUND
 	RUN_IN_BACKGROUND = True
 	iteration = 0
@@ -286,7 +296,7 @@ def live_quote_background(symbol, general, ohlc, wk52, volume, orderbook, termin
 	click.secho('Finished all iterations of scanning live quotes.', fg='green', nl=True)
 	return iteration
 
-def scan_live_background(scannerinstance, stocks, indicator, terminate_after_iter=0, wait_time=60):
+def scan_live_background(scannerinstance, stocks, indicator, terminate_after_iter=0, wait_time=resources.scanner().background_scan_frequency_live):
 	global RUN_IN_BACKGROUND
 	RUN_IN_BACKGROUND = True
 	iteration = 0
@@ -295,14 +305,14 @@ def scan_live_background(scannerinstance, stocks, indicator, terminate_after_ite
 		if terminate_after_iter > 0 and iteration >= terminate_after_iter:
 			RUN_IN_BACKGROUND = False
 			break
-		clear_cache(True, True, indicator, False, True, False, False)
+		clear_cache(True, True, indicator, intraday=False, live=True, swing=False, volume=False, force_clear=True)
 		df, signaldf = scannerinstance.scan_live(stocks=stocks)
 		scan_live_results(df, signaldf, indicator, should_cache=False)
 		time.sleep(wait_time)
 	click.secho('Finished all iterations of scanning live stocks.', fg='green', nl=True)
 	return iteration
 
-def scan_intraday_background(scannerinstance, stocks, indicator, terminate_after_iter=0, wait_time=10):
+def scan_intraday_background(scannerinstance, stocks, indicator, terminate_after_iter=0, wait_time=resources.scanner().background_scan_frequency_intraday):
 	global RUN_IN_BACKGROUND
 	RUN_IN_BACKGROUND = True
 	iteration = 0
@@ -311,9 +321,25 @@ def scan_intraday_background(scannerinstance, stocks, indicator, terminate_after
 		if terminate_after_iter > 0 and iteration >= terminate_after_iter:
 			RUN_IN_BACKGROUND = False
 			break
-		clear_cache(True, True, indicator, True, False, False, False)
+		clear_cache(True, True, indicator, intraday=True, live=False, swing=False, volume=False, force_clear=True)
 		df, signaldf = scannerinstance.scan_intraday(stocks=stocks)
 		scan_intraday_results(df, signaldf, indicator, should_cache= False)
 		time.sleep(wait_time)
 	click.secho('Finished all iterations of scanning intraday.', fg='green', nl=True)
+	return iteration
+
+def scan_volume_background(scannerinstance, stocks, indicator, orderby, terminate_after_iter=0, wait_time=resources.scanner().background_scan_frequency_volume):
+	global RUN_IN_BACKGROUND
+	RUN_IN_BACKGROUND = True
+	iteration = 0
+	while RUN_IN_BACKGROUND:
+		iteration = iteration + 1
+		if terminate_after_iter > 0 and iteration >= terminate_after_iter:
+			RUN_IN_BACKGROUND = False
+			break
+		clear_cache(True, True, indicator, intraday=False, live=False, swing=False, volume=True, force_clear=True)
+		df, signaldf = scannerinstance.scan_volume(stocks=stocks)
+		scan_volume_results(df, signaldf, indicator, orderby)
+		time.sleep(wait_time)
+	click.secho('Finished all iterations of scanning volume.', fg='green', nl=True)
 	return iteration

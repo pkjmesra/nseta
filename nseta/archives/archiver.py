@@ -8,6 +8,7 @@ import pytz
 
 from nseta.common.log import tracelog, default_logger
 from nseta.common.tradingtime import *
+from nseta.resources.resources import *
 
 __all__ = ['archiver', 'ResponseType']
 
@@ -21,7 +22,22 @@ class ResponseType(enum.Enum):
 class archiver:
 
 	def __init__(self):
-		self._archival_dir = os.path.dirname(os.path.realpath(__file__))
+		user_data_dir = resources.default().user_data_dir
+		if user_data_dir is not None:
+			try:
+				original_umask = os.umask(0)
+				if not os.path.exists(user_data_dir):
+					os.makedirs(user_data_dir, mode=0o777)
+					os.chmod(user_data_dir, mode=0o777)
+				self._archival_dir = user_data_dir
+			except OSError as e:
+				default_logger().debug("Exception in archiver while creating user specified DIR:{}.".format(user_data_dir))
+				default_logger().debug(e, exc_info=True)
+				self._archival_dir = os.path.dirname(os.path.realpath(__file__))
+			finally:
+				os.umask(original_umask)
+		else:
+			self._archival_dir = os.path.dirname(os.path.realpath(__file__))
 		try:
 			self._logs_dir = os.path.join(self.archival_directory, 'logs')
 			if not os.path.exists(self._logs_dir):
@@ -175,7 +191,8 @@ class archiver:
 		directory = self.get_directory(response_type)
 		self.remove_cached_file(directory, force_clear=deep_clean, prefix= None if deep_clean else 'DF_')
 		self.remove_cached_file(directory, force_clear=deep_clean, prefix= None if deep_clean else 'SIGNALDF_')
-		self.remove_cached_file(self.logs_directory, force_clear=True)
+		if deep_clean:
+			self.remove_cached_file(self.logs_directory, force_clear=True)
 
 	@tracelog
 	def clearcache(self, symbol=None, response_type=ResponseType.Default, force_clear=False):

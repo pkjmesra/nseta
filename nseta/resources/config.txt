@@ -1,6 +1,7 @@
 [DEFAULT]
+version = 0.6
 DefaultStocksFilePath = stocks.txt
-Background_Scan_Frequency = 10
+UserDataDirectory =
 
 [RSI]
 Lower = 25
@@ -8,6 +9,10 @@ Upper = 75
 
 [SCANNER]
 UserStocksFilePath = userstocks.txt
+Background_Scan_Frequency_Intraday = 10
+Background_Scan_Frequency_Live = 60
+Background_Scan_Frequency_Quotes = 60
+Background_Scan_Frequency_Volume = 30
 
 [FORECAST]
 Lower = 1.5
