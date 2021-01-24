@@ -30,11 +30,11 @@ class ti:
 		return df
 
 	def get_rsi_df(self, df):
-		df['RSI'] = ta.RSI(df['Close'],14)
+		df['RSI'] = ta.RSI(df['Close'],14).apply(lambda x: round(x, 2))
 		return df['RSI']
 
 	def get_mom_df(self, df):
-		df['MOM'] = ta.MOM(df['Close'],2)
+		df['MOM'] = ta.MOM(df['Close'],2).apply(lambda x: round(x, 2))
 		return df['MOM']
 
 	def get_dmi_df(self, df):
@@ -43,23 +43,29 @@ class ti:
 
 	def get_macd_df(self, df):
 		df['macd'], df['macdsignal'], df['macdhist'] = ta.MACD(df['Close'], fastperiod=12, slowperiod=26, signalperiod=9)
+		df['macd'] = df['macd'].apply(lambda x: round(x, 2))
+		df['macdsignal']= df['macdsignal'].apply(lambda x: round(x, 2))
+		df['macdhist'] = df['macdhist'].apply(lambda x: round(x, 2))
 		return df[['macd','macdsignal', 'macdhist']]
 
 	def get_sma_df(self, df):
-		df['SMA(10)'] = ta.SMA(df['Close'],10)
-		df['SMA(50)'] = ta.SMA(df['Close'],50)
+		df['SMA(10)'] = ta.SMA(df['Close'],10).apply(lambda x: round(x, 2))
+		df['SMA(50)'] = ta.SMA(df['Close'],50).apply(lambda x: round(x, 2))
 		return df[['Close','SMA(10)', 'SMA(50)']]
 
 	def get_ema_df(self, df):
-		df['EMA(9)'] = ta.EMA(df['Close'], timeperiod = 9)
+		df['EMA(9)'] = ta.EMA(df['Close'], timeperiod = 9).apply(lambda x: round(x, 2))
 		return df[['Close','EMA(9)']]
 
 	def get_adx_df(self, df):
-		df['ADX'] = ta.ADX(df['High'],df['Low'], df['Close'], timeperiod=14)
+		df['ADX'] = ta.ADX(df['High'],df['Low'], df['Close'], timeperiod=14).apply(lambda x: round(x, 2))
 		return df['ADX']
 
 	def get_bbands_df(self, df):
 		df['BBands-U'], df['BBands-M'], df['BBands-L'] = ta.BBANDS(df['Close'], timeperiod =20)
+		df['BBands-U'] = df['BBands-U'].apply(lambda x: round(x, 2))
+		df['BBands-M'] = df['BBands-M'].apply(lambda x: round(x, 2))
+		df['BBands-L'] = df['BBands-L'].apply(lambda x: round(x, 2))
 		return df[['Close','BBands-U','BBands-M','BBands-L']]
 
 	def get_obv_df(self, df):

@@ -1,10 +1,13 @@
 [DEFAULT]
 version = 0.6
 DefaultStocksFilePath = stocks.txt
+# A valid folder path. If it does not exit, it will be created.
 UserDataDirectory =
 
 [RSI]
+# Any value between 0 to 100
 Lower = 25
+# Any value between 0 to 100
 Upper = 75
 
 [SCANNER]
@@ -13,6 +16,13 @@ Background_Scan_Frequency_Intraday = 10
 Background_Scan_Frequency_Live = 60
 Background_Scan_Frequency_Quotes = 60
 Background_Scan_Frequency_Volume = 30
+enumerate_volume_scan_signals = no
+# Available columns : Symbol,Date,VWAP,LTP,%%Change,TDYVol(%%),7DVol(%%),Remarks,Yst7DVol(%%),Yst%%Del,Tdy%%Del,PPoint,S1-R3
+volume_scan_columns = Symbol,VWAP,LTP,%%Change,TDYVol(%%),7DVol(%%),Remarks,Tdy%%Del,S1-R3
+# Available columns: Symbol,Date,RSI,MOM,EMA(9),macd(12),macdsignal(9),macdhist(26),BBands-U,BBands-L,LTP,Signal,Remarks,Confidence
+swing_scan_columns = Symbol,RSI,macd(12),macdsignal(9),BBands-U,BBands-L,LTP,Signal,Remarks,Confidence
+# Available columns : Symbol,Date,RSI,MOM,EMA(9),macd(12),macdsignal(9),macdhist(26),BBands-U,BBands-L,LTP,Signal,Remarks,Confidence
+intraday_scan_columns = Symbol,RSI,MOM,macd(12),macdsignal(9),BBands-U,BBands-L,LTP,Signal,Remarks,Confidence
 
 [FORECAST]
 Lower = 1.5

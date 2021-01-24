@@ -3,6 +3,14 @@ import os.path
 
 __all__ = ['resources', 'RSI','Forecast','Backtest','Scanner']
 
+def split_into_range_int(str_val):
+	return sum(((list(range(*[int(b) + c
+			for c, b in enumerate(a.split('-'))]))
+			if '-' in a else [int(a)]) for a in str_val.split(',')), [])
+
+def split_into_range_str(str_val):
+	return sum((([a]) for a in str_val.split(',')), [])
+
 class Default:
 	def __init__(self, version=0.6, defaultstocks_path='stocks.txt', UserDataDirectory=None):
 		self._version = version
@@ -38,12 +46,17 @@ class Default:
 class Scanner:
 	def __init__(self, userstocks_path='userstocks.txt',Background_Scan_Frequency_Intraday=10,
 		Background_Scan_Frequency_Live=60,Background_Scan_Frequency_Quotes=60,
-		Background_Scan_Frequency_Volume=30):
+		Background_Scan_Frequency_Volume=30,volume_scan_columns=None,swing_scan_columns=None,
+		enumerate_volume_scan_signals=False, intraday_scan_columns = None):
 		self._userstocks_filepath = userstocks_path
 		self._Background_Scan_Frequency_Intraday = int(Background_Scan_Frequency_Intraday)
 		self._Background_Scan_Frequency_Live = int(Background_Scan_Frequency_Live)
 		self._Background_Scan_Frequency_Quotes = int(Background_Scan_Frequency_Quotes)
 		self._Background_Scan_Frequency_Volume = int(Background_Scan_Frequency_Volume)
+		self._volume_scan_columns = volume_scan_columns
+		self._swing_scan_columns = swing_scan_columns
+		self._enumerate_volume_scan_signals = enumerate_volume_scan_signals
+		self._intraday_scan_columns = intraday_scan_columns
 
 	@property
 	def userstocks_filepath(self):
@@ -64,6 +77,22 @@ class Scanner:
 	@property
 	def background_scan_frequency_volume(self):
 		return self._Background_Scan_Frequency_Volume
+
+	@property
+	def volume_scan_columns(self):
+		return self._volume_scan_columns
+
+	@property
+	def swing_scan_columns(self):
+		return self._swing_scan_columns
+
+	@property
+	def intraday_scan_columns(self):
+		return self._intraday_scan_columns
+
+	@property
+	def enumerate_volume_scan_signals(self):
+		return self._enumerate_volume_scan_signals
 
 class Backtest:
 	def __init__(self, init_cash=100000, smac_fast_period=10,smac_slow_period=50,
@@ -408,22 +437,10 @@ class resources:
 		masp = r.config_valueforkey('BACKTEST',"macd_signal_period")
 		msmap = r.config_valueforkey('BACKTEST',"macd_sma_period")
 		mdp = r.config_valueforkey('BACKTEST',"macd_dir_period")
-		msfpr = r.config_valueforkey('BACKTEST',"multi_smac_fast_period_range")
-		msfpr = sum(((list(range(*[int(b) + c
-			for c, b in enumerate(a.split('-'))]))
-			if '-' in a else [int(a)]) for a in msfpr.split(',')), [])
-		msspr = r.config_valueforkey('BACKTEST',"multi_smac_slow_period_range")
-		msspr = sum(((list(range(*[int(b) + c
-			for c, b in enumerate(a.split('-'))]))
-			if '-' in a else [int(a)]) for a in msspr.split(',')), [])
-		mrlr = r.config_valueforkey('BACKTEST',"multi_rsi_lower_range")
-		mrlr = sum(((list(range(*[int(b) + c
-			for c, b in enumerate(a.split('-'))]))
-			if '-' in a else [int(a)]) for a in mrlr.split(',')), [])
-		mrur = r.config_valueforkey('BACKTEST',"multi_rsi_upper_range")
-		mrur = sum(((list(range(*[int(b) + c
-			for c, b in enumerate(a.split('-'))]))
-			if '-' in a else [int(a)]) for a in mrur.split(',')), [])
+		msfpr = split_into_range_int(r.config_valueforkey('BACKTEST',"multi_smac_fast_period_range"))
+		msspr = split_into_range_int(r.config_valueforkey('BACKTEST',"multi_smac_slow_period_range"))
+		mrlr = split_into_range_int(r.config_valueforkey('BACKTEST',"multi_rsi_lower_range"))
+		mrur = split_into_range_int(r.config_valueforkey('BACKTEST',"multi_rsi_upper_range"))
 		bp = r.config_valueforkey('BACKTEST',"bbands_period")
 		bd = r.config_valueforkey('BACKTEST',"bbands_devfactor")
 		rp = r.config_valueforkey('BACKTEST',"rsi_period")
@@ -442,4 +459,8 @@ class resources:
 		bsfl = r.config_valueforkey('SCANNER',"Background_Scan_Frequency_Live")
 		bsfq = r.config_valueforkey('SCANNER',"Background_Scan_Frequency_Quotes")
 		bsfv = r.config_valueforkey('SCANNER',"Background_Scan_Frequency_Volume")
-		return Scanner(usfp, bsfi, bsfl,bsfq, bsfv)
+		vsc = split_into_range_str(r.config_valueforkey('SCANNER',"volume_scan_columns"))
+		ssc = split_into_range_str(r.config_valueforkey('SCANNER',"swing_scan_columns"))
+		isc = split_into_range_str(r.config_valueforkey('SCANNER',"intraday_scan_columns"))
+		evss = r.config_valueforkey('SCANNER',"enumerate_volume_scan_signals").lower() in ("yes", "true", "t", "1")
+		return Scanner(usfp, bsfi, bsfl,bsfq, bsfv,vsc,ssc, evss,isc)

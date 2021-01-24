@@ -168,7 +168,8 @@ def scan_intraday_results(df, signaldf, indicator, should_cache=True):
 		print('Nothing to show here.')
 	if signaldf is not None and len(signaldf) > 0:
 		signaldf = signaldf.sort_values(by='Signal',ascending=True)
-		print("\n\nWe recommend taking the following BUY/SELL positions for day trading. Intraday Signals:\n\n" + signaldf.to_string(index=False))
+		user_signaldf = configure_user_display(signaldf, columns=resources.scanner().intraday_scan_columns)
+		print("\nWe recommend taking the following BUY/SELL positions for day trading. Intraday Signals:\n\n" + user_signaldf.to_string(index=False))
 	else:
 		print('No signals to show here.')
 	click.secho('Intraday scanning finished.', fg='green', nl=True)
@@ -193,7 +194,8 @@ def scan_swing_results(df, signaldf, indicator, should_cache=True):
 	else:
 		print('Nothing to show here.')
 	if signaldf is not None and len(signaldf) > 0:
-		print("\nWe recommend taking the following BUY/SELL positions for swing trading. Swing Signals:\n" + signaldf.to_string(index=False))
+		user_signaldf = configure_user_display(signaldf, columns=resources.scanner().swing_scan_columns)
+		print("\nWe recommend taking the following BUY/SELL positions for swing trading. Swing Signals:\n" + user_signaldf.to_string(index=False))
 	else:
 		print('No signals to show here.')
 	click.secho('Swing scanning finished.', fg='green', nl=True)
@@ -223,7 +225,10 @@ def scan_volume_results(df, signaldf, indicator, orderby, should_cache=True):
 		signaldf = signaldf.sort_values(by=order_key,ascending=False)
 		signal_stocks_list = signaldf['Symbol'].tolist()
 		str_signal_stocks_list = '{}'.format(signal_stocks_list)
-		print("\n\nVolume Signals: {}\n\n".format(str_signal_stocks_list.replace('[','').replace(']','').replace("'",'').replace(' ','')) + signaldf.to_string(index=False))
+		user_signaldf = configure_user_display(signaldf, columns=resources.scanner().volume_scan_columns)
+		should_enum = resources.scanner().enumerate_volume_scan_signals
+		csv_signals = str_signal_stocks_list.replace('[','').replace(']','').replace("'",'').replace(' ','') if should_enum else ''
+		print("\nVolume Signals: {}\n\n".format(csv_signals) + user_signaldf.to_string(index=False))
 	else:
 		print('No signals to show here.')
 	click.secho('Volume scanning finished.', fg='green', nl=True)
@@ -265,6 +270,15 @@ def formatted_dataframe(list_data, column_names, indices=True):
 		df = pd.DataFrame(list_data, columns = columns, index = [''])
 	else:
 		df = pd.DataFrame(list_data, columns = columns)
+	return df
+
+def configure_user_display(df, columns=None):
+	if columns is None:
+		return df
+	keys = df.keys()
+	for key in keys:
+		if key not in columns:
+			df.drop([key], axis = 1, inplace = True)
 	return df
 
 def clear_cache(clear, background, indicator, intraday = True, live = False, swing = False, volume = False, force_clear = False):

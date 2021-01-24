@@ -456,7 +456,6 @@ class scanner:
 	def update_signal_indicator(self, df, signalframes, indicator, column, margin, comparator_value, ltp_label_comparator, true_type, true_remarks, false_type, false_remarks):
 		deep_df = df.copy(deep=True)
 		if self.indicator == indicator or self.indicator == 'all':
-			decimals = 2
 			value = round(deep_df[column].iloc[0],2)
 			if ltp_label_comparator == '><':
 				if (value is not None) and (value > comparator_value or value < margin):
@@ -476,8 +475,6 @@ class scanner:
 					deep_df = self.update_confidence_level(deep_df)
 					default_logger().debug(deep_df.to_string(index=False))
 					signalframes.append(deep_df)
-			df[column] = df[column].apply(lambda x: round(x, decimals))
-			deep_df[column] = deep_df[column].apply(lambda x: round(x, decimals))
 		return signalframes
 
 	def get_quick_recommendation(self, df, indicator):
