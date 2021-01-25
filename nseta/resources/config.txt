@@ -2,7 +2,7 @@
 version = 0.6
 DefaultStocksFilePath = stocks.txt
 # A valid folder path. If it does not exit, it will be created.
-UserDataDirectory =
+UserDataDirectory = ~/Documents/GitHub/nseta/build/userdata/
 
 [RSI]
 # Any value between 0 to 100
@@ -17,12 +17,19 @@ Background_Scan_Frequency_Live = 60
 Background_Scan_Frequency_Quotes = 60
 Background_Scan_Frequency_Volume = 30
 enumerate_volume_scan_signals = no
+
 # Available columns : Symbol,Date,VWAP,LTP,%%Change,TDYVol(%%),7DVol(%%),Remarks,Yst7DVol(%%),Yst%%Del,Tdy%%Del,PPoint,S1-R3
-volume_scan_columns = Symbol,VWAP,LTP,%%Change,TDYVol(%%),7DVol(%%),Remarks,Tdy%%Del,S1-R3
+# You can also change the order of columns. Put two %% for 1 % to appear in the column name
+# You can provide your own custom names to column heads/keys in the format key1=YourKey1,key2=YourKey2 etc.
+volume_scan_columns = Symbol,LTP,VWAP,%%Change=%%Chng,TDYVol(%%)=Vol_TDY,7DVol(%%)=Vol_7D,S1-R3,Remarks,Tdy%%Del=Del_TDY
+
 # Available columns: Symbol,Date,RSI,MOM,EMA(9),macd(12),macdsignal(9),macdhist(26),BBands-U,BBands-L,LTP,Signal,Remarks,Confidence
-swing_scan_columns = Symbol,RSI,macd(12),macdsignal(9),BBands-U,BBands-L,LTP,Signal,Remarks,Confidence
+# You can also change the order of columns.  Put two %% for 1 % to appear in the column name
+swing_scan_columns = Symbol,LTP,RSI,macd(12)=MACD(12),macdsignal(9)=MACD(9),BBands-U,BBands-L,Signal,Remarks,Confidence
+
 # Available columns : Symbol,Date,RSI,MOM,EMA(9),macd(12),macdsignal(9),macdhist(26),BBands-U,BBands-L,LTP,Signal,Remarks,Confidence
-intraday_scan_columns = Symbol,RSI,MOM,macd(12),macdsignal(9),BBands-U,BBands-L,LTP,Signal,Remarks,Confidence
+# You can also change the order of columns.  Put two %% for 1 % to appear in the column name
+intraday_scan_columns = Symbol,LTP,RSI,MOM,macd(12)=MACD(12),macdsignal(9)=MACD(9),BBands-U,BBands-L,Signal,Remarks,Confidence
 
 [FORECAST]
 Lower = 1.5

@@ -1,6 +1,6 @@
 import logging
 import os
-# import sys
+import time
 import warnings
 import inspect
 
@@ -50,17 +50,17 @@ class filterlogger:
 			filename = (frame[0].f_code.co_filename).rsplit('/', 1)[1]
 			components = str(frame).split(',')
 			line = '{} - {} - {}\n{}'.format(filename, components[5],components[6] , line)
-			if __filter__ in line:
+			if __filter__ in line.upper():
 				self.logger.debug(line, exc_info=exc_info)
 
 	def info(self, line):
 		global __filter__
-		if __filter__ in line:
+		if __filter__ in line.upper():
 			self.logger.info(line)
 	
 	def warn(self, line):
 		global __filter__
-		if __filter__ in line:
+		if __filter__ in line.upper():
 			self.logger.warn(line)
 
 	def error(self, line):
@@ -85,7 +85,7 @@ def setup_custom_logger(name, levelname=logging.DEBUG, trace=False, log_file_pat
 	__trace__ = trace
 
 	global __filter__
-	__filter__ = filter
+	__filter__ = filter if filter is None else filter.upper()
 
 	logger = logging.getLogger(name)
 	logger.setLevel(levelname)
@@ -102,7 +102,7 @@ def setup_custom_logger(name, levelname=logging.DEBUG, trace=False, log_file_pat
 		logger.addHandler(filehandler)
 		global __DEBUG__
 		__DEBUG__ = True
-		logger.debug('Logging started. Filter:{}'.format(__filter__))
+		logger.debug('Logging started. Filter:{}'.format(filter))
 
 	if trace:
 		tracelogger = logging.getLogger('nseta_file_logger')
@@ -174,11 +174,18 @@ def log_to(logger_func):
 					frame = inspect.stack()[1]
 					filename = (frame[0].f_code.co_filename).rsplit('/', 1)[1]
 					components = str(frame).split(',')
-					description = '{} - {} - {}'.format(filename, components[5],components[6])
+					func_description = '{} - {} - {}'.format(filename, components[5],components[6])
+					description = func_description
 					for line in describe_call(func, *args, **kwargs):
 						description = description + "\n" + line
 					logger_func(description)
-				return func(*args, **kwargs)
+					startTime = time.time()
+					ret_val = func(*args, **kwargs)
+					time_spent = time.time() - startTime
+					logger_func('\n%s called (%s): %.3f  (TIME_TAKEN)' % (func_description, func.__name__, time_spent))
+					return ret_val
+				else:
+					return func(*args, **kwargs)
 			return wrapper
 	else:
 		decorator = lambda x: x

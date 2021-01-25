@@ -25,6 +25,8 @@ class archiver:
 		user_data_dir = resources.default().user_data_dir if data_dir is None else data_dir
 		if user_data_dir is not None:
 			try:
+				if user_data_dir.startswith('~'):
+					user_data_dir = user_data_dir.replace('~',os.path.expanduser('~'))
 				original_umask = os.umask(0)
 				if not os.path.exists(user_data_dir):
 					os.makedirs(user_data_dir, mode=0o777)

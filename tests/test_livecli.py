@@ -65,7 +65,6 @@ class TestLivecli(baseUnitTest):
 		result = runner.invoke(scan, args=['--stocks', 'BANDHANBNK', '--volume', '--clear', '--orderby', 'momentum'])
 		self.assertEqual(result.exit_code , 0)
 		self.assertIn("Volume scanning finished.", result.output, str(result.output))
-		self.assertIn("TDYVol(%)", result.output, str(result.output))
 	
 	def test_scan_volume_background(self):
 		s = scanner('emac')

@@ -1,7 +1,7 @@
 [DEFAULT]
 version = 0.6
 DefaultStocksFilePath = stocks.txt
-UserDataDirectory = /Users/Shared/nseta/
+UserDataDirectory = ~/Documents/GitHub/nseta/build/userdata/
 
 [RSI]
 Lower = 25

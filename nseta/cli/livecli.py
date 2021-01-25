@@ -140,9 +140,9 @@ def scan_live_results(df, signaldf, indicator, should_cache=True):
 		# print("\nAll Stocks LTP and Signals:\n" + df.to_string(index=False))
 		default_logger().debug("\nAll Stocks LTP and Signals:\n" + df.to_string(index=False))
 	else:
-		print('Nothing to show here.')
+		print('As of {}, nothing to show here.'.format(IST_datetime()))
 	if signaldf is not None and len(signaldf) > 0:
-		print("\nLive Signals:\n" + signaldf.to_string(index=False))
+		print("\nAs of {}, live Signals:\n{}".format(IST_datetime(), signaldf.to_string(index=False)))
 	else:
 		print('No signals to show here.')
 	click.secho('Live scanning finished.', fg='green', nl=True)
@@ -162,16 +162,16 @@ def scan_intraday(stocks, indicator, background):
 def scan_intraday_results(df, signaldf, indicator, should_cache=True):
 	if df is not None and len(df) > 0:
 		save_scan_results_archive(df, signaldf, ResponseType.Intraday, indicator, should_cache)
-		default_logger().debug("\nAll Stocks LTP and Signals:\n" + df.to_string(index=False))
+		default_logger().debug("\nAs of {}, all Stocks LTP and Signals:\n{}".format(IST_datetime(),df.to_string(index=False)))
 		# print("\n\nIntraday results\n\n" + df.to_string(index=False))
 	else:
-		print('Nothing to show here.')
+		print('As of {}, nothing to show here.'.format(IST_datetime()))
 	if signaldf is not None and len(signaldf) > 0:
 		signaldf = signaldf.sort_values(by='Signal',ascending=True)
 		user_signaldf = configure_user_display(signaldf, columns=resources.scanner().intraday_scan_columns)
-		print("\nWe recommend taking the following BUY/SELL positions for day trading. Intraday Signals:\n\n" + user_signaldf.to_string(index=False))
+		print("\nAs of {}, intraday Signals:\n\n{}".format(IST_datetime(),user_signaldf.to_string(index=False)))
 	else:
-		print('No signals to show here.')
+		print('As of {}, no signals to show here.'.format(IST_datetime()))
 	click.secho('Intraday scanning finished.', fg='green', nl=True)
 
 def scan_swing(stocks, indicator, background):
@@ -190,14 +190,14 @@ def scan_swing(stocks, indicator, background):
 def scan_swing_results(df, signaldf, indicator, should_cache=True):
 	if df is not None and len(df) > 0:
 		save_scan_results_archive(df, signaldf,ResponseType.History, indicator, should_cache)
-		default_logger().debug("\nAll Stocks LTP and Signals:\n" + df.to_string(index=False))
+		default_logger().debug("\nAs of {}, all Stocks LTP and Signals:\n{}".format(IST_datetime(),df.to_string(index=False)))
 	else:
-		print('Nothing to show here.')
+		print('As of {}, nothing to show here.'.format(IST_datetime()))
 	if signaldf is not None and len(signaldf) > 0:
 		user_signaldf = configure_user_display(signaldf, columns=resources.scanner().swing_scan_columns)
-		print("\nWe recommend taking the following BUY/SELL positions for swing trading. Swing Signals:\n" + user_signaldf.to_string(index=False))
+		print("\nAs of {}, swing Signals:\n{}".format(IST_datetime(), user_signaldf.to_string(index=False)))
 	else:
-		print('No signals to show here.')
+		print('As of {}, no signals to show here.'.format(IST_datetime()))
 	click.secho('Swing scanning finished.', fg='green', nl=True)
 
 def scan_volume(stocks, indicator, background, orderby):
@@ -217,10 +217,10 @@ def scan_volume_results(df, signaldf, indicator, orderby, should_cache=True):
 	if df is not None and len(df) > 0:
 		save_scan_results_archive(df, signaldf,ResponseType.Volume, indicator, should_cache)
 		df = df.sort_values(by=order_key,ascending=False)
-		default_logger().debug("\nAll Stocks LTP and Signals:\n" + df.to_string(index=False))
+		default_logger().debug("\nAs of {}, all Stocks LTP and Signals:\n{}".format(IST_datetime(),df.to_string(index=False)))
 		# print("\n\nVolume Data:\n\n" + df.to_string(index=False))
 	else:
-		print('Nothing to show here.')
+		print('As of {}, nothing to show here.'.format(IST_datetime()))
 	if signaldf is not None and len(signaldf) > 0:
 		signaldf = signaldf.sort_values(by=order_key,ascending=False)
 		signal_stocks_list = signaldf['Symbol'].tolist()
@@ -228,9 +228,9 @@ def scan_volume_results(df, signaldf, indicator, orderby, should_cache=True):
 		user_signaldf = configure_user_display(signaldf, columns=resources.scanner().volume_scan_columns)
 		should_enum = resources.scanner().enumerate_volume_scan_signals
 		csv_signals = str_signal_stocks_list.replace('[','').replace(']','').replace("'",'').replace(' ','') if should_enum else ''
-		print("\nVolume Signals: {}\n\n".format(csv_signals) + user_signaldf.to_string(index=False))
+		print("\nAs of {}, volume Signals: {}\n\n{}".format(IST_datetime(), csv_signals, user_signaldf.to_string(index=False)))
 	else:
-		print('No signals to show here.')
+		print('As of {}, no signals to show here.'.format(IST_datetime()))
 	click.secho('Volume scanning finished.', fg='green', nl=True)
 	# scan_intraday(signal_stocks_list, indicator, False)
 
@@ -275,11 +275,21 @@ def formatted_dataframe(list_data, column_names, indices=True):
 def configure_user_display(df, columns=None):
 	if columns is None:
 		return df
+	column_dict = {}
+	for column in columns:
+		kvp = column.rsplit('=',1)
+		if len(kvp) > 1:
+			column_dict[kvp[0]] = kvp[1]
+		else:
+			column_dict[kvp[0]] = kvp[0]
+	column_keys = column_dict.keys()
+	column_values = column_dict.values()
+	user_df = pd.DataFrame(columns=column_values)
 	keys = df.keys()
 	for key in keys:
-		if key not in columns:
-			df.drop([key], axis = 1, inplace = True)
-	return df
+		if key in column_keys:
+			user_df[column_dict[key]] = df[key]
+	return user_df
 
 def clear_cache(clear, background, indicator, intraday = True, live = False, swing = False, volume = False, force_clear = False):
 	response_type = ResponseType.Default
@@ -357,3 +367,15 @@ def scan_volume_background(scannerinstance, stocks, indicator, orderby, terminat
 		time.sleep(wait_time)
 	click.secho('Finished all iterations of scanning volume.', fg='green', nl=True)
 	return iteration
+
+'''
+TODO:
+1. Scan for stocks that have 
+	higher highs or V patterns of MOM, OBV, MACD, Price, RSI 
+	and RSI is bullish (50+). 
+	and Price is above EMA(9), SMA(10) and SMA(50)
+	and MOM is +ve
+	and OBV is +ve
+	and MACD is > signal by a margin of x
+	and volume is rising compared to 7day or yesterday's volume
+'''
