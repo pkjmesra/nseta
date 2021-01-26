@@ -47,7 +47,7 @@ class Scanner:
 	def __init__(self, userstocks_path='userstocks.txt',Background_Scan_Frequency_Intraday=10,
 		Background_Scan_Frequency_Live=60,Background_Scan_Frequency_Quotes=60,
 		Background_Scan_Frequency_Volume=30,volume_scan_columns=None,swing_scan_columns=None,
-		enumerate_volume_scan_signals=False, intraday_scan_columns = None):
+		enumerate_volume_scan_signals=False, intraday_scan_columns = None, live_scan_columns=None):
 		self._userstocks_filepath = userstocks_path
 		self._Background_Scan_Frequency_Intraday = int(Background_Scan_Frequency_Intraday)
 		self._Background_Scan_Frequency_Live = int(Background_Scan_Frequency_Live)
@@ -57,6 +57,7 @@ class Scanner:
 		self._swing_scan_columns = swing_scan_columns
 		self._enumerate_volume_scan_signals = enumerate_volume_scan_signals
 		self._intraday_scan_columns = intraday_scan_columns
+		self._live_scan_columns = live_scan_columns
 
 	@property
 	def userstocks_filepath(self):
@@ -89,6 +90,10 @@ class Scanner:
 	@property
 	def intraday_scan_columns(self):
 		return self._intraday_scan_columns
+
+	@property
+	def live_scan_columns(self):
+		return self._live_scan_columns
 
 	@property
 	def enumerate_volume_scan_signals(self):
@@ -215,9 +220,10 @@ class Backtest:
 		return self._commission
 
 class RSI:
-	def __init__(self, lower=25, upper=75):
+	def __init__(self, lower=25, upper=75, period = 14):
 		self._lower = int(lower)
 		self._upper = int(upper)
+		self._period = int(period)
 
 	@property
 	def upper(self):
@@ -226,6 +232,10 @@ class RSI:
 	@property
 	def lower(self):
 		return self._lower
+
+	@property
+	def period(self):
+		return self._period
 
 class Forecast:
 	def __init__(self, lower=1.5, upper=1.5, training_percent=0.75, test_percent=0.25,
@@ -395,7 +405,8 @@ class resources:
 		r = cls()
 		lower = r.config_valueforkey('RSI',"Lower")
 		upper = r.config_valueforkey('RSI',"Upper")
-		return RSI(lower, upper)
+		period = r.config_valueforkey('RSI',"period")
+		return RSI(lower, upper, period)
 
 	@classmethod
 	def forecast(cls):
@@ -461,6 +472,7 @@ class resources:
 		bsfv = r.config_valueforkey('SCANNER',"Background_Scan_Frequency_Volume")
 		vsc = split_into_range_str(r.config_valueforkey('SCANNER',"volume_scan_columns"))
 		ssc = split_into_range_str(r.config_valueforkey('SCANNER',"swing_scan_columns"))
-		isc = split_into_range_str(r.config_valueforkey('SCANNER',"intraday_scan_columns"))
 		evss = r.config_valueforkey('SCANNER',"enumerate_volume_scan_signals").lower() in ("yes", "true", "t", "1")
-		return Scanner(usfp, bsfi, bsfl,bsfq, bsfv,vsc,ssc, evss,isc)
+		isc = split_into_range_str(r.config_valueforkey('SCANNER',"intraday_scan_columns"))
+		lsc = split_into_range_str(r.config_valueforkey('SCANNER',"live_scan_columns"))
+		return Scanner(usfp, bsfi, bsfl,bsfq, bsfv,vsc,ssc, evss,isc,lsc)

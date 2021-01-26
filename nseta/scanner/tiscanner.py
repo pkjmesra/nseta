@@ -222,7 +222,7 @@ class scanner:
 					index = len(self.stocksdict[stock])
 					if index >= 15:
 						dfclose = pd.DataFrame(self.stocksdict[stock], columns = ['Close'])
-						rsi = ta.RSI(dfclose['Close'],14)
+						rsi = ta.RSI(dfclose['Close'],resources.rsi().period)
 						rsivalue = rsi[index -1]
 						row['RSI'] = rsivalue
 						default_logger().debug(stock + " RSI:" + str(rsi))

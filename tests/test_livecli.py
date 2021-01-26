@@ -4,10 +4,11 @@ import unittest
 
 from click.testing import CliRunner
 
-from nseta.cli.livecli import live_quote, scan, live_quote_background, scan_live_background, scan_intraday_background, scan_volume_background
+from nseta.cli.livecli import live_quote, scan
 from nseta.common import urls
 from nseta.scanner.tiscanner import scanner
 from baseUnitTest import baseUnitTest
+from nseta.scanner.scannerFactory import *
 
 class TestLivecli(baseUnitTest):
 	def setUp(self):
@@ -39,8 +40,10 @@ class TestLivecli(baseUnitTest):
 		self.assertIn("Intraday scanning finished.", result.output, str(result.output))
 
 	def test_scan_intraday_background(self):
-		s = scanner('rsi')
-		result = scan_intraday_background(s, ['HDFC'], 'emac', terminate_after_iter=2, wait_time=2)
+		s = scannerFactory.scanner(ScannerType.Intraday, ['HDFC'], 'emac', True)
+		scannerinstance = scanner(indicator='rsi')
+		s.scanner_func = scannerinstance.scan_swing
+		result = s.scan_background(terminate_after_iter=2, wait_time=2)
 		self.assertEqual(result , 2)
 
 	def test_scan_live(self):
@@ -50,8 +53,10 @@ class TestLivecli(baseUnitTest):
 		self.assertIn("Live scanning finished.", result.output, str(result.output))
 
 	def test_scan_live_background(self):
-		s = scanner('rsi')
-		result = scan_live_background(s, ['HDFC'], 'emac', terminate_after_iter=2, wait_time=2)
+		s = scannerFactory.scanner(ScannerType.Live, ['HDFC'], 'emac', True)
+		scannerinstance = scanner(indicator='rsi')
+		s.scanner_func = scannerinstance.scan_live
+		result = s.scan_background(terminate_after_iter=2, wait_time=2)
 		self.assertEqual(result , 2)
 
 	def test_scan_swing(self):
@@ -67,8 +72,10 @@ class TestLivecli(baseUnitTest):
 		self.assertIn("Volume scanning finished.", result.output, str(result.output))
 	
 	def test_scan_volume_background(self):
-		s = scanner('emac')
-		result = scan_volume_background(s, ['HDFC'], 'emac', 'momentum', terminate_after_iter=2, wait_time=2)
+		s = scannerFactory.scanner(ScannerType.Volume, ['HDFC'], 'emac', True)
+		scannerinstance = scanner(indicator='rsi')
+		s.scanner_func = scannerinstance.scan_volume
+		result = s.scan_background(terminate_after_iter=2, wait_time=2)
 		self.assertEqual(result , 2)
 
 	def test_live_quote_inputs(self):
@@ -78,7 +85,8 @@ class TestLivecli(baseUnitTest):
 		self.assertIn("Usage:  [OPTIONS]", result.output, str(result.output))
 
 	def test_scan_live_quote_background(self):
-		result = live_quote_background('HDFC', True, True, True, True, True, terminate_after_iter=2, wait_time=2)
+		scanner = scannerFactory.scanner(ScannerType.Quote)
+		result = scanner.live_quote_background('HDFC', True, True, True, True, True, terminate_after_iter=2, wait_time=2)
 		self.assertEqual(result , 2)
 
 	def test_scan_inputs(self):

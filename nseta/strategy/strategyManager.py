@@ -16,7 +16,6 @@ from nseta.scanner.tiscanner import scanner
 from nseta.common.multithreadedScanner import multithreaded_scan
 from nseta.common.ti import ti
 from nseta.common.history import *
-from nseta.resources.resources import *
 from nseta.plots.plots import plot_rsi
 
 __all__ = ['STRATEGY_MAPPING', 'strategyManager']

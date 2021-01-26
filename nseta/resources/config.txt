@@ -9,12 +9,13 @@ UserDataDirectory = ~/Documents/GitHub/nseta/build/userdata/
 Lower = 25
 # Any value between 0 to 100
 Upper = 75
+period = 14
 
 [SCANNER]
 UserStocksFilePath = userstocks.txt
 Background_Scan_Frequency_Intraday = 10
-Background_Scan_Frequency_Live = 60
-Background_Scan_Frequency_Quotes = 60
+Background_Scan_Frequency_Live = 50
+Background_Scan_Frequency_Quotes = 50
 Background_Scan_Frequency_Volume = 30
 enumerate_volume_scan_signals = no
 
@@ -30,6 +31,10 @@ swing_scan_columns = Symbol,LTP,RSI,macd(12)=MACD(12),macdsignal(9)=MACD(9),BBan
 # Available columns : Symbol,Date,RSI,MOM,EMA(9),macd(12),macdsignal(9),macdhist(26),BBands-U,BBands-L,LTP,Signal,Remarks,Confidence
 # You can also change the order of columns.  Put two %% for 1 % to appear in the column name
 intraday_scan_columns = Symbol,LTP,RSI,MOM,macd(12)=MACD(12),macdsignal(9)=MACD(9),BBands-U,BBands-L,Signal,Remarks,Confidence
+
+# Available columns : Updated,Symbol,Close,LTP,%% Delivery,Buy - Sell,TotalTradedVolume,pChange
+# You can also change the order of columns.  Put two %% for 1 % to appear in the column name
+live_scan_columns = Updated,Symbol,Close,LTP,%% Delivery,Buy - Sell,TotalTradedVolume,pChange
 
 [FORECAST]
 Lower = 1.5
