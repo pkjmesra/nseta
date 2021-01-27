@@ -22,7 +22,6 @@ from nseta.live.live import get_live_quote
 from nseta.common.tradingtime import *
 
 __all__ = ['KEY_MAPPING', 'scanner', 'TECH_INDICATOR_KEYS']
-global __scan_counter__
 
 TYPE_LIVE = 'live'
 TYPE_INTRADAY = 'intraday'
@@ -270,7 +269,7 @@ class scanner:
 								df.drop([key], axis = 1, inplace = True)
 					tailed_df = df.tail(1)
 					frames.append(tailed_df)
-					signalframes = self.update_signals(signalframes, tailed_df, df)
+					signalframes, df = self.update_signals(signalframes, tailed_df, df)
 			except Exception as e:
 				default_logger().debug("Exception encountered for " + symbol)
 				default_logger().debug(e, exc_info=True)
@@ -319,7 +318,7 @@ class scanner:
 					tailed_df = df.tail(1)
 					default_logger().debug(tailed_df.to_string(index=False))
 					frames.append(tailed_df)
-					signalframes = self.update_signals(signalframes, tailed_df, df)
+					signalframes, df = self.update_signals(signalframes, tailed_df, df)
 			except Exception as e:
 				default_logger().debug("Exception encountered for " + symbol)
 				default_logger().debug(e, exc_info=True)
@@ -425,12 +424,12 @@ class scanner:
 	@tracelog
 	def update_signals(self, signalframes, df_main, full_df=None):
 		if (df_main is None) or (len(df_main) < 1) or (not 'RSI' in df_main.keys() and not 'EMA(9)' in df_main.keys()):
-			return signalframes
+			return signalframes, df_main
 		try:
 			df = df_main.copy(deep=True)
 			df['Signal'] = 'NA'
 			df['Remarks'] = 'NA'
-			df['Confidence'] = 'NA'
+			df['Confidence'] = np.nan
 			decimals = 2
 			ltp = df['LTP'].iloc[0]
 			bbands_reco = self.get_quick_recommendation(full_df, 'bbands')
@@ -450,7 +449,7 @@ class scanner:
 		except Exception as e:
 			default_logger().debug(e, exc_info=True)
 			return signalframes
-		return signalframes
+		return signalframes, df_main
 
 	@tracelog
 	def update_signal_indicator(self, df, signalframes, indicator, column, margin, comparator_value, ltp_label_comparator, true_type, true_remarks, false_type, false_remarks):
@@ -462,8 +461,17 @@ class scanner:
 					deep_df['Remarks'].iloc[0] = true_remarks if value > comparator_value else false_remarks
 					deep_df['Signal'].iloc[0] = true_type if value > comparator_value else false_type
 					deep_df = self.update_confidence_level(deep_df)
-					default_logger().debug(deep_df.to_string(index=False))
-					signalframes.append(deep_df)
+					default_logger().debug('To be added to update_signal_indicator.signalframes:\n{}\n'.format(deep_df.to_string(index=False)))
+					default_logger().debug('update_signal_indicator.signalframes:\n{}\n'.format(signalframes))
+					if len(signalframes) > 0:
+						saved_df = signalframes[len(signalframes) - 1]
+						if saved_df['Symbol'].iloc[0] == deep_df['Symbol'].iloc[0]:
+							saved_df['Remarks'].iloc[0] = '{},{}'.format(saved_df['Remarks'].iloc[0],deep_df['Remarks'].iloc[0])
+							saved_df['Signal'].iloc[0] = '{},{}'.format(saved_df['Signal'].iloc[0],deep_df['Signal'].iloc[0])
+							saved_df['Confidence'].iloc[0] = max(saved_df['Confidence'].iloc[0],deep_df['Confidence'].iloc[0])
+							signalframes[len(signalframes) - 1] = saved_df
+					else:
+						signalframes.append(deep_df)
 			else:
 				if (value is not None) and (abs(value-comparator_value) >= margin):
 					if ltp_label_comparator == '<=':
@@ -473,24 +481,33 @@ class scanner:
 						deep_df['Remarks'].iloc[0] = true_remarks if comparator_value - value >=0 else false_remarks
 						deep_df['Signal'].iloc[0] = true_type if comparator_value - value >=0 else false_type
 					deep_df = self.update_confidence_level(deep_df)
-					default_logger().debug(deep_df.to_string(index=False))
-					signalframes.append(deep_df)
+					default_logger().debug('To be added to update_signal_indicator.signalframes:\n{}\n'.format(deep_df.to_string(index=False)))
+					default_logger().debug('update_signal_indicator.signalframes:\n{}\n'.format(signalframes))
+					if len(signalframes) > 0:
+						saved_df = signalframes[len(signalframes) - 1]
+						if saved_df['Symbol'].iloc[0] == deep_df['Symbol'].iloc[0]:
+							saved_df['Remarks'].iloc[0] = '{},{}'.format(saved_df['Remarks'].iloc[0],deep_df['Remarks'].iloc[0])
+							saved_df['Signal'].iloc[0] = '{},{}'.format(saved_df['Signal'].iloc[0],deep_df['Signal'].iloc[0])
+							saved_df['Confidence'].iloc[0] = max(saved_df['Confidence'].iloc[0],deep_df['Confidence'].iloc[0])
+							signalframes[len(signalframes) - 1] = saved_df
+					else:
+						signalframes.append(deep_df)
 		return signalframes
 
 	def get_quick_recommendation(self, df, indicator):
-		if indicator not in ['rsi', 'bbands', 'macd']:
+		if indicator not in ['rsi', 'bbands', 'macd', 'all']:
 			return 'Unknown'
 		sm = None
 		tiny_df = None
 		limited_df = df.tail(7)
-		if indicator == 'macd':
+		if indicator == 'macd' or indicator == 'all':
 			tiny_df = pd.DataFrame({'Symbol':limited_df['Symbol'],'Date':limited_df['Date'],'macd(12)':limited_df['macd(12)'],'Close':limited_df['LTP']})
 			sm = macdSignalStrategy(strict=True, intraday=False, requires_ledger=False)
-		elif indicator == 'rsi':
+		elif indicator == 'rsi' or indicator == 'all':
 			tiny_df = pd.DataFrame({'Symbol':limited_df['Symbol'],'Date':limited_df['Date'],'RSI':limited_df['RSI'],'Close':limited_df['LTP']})
 			sm = rsiSignalStrategy(strict=True, intraday=False, requires_ledger=False)
 			sm.set_limits(resources.rsi().lower, resources.rsi().upper)
-		elif indicator == 'bbands':
+		elif indicator == 'bbands' or indicator == 'all':
 			tiny_df = pd.DataFrame({'Symbol':limited_df['Symbol'],'Date':limited_df['Date'],'BBands-L':limited_df['BBands-L'], 'BBands-U':limited_df['BBands-U'], 'Close':limited_df['LTP']})
 			sm = bbandsSignalStrategy(strict=True, intraday=False, requires_ledger=False)
 
@@ -499,11 +516,11 @@ class scanner:
 		if summary is not None and len(summary) > 0:
 			last_row = summary.tail(1)
 			reco = last_row['Recommendation'].iloc[0]
-			if reco == str(Recommendation.Buy):
+			if reco == str(Recommendation.Buy.name):
 				return 'Buy'
-			elif reco == str(Recommendation.Sell):
+			elif reco == str(Recommendation.Sell.name):
 				return 'Sell'
-			elif reco == str(Recommendation.Hold):
+			elif reco == str(Recommendation.Hold.name):
 				return 'Hold'
 			else:
 				return 'Unknown'
@@ -559,7 +576,7 @@ class scanner:
 				confidence = confidence + 10
 			elif self.indicator == 'emac':
 				confidence = confidence + 10
-		df['Confidence'].iloc[0] = ' >> {} %  <<'.format(confidence) if confidence >=80 else '{} %'.format(confidence)
+		df['Confidence'].iloc[0] = confidence
 		return df
 
 	def trim_columns(self, df):
@@ -618,36 +635,53 @@ class scanner:
 		df['Yst7DVol(%)'].iloc[n-1] = round((100 * (volume_yest - avg_volume)/avg_volume))
 		df['Tdy%Del'].iloc[n-1] = df_today['Tdy%Del'].iloc[0]
 		df['Yst%Del'].iloc[n-1] = df['Yst%Del'].iloc[0]
-		if ltp >= df['PP'].iloc[n-1]:
-			df['Remarks'].iloc[n-1]='LTP >= PP'
-			df['S1-R3'].iloc[n-1] = df['PP'].iloc[n-1]
-			if ltp >= df['R3'].iloc[n-1]:
-				df['Remarks'].iloc[n-1]='LTP >= R3'
-				df['S1-R3'].iloc[n-1] = df['R3'].iloc[n-1]
-			elif ltp >= df['R2'].iloc[n-1]:
-				df['Remarks'].iloc[n-1]='LTP >= R2'
-				df['S1-R3'].iloc[n-1] = df['R2'].iloc[n-1]
-			elif ltp >= df['R1'].iloc[n-1]:
-				df['Remarks'].iloc[n-1]='LTP >= R1'
-				df['S1-R3'].iloc[n-1] = df['R1'].iloc[n-1]
-			elif ltp < df['R1'].iloc[n-1]:
-				df['Remarks'].iloc[n-1]='LTP < R1'
-				df['S1-R3'].iloc[n-1] = df['R1'].iloc[n-1]
-		else:
-			df['Remarks'].iloc[n-1]='LTP < PP'
-			df['S1-R3'].iloc[n-1] = df['PP'].iloc[n-1]
-			if ltp >= df['S1'].iloc[n-1]:
-				df['Remarks'].iloc[n-1]='LTP >= S1'
-				df['S1-R3'].iloc[n-1] = df['S1'].iloc[n-1]
-			elif ltp >= df['S2'].iloc[n-1]:
-				df['Remarks'].iloc[n-1]='LTP >= S2'
-				df['S1-R3'].iloc[n-1] = df['S2'].iloc[n-1]
-			elif ltp >= df['S3'].iloc[n-1]:
-				df['Remarks'].iloc[n-1]='LTP >= S3'
-				df['S1-R3'].iloc[n-1] = df['S3'].iloc[n-1]
-			elif ltp < df['S3'].iloc[n-1]:
-				df['Remarks'].iloc[n-1]='LTP < S3'
-				df['S1-R3'].iloc[n-1] = df['S3'].iloc[n-1]
+		r3 = df['R3'].iloc[n-1]
+		r2 = df['R2'].iloc[n-1]
+		r1 = df['R1'].iloc[n-1]
+		pp = df['PP'].iloc[n-1]
+		s1 = df['S1'].iloc[n-1]
+		s2 = df['S2'].iloc[n-1]
+		s3 = df['S3'].iloc[n-1]
+		crossover_point = False
+		for pt, pt_name in zip([r3,r2,r1,pp,s1,s2,s3], ['R3', 'R2', 'R1', 'PP', 'S1', 'S2', 'S3']):
+			# Stocks that are within 0.075% of crossover points
+			if abs((ltp-pt)*100/ltp) - resources.scanner().crossover_reminder_percent <= 0:
+				crossover_point = True
+				df['Symbol'].iloc[n-1] = '** {}'.format(df['Symbol'].iloc[n-1])
+				df['Remarks'].iloc[n-1]= pt_name
+				df['S1-R3'].iloc[n-1] = pt
+				break
+		if not crossover_point:
+			if ltp >= pp:
+				df['Remarks'].iloc[n-1]='LTP >= PP'
+				df['S1-R3'].iloc[n-1] = pp
+				if ltp >= r3:
+					df['Remarks'].iloc[n-1]='LTP >= R3'
+					df['S1-R3'].iloc[n-1] = r3
+				elif ltp >= r2:
+					df['Remarks'].iloc[n-1]='LTP >= R2'
+					df['S1-R3'].iloc[n-1] = r2
+				elif ltp >= r1:
+					df['Remarks'].iloc[n-1]='LTP >= R1'
+					df['S1-R3'].iloc[n-1] = r1
+				elif ltp < r1:
+					df['Remarks'].iloc[n-1]='PP <= LTP < R1'
+					df['S1-R3'].iloc[n-1] = r1
+			else:
+				df['Remarks'].iloc[n-1]='LTP < PP'
+				df['S1-R3'].iloc[n-1] = pp
+				if ltp >= s1:
+					df['Remarks'].iloc[n-1]='PP > LTP >= S1'
+					df['S1-R3'].iloc[n-1] = s1
+				elif ltp >= s2:
+					df['Remarks'].iloc[n-1]='LTP >= S2'
+					df['S1-R3'].iloc[n-1] = s2
+				elif ltp >= s3:
+					df['Remarks'].iloc[n-1]='LTP >= S3'
+					df['S1-R3'].iloc[n-1] = s3
+				elif ltp < s3:
+					df['Remarks'].iloc[n-1]='LTP < S3'
+					df['S1-R3'].iloc[n-1] = s3
 		if current_datetime_in_ist_trading_time_range():
 			df['T0BuySellDiff']= np.nan
 			df['T0BuySellDiff'].iloc[n-1] = df_today['T0BuySellDiff'].iloc[0]
@@ -659,7 +693,7 @@ class scanner:
 			if not key in VOLUME_KEYS:
 				df.drop([key], axis = 1, inplace = True)
 		default_logger().debug(df.to_string(index=False))
-		if today_vs_yest > 0 or ltp >= vwap:
+		if today_vs_yest > 0 or ltp >= vwap or crossover_point:
 			signalframescopy.append(df)
 		return df, df_today, signalframescopy
 	

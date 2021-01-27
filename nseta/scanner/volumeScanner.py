@@ -19,6 +19,7 @@ class volumeScanner(baseScanner):
 		self.signal_columns = resources.scanner().volume_scan_columns
 		scannerinstance = scanner(indicator=self.indicator)
 		self.scanner_func = scannerinstance.scan_volume
+		self.sortAscending = False
 		super().scan(option=option)
 
 	def scan_background(self, terminate_after_iter=0, wait_time=resources.scanner().background_scan_frequency_intraday):

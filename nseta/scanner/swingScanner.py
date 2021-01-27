@@ -18,7 +18,8 @@ class swingScanner(baseScanner):
 		self.signal_columns = resources.scanner().swing_scan_columns
 		scannerinstance = scanner(indicator=self.indicator)
 		self.scanner_func = scannerinstance.scan_swing
-		super().scan(option=None)
+		self.sortAscending = True
+		super().scan(option='Symbol')
 		# TODO: Include get-quote results for OHLC of today before market closing hours for better accuracy
 
 	@tracelog

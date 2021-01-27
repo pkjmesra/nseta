@@ -26,15 +26,18 @@ volume_scan_columns = Symbol,LTP,VWAP,%%Change=%%Chng,TDYVol(%%)=Vol_TDY,7DVol(%
 
 # Available columns: Symbol,Date,RSI,MOM,EMA(9),macd(12),macdsignal(9),macdhist(26),BBands-U,BBands-L,LTP,Signal,Remarks,Confidence
 # You can also change the order of columns.  Put two %% for 1 % to appear in the column name
-swing_scan_columns = Symbol,LTP,RSI,macd(12)=MACD(12),macdsignal(9)=MACD(9),BBands-U,BBands-L,Signal,Remarks,Confidence
+swing_scan_columns = Symbol,LTP,RSI,macd(12)=MACD(12),macdsignal(9)=MACD(9),BBands-U,BBands-L,Signal,Confidence
 
 # Available columns : Symbol,Date,RSI,MOM,EMA(9),macd(12),macdsignal(9),macdhist(26),BBands-U,BBands-L,LTP,Signal,Remarks,Confidence
 # You can also change the order of columns.  Put two %% for 1 % to appear in the column name
-intraday_scan_columns = Symbol,LTP,RSI,MOM,macd(12)=MACD(12),macdsignal(9)=MACD(9),BBands-U,BBands-L,Signal,Remarks,Confidence
+intraday_scan_columns = Symbol,LTP,RSI,MOM,macd(12)=MACD(12),macdsignal(9)=MACD(9),BBands-U,BBands-L,Signal,Confidence
 
 # Available columns : Updated,Symbol,Close,LTP,%% Delivery,Buy - Sell,TotalTradedVolume,pChange
 # You can also change the order of columns.  Put two %% for 1 % to appear in the column name
 live_scan_columns = Updated,Symbol,Close,LTP,%% Delivery,Buy - Sell,TotalTradedVolume,pChange
+
+# The percent value which will be marked with **<Symbol_Name> during volume scans if LTP is within this percentage value
+crossover_reminder_percent = 0.075
 
 [FORECAST]
 Lower = 1.5

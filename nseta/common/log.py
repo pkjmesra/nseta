@@ -5,16 +5,13 @@ import warnings
 import inspect
 
 from functools import wraps
-from inspect import getcallargs, getfullargspec
+# from inspect import getcallargs, getfullargspec
 from collections import OrderedDict, Iterable
 from itertools import *
 
 __all__ = ['setup_custom_logger', 'default_logger', 'log_to', 'tracelog', 'suppress_stdout_stderr']
-global __trace__ 
 __trace__ = False
-global __filter__ 
 __filter__ = None
-global __DEBUG__
 __DEBUG__ = False
 
 class filterlogger:
@@ -143,13 +140,13 @@ def getargnames(func):
 	"""Return an iterator over all arg names, including nested arg names and varargs.
 	Goes in the order of the functions argspec, with varargs and
 	keyword args last if present."""
-	(args, varargs, varkw, defaults, kwonlyargs, kwonlydefaults, annotations) = getfullargspec(func)
+	(args, varargs, varkw, defaults, kwonlyargs, kwonlydefaults, annotations) = inspect.getfullargspec(func)
 	return chain(flatten(args), filter(None, [varargs, varkw]))
 
 def getcallargs_ordered(func, *args, **kwargs):
 	"""Return an OrderedDict of all arguments to a function.
 	Items are ordered by the function's argspec."""
-	argdict = getcallargs(func, *args, **kwargs)
+	argdict = inspect.getcallargs(func, *args, **kwargs)
 	return OrderedDict((name, argdict[name]) for name in getargnames(func))
 
 def describe_call(func, *args, **kwargs):

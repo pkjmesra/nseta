@@ -1,0 +1,1 @@
+global __scan_counter__

@@ -20,9 +20,6 @@ from nseta.plots.plots import plot_rsi
 
 __all__ = ['STRATEGY_MAPPING', 'strategyManager']
 
-global __test_counter__
-global __download_counter__
-
 CONCURRENT_STOCK_COUNT = 3
 CONCURRENT_STRATEGY_COUNT = 3
 
@@ -102,7 +99,7 @@ class strategyManager:
 					if summary is not None and len(summary) > 0:
 						df_summary['Symbol'].iloc[0] = stock
 						df_summary['{}-PnL'.format(strategy.upper())].iloc[0] = summary['PnL'].iloc[0]
-						df_summary['Reco-{}'.format(strategy.upper())].iloc[0] = str(summary['Recommendation'].iloc[0]).rsplit('.',1)[1]
+						df_summary['Reco-{}'.format(strategy.upper())].iloc[0] = str(summary['Recommendation'].iloc[0])
 				except Exception as e:
 					default_logger().debug(e, exc_info=True)
 					default_logger().debug('Failed to test trading strategy for symbol: {}.'.format(stock))

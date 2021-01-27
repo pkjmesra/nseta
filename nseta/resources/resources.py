@@ -47,7 +47,8 @@ class Scanner:
 	def __init__(self, userstocks_path='userstocks.txt',Background_Scan_Frequency_Intraday=10,
 		Background_Scan_Frequency_Live=60,Background_Scan_Frequency_Quotes=60,
 		Background_Scan_Frequency_Volume=30,volume_scan_columns=None,swing_scan_columns=None,
-		enumerate_volume_scan_signals=False, intraday_scan_columns = None, live_scan_columns=None):
+		enumerate_volume_scan_signals=False, intraday_scan_columns = None, live_scan_columns=None,
+		crossover_reminder_percent=0.075):
 		self._userstocks_filepath = userstocks_path
 		self._Background_Scan_Frequency_Intraday = int(Background_Scan_Frequency_Intraday)
 		self._Background_Scan_Frequency_Live = int(Background_Scan_Frequency_Live)
@@ -58,6 +59,7 @@ class Scanner:
 		self._enumerate_volume_scan_signals = enumerate_volume_scan_signals
 		self._intraday_scan_columns = intraday_scan_columns
 		self._live_scan_columns = live_scan_columns
+		self._crossover_reminder_percent = float(crossover_reminder_percent)
 
 	@property
 	def userstocks_filepath(self):
@@ -98,6 +100,10 @@ class Scanner:
 	@property
 	def enumerate_volume_scan_signals(self):
 		return self._enumerate_volume_scan_signals
+
+	@property
+	def crossover_reminder_percent(self):
+		return self._crossover_reminder_percent
 
 class Backtest:
 	def __init__(self, init_cash=100000, smac_fast_period=10,smac_slow_period=50,
@@ -475,4 +481,5 @@ class resources:
 		evss = r.config_valueforkey('SCANNER',"enumerate_volume_scan_signals").lower() in ("yes", "true", "t", "1")
 		isc = split_into_range_str(r.config_valueforkey('SCANNER',"intraday_scan_columns"))
 		lsc = split_into_range_str(r.config_valueforkey('SCANNER',"live_scan_columns"))
-		return Scanner(usfp, bsfi, bsfl,bsfq, bsfv,vsc,ssc, evss,isc,lsc)
+		crp = r.config_valueforkey('SCANNER',"crossover_reminder_percent")
+		return Scanner(usfp, bsfi, bsfl,bsfq, bsfv,vsc,ssc, evss,isc,lsc,crp)

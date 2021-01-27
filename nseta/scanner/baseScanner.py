@@ -1,7 +1,7 @@
 import threading, time
 import click
 import pandas as pd
-import enum
+
 from nseta.archives.archiver import *
 from nseta.common.tradingtime import *
 from nseta.common.log import tracelog, default_logger
@@ -18,6 +18,7 @@ class baseScanner:
 		self._archiver = None
 		self._response_type = None
 		self._scanner_func = None
+		self._sortAscending = False
 
 	@property
 	def scanner_type(self):
@@ -30,6 +31,14 @@ class baseScanner:
 	@property
 	def indicator(self):
 		return self._indicator
+
+	@property
+	def sortAscending(self):
+		return self._sortAscending
+
+	@sortAscending.setter
+	def sortAscending(self, value):
+		self._sortAscending = value
 
 	@property
 	def background(self):
@@ -79,6 +88,7 @@ class baseScanner:
 	def scanner_func(self, value):
 		self._scanner_func = value
 
+	@tracelog
 	def scan(self, option=None):
 		self.option = option
 		if self.background:
@@ -95,12 +105,14 @@ class baseScanner:
 	def scan_results_file_names(self):
 		return 'df_Scan_Results.{}'.format(self.indicator), 'signaldf_Scan_Results.{}'.format(self.indicator)
 
+	@tracelog
 	def load_archived_scan_results(self):
 		df_file_name , signaldf_file_name = self.scan_results_file_names()
 		df = self.archiver.restore(df_file_name, self.response_type)
 		signaldf = self.archiver.restore(signaldf_file_name, self.response_type)
 		return df, signaldf
 
+	@tracelog
 	def save_scan_results_archive(self, df, signaldf, should_cache=True):
 		if should_cache or not current_datetime_in_ist_trading_time_range():
 			df_file_name , signaldf_file_name = self.scan_results_file_names()
@@ -111,6 +123,7 @@ class baseScanner:
 				self.archiver.archive(signaldf, signaldf_file_name,self.response_type)
 				default_logger().debug('Saved to: {}'.format(signaldf_file_name))
 	
+	@tracelog
 	def scan_results(self, df, signaldf, should_cache=True):
 		if df is not None and len(df) > 0:
 			self.save_scan_results_archive(df, signaldf, should_cache)
@@ -119,13 +132,14 @@ class baseScanner:
 			print('As of {}, nothing to show here.'.format(IST_datetime()))
 		if signaldf is not None and len(signaldf) > 0:
 			if self.option is not None:
-				signaldf = signaldf.sort_values(by=self.option, ascending=False)
+				signaldf = signaldf.sort_values(by=self.option, ascending=self.sortAscending)
 			user_signaldf = self.configure_user_display(signaldf, columns=self.signal_columns)
 			print("\nAs of {}, {} Signals:\n\n{}".format(IST_datetime(),self.scanner_type.name, user_signaldf.to_string(index=False)))
 		else:
 			print('As of {}, no signals to show here.'.format(IST_datetime()))
 		click.secho('{} scanning finished.'.format(self.scanner_type.name), fg='green', nl=True)
 
+	@tracelog
 	def configure_user_display(self, df, columns=None):
 		if columns is None:
 			return df
@@ -145,6 +159,7 @@ class baseScanner:
 				user_df[column_dict[key]] = df[key]
 		return user_df
 
+	@tracelog
 	def clear_cache(self, clear, force_clear=False):
 		if clear or self.background:
 			df_file_name = 'df_Scan_Results.{}'.format(self.indicator)
@@ -153,6 +168,7 @@ class baseScanner:
 			self.archiver.clearcache(signaldf_file_name, self.response_type, force_clear=force_clear)
 			self.archiver.clearcache(response_type=self.response_type, force_clear=force_clear)
 
+	@tracelog
 	def scan_background(self, terminate_after_iter=0, wait_time=0):
 		global RUN_IN_BACKGROUND
 		RUN_IN_BACKGROUND = True

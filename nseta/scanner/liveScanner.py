@@ -18,6 +18,7 @@ class liveScanner(baseScanner):
 		self.signal_columns = resources.scanner().live_scan_columns
 		scannerinstance = scanner(indicator=self.indicator)
 		self.scanner_func = scannerinstance.scan_live
+		self.sortAscending = False
 		super().scan(option='% Delivery')
 
 	@tracelog
