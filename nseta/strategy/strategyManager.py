@@ -198,6 +198,9 @@ class strategyManager:
 
 	def test_historical_trading_strategy(self, symbol, sd, ed, strategy, lower, upper, plot=False, backtest_lib=True):
 		df = self.get_historical_dataframe(symbol, sd, ed)
+		global __test_counter__
+		__test_counter__ = 0
+		self._total_tests_counter = 1
 		if df is not None and len(df) > 0:
 			if backtest_lib:
 				self.run_test_strategy(df, symbol, strategy,  lower, upper, plot=plot)
@@ -207,6 +210,9 @@ class strategyManager:
 
 	def test_intraday_trading_strategy(self, symbol, strategy,lower, upper, plot=False, backtest_lib=True):
 		df = self.get_intraday_dataframe(symbol, strategy)
+		global __test_counter__
+		__test_counter__ = 0
+		self._total_tests_counter = 1
 		if df is not None and len(df) > 0:
 			if backtest_lib:
 				self.run_test_strategy(df, symbol, strategy, lower, upper, plot=plot)
@@ -229,6 +235,7 @@ class strategyManager:
 		s = scanner(strategy)
 		df = s.ohlc_intraday_history(symbol)
 		if df is not None and len(df) > 0:
+			df.drop(['Open'], axis = 1, inplace = True)
 			df = df.sort_values(by='Date',ascending=True)
 		return df
 
