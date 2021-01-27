@@ -65,9 +65,23 @@ class TestLivecli(baseUnitTest):
 		self.assertEqual(result.exit_code , 0)
 		self.assertIn("Swing scanning finished.", result.output, str(result.output))
 
+	def test_scan_swing_background(self):
+		s = scannerFactory.scanner(ScannerType.Swing, ['HDFC'], 'emac', True)
+		scannerinstance = scanner(indicator='rsi')
+		s.scanner_func = scannerinstance.scan_swing
+		result = s.scan_background(terminate_after_iter=2, wait_time=0)
+		self.assertEqual(result , 0)
+		self.assertFalse(s.background)
+
 	def test_scan_volume(self):
 		runner = CliRunner()
 		result = runner.invoke(scan, args=['--stocks', 'BANDHANBNK', '--volume', '--clear', '--orderby', 'momentum'])
+		self.assertEqual(result.exit_code , 0)
+		self.assertIn("Volume scanning finished.", result.output, str(result.output))
+
+	def test_scan_volume_intraday(self):
+		runner = CliRunner()
+		result = runner.invoke(scan, args=['--stocks', 'BANDHANBNK', '--volume', '--clear', '--orderby', 'intraday'])
 		self.assertEqual(result.exit_code , 0)
 		self.assertIn("Volume scanning finished.", result.output, str(result.output))
 	

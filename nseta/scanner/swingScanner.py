@@ -22,7 +22,8 @@ class swingScanner(baseScanner):
 		# TODO: Include get-quote results for OHLC of today before market closing hours for better accuracy
 
 	@tracelog
-	def scan_background(self, terminate_after_iter=0, wait_time=resources.scanner().background_scan_frequency_intraday):
+	def scan_background(self, terminate_after_iter=0, wait_time=0):
 		default_logger().debug('Background running not supported yet. Stay tuned. Executing just once.')
 		self.background = False
 		self.scan(self.option)
+		return 0

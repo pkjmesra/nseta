@@ -119,7 +119,7 @@ class baseScanner:
 			print('As of {}, nothing to show here.'.format(IST_datetime()))
 		if signaldf is not None and len(signaldf) > 0:
 			if self.option is not None:
-				signaldf = signaldf.sort_values(by=self.option, ascending=True)
+				signaldf = signaldf.sort_values(by=self.option, ascending=False)
 			user_signaldf = self.configure_user_display(signaldf, columns=self.signal_columns)
 			print("\nAs of {}, {} Signals:\n\n{}".format(IST_datetime(),self.scanner_type.name, user_signaldf.to_string(index=False)))
 		else:
