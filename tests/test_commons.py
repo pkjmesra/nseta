@@ -178,7 +178,7 @@ class TestURLFetch(baseUnitTest):
 		http_get = URLFetch(url=url, session=self.session)
 		try:
 			resp = http_get(key1='val1', key2='val2')
-		except requests.exceptions.ConnectionError as e:
+		except requests.exceptions.ConnectionError:
 			raise requests.exceptions.ConnectionError(
 				'Error fetching (check proxy settings):', url)
 		json = resp.json()

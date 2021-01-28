@@ -1,6 +1,5 @@
 import unittest
 from nseta.common.symbols import get_symbol_list, get_index_constituents_list
-import pdb
 from baseUnitTest import baseUnitTest
 
 class TestSymbols(baseUnitTest):
@@ -39,3 +38,20 @@ class TestSymbols(baseUnitTest):
 
     def tearDown(self):
         super().tearDown()
+
+if __name__ == '__main__':
+
+    suite = unittest.TestLoader().loadTestsFromTestCase(TestSymbols)
+    result = unittest.TextTestRunner(verbosity=2).run(suite)
+    if six.PY2:
+        if result.wasSuccessful():
+            print("tests OK")
+        for (test, error) in result.errors:
+            print("=========Error in: %s===========" % test)
+            print(error)
+            print("======================================")
+
+        for (test, failures) in result.failures:
+            print("=========Error in: %s===========" % test)
+            print(failures)
+            print("======================================")

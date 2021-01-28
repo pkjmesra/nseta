@@ -1,10 +1,7 @@
 # -*- coding: utf-8 -*-
 import unittest
-
 from click.testing import CliRunner
-
 from nseta.cli.historycli import history, pe_history
-import nseta.common.urls as urls
 from baseUnitTest import baseUnitTest
 
 class TestHistorycli(baseUnitTest):

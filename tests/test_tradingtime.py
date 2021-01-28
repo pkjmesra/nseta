@@ -1,10 +1,5 @@
 # -*- coding: utf-8 -*-
-import pdb
 import unittest
-import pandas as pd
-import os
-import time
-
 from datetime import datetime
 from nseta.common.tradingtime import *
 from baseUnitTest import baseUnitTest

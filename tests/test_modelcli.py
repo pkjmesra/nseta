@@ -1,11 +1,7 @@
 # -*- coding: utf-8 -*-
-import pdb
 import unittest
-
 from click.testing import CliRunner
-
 from nseta.cli.modelcli import create_cdl_model
-import nseta.common.urls as urls
 from baseUnitTest import baseUnitTest
 
 class TestModelcli(baseUnitTest):

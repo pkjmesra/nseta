@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-import pdb
 import unittest
 import matplotlib.pyplot as plt
 from unittest.mock import patch
@@ -8,7 +7,6 @@ import time
 from click.testing import CliRunner
 from nseta.resources.resources import *
 from nseta.cli.strategycli import test_trading_strategy, forecast_strategy, scan_trading_strategy
-from nseta.common import urls
 from baseUnitTest import baseUnitTest
 
 class TestStrategycli(baseUnitTest):

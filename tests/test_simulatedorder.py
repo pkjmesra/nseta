@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-import pdb
 import unittest
 
 from nseta.strategy.simulatedorder import simulatedorder, OrderType, INITIAL_FUNDS
