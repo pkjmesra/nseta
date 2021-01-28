@@ -30,7 +30,7 @@ swing_scan_columns = Symbol,LTP,RSI,macd(12)=MACD(12),macdsignal(9)=MACD(9),BBan
 
 # Available columns : Symbol,Date,RSI,MOM,EMA(9),macd(12),macdsignal(9),macdhist(26),BBands-U,BBands-L,LTP,Signal,Remarks,Confidence
 # You can also change the order of columns.  Put two %% for 1 % to appear in the column name
-intraday_scan_columns = Symbol,LTP,RSI,MOM,macd(12)=MACD(12),macdsignal(9)=MACD(9),BBands-U,BBands-L,Signal,Confidence
+intraday_scan_columns = Symbol,LTP,RSI,MOM,macd(12)=MACD(12),macdsignal(9)=MACD(9),BBands-U,BBands-L,Signal,Remarks,Confidence
 
 # Available columns : Updated,Symbol,Close,LTP,%% Delivery,Buy - Sell,TotalTradedVolume,pChange
 # You can also change the order of columns.  Put two %% for 1 % to appear in the column name

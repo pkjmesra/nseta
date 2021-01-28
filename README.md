@@ -26,7 +26,11 @@ Python Library (and console/CLI application) to
 
 ## Donate
 
+It takes a lot of time/effort to develop, implement, test and maintain the codebase. When possible, please donate as per your wishes.
 [![Otechie](https://api.otechie.com/pkjmes/badge.svg)](https://otechie.com/pkjmes)
+
+## Tech Disclaimer
+This has been built and tested only on macOS Big Sur (v11+). You may wish to check the `.travis.yml` or the `python-publish.yml` file to understand how to build from source. If you test it on a platform other than macOS and find issues, please do report those in the `issues` tab above.
 
 ## Libraries Required
 - (See requirements.txt file for more)
@@ -44,7 +48,7 @@ pip3 install nseta
 ```
 -  Installing specific version
 ```
-pip3 install nseta==0.6.68
+pip3 install nseta==0.6.202
 ```
   You can also directly install specific versions from pypi.org:
 ```
@@ -56,12 +60,13 @@ pip install --index-url https://pypi.org/simple/ --extra-index-url https://pypi.
 python3 -m pip install --upgrade nseta
 ```
 -  Wheel (.whl) file from PyPi.org
+
   Just go ahead and download the ```.whl``` file from ```https://pypi.org/project/nseta/#files``` and install from the downloaded directory:
 
 ```
-pip3 install ./nseta-0.6.68-py3-none-any.whl
+pip3 install ./nseta-0.6.202-py3-none-any.whl
 ```
-  where 0.6.68 is the version of the library.
+  where `0.6.202` is the version of the library.
 
 - Specific test versions(under development) can be installed from test.pypi.org
 ```
@@ -79,42 +84,52 @@ python3 -c "import nseta; print(nseta.__version__)"
 ```python
 
 #Usage Commands (You can use nsetacli or nseta - either is good.)
-$ nseta
+$ $ nseta
 Usage: nseta [OPTIONS] COMMAND [ARGS]...
 
 Options:
   --debug / --no-debug  --debug to turn debugging on. Default is off
-  --trace / --no-trace  --trace to turn tracing on (works only with --debug). Default is off.
   --version             Shows the version of this library
+  --trace / --no-trace  --trace to turn tracing on (works only with --debug).
+                        Default is off.
+  -f, --filter TEXT     --filter <TEXT> to show only logs that match the
+                        filter text. Works only with --debug
   --help                Show this message and exit.
 
 Commands:
+  clear                  Force clears log files, downloaded contents etc.
   create-cdl-model       Create candlestick model.Plot uncovered patterns
   forecast-strategy      Forecast & measure performance of a trading model
   history                Get price history of a security for given dates
   live-quote             Get live price quote of a security
   pe-history             Get PE history of a security for given dates
   plot-ta                Plot various technical analysis indicators
-  scan                   Scan live price quotes and calculate RSI for...
+  scan                   Scan live and intraday for prices and signals.
+  scan-trading-strategy  Test/Measure the performance of your trading strategies
   test-trading-strategy  Measure the performance of your trading strategy
 ```
 - Sample commands
 ```python
 
   Example:
+  nseta clear -d
   nseta create-cdl-model -S bandhanbnk -s 2019-07-30 -e 2020-11-20 --steps
   nseta forecast-strategy -S bandhanbnk -s 2019-07-30 -e 2020-11-20 --strategy rsi
   nseta history -S bandhanbnk -s 2019-07-30 -e 2020-11-20
   nseta live-quote -S bandhanbnk
   nseta pe-history -S bandhanbnk -s 2019-07-30 -e 2020-11-20
   nseta plot-ta -S bandhanbnk -s 2019-07-30 -e 2020-11-20
-  nseta test-trading-strategy -S bandhanbnk -s 2019-07-30 -e 2020-11-20 --strategy rsi
   nseta scan -S HDFC,ABB -s
   nseta scan -i
   nseta scan -l
   nseta scan -s
   nseta scan -v
+  nseta scan-trading-strategy -S bandhanbnk -s 2019-07-30 -e 2020-11-20 --strategy rsi
+  nseta scan-trading-strategy -s 2019-07-30 -e 2020-11-20 --strategy rsi
+  nseta scan-trading-strategy -s 2019-07-30 -e 2020-11-20
+  nseta test-trading-strategy -S bandhanbnk -s 2019-07-30 -e 2020-11-20 --strategy rsi
 ```
+
 - Test your trading strategies
 
 ```python
@@ -150,18 +165,7 @@ Options:
 - Test your trading strategies (for example, using *RSI* as technical indicator)
 
 ```python
-$ nseta test-trading-strategy -S bandhanbnk -s 2020-01-01 -e 2020-10-03 --strategy rsi --autosearch
-
-init_cash : 100000
-buy_prop : 1
-sell_prop : 1
-commission : 0.0075
-===Strategy level arguments===
-rsi_period : 14
-rsi_upper : 70
-rsi_lower : 15
-Final Portfolio Value: 162418.36025
-Final PnL: 62418.36
+$ nseta test-trading-strategy -S bandhanbnk -s 2020-01-01 -e 2020-10-03 --strategy rsi
 
 Time used (seconds): 0.13728976249694824
 Optimal parameters: {'init_cash': 100000, 'buy_prop': 1, 'sell_prop': 1, 'commission': 0.0075, 'execution_type': 'close', 'channel': None, 'symbol': None, 'rsi_period': 14, 'rsi_upper': 70, 'rsi_lower': 15}
@@ -486,26 +490,34 @@ Live scanning finished.
 - Scanning options
 ```python
 nseta scan --help
-Usage: nseta scan [OPTIONS]
+Usage:  [OPTIONS]
 
   Scan live and intraday for prices and signals.
 
 Options:
-  -S, --stocks TEXT               Comma separated security codes(Optional.
+  -S, --stocks TEXT               Comma separated security codes(Optional).
                                   When skipped, all stocks configured in
                                   stocks.txt will be scanned.)
-  -l, --live                      Scans (every min.) the live-quote and lists
-                                  those that meet the signal criteria. Works
-                                  best with --background.
-  -i, --intraday                  Scans (every 10 sec) the intraday price
-                                  history and lists those that meet the signal
-                                  criteria
-  -s, --swing                     Scans (every 10 sec) the past 365 days price
-                                  history and lists those that meet the signal
-                                  criteria
-  -t, --indicator [rsi|sma10|sma50|ema|macd|bbands|all]
-                                  rsi, sma10, sma50, ema, macd, bbands, all.
-                                  Choose one.
+  -l, --live                      Scans (every min. when in background) the
+                                  live-quote and lists those that meet the
+                                  signal criteria. Works best with
+                                  --background.
+  -i, --intraday                  Scans (every 10 sec when in background) the
+                                  intraday price history and lists those that
+                                  meet the signal criteria
+  -s, --swing                     Scans (every 10 sec when in background) the
+                                  past 90 days price history and lists those
+                                  that meet the signal criteria
+  -v, --volume                    Scans (every 10 sec when in background) the
+                                  past 7 days price history and lists those
+                                  that meet the signal criteria
+  -t, --indicator [rsi|smac|emac|macd|bbands|all]
+                                  rsi, smac, emac, macd, bbands, all. Choose
+                                  one.
+  -o, --orderby [intraday|momentum]
+                                  intraday, momentum. Choose one.
+  -c, --clear                     Clears the cached data for the given
+                                  options.
   -r, --background                Keep running the process in the background
                                   (Optional)
   --help                          Show this message and exit.
@@ -602,25 +614,78 @@ Swing scanning finished.
 
 - Scanning based on volumes
 ```python
-nseta scan -v
-Volume Signals:
-     Symbol                  Date     VWAP       LTP  TodayVsYest(%)  TodayVs7Day(%)  YestVs7Day(%)  Yest-%Deliverable  Today%Deliverable  7DayAvgVolume  TodaysVolume  TodaysBuy-SelllDiff
-       MOIL  13-JAN-2021 16:00:00   147.77    153.00           960.0           937.0           -2.0              45.32              16.29      410063.43     42,53,516                  NaN
- BHARATFORG  13-JAN-2021 16:00:00   619.08    626.50           544.0           338.0          -32.0              18.90              11.85     3454696.14   1,51,15,174                  NaN
-  TATAELXSI  13-JAN-2021 16:00:00  2114.73  2,398.95           530.0          1021.0           78.0              23.87              12.63      478625.57     53,67,427                  NaN
-       ATUL  13-JAN-2021 16:00:00  6593.64  6,640.95           393.0           287.0          -22.0              62.71              86.12       32846.00      1,27,126                  NaN
-       BHEL  13-JAN-2021 16:00:00    39.51     40.75           308.0           296.0           -3.0              20.14              18.32    39062576.86  15,45,73,968                  NaN
-  TEAMLEASE  13-JAN-2021 16:00:00  2789.78  2,822.00           272.0            29.0          -65.0              38.50              74.94       30741.71        39,718                  NaN
-        M&M  13-JAN-2021 16:00:00   785.66    824.00           254.0           431.0           50.0              29.54              22.67     3691342.86   1,96,10,461                  NaN
- BHARTIARTL  13-JAN-2021 16:00:00   559.81    576.30           230.0           357.0           39.0              38.74              31.54    18309113.57   8,36,68,562                  NaN
- MUTHOOTFIN  13-JAN-2021 16:00:00  1273.55  1,237.95           214.0           271.0           18.0              49.30              34.41     1074672.71     39,82,200                  NaN
-    SIEMENS  13-JAN-2021 16:00:00  1651.87  1,630.50           191.0            64.0          -44.0              16.40              22.27      258853.43      4,24,905                  NaN
-  GODREJIND  13-JAN-2021 16:00:00   434.44    434.00           178.0           470.0          105.0              48.07              48.75      308610.14     17,58,041                  NaN
-        HAL  13-JAN-2021 16:00:00   904.84    919.95           176.0            73.0          -37.0              43.93              27.24      464817.57      8,06,377                  NaN
-  HINDPETRO  13-JAN-2021 16:00:00   226.10    226.80           156.0           162.0            2.0              35.12              30.07     4418919.00   1,15,55,573                  NaN
-       BPCL  13-JAN-2021 16:00:00   404.45    411.50           154.0           252.0           38.0              27.33              23.82     6025170.43   2,11,81,147                  NaN
-  LICHSGFIN  13-JAN-2021 16:00:00   438.29    437.25           129.0            96.0          -14.0              29.83              24.86     6842493.43   1,34,35,773                  NaN
-       NTPC  13-JAN-2021 16:00:00    99.85    102.50           103.0           153.0           24.0              42.72              26.44    19498864.00   4,92,36,964                  NaN
+$ nseta scan -v -c
+Done.                                                                                                                            
+This run of volume scan took 38.4 sec
+
+As of 2021-01-28 14:16:39.955641+05:30, Volume Signals:
+
+        Symbol      LTP     VWAP   %Chng  Vol_TDY  Vol_7D    S1-R3         Remarks Del_TDY
+       HAVELLS  1176.90  1114.08    5.74    550.0   125.0  1153.70       LTP >= R3   16.62
+     TEAMLEASE  2813.10  2783.31    1.41    414.0   153.0  2826.67  PP <= LTP < R1   39.66
+         ABFRL   152.45   164.95   -5.95    209.0   161.0   148.48       LTP >= S3   50.51
+         IRCTC  1460.00  1433.52    1.51    205.0   269.0  1456.12       LTP >= R2   29.85
+        RADICO   496.75   496.43   -0.31    171.0    75.0   508.45  PP <= LTP < R1   28.40
+       DCBBANK   103.50   110.92   -5.00    170.0   335.0    99.38       LTP >= S3   69.16
+        ARVIND    53.90    49.46    8.56    134.0   149.0    53.32       LTP >= R3   33.39
+    MCDOWELL-N   597.80   642.02   -7.30    108.0   200.0   613.00        LTP < S3   30.90
+      AXISBANK   660.90   641.63    4.56    102.0   239.0   654.80       LTP >= R1   31.76
+       PRAJIND   116.85   113.56    3.68     77.0    36.0   114.90       LTP >= R1   36.69
+    BANKBARODA    66.15    73.84  -10.67     69.0   166.0    68.70        LTP < S3   26.11
+    MADRASFERT    29.30    28.66    3.17     66.0   -15.0    29.88  PP <= LTP < R1   39.44
+           PNB    32.55    33.70   -2.40     53.0    14.0    32.35       LTP >= S2   27.43
+   ** GLENMARK   480.60   490.14   -1.09     45.0    54.0   480.65              S1   23.19
+    FEDERALBNK    71.45    70.58    2.36     39.0    38.0    71.33       LTP >= R1   35.15
+     ** MARUTI  7655.00  7972.54   -2.74     39.0    89.0  7657.63              S2   19.78
+      HDFCBANK  1354.50  1437.02   -3.91     36.0    93.0  1320.78       LTP >= S3   55.02
+    CENTURYTEX   418.50   399.95    3.87     35.0   102.0   411.48       LTP >= R1   39.89
+     REPCOHOME   242.35   245.96   -2.06     32.0    -6.0   238.95       LTP >= S2   65.10
+        VOLTAS   934.00   926.47    2.24     26.0     0.0   936.03  PP <= LTP < R1   17.57
+          SAIL    56.90    58.24   -0.70     24.0    58.0    56.03  PP > LTP >= S1   53.29
+      ADANIENT   514.85   514.84    0.40     21.0    -8.0   520.55  PP <= LTP < R1   13.30
+    HEROMOTOCO  3411.95  3415.36    1.59     21.0     9.0  3451.72  PP <= LTP < R1   19.69
+    HINDUNILVR  2314.00  2376.31   -3.23     19.0    78.0  2293.77       LTP >= S2   42.49
+        ** PFC   108.95   112.24   -2.33     18.0    30.0   109.02              S2   30.12
+          NTPC    91.15    91.79   -0.16     17.0    35.0    90.37  PP > LTP >= S1   39.90
+           SRF  5401.00  5388.80    0.73     15.0    -6.0  5439.45  PP <= LTP < R1   38.47
+           ABB  1360.60  1376.47   -2.03     15.0    -8.0  1356.57  PP > LTP >= S1   57.69
+           PEL  1375.35  1458.75   -3.22     14.0    11.0  1357.72       LTP >= S2   29.32
+    BAJAJFINSV  8980.00  9160.23   -1.60     14.0   -19.0  8908.13       LTP >= S2   23.79
+    BANDHANBNK   311.70   306.90    2.63     12.0   -23.0   312.03  PP <= LTP < R1   38.21
+          BPCL   384.35   384.57    0.99     12.0    21.0   387.32  PP <= LTP < R1   41.09
+         DABUR   527.60   530.46    0.02      9.0    -1.0   522.93  PP > LTP >= S1   35.21
+     JKLAKSHMI   315.30   322.11   -1.47      7.0   -25.0   311.40       LTP >= S2   55.56
+  ** VISAKAIND   436.50   434.30   -0.16      6.0   -50.0   436.48              PP   56.08
+    TATACONSUM   563.90   578.75   -1.53      5.0     2.0   563.28  PP > LTP >= S1   45.95
+    BAJFINANCE  4839.10  4857.86   -0.12      3.0   -18.0  4788.80  PP > LTP >= S1   11.44
+    IDFCFIRSTB    47.70    48.01   -0.21      3.0   -25.0    46.73  PP > LTP >= S1   20.66
+ ** OBEROIRLTY   526.35   544.23   -1.93      3.0    16.0   526.57              S1   69.43
+          IDBI    28.35    27.46    2.35      0.0     1.0    28.43  PP <= LTP < R1   37.41
+ ** GODREJPROP  1243.35  1299.75   -4.15     -4.0    -8.0  1243.72              S2   24.19
+    CHAMBLFERT   238.90   236.28    3.38     -7.0    11.0   239.13  PP <= LTP < R1   40.73
+          BHEL    35.95    35.82    0.70    -11.0   -13.0    36.13  PP <= LTP < R1   22.06
+  ** SUNPHARMA   560.75   572.43   -1.59    -11.0    42.0   560.40              S1   22.73
+          SBIN   280.05   278.67    1.60    -12.0    11.0   282.77  PP <= LTP < R1   30.15
+           MCX  1670.60  1642.18    1.15    -14.0    21.0  1680.13  PP <= LTP < R1   59.88
+        ** TCS  3222.70  3265.48   -1.18    -24.0   -14.0  3223.22              S1   54.12
+        BIOCON   382.15   378.58    1.22    -27.0   -12.0   386.82  PP <= LTP < R1   28.90
+    CUMMINSIND   630.20   622.05    0.92    -27.0    62.0   632.75  PP <= LTP < R1   24.05
+           IOC    92.65    91.25    1.37    -32.0    -7.0    93.38  PP <= LTP < R1   34.78
+  ** BOMDYEING    74.20    74.15    0.34    -32.0   -52.0    74.15              PP   32.03
+   ** GODREJCP   775.50   776.00    0.20    -34.0   -51.0   775.25              PP   37.32
+      JSWSTEEL   379.70   377.59    0.92    -35.0   -28.0   381.65  PP <= LTP < R1   27.43
+       ** ONGC    90.15    90.09    0.50    -36.0    -5.0    90.12              PP   24.72
+    ** RAYMOND   325.30   325.19   -0.63    -36.0     0.0   325.52              PP   44.15
+      CROMPTON   423.65   417.12   -1.03    -37.0   -22.0   444.40  PP <= LTP < R1   66.16
+    INDUSTOWER   241.40   241.10    1.28    -38.0    25.0   245.23  PP <= LTP < R1   36.59
+     HINDPETRO   220.60   216.74    1.82    -42.0   -19.0   220.37       LTP >= R1   39.98
+      EVEREADY   192.90   189.48   -0.85    -43.0   -23.0   199.80  PP <= LTP < R1   68.86
+      ** CIPLA   840.95   843.08   -0.18    -52.0   -22.0   841.38              PP   25.68
+       ** INFY  1282.30  1308.99   -1.44    -57.0   -45.0  1281.55              S1   50.59
+    TRITURBINE    85.40    84.49    1.36    -61.0   -84.0    85.83  PP <= LTP < R1   57.39
+      GRAPHITE   314.80   312.42   -1.04    -64.0   -35.0   326.40  PP <= LTP < R1   34.02
+      ** SPARC   181.60   185.24   -1.33    -65.0   -47.0   181.58              S1   40.26
+    CASTROLIND   125.30   124.98    1.21    -68.0   -54.0   126.65  PP <= LTP < R1   48.23
 Volume scanning finished.
 
 ```
@@ -1016,7 +1081,7 @@ nseta scan-trading-strategy -s 2020-06-01 -e 2021-01-22
 
 
  Done.                                                                                                                                
-This run of trading strategy scan took 145.9 sec
+This run of trading strategy scan took 124.9 sec
 
      Symbol   RSI-PnL   MACD-PnL  BBANDS-PnL Reco-RSI Reco-MACD Reco-BBANDS
         ABB   2001.65   10381.40     8419.90  Unknown       Buy     Unknown
@@ -1167,6 +1232,20 @@ This run of trading strategy scan took 145.9 sec
      RADICO  18186.15    9358.40    29067.85  Unknown   Unknown     Unknown
 ```
 
+- To view just the logs of your interest, you can filter those:
+  ```python
+    nseta --debug --filter filter_text_goes_here <command> [command options]
+    nseta --debug --trace --filter filter_text_goes_here <command> [command options]
+  ```
+
+- To view the time taken by each method:
+  ```python
+    nseta --debug --filter time_taken <command> [command options]
+    nseta --debug --trace --filter time_taken <command> [command options]
+  ```
+- Configuration based display outputs
+ You can use the config.txt file and make changes as per your wish to view the results in a specific order or add/remove columns.
+ 
 ### Submit patches
 
 If you have fixed an issue or added a new feature, please fork this repository, make your changes and submit a pull request. [Here's good article on how to do this.](https://code.tutsplus.com/tutorials/how-to-collaborate-on-github--net-34267) 
