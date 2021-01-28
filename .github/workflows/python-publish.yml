@@ -75,6 +75,12 @@ jobs:
         fail_ci_if_error: false
         # path_to_write_report: ./coverage/codecov_report.txt
         verbose: true
+    - name: "Upload test coverage to Codacy"
+      env:
+        CODACY_PROJECT_TOKEN: ${{ secrets.CODACY_PROJECT_TOKEN }}
+      run: |
+        coverage xml
+        bash <(curl -Ls https://coverage.codacy.com/get.sh) report -l Python
     - name: Build and publish distribution 📦 to Test PyPI
       env:
         TWINE_USERNAME: ${{ secrets.TESTPYPI_USERNAME }}
