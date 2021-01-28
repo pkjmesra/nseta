@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-import pdb
 import unittest
 
 from click.testing import CliRunner
@@ -9,7 +8,7 @@ import nseta.common.urls as urls
 from baseUnitTest import baseUnitTest
 
 class TestHistorycli(baseUnitTest):
-	def setUp(self):
+	def setUp(self, redirect_logs=True):
 		super().setUp()
 
 	def test_history(self):

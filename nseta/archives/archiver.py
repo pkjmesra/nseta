@@ -3,7 +3,7 @@ import os
 import pandas as pd
 # import shutil
 import sys
-from datetime import datetime, time, timezone
+from datetime import datetime, timezone
 import pytz
 
 from nseta.common.log import tracelog, default_logger
@@ -176,8 +176,8 @@ class archiver:
 			default_logger().debug("File path does not exist:{}".format(file_path))
 		return df
 
-	@tracelog
-	def restore_from_path(self, file_path):
+	@staticmethod
+	def restore_from_path(file_path):
 		df = None
 		if os.path.exists(file_path):
 			try:

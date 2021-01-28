@@ -11,7 +11,7 @@ from nseta.common.log import *
 from baseUnitTest import baseUnitTest
 
 class TestLog(baseUnitTest):
-	def setUp(self):
+	def setUp(self, redirect_logs=True):
 		super().setUp(redirect_logs=False)
 		logging.disable(logging.NOTSET)
 
@@ -26,7 +26,7 @@ class TestLog(baseUnitTest):
 		default_logger().debug('test_debug_log_filter')
 		self.assertIn('test_debug_log_filter', self.capturedOutput.getvalue())
 		self.assertIn('test_log.py', self.capturedOutput.getvalue())
-	
+
 	def test_debug_log_filter_info(self):
 		log.setup_custom_logger('nseta', logging.INFO, False, filter='test_debug_log_filter_info')
 		default_logger().info('test_debug_log_filter_info')

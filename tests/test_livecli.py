@@ -11,7 +11,7 @@ from baseUnitTest import baseUnitTest
 from nseta.scanner.scannerFactory import *
 
 class TestLivecli(baseUnitTest):
-	def setUp(self):
+	def setUp(self, redirect_logs=True):
 		super().setUp()
 
 	def test_live_quote(self):

@@ -12,7 +12,7 @@ from nseta.common import urls
 from baseUnitTest import baseUnitTest
 
 class TestStrategycli(baseUnitTest):
-	def setUp(self):
+	def setUp(self, redirect_logs=True):
 		super().setUp()
 
 	def test_test_trading_strategy_inputs(self):

@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-import pdb
 import unittest
 
 from nseta.analytics.model import *
@@ -9,18 +8,16 @@ import nseta.common.urls as urls
 
 FIXTURE_PATH = 'tests/fixtures/BANDHANBNK_01-01-2020_08-01-2021'
 class TestAnalyticsModel(baseUnitTest):
-	def setUp(self):
+	def setUp(self, redirect_logs=True):
 		super().setUp()
 		arch = archiver()
-		self.df = arch.restore_from_path(FIXTURE_PATH)
+		self.df = archiver.restore_from_path(FIXTURE_PATH)
 
 	def test_get_candle_funcs(self):
 		candle_names = get_candle_funcs()
 		self.assertEqual(len(candle_names), 56)
 
 	def test_create_pattern_data(self):
-		candle_names = get_candle_funcs()
-		candle_counts = len(candle_names)
 		df = create_pattern_data(self.df)
 		self.assertEqual(len(df.keys()), 73)
 		self.assertIn("CDL3LINESTRIKE", df.columns, str(df.columns))

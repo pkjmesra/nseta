@@ -16,11 +16,9 @@ import time
 import unittest
 from datetime import date, timedelta
 import six
-import pdb
-
 
 class TestHistory(baseUnitTest):
-		def setUp(self):
+		def setUp(self, redirect_logs=True):
 				super().setUp()
 				self.start = date(2020, 12, 30)
 				self.end = date(2021, 1, 8)

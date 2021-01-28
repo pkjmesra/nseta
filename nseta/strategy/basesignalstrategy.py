@@ -89,8 +89,8 @@ class basesignalstrategy:
 		return self._dir
 
 	@direction.setter
-	def direction(self, dir):
-		self._dir = dir
+	def direction(self, direction):
+		self._dir = direction
 
 	@property
 	def p3(self):

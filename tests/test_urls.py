@@ -4,7 +4,6 @@ Created on Thu Nov 19 20:52:33 2015
 
 @author: SW274998
 """
-import pdb
 from nseta.common.commons import *
 import datetime
 import unittest
@@ -21,7 +20,7 @@ from six.moves.urllib.parse import urlparse
 from baseUnitTest import baseUnitTest
 
 class TestUrls(baseUnitTest):
-    def setUp(self):
+    def setUp(self, redirect_logs=True):
         super().setUp()
         proxy_on = False
         if proxy_on:

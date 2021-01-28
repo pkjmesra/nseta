@@ -9,7 +9,7 @@ from nseta.cli.livecli import live_quote
 from baseUnitTest import baseUnitTest
 
 class TestCliInputs(baseUnitTest):
-	def setUp(self):
+	def setUp(self, redirect_logs=True):
 		super().setUp()
 
 	def test_validate_inputs(self):

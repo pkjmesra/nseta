@@ -9,7 +9,7 @@ import nseta.common.urls as urls
 from baseUnitTest import baseUnitTest
 
 class TestModelcli(baseUnitTest):
-	def setUp(self):
+	def setUp(self, redirect_logs=True):
 		super().setUp()
 
 	def test_create_cdl_model(self):

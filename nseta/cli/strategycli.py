@@ -94,7 +94,7 @@ def scan_trading_strategy(symbol, start, end, strategy, upper, lower, clear, ord
 @click.option('--symbol', '-S',  help='Security code')
 @click.option('--start', '-s', help='Start date in yyyy-mm-dd format')
 @click.option('--end', '-e', help='End date in yyyy-mm-dd format')
-@click.option('--strategy', default='rsi', type=click.Choice(STRATEGY_MAPPING_KEYS), 
+@click.option('--strategy', default='rsi', type=click.Choice(STRATEGY_MAPPING_KEYS),
 	help=', '.join(STRATEGY_MAPPING_KEYS) + ". Choose one.")
 @click.option('--upper', '-u', default=resources.forecast().upper, help='Only when strategy is "custom". Default is {}. We buy the security when the predicted next day return is > + upper %'.format(resources.forecast().upper))
 @click.option('--lower', '-l', default=resources.forecast().lower, help='Only when strategy is "custom". Default is {}. We sell the security when the predicted next day return is < - lower %'.format(resources.forecast().lower))

@@ -29,7 +29,7 @@ class bbandsSignalStrategy(basesignalstrategy):
 		# TODO: What if keys are in lowercase or dt/datetime is used instead of date/Date
 		try:
 			rowindex = 0
-			for lower_bband, upper_bband, price, ts in zip(df['BBands-L'], df['BBands-U'], df['Close'], df['Date']): 
+			for lower_bband, upper_bband, price, ts in zip(df['BBands-L'], df['BBands-U'], df['Close'], df['Date']):
 				self.index(lower_bband, upper_bband, price, ts)
 				rowindex = rowindex + 1
 			if self.order_queue.holdings_size < 0:

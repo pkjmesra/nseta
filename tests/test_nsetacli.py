@@ -9,8 +9,8 @@ import nseta
 from baseUnitTest import baseUnitTest
 
 class TestNSEtacli(baseUnitTest):
-	def setUp(self):
-		super().setUp(redirect_logs=False)
+	def setUp(self, redirect_logs=False):
+		super().setUp(redirect_logs=redirect_logs)
 
 	def test_nsetacli_entry(self):
 		runner = CliRunner()

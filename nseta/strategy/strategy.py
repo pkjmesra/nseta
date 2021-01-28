@@ -169,7 +169,7 @@ def init_modeler():
 	# m = Prophet(daily_seasonality=True, yearly_seasonality=True).fit(ts)
 	# Time series usually have abrupt changes in their trajectories. Prophet 
 	# by default employs automatic changepoint detection. However, the strength 
-	# of this changepoint detection can be adjusted by using the parameter 
+	# of this changepoint detection can be adjusted by using the parameter
 	# changepoint_prior_scale. Increasing changepoint_prior_scale will make the 
 	# trend more flexible and result in overfitting. Decreasing the 
 	# changepoint_prior_scale will make the trend less flexible and result in 

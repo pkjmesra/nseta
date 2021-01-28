@@ -163,11 +163,10 @@ class ParseTables:
 				i += 1
 			lists.append(lst)
 		self.lists = lists
-		"""
-		for i in range(0, len(lists)):
-			for j in range(0, len(lists[i])):
-				lists[i][j] = schema[i](lists[i][j])
-		"""
+		
+		# for i in range(0, len(lists)):
+		# 	for j in range(0, len(lists[i])):
+		# 		lists[i][j] = schema[i](lists[i][j])
 		return lists
 
 def unzip_str(zipped_str, file_name = None):

@@ -1,7 +1,6 @@
 from nseta.common.commons import *
 from nseta.common.urls import *
 from nseta.common.constants import NSE_INDICES, INDEX_DERIVATIVES
-from nseta.common import urls
 import datetime
 import time
 
@@ -52,7 +51,7 @@ def text_to_list(text, schema):
 
 
 class TestCommons(baseUnitTest):
-	def setUp(self):
+	def setUp(self, redirect_logs=True):
 		super().setUp()
 
 	def test_is_index(self):
@@ -164,7 +163,7 @@ class TestCommons(baseUnitTest):
 		super().tearDown()
 
 class TestURLFetch(baseUnitTest):
-	def setUp(self):
+	def setUp(self, redirect_logs=True):
 		super().setUp()
 		self.proxy_on = False
 		self.session = requests.Session()

@@ -18,10 +18,10 @@ class ScannerType(enum.Enum):
 class scannerFactory:
 	@staticmethod
 	def scanner(scanner_type=ScannerType.Unknown, stocks=[], indicator=None, background=False):
-		scanner_dict = {(ScannerType.Intraday).name:intradayScanner, 
+		scanner_dict = {(ScannerType.Intraday).name:intradayScanner,
 			(ScannerType.Live).name:liveScanner,
 			(ScannerType.Quote).name:quoteScanner,
 			(ScannerType.Swing).name:swingScanner,
 			(ScannerType.Volume).name:volumeScanner}
-		return scanner_dict[scanner_type.name](scanner_type=scanner_type, 
+		return scanner_dict[scanner_type.name](scanner_type=scanner_type,
 			stocks=stocks, indicator=indicator, background=background)

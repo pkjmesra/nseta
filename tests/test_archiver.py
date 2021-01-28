@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-import pdb
 import unittest
 import pandas as pd
 import os
@@ -9,7 +8,7 @@ from nseta.resources.resources import *
 from baseUnitTest import baseUnitTest
 
 class TestArchiver(baseUnitTest):
-	def setUp(self):
+	def setUp(self, redirect_logs=True):
 		super().setUp()
 
 	def test_get_path(self):
@@ -140,7 +139,7 @@ class TestArchiver(baseUnitTest):
 		symbol = 'RANDOM_TEST_RESTORE_FROM_PATH'
 		df_non_empty = pd.DataFrame({'A':[symbol],'B':['C']})
 		df_non_empty.to_csv(a.get_path(symbol, ResponseType.Default), index=False)
-		result = a.restore_from_path(a.get_path(symbol, ResponseType.Default))
+		result = archiver.restore_from_path(a.get_path(symbol, ResponseType.Default))
 		self.assertTrue(result['A'].iloc[0] == symbol)
 
 	def test_clearcache(self):

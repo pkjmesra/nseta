@@ -121,7 +121,7 @@ class historicaldata:
 				pandas.DataFrame : A pandas dataframe object 
 
 			Raises:
-				ValueError: 
+				ValueError:
 							1. strike_price argument missing or not of type int when options_type is provided
 							2. If there's an Invalid value in option_type, valid values-'CE' or 'PE' or 'CA' or 'CE'
 							3. If both futures='True' and option_type='CE' or 'PE'

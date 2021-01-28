@@ -1244,8 +1244,9 @@ This run of trading strategy scan took 124.9 sec
     nseta --debug --trace --filter time_taken <command> [command options]
   ```
 - Configuration based display outputs
- You can use the config.txt file and make changes as per your wish to view the results in a specific order or add/remove columns.
  
+ You can use the `config.txt` file and make changes as per your wish to view the results in a specific order or add/remove columns.
+
 ### Submit patches
 
 If you have fixed an issue or added a new feature, please fork this repository, make your changes and submit a pull request. [Here's good article on how to do this.](https://code.tutsplus.com/tutorials/how-to-collaborate-on-github--net-34267) 

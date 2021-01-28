@@ -6,7 +6,7 @@ from nseta.resources.resources import *
 from baseUnitTest import baseUnitTest
 
 class TestResources(unittest.TestCase):
-	def setUp(self):
+	def setUp(self, redirect_logs=True):
 		super().setUp()
 
 	def test_default_config(self):

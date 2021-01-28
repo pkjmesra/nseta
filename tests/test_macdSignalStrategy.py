@@ -10,7 +10,7 @@ from nseta.common import urls
 from baseUnitTest import baseUnitTest
 
 class TestMACDSignalStrategy(baseUnitTest):
-	def setUp(self):
+	def setUp(self, redirect_logs=True):
 		super().setUp()
 
 	def test_update_ledger_debug(self):

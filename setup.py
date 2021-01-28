@@ -54,7 +54,7 @@ setup(
 	nsetacli=nseta.cli.nsetacli:nsetacli
 	nseta=nseta.cli.nsetacli:nsetacli
 	''',
-	download_url = 'https://github.com/'+__USERNAME__+'/nseta/archive/v' + nseta.__version__ + '.zip', 
+	download_url = 'https://github.com/'+__USERNAME__+'/nseta/archive/v' + nseta.__version__ + '.zip',
 	classifiers=[
 	"Programming Language :: Python :: 3",
 	"License :: OSI Approved :: MIT License",

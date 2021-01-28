@@ -10,7 +10,7 @@ from nseta.common.tradingtime import *
 from baseUnitTest import baseUnitTest
 
 class TestTradingTime(baseUnitTest):
-	def setUp(self):
+	def setUp(self, redirect_logs=True):
 		super().setUp()
 
 	def test_ist_time(self):

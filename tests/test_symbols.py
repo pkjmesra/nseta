@@ -4,7 +4,7 @@ import pdb
 from baseUnitTest import baseUnitTest
 
 class TestSymbols(baseUnitTest):
-    def setUp(self):
+    def setUp(self, redirect_logs=True):
         super().setUp()
 
     def test_symbol_list(self):

@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-import pdb
 import unittest
 import logging
 
@@ -9,7 +8,7 @@ from nseta.common import urls
 from baseUnitTest import baseUnitTest
 
 class TestRSISignalStrategy(baseUnitTest):
-	def setUp(self):
+	def setUp(self, redirect_logs=True):
 		super().setUp()
 
 	def test_update_ledger_debug(self):

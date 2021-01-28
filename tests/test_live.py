@@ -10,14 +10,13 @@ from baseUnitTest import baseUnitTest
 from tests import htmls
 from nseta.live.liveurls import quote_eq_url, quote_derivative_url, option_chain_url, futures_chain_url
 from nseta.live.live import get_quote, get_futures_chain_table, get_holidays_list, getworkingdays
-import nseta.common.urls as urls
 from nseta.common.commons import (is_index, is_index_derivative,
 						   NSE_INDICES, INDEX_DERIVATIVES,
 						   ParseTables, StrDate, unzip_str,
 						   ThreadReturns, URLFetch)
 
-class TestLiveUrls(baseUnitTest):
-	def setUp(self):
+class TestLive(baseUnitTest):
+	def setUp(self, redirect_logs=True):
 		super().setUp()
 
 	def runTest(self):
@@ -86,3 +85,20 @@ class TestLiveUrls(baseUnitTest):
 		
 	def tearDown(self):
 		super().tearDown()
+
+if __name__ == '__main__':
+
+	suite = unittest.TestLoader().loadTestsFromTestCase(TestLive)
+	result = unittest.TextTestRunner(verbosity=2).run(suite)
+	if six.PY2:
+		if result.wasSuccessful():
+			print("tests OK")
+		for (test, error) in result.errors:
+			print("=========Error in: %s===========" % test)
+			print(error)
+			print("======================================")
+
+		for (test, failures) in result.failures:
+			print("=========Error in: %s===========" % test)
+			print(failures)
+			print("======================================")

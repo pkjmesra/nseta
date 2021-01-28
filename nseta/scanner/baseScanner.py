@@ -98,7 +98,7 @@ class baseScanner:
 			b.join()
 		else:
 			df, signaldf = self.load_archived_scan_results()
-			if df is None or len(df) == 0:
+			if df is None or len(df) == 0 and self.scanner_func is not None:
 				df, signaldf = self.scanner_func(self.stocks)
 			self.scan_results(df, signaldf)
 

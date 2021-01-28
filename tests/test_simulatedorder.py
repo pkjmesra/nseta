@@ -7,7 +7,7 @@ from nseta.common import urls
 from baseUnitTest import baseUnitTest
 
 class TestSimulatedOrder(baseUnitTest):
-	def setUp(self):
+	def setUp(self, redirect_logs=True):
 		super().setUp()
 
 	def test_buy_sell_MIS(self):

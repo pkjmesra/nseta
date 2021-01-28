@@ -5,13 +5,12 @@ import requests
 import six
 
 import timeout_decorator
-import time
 
 from bs4 import BeautifulSoup
 from datetime import datetime, timedelta
 
 from tests import htmls
-from nseta.live.liveurls import quote_eq_url, quote_derivative_url, option_chain_url, futures_chain_url, holiday_list_url
+from nseta.live.liveurls import quote_eq_url, quote_derivative_url, futures_chain_url, holiday_list_url
 import nseta.common.urls as urls
 from baseUnitTest import baseUnitTest
 from nseta.common.commons import (is_index, is_index_derivative,
@@ -21,7 +20,7 @@ from nseta.common.commons import (is_index, is_index_derivative,
 
 LOCAL_TIMEOUT = 60
 class TestLiveUrls(baseUnitTest):
-	def setUp(self):
+	def setUp(self, redirect_logs=True):
 		super().setUp()
 		proxy_on = False
 		if proxy_on:
@@ -80,3 +79,20 @@ class TestLiveUrls(baseUnitTest):
 		if base_expiry_date < datetime.now():
 			new_expiry_date = self.get_next_expiry_date(base_expiry_date + timedelta(28))
 		return new_expiry_date
+
+if __name__ == '__main__':
+
+	suite = unittest.TestLoader().loadTestsFromTestCase(TestLiveUrls)
+	result = unittest.TextTestRunner(verbosity=2).run(suite)
+	if six.PY2:
+		if result.wasSuccessful():
+			print("tests OK")
+		for (test, error) in result.errors:
+			print("=========Error in: %s===========" % test)
+			print(error)
+			print("======================================")
+
+		for (test, failures) in result.failures:
+			print("=========Error in: %s===========" % test)
+			print(failures)
+			print("======================================")

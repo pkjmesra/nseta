@@ -174,7 +174,7 @@ def format_as_dataframe(orgdata, symbol, general, ohlc, wk52, volume, keys=[]):
 def get_data_list(orgdata, keys=[]):
 	data = orgdata['data'][0]
 	time = orgdata['lastUpdateTime']
-	
+
 	name_data = []
 	quote_data = []
 	ohlc_data = []

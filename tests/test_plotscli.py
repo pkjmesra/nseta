@@ -11,7 +11,7 @@ import nseta.common.urls as urls
 from baseUnitTest import baseUnitTest
 
 class TestStrategycli(baseUnitTest):
-	def setUp(self):
+	def setUp(self, redirect_logs=True):
 		super().setUp()
 
 	def test_plot_ta_inputs(self):

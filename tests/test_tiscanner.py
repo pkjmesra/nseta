@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 import pdb
 import unittest
-import time
 import pandas as pd
 
 from nseta.scanner.tiscanner import scanner
@@ -9,7 +8,7 @@ from nseta.common import urls
 from baseUnitTest import baseUnitTest
 
 class TestTIScanner(baseUnitTest):
-	def setUp(self):
+	def setUp(self, redirect_logs=True):
 		super().setUp()
 
 	def test_default_indicator(self):
