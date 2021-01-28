@@ -90,12 +90,12 @@ class simulatedorder:
 	def portfolio_value(self):
 		return self.funds + self.stock_value * self.margin
 
-	def buy(self, price):
-		self.stock_price = price
+	def buy(self, price, Sqr_off = False):
 		available_funds = self.funds * self.single_tran_multiplier / self.margin
-		if self.holdings_size >= 0:
+		if self.holdings_size == 0:
 			# This is a normal delivery order.
 			if available_funds > price:
+				self.stock_price = price
 				afforded_size = int(
 					available_funds
 					/ (self.stock_price * (1 + self.commission))
@@ -107,21 +107,27 @@ class simulatedorder:
 				used_funds = final_size * (self.stock_price * (1 + self.commission))
 				self.funds = self.funds - used_funds * self.margin
 		elif self.holdings_size < 0 and self.order_type == OrderType.MIS:
+			if price >= self.stock_price and not Sqr_off:
+				return
+			self.stock_price = price
 			# This is an MIS order and we have to square off
 			self.order_size = self.holdings_size
 			self.holdings_size = 0
 			money_made = 0 - self.order_size * (self.stock_price * (1 - self.commission))
 			self.funds = self.funds + money_made * self.margin
 	
-	def sell(self, price):
-		self.stock_price = price
+	def sell(self, price, Sqr_off=False):
+		if price <= self.stock_price and not Sqr_off:
+			return
 		if self.holdings_size > 0:
+			self.stock_price = price
 			# Assuming a buy order preceded this sell order, so holdings are +ve
 			self.order_size = self.holdings_size
 			money_made = self.order_size * (self.stock_price * (1 - self.commission))
 			self.holdings_size = self.holdings_size - self.order_size
 			self.funds = self.funds + money_made * self.margin
 		elif self.holdings_size <= 0 and self.order_type == OrderType.MIS:
+			self.stock_price = price
 			# Must square off later in the day. This is an MIS order
 			available_funds = self.funds / self.margin
 			afforded_size = int(
@@ -140,6 +146,6 @@ class simulatedorder:
 			self.order_size = 0
 			return
 		elif self.holdings_size > 0:
-			self.sell(price)
+			self.sell(price, Sqr_off=True)
 		elif self.holdings_size < 0:
-			self.buy(price)
+			self.buy(price, Sqr_off=True)

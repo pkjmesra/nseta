@@ -26,9 +26,10 @@ STRATEGY_MAPPING_KEYS = list(STRATEGY_MAPPING.keys()) + ['custom']
 @click.option('--lower', '-l', default=resources.backtest().rsi_lower, type=float, help='Used as lower limit, for example, for RSI. Default is {}. Only when strategy is "custom", we sell the security when the predicted next day return is < - lower %'.format(str(resources.backtest().rsi_lower)))
 @click.option('--clear', '-c', default=False, is_flag=True, help='Clears the cached data for the given options.')
 @click.option('--plot', '-p', default=False, is_flag=True, help='By default(False). --plot, if you would like the results to be plotted.')
+@click.option('--strict', default=False, is_flag=True, help='By default(False). --strict, if you would like the buy/sell to be generated only at top/bottom reversals for the selected strategy.')
 @click.option('--intraday', '-i', is_flag=True, help='Test trading strategy for the current intraday price history (Optional)')
 @tracelog
-def test_trading_strategy(symbol, start, end, strategy, upper, lower, clear, plot, intraday=False):
+def test_trading_strategy(symbol, start, end, strategy, upper, lower, clear, plot, strict, intraday=False):
 	if not intraday:
 		if not validate_inputs(start, end, symbol, strategy):
 			print_help_msg(test_trading_strategy)
@@ -39,6 +40,7 @@ def test_trading_strategy(symbol, start, end, strategy, upper, lower, clear, plo
 	try:
 		clear_cache(clear, intraday)
 		sm = strategyManager()
+		sm.strict = strict
 		if intraday:
 			sm.test_intraday_trading_strategy(symbol, strategy, lower, upper, plot=True)
 		else:
@@ -62,10 +64,11 @@ def test_trading_strategy(symbol, start, end, strategy, upper, lower, clear, plo
 @click.option('--lower', '-l', default=resources.rsi().lower, type=float, help='Used as lower limit, for example, for RSI. Default is {}. Only when strategy is "custom", we sell the security when the predicted next day return is < - lower %'.format(str(resources.rsi().lower)))
 @click.option('--clear', '-c', default=False, is_flag=True, help='Clears the cached data for the given options.')
 @click.option('--intraday', '-i', is_flag=True, help='Test trading strategy for the current intraday price history (Optional)')
+@click.option('--strict', default=False, is_flag=True, help='By default(False). --strict, if you would like the buy/sell to be generated only at top/bottom reversals for the selected strategy.')
 @click.option('--orderby', '-o', default='recommendation', type=click.Choice(['symbol','recommendation']),
 	help='symbol or recommendation. Choose one. Default is orderby recommendation.')
 @tracelog
-def scan_trading_strategy(symbol, start, end, strategy, upper, lower, clear, orderby, intraday=False):
+def scan_trading_strategy(symbol, start, end, strategy, upper, lower, clear, orderby, strict, intraday=False):
 	if not intraday:
 		if not validate_inputs(start, end, symbol, None, skip_symbol=True):
 			print_help_msg(test_trading_strategy)
@@ -74,6 +77,7 @@ def scan_trading_strategy(symbol, start, end, strategy, upper, lower, clear, ord
 	try:
 		clear_cache(clear, intraday)
 		sm = strategyManager()
+		sm.strict = strict
 		full_summary= sm.scan_trading_strategy(symbol, start, end, strategy, upper, lower, clear, orderby, intraday)
 		end_time = time()
 		time_spent = end_time-start_time

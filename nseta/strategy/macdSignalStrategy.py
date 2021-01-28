@@ -91,22 +91,26 @@ class macdSignalStrategy(basesignalstrategy):
 	@tracelog
 	def possibleReversalUpward_pattern(self, prev_pattern=Direction.Neutral):
 		# if self.order_queue.holdings_size <= 0:
-		self.buy_signal()
+		if not self.strict:
+			self.buy_signal()
 
 	@tracelog
 	def possibleReversalDownward_pattern(self, prev_pattern=Direction.Neutral):
 		# if self.order_queue.holdings_size > 0:
-		self.sell_signal()
+		if not self.strict:
+			self.sell_signal()
 
 	def possible_higherhigh_pattern(self, prev_pattern=Direction.Neutral):
 		# holding_size = self.order_queue.holdings_size
 		# if holding_size <= 0:
-		self.buy_signal()
+		if not self.strict:
+			self.buy_signal()
 
 	def lowerlow_direction(self, prev_pattern=Direction.Neutral):
 		# holding_size = self.order_queue.holdings_size
 		# if holding_size > 0:
-		self.sell_signal()
+		if not self.strict:
+			self.sell_signal()
 
 	@tracelog
 	def buy_signal(self):

@@ -14,6 +14,7 @@ from nseta.archives.archiver import *
 from nseta.common.log import tracelog, default_logger
 from nseta.scanner.tiscanner import scanner
 from nseta.common.multithreadedScanner import multithreaded_scan
+from nseta.strategy.simulatedorder import OrderType
 from nseta.common.ti import ti
 from nseta.common.history import *
 from nseta.plots.plots import plot_rsi
@@ -65,6 +66,9 @@ STRATEGY_MAPPING = {
 
 class strategyManager:
 
+	def __init__(self, order_type=OrderType.Delivery):
+		self._strict = False
+
 	@property
 	def total_stocks_counter(self):
 		return self._total_stocks_counter
@@ -72,6 +76,14 @@ class strategyManager:
 	@property
 	def total_tests_counter(self):
 		return self._total_tests_counter
+
+	@property
+	def strict(self):
+		return self._strict
+
+	@strict.setter
+	def strict(self, value):
+		self._strict = value
 
 	@tracelog
 	def multithreadedScanner_callback(self, **kwargs):
@@ -262,7 +274,7 @@ class strategyManager:
 		if strategy.lower() == 'rsi':
 			df_rsi_dict = {'Symbol':df['Symbol'], 'Date':df['Date'], 'RSI':df['RSI'], 'Close':df['Close']}
 			df_rsi = pd.DataFrame(df_rsi_dict)
-			rsisignal = rsiSignalStrategy(strict=True, intraday=False, requires_ledger=show_detail)
+			rsisignal = rsiSignalStrategy(strict=self.strict, intraday=False, requires_ledger=show_detail)
 			rsisignal.set_limits(lower, upper)
 			results, summary = rsisignal.test_strategy(df_rsi)
 			if plot:
@@ -270,12 +282,12 @@ class strategyManager:
 		elif strategy.lower() == 'bbands':
 			df_bbands_dict = {'Symbol':df['Symbol'], 'Date':df['Date'], 'BBands-U':df['BBands-U'], 'BBands-M':df['BBands-M'], 'BBands-L':df['BBands-L'], 'Close':df['Close']}
 			df_bbands = pd.DataFrame(df_bbands_dict)
-			bbandsSignal = bbandsSignalStrategy(strict=False, intraday=False, requires_ledger=show_detail)
+			bbandsSignal = bbandsSignalStrategy(strict=self.strict, intraday=False, requires_ledger=show_detail)
 			results, summary = bbandsSignal.test_strategy(df_bbands)
 		elif strategy.lower() == 'macd':
 			df_macd_dict = {'Symbol':df['Symbol'], 'Date':df['Date'], 'macd(12)':df['macd(12)'], 'macdsignal(9)':df['macdsignal(9)'], 'macdhist(26)':df['macdhist(26)'], 'Close':df['Close']}
 			df_macd = pd.DataFrame(df_macd_dict)
-			macdSignal = macdSignalStrategy(strict=False, intraday=False, requires_ledger=show_detail)
+			macdSignal = macdSignalStrategy(strict=self.strict, intraday=False, requires_ledger=show_detail)
 			results, summary = macdSignal.test_strategy(df_macd)
 		sys.stdout.write("\r{}/{}. Finished testing {} trading strategy for {}.".ljust(120).format(__test_counter__, self.total_tests_counter, strategy, symbol))
 		sys.stdout.flush()

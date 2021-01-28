@@ -80,7 +80,7 @@ jobs:
         CODACY_PROJECT_TOKEN: ${{ secrets.CODACY_PROJECT_TOKEN }}
       run: |
         coverage xml
-        bash <(curl -Ls https://coverage.codacy.com/get.sh) report -l Python
+        bash <(curl -Ls https://coverage.codacy.com/get.sh) report -l Python -r coverage.xml
     - name: Build and publish distribution 📦 to Test PyPI
       env:
         TWINE_USERNAME: ${{ secrets.TESTPYPI_USERNAME }}
