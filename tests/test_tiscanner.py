@@ -41,41 +41,31 @@ class TestTIScanner(baseUnitTest):
 	# TODO: Takes 126 seconds to run
 	def test_scan_live_queue_all(self):
 		s = scanner('all')
-		n = range(15)
-		for iteration in n:
-			df, signaldf = s.scan_live(['HDFC'])
+		df, signaldf = s.scan_live(['HDFC'])
 		self.assertEqual(len(df), 1)
 		# self.assertEqual(len(signaldf), 1)
 
 	def test_scan_live_queue_rsi(self):
 		s = scanner('rsi')
-		n = range(15)
-		for iteration in n:
-			df, signaldf = s.scan_live(['HDFC'])
+		df, signaldf = s.scan_live(['HDFC'])
 		self.assertEqual(len(df), 1)
 		# self.assertEqual(len(signaldf), 1)
 
 	def test_scan_live_queue_ema(self):
 		s = scanner('emac')
-		n = range(15)
-		for iteration in n:
-			df, signaldf = s.scan_live(['HDFC'])
+		df, signaldf = s.scan_live(['HDFC'])
 		self.assertEqual(len(df), 1)
 		# self.assertEqual(len(signaldf), 1)
 
 	def test_scan_live_queue_macd(self):
 		s = scanner('macd')
-		n = range(15)
-		for iteration in n:
-			df, signaldf = s.scan_live(['HDFC'])
+		df, signaldf = s.scan_live(['HDFC'])
 		self.assertEqual(len(df), 1)
 		# self.assertEqual(len(signaldf), 1)
 
 	def test_scan_live_queue_bbands(self):
 		s = scanner('bbands')
-		n = range(15)
-		for iteration in n:
-			df, signaldf = s.scan_live(['HDFC'])
+		df, signaldf = s.scan_live(['HDFC'])
 		self.assertEqual(len(df), 1)
 
 	def test_scan_live_confidence_level_buy_route(self):

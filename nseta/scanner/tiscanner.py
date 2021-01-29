@@ -436,11 +436,11 @@ class scanner:
 			signalframes = self.update_signal_indicator(df, signalframes, 'bbands', 'BBands-L', 0.05, ltp, '<=', 'BUY', '[LTP < BBands-L].{}'.format(bbands_reco), 'BUY', '[LTP ~ BBands-L].{}'.format(bbands_reco))
 			signalframes = self.update_signal_indicator(df, signalframes, 'bbands', 'BBands-U', 0.05, ltp, '<=', 'SELL', '[LTP ~ BBands-U].{}'.format(bbands_reco), 'SELL', '[LTP > BBands-U].{}'.format(bbands_reco))
 			rsi_reco = self.get_quick_recommendation(full_df, 'rsi')
-			signalframes = self.update_signal_indicator(df, signalframes, 'rsi', 'RSI', resources.rsi().lower, resources.rsi().upper, '><', 'SELL', '[RSI >= {}].{}'.format(resources.rsi().upper, rsi_reco), 'BUY', '[RSI <= {}].{}'.format(resources.rsi().lower,rsi_reco))
+			signalframes = self.update_signal_indicator(df, signalframes, 'rsi', 'RSI', resources.rsi().lower, resources.rsi().upper, '><', '* SELL' if rsi_reco.endswith('Buy') else 'SELL', '[RSI >= {}].{}'.format(resources.rsi().upper, rsi_reco), '* BUY' if rsi_reco.endswith('Buy') else 'BUY', '[RSI <= {}].{}'.format(resources.rsi().lower,rsi_reco))
 			signalframes = self.update_signal_indicator(df, signalframes, 'emac', 'EMA(9)', 0.1, ltp, '>=', 'BUY', '[LTP > EMA(9)]', 'SELL', '[LTP < EMA(9)]')
 			macd12 = df['macd(12)'].iloc[0]
 			macd_reco = self.get_quick_recommendation(full_df, 'macd')
-			signalframes = self.update_signal_indicator(df, signalframes, 'macd', 'macdsignal(9)', 0.05, macd12, '>=', 'BUY', '[MACD > EMA].{}'.format(macd_reco), 'SELL', '[MACD < EMA].{}'.format(macd_reco))
+			signalframes = self.update_signal_indicator(df, signalframes, 'macd', 'macdsignal(9)', 0.05, macd12, '>=', '* BUY' if macd_reco.endswith('Buy') else 'BUY', '[MACD > EMA].{}'.format(macd_reco), '* SELL' if macd_reco.endswith('Buy') else 'SELL', '[MACD < EMA].{}'.format(macd_reco))
 			if self.indicator == 'macd' or self.indicator == 'all':
 				df['macd(12)'] = df['macd(12)'].apply(lambda x: round(x, decimals))
 				df['macdhist(26)'] = df['macdhist(26)'].apply(lambda x: round(x, decimals))

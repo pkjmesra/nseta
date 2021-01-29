@@ -2,7 +2,7 @@ import logging
 import pandas as pd
 
 from nseta.common.log import tracelog, default_logger
-from nseta.common.commons import Direction
+from nseta.common.commons import Direction, Recommendation
 from nseta.resources.resources import *
 from nseta.strategy.simulatedorder import simulatedorder, OrderType
 from nseta.strategy.basesignalstrategy import basesignalstrategy
@@ -104,14 +104,21 @@ class rsiSignalStrategy(basesignalstrategy):
 		super().update_direction()
 
 	def v_pattern(self, prev_pattern=Direction.Neutral):
-		self.buy_signal()
+		if self.n3 >= 55:
+			self.recommendation = Recommendation.Buy
+			self.buy_signal()
+		else:
+			self.recommendation = Recommendation.Hold
 
 	def invertedv_pattern(self, prev_pattern=Direction.Neutral):
 		self.sell_signal()
 
 	def higherhigh_pattern(self, prev_pattern=Direction.Neutral):
-		if not self.strict:
+		if not self.strict and self.n3 >= 55:
+			self.recommendation = Recommendation.Buy
 			self.buy_signal()
+		else:
+			self.recommendation = Recommendation.Hold
 
 	def lowerlow_direction(self, prev_pattern=Direction.Neutral):
 		if not self.strict:
