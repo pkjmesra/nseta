@@ -2,7 +2,7 @@
 import unittest
 import pandas as pd
 
-from nseta.scanner.tiscanner import scanner
+from nseta.scanner.tiscanner import *
 from nseta.common import urls
 from baseUnitTest import baseUnitTest
 
@@ -16,56 +16,56 @@ class TestTIScanner(baseUnitTest):
 
 	def test_empty_dataframe(self):
 		s = scanner('emac')
-		df, signaldf = s.scan_intraday(['SOMESYMBOL'])
+		df, signaldf = s.scan(['SOMESYMBOL'], scanner_type=ScannerType.Intraday)
 		self.assertEqual(df, None)
 		self.assertEqual(signaldf, None)
 
 	def test_scan_intraday_more_than_n(self):
 		s = scanner('bbands')
 		n = 4
-		df, signaldf = s.scan_intraday(['HDFC', 'SBIN','BANDHANBNK', 'PNB'])
+		df, signaldf = s.scan(['HDFC', 'SBIN','BANDHANBNK', 'PNB'], scanner_type=ScannerType.Intraday)
 		self.assertEqual(len(df), n)
 
 	def test_scan_swing(self):
 		s = scanner()
 		n = 1
-		df, signaldf = s.scan_swing(['HDFC'])
+		df, signaldf = s.scan(['HDFC'], scanner_type=ScannerType.Swing)
 		self.assertEqual(len(df), n)
 
 	def test_scan_volume(self):
 		s = scanner()
 		n = 1
-		df, signaldf = s.scan_volume(['HDFC'])
+		df, signaldf = s.scan(['HDFC'], scanner_type=ScannerType.Volume)
 		self.assertEqual(len(df), n)
 
 	# TODO: Takes 126 seconds to run
 	def test_scan_live_queue_all(self):
 		s = scanner('all')
-		df, signaldf = s.scan_live(['HDFC'])
+		df, signaldf = s.scan(['HDFC'], scanner_type=ScannerType.Live)
 		self.assertEqual(len(df), 1)
 		# self.assertEqual(len(signaldf), 1)
 
 	def test_scan_live_queue_rsi(self):
 		s = scanner('rsi')
-		df, signaldf = s.scan_live(['HDFC'])
+		df, signaldf = s.scan(['HDFC'], scanner_type=ScannerType.Live)
 		self.assertEqual(len(df), 1)
 		# self.assertEqual(len(signaldf), 1)
 
 	def test_scan_live_queue_ema(self):
 		s = scanner('emac')
-		df, signaldf = s.scan_live(['HDFC'])
+		df, signaldf = s.scan(['HDFC'], scanner_type=ScannerType.Live)
 		self.assertEqual(len(df), 1)
 		# self.assertEqual(len(signaldf), 1)
 
 	def test_scan_live_queue_macd(self):
 		s = scanner('macd')
-		df, signaldf = s.scan_live(['HDFC'])
+		df, signaldf = s.scan(['HDFC'], scanner_type=ScannerType.Live)
 		self.assertEqual(len(df), 1)
 		# self.assertEqual(len(signaldf), 1)
 
 	def test_scan_live_queue_bbands(self):
 		s = scanner('bbands')
-		df, signaldf = s.scan_live(['HDFC'])
+		df, signaldf = s.scan(['HDFC'], scanner_type=ScannerType.Live)
 		self.assertEqual(len(df), 1)
 
 	def test_scan_live_confidence_level_buy_route(self):

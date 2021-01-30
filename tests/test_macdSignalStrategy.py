@@ -15,11 +15,13 @@ class TestMACDSignalStrategy(baseUnitTest):
 	def test_update_ledger_debug(self):
 		default_logger().setLevel(logging.DEBUG)
 		macd = macdSignalStrategy(requires_ledger=True)
+		macd.macd9 = 99
 		macd.index(100,100,'2021-01-18')
 		macd.index(101,100,'2021-01-18')
 		macd.index(102,100,'2021-01-18')
 		macd.index(103,100,'2021-01-18')
 		macd.index(102,100,'2021-01-18')
+		macd.macd9 = 102
 		macd.index(101,100,'2021-01-18')
 		macd.index(100,100,'2021-01-18')
 		report = macd.report.to_string(index=False)

@@ -1,7 +1,6 @@
 from nseta.scanner.baseScanner import baseScanner
 from nseta.resources.resources import resources
 from nseta.archives.archiver import *
-from nseta.scanner.tiscanner import scanner
 from nseta.common.tradingtime import IST_datetime
 from nseta.common.log import tracelog
 
@@ -17,8 +16,6 @@ class volumeScanner(baseScanner):
 	@tracelog
 	def scan(self, option=None):
 		self.signal_columns = resources.scanner().volume_scan_columns
-		scannerinstance = scanner(indicator=self.indicator)
-		self.scanner_func = scannerinstance.scan_volume
 		self.sortAscending = False
 		super().scan(option=option)
 

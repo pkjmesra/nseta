@@ -5,6 +5,7 @@ from nseta.cli.inputs import *
 from nseta.common.tradingtime import current_datetime_in_ist_trading_time_range
 from nseta.common.log import tracelog, default_logger
 from nseta.scanner.scannerFactory import *
+from nseta.scanner.tiscanner import ScannerType
 
 __all__ = ['live_quote', 'scan']
 

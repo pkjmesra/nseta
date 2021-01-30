@@ -14,6 +14,7 @@ class macdSignalStrategy(basesignalstrategy):
 		# Cross over above zero line for buy or below zero line for sell
 		self._strict = strict
 		self._prc = 0
+		self._macd9 = 0
 		self._order_queue = simulatedorder(OrderType.MIS if intraday else OrderType.Delivery)
 		self._ledger = {'DateTime':[],'Signal':[],'Price':[],'Pattern':[],'Direction':[], 'Funds':[], 'Order_Size':[], 'Holdings_Size':[], 'Portfolio_Value':[]}
 
@@ -22,11 +23,13 @@ class macdSignalStrategy(basesignalstrategy):
 		# TODO: What if keys are in lowercase or dt/datetime is used instead of date/Date
 		try:
 			rowindex = 0
+			df_summary = None
 			df = df.dropna()
-			for macd in (df['macd(12)']).values:
+			for macd, macd9 in zip((df['macd(12)']).values, (df['macdsignal(9)']).values):
 				if macd is not None:
 					price =(df.iloc[rowindex])['Close']
 					ts =(df.iloc[rowindex])['Date']
+					self.macd9 = macd9
 					self.index(macd, price, ts)
 				rowindex = rowindex + 1
 			default_logger().debug("\n{}\n".format(self.basereport.to_string(index=False)))
@@ -56,6 +59,14 @@ class macdSignalStrategy(basesignalstrategy):
 		return self._strict
 
 	@property
+	def macd9(self):
+		return self._macd9
+
+	@macd9.setter
+	def macd9(self, macd9):
+		self._macd9 = macd9
+
+	@property
 	def order_queue(self):
 		return self._order_queue
 
@@ -81,12 +92,14 @@ class macdSignalStrategy(basesignalstrategy):
 	@tracelog
 	def v_pattern(self, prev_pattern=Direction.Neutral):
 		# if self.order_queue.holdings_size <= 0:
-		self.buy_signal()
+		if self.n3 > self.macd9:
+			self.buy_signal()
 	
 	@tracelog
 	def invertedv_pattern(self, prev_pattern=Direction.Neutral):
 		# if self.order_queue.holdings_size > 0:
-		self.sell_signal()
+		if self.n3 < self.macd9:
+			self.sell_signal()
 
 	@tracelog
 	def possibleReversalUpward_pattern(self, prev_pattern=Direction.Neutral):

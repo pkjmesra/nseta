@@ -168,7 +168,7 @@ class archiver:
 					cache_warn = 'Last Modified:{}. Fetched {} from the disk cache. You may wish to clear cache (nseta [command] --clear).'.format(str(last_modified), symbol)
 					sys.stdout.write("\r{}".format(cache_warn))
 				else:
-					sys.stdout.write("\rLast Modified: {}. ***** Fetched {} from the disk cache. *****.".format(str(last_modified), symbol))
+					sys.stdout.write("\rLast Modified: {}. Fetched {} from the disk cache.".format(str(last_modified), symbol))
 				sys.stdout.flush()
 			else:
 				default_logger().debug("Empty DataFrame for file:{}".format(file_path))

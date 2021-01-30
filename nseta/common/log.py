@@ -76,8 +76,8 @@ class filterlogger:
 		self.logger.removeHandler(hdl)
 
 def setup_custom_logger(name, levelname=logging.DEBUG, trace=False, log_file_path='logs.log', filter=None):
-	trace_formatter = logging.Formatter(fmt='%(asctime)s - %(name)s - %(levelname)s - %(filename)s - %(module)s - %(funcName)s - %(lineno)d\n%(message)s\n')
-	console_info_formatter = logging.Formatter(fmt='%(levelname)s - %(filename)s(%(funcName)s - %(lineno)d)\n%(message)s\n')
+	trace_formatter = logging.Formatter(fmt='\n%(asctime)s - %(name)s - %(levelname)s - %(filename)s - %(module)s - %(funcName)s - %(lineno)d\n%(message)s\n')
+	console_info_formatter = logging.Formatter(fmt='\n%(levelname)s - %(filename)s(%(funcName)s - %(lineno)d)\n%(message)s\n')
 	global __trace__
 	__trace__ = trace
 

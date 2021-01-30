@@ -1,7 +1,6 @@
 from nseta.scanner.baseScanner import baseScanner
 from nseta.resources.resources import resources
 from nseta.archives.archiver import *
-from nseta.scanner.tiscanner import scanner
 from nseta.common.log import tracelog
 
 __all__ = ['liveScanner']
@@ -16,8 +15,6 @@ class liveScanner(baseScanner):
 	@tracelog
 	def scan(self, option=None):
 		self.signal_columns = resources.scanner().live_scan_columns
-		scannerinstance = scanner(indicator=self.indicator)
-		self.scanner_func = scannerinstance.scan_live
 		self.sortAscending = False
 		super().scan(option='% Delivery')
 

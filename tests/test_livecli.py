@@ -5,7 +5,7 @@ from click.testing import CliRunner
 
 from nseta.cli.livecli import live_quote, scan
 from nseta.common import urls
-from nseta.scanner.tiscanner import scanner
+from nseta.scanner.tiscanner import *
 from baseUnitTest import baseUnitTest
 from nseta.scanner.scannerFactory import *
 
@@ -41,7 +41,6 @@ class TestLivecli(baseUnitTest):
 	def test_scan_intraday_background(self):
 		s = scannerFactory.scanner(ScannerType.Intraday, ['HDFC'], 'emac', True)
 		scannerinstance = scanner(indicator='rsi')
-		s.scanner_func = scannerinstance.scan_swing
 		result = s.scan_background(terminate_after_iter=2, wait_time=2)
 		self.assertEqual(result , 2)
 
@@ -54,7 +53,6 @@ class TestLivecli(baseUnitTest):
 	def test_scan_live_background(self):
 		s = scannerFactory.scanner(ScannerType.Live, ['HDFC'], 'emac', True)
 		scannerinstance = scanner(indicator='rsi')
-		s.scanner_func = scannerinstance.scan_live
 		result = s.scan_background(terminate_after_iter=2, wait_time=2)
 		self.assertEqual(result , 2)
 
@@ -67,7 +65,6 @@ class TestLivecli(baseUnitTest):
 	def test_scan_swing_background(self):
 		s = scannerFactory.scanner(ScannerType.Swing, ['HDFC'], 'emac', True)
 		scannerinstance = scanner(indicator='rsi')
-		s.scanner_func = scannerinstance.scan_swing
 		result = s.scan_background(terminate_after_iter=2, wait_time=0)
 		self.assertEqual(result , 0)
 		self.assertFalse(s.background)
@@ -87,7 +84,6 @@ class TestLivecli(baseUnitTest):
 	def test_scan_volume_background(self):
 		s = scannerFactory.scanner(ScannerType.Volume, ['HDFC'], 'emac', True)
 		scannerinstance = scanner(indicator='rsi')
-		s.scanner_func = scannerinstance.scan_volume
 		result = s.scan_background(terminate_after_iter=2, wait_time=2)
 		self.assertEqual(result , 2)
 

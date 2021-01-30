@@ -1,3 +1,4 @@
+import enum
 import inspect
 import numpy as np
 import pandas as pd
@@ -21,12 +22,16 @@ from nseta.common.ti import ti
 from nseta.live.live import get_live_quote
 from nseta.common.tradingtime import *
 
-__all__ = ['KEY_MAPPING', 'scanner', 'TECH_INDICATOR_KEYS']
+__all__ = ['KEY_MAPPING', 'scanner', 'TECH_INDICATOR_KEYS', 'ScannerType']
 
-TYPE_LIVE = 'live'
-TYPE_INTRADAY = 'intraday'
-TYPE_SWING = 'swing'
-TYPE_VOLUME = 'volume'
+class ScannerType(enum.Enum):
+	Intraday = 1
+	Live = 2
+	Quote = 3
+	Swing = 4
+	Volume = 5
+	Unknown = 6
+
 SWING_PERIOD = 90
 
 KEY_MAPPING = {
@@ -92,20 +97,17 @@ class scanner:
 		return self._stocksdict
 
 	def multithreadedScanner_callback(self, **kwargs):
-		kind = kwargs['kind']
-		del(kwargs['kind'])
-		callback_func = self.get_func_name(kind)
+		scanner_type = kwargs['scanner_type']
+		del(kwargs['scanner_type'])
+		callback_func = self.get_func_name(scanner_type)
 		return callback_func(**kwargs)
 
-	def get_func_name(self, kind):
-		if kind==TYPE_LIVE:
-			return self.scan_live_quanta
-		elif kind==TYPE_INTRADAY:
-			return self.scan_intraday_quanta
-		elif kind==TYPE_SWING:
-			return self.scan_swing_quanta
-		elif kind==TYPE_VOLUME:
-			return self.scan_volume_quanta
+	def get_func_name(self, scanner_type=ScannerType.Unknown):
+		scanner_dict = {(ScannerType.Intraday).name:self.scan_intraday_quanta,
+			(ScannerType.Live).name:self.scan_live_quanta,
+			(ScannerType.Swing).name:self.scan_swing_quanta,
+			(ScannerType.Volume).name:self.scan_volume_quanta}
+		return scanner_dict[scanner_type.name]
 	
 	@tracelog
 	def stocks_list(self, stocks=[]):
@@ -117,14 +119,14 @@ class scanner:
 		return stocks
 
 	@tracelog
-	def scan_live(self, stocks=[]):
+	def scan(self, stocks=[], scanner_type=ScannerType.Unknown):
 		start_time = time()
 		stocks = self.stocks_list(stocks)
 		frame = inspect.currentframe()
 		args, _, _, kwargs = inspect.getargvalues(frame)
 		del(kwargs['frame'])
 		del(kwargs['self'])
-		kwargs['kind'] = TYPE_LIVE
+		kwargs['scanner_type'] = scanner_type
 		kwargs['callbackMethod'] = self.multithreadedScanner_callback
 		kwargs['items'] = stocks
 		kwargs['max_per_thread'] = 3
@@ -133,67 +135,7 @@ class scanner:
 		time_spent = end_time-start_time
 		sys.stdout.write("\rDone.".ljust(120))
 		sys.stdout.flush()
-		print("\nThis run of live scan took {:.1f} sec".format(time_spent))
-		return list_returned.pop(0), list_returned.pop(0)
-
-	@tracelog
-	def scan_intraday(self, stocks=[]):
-		start_time = time()
-		stocks = self.stocks_list(stocks)
-		frame = inspect.currentframe()
-		args, _, _, kwargs = inspect.getargvalues(frame)
-		del(kwargs['frame'])
-		del(kwargs['self'])
-		kwargs['kind'] = TYPE_INTRADAY
-		kwargs['callbackMethod'] = self.multithreadedScanner_callback
-		kwargs['items'] = stocks
-		kwargs['max_per_thread'] = 3
-		list_returned = multithreaded_scan(**kwargs)
-		end_time = time()
-		time_spent = end_time-start_time
-		sys.stdout.write("\rDone.".ljust(120))
-		sys.stdout.flush()
-		print("\nThis run of intraday scan took {:.1f} sec".format(time_spent))
-		return list_returned.pop(0), list_returned.pop(0)
-
-	@tracelog
-	def scan_swing(self, stocks=[]):
-		start_time = time()
-		stocks = self.stocks_list(stocks)
-		frame = inspect.currentframe()
-		args, _, _, kwargs = inspect.getargvalues(frame)
-		del(kwargs['frame'])
-		del(kwargs['self'])
-		kwargs['kind'] = TYPE_SWING
-		kwargs['callbackMethod'] = self.multithreadedScanner_callback
-		kwargs['items'] = stocks
-		kwargs['max_per_thread'] = 3
-		list_returned = multithreaded_scan(**kwargs)
-		end_time = time()
-		time_spent = end_time-start_time
-		sys.stdout.write("\rDone.".ljust(120))
-		sys.stdout.flush()
-		print("\nThis run of swing scan took {:.1f} sec".format(time_spent))
-		return list_returned.pop(0), list_returned.pop(0)
-
-	@tracelog
-	def scan_volume(self, stocks=[]):
-		start_time = time()
-		stocks = self.stocks_list(stocks)
-		frame = inspect.currentframe()
-		args, _, _, kwargs = inspect.getargvalues(frame)
-		del(kwargs['frame'])
-		del(kwargs['self'])
-		kwargs['kind'] = TYPE_VOLUME
-		kwargs['callbackMethod'] = self.multithreadedScanner_callback
-		kwargs['items'] = stocks
-		kwargs['max_per_thread'] = 3
-		list_returned = multithreaded_scan(**kwargs)
-		end_time = time()
-		time_spent = end_time-start_time
-		sys.stdout.write("\rDone.".ljust(120))
-		sys.stdout.flush()
-		print("\nThis run of volume scan took {:.1f} sec".format(time_spent))
+		print("\nThis run of {} scan took {:.1f} sec".format(scanner_type.name, time_spent))
 		return list_returned.pop(0), list_returned.pop(0)
 
 	@tracelog
@@ -205,11 +147,7 @@ class scanner:
 		signaldf = None
 		for stock in stocks:
 			try:
-				global __scan_counter__
-				with threading.Lock():
-					__scan_counter__ += 1
-				sys.stdout.write("\r{}/{}. Fetching for {}".ljust(120).format(__scan_counter__, self.total_counter, stock))
-				sys.stdout.flush()
+				self.update_progress(stock)
 				result, primary = get_live_quote(stock, keys = self.keys)
 				if primary is not None and len(primary) > 0:
 					row = pd.DataFrame(primary, columns = ['Updated', 'Symbol', 'Close', 'LTP', '% Delivery', 'Buy - Sell', 'TotalTradedVolume', 'pChange'], index = [''])
@@ -250,11 +188,7 @@ class scanner:
 		tailed_df = None
 		for symbol in stocks:
 			try:
-				global __scan_counter__
-				with threading.Lock():
-					__scan_counter__ += 1
-				sys.stdout.write("\r{}/{}. Fetching for {}".ljust(120).format(__scan_counter__, self.total_counter, symbol))
-				sys.stdout.flush()
+				self.update_progress(symbol)
 				df = self.ohlc_intraday_history(symbol)
 				if df is not None and len(df) > 0:
 					df = tiinstance.update_ti(df)
@@ -296,11 +230,7 @@ class scanner:
 		end_date = datetime.datetime.now()
 		for symbol in stocks:
 			try:
-				global __scan_counter__
-				with threading.Lock():
-					__scan_counter__ += 1
-				sys.stdout.write("\r{}/{}. Fetching for {}".ljust(120).format(__scan_counter__, self.total_counter, symbol))
-				sys.stdout.flush()
+				self.update_progress(symbol)
 				df = historyinstance.daily_ohlc_history(symbol, start_date, end_date, type=ResponseType.History)
 				if df is not None and len(df) > 0:
 					df = tiinstance.update_ti(df)
@@ -347,11 +277,7 @@ class scanner:
 			primary = None
 			df = None
 			try:
-				global __scan_counter__
-				with threading.Lock():
-					__scan_counter__ += 1
-				sys.stdout.write("\r{}/{}. Fetching for {}".ljust(120).format(__scan_counter__, self.total_counter, symbol))
-				sys.stdout.flush()
+				self.update_progress(symbol)
 				df = historyinstance.daily_ohlc_history(symbol, start_date, end_date, type=ResponseType.Volume)
 				if df is not None and len(df) > 0:
 					df = tiinstance.update_ti(df)
@@ -380,6 +306,13 @@ class scanner:
 		if len(signalframes) > 0:
 			signaldf = pd.concat(signalframes)
 		return [df, signaldf]
+
+	def update_progress(self, symbol):
+		global __scan_counter__
+		with threading.Lock():
+			__scan_counter__ += 1
+		sys.stdout.write("\r{}/{}. Fetching for {}".ljust(120).format(__scan_counter__, self.total_counter, symbol))
+		sys.stdout.flush()
 
 	@tracelog
 	def ohlc_intraday_history(self, symbol):
@@ -432,6 +365,7 @@ class scanner:
 			df['Confidence'] = np.nan
 			decimals = 2
 			ltp = df['LTP'].iloc[0]
+			length_old = len(signalframes)
 			bbands_reco = self.get_quick_recommendation(full_df, 'bbands')
 			signalframes = self.update_signal_indicator(df, signalframes, 'bbands', 'BBands-L', 0.05, ltp, '<=', 'BUY', '[LTP < BBands-L].{}'.format(bbands_reco), 'BUY', '[LTP ~ BBands-L].{}'.format(bbands_reco))
 			signalframes = self.update_signal_indicator(df, signalframes, 'bbands', 'BBands-U', 0.05, ltp, '<=', 'SELL', '[LTP ~ BBands-U].{}'.format(bbands_reco), 'SELL', '[LTP > BBands-U].{}'.format(bbands_reco))
@@ -441,6 +375,13 @@ class scanner:
 			macd12 = df['macd(12)'].iloc[0]
 			macd_reco = self.get_quick_recommendation(full_df, 'macd')
 			signalframes = self.update_signal_indicator(df, signalframes, 'macd', 'macdsignal(9)', 0.05, macd12, '>=', '* BUY' if macd_reco.endswith('Buy') else 'BUY', '[MACD > EMA].{}'.format(macd_reco), '* SELL' if macd_reco.endswith('Buy') else 'SELL', '[MACD < EMA].{}'.format(macd_reco))
+			length_new = len(signalframes)
+			
+			if length_new > length_old:
+				saved_df = signalframes[len(signalframes) - 1]
+				if saved_df.loc[:,'macd(12)'].iloc[0] > saved_df.loc[:,'macdsignal(9)'].iloc[0]:
+					saved_df.loc[:,'Signal'].iloc[0] = '{}*'.format(saved_df.loc[:,'Signal'].iloc[0])
+					signalframes[len(signalframes) - 1] = saved_df
 			if self.indicator == 'macd' or self.indicator == 'all':
 				df['macd(12)'] = df['macd(12)'].apply(lambda x: round(x, decimals))
 				df['macdhist(26)'] = df['macdhist(26)'].apply(lambda x: round(x, decimals))
@@ -448,7 +389,7 @@ class scanner:
 			df_main = df
 		except Exception as e:
 			default_logger().debug(e, exc_info=True)
-			return signalframes
+			return signalframes, df_main
 		return signalframes, df_main
 
 	@tracelog
@@ -470,6 +411,8 @@ class scanner:
 							saved_df['Signal'].iloc[0] = '{},{}'.format(saved_df['Signal'].iloc[0],deep_df['Signal'].iloc[0])
 							saved_df['Confidence'].iloc[0] = max(saved_df['Confidence'].iloc[0],deep_df['Confidence'].iloc[0])
 							signalframes[len(signalframes) - 1] = saved_df
+						else:
+							signalframes.append(deep_df)
 					else:
 						signalframes.append(deep_df)
 			else:
@@ -490,6 +433,8 @@ class scanner:
 							saved_df['Signal'].iloc[0] = '{},{}'.format(saved_df['Signal'].iloc[0],deep_df['Signal'].iloc[0])
 							saved_df['Confidence'].iloc[0] = max(saved_df['Confidence'].iloc[0],deep_df['Confidence'].iloc[0])
 							signalframes[len(signalframes) - 1] = saved_df
+						else:
+							signalframes.append(deep_df)
 					else:
 						signalframes.append(deep_df)
 		return signalframes
@@ -501,7 +446,7 @@ class scanner:
 		tiny_df = None
 		limited_df = df.tail(7)
 		if indicator == 'macd' or indicator == 'all':
-			tiny_df = pd.DataFrame({'Symbol':limited_df['Symbol'],'Date':limited_df['Date'],'macd(12)':limited_df['macd(12)'],'Close':limited_df['LTP']})
+			tiny_df = pd.DataFrame({'Symbol':limited_df['Symbol'],'Date':limited_df['Date'],'macd(12)':limited_df['macd(12)'],'macdsignal(9)':limited_df['macdsignal(9)'], 'Close':limited_df['LTP']})
 			sm = macdSignalStrategy(strict=True, intraday=False, requires_ledger=False)
 		elif indicator == 'rsi' or indicator == 'all':
 			tiny_df = pd.DataFrame({'Symbol':limited_df['Symbol'],'Date':limited_df['Date'],'RSI':limited_df['RSI'],'Close':limited_df['LTP']})
@@ -515,15 +460,7 @@ class scanner:
 		default_logger().debug(summary.to_string(index=False))
 		if summary is not None and len(summary) > 0:
 			last_row = summary.tail(1)
-			reco = last_row['Recommendation'].iloc[0]
-			if reco == str(Recommendation.Buy.name):
-				return 'Buy'
-			elif reco == str(Recommendation.Sell.name):
-				return 'Sell'
-			elif reco == str(Recommendation.Hold.name):
-				return 'Hold'
-			else:
-				return 'Unknown'
+			return last_row['Recommendation'].iloc[0]
 		else:
 			return 'Unknown'
 

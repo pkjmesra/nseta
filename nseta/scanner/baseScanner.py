@@ -4,6 +4,7 @@ import pandas as pd
 
 from nseta.archives.archiver import *
 from nseta.common.tradingtime import *
+from nseta.scanner.tiscanner import scanner
 from nseta.common.log import tracelog, default_logger
 
 class baseScanner:
@@ -99,7 +100,8 @@ class baseScanner:
 		else:
 			df, signaldf = self.load_archived_scan_results()
 			if df is None or len(df) == 0 and self.scanner_func is not None:
-				df, signaldf = self.scanner_func(self.stocks)
+				scannerinstance = scanner(indicator=self.indicator)
+				df, signaldf = scannerinstance.scan(self.stocks, self.scanner_type)
 			self.scan_results(df, signaldf)
 
 	def scan_results_file_names(self):
@@ -179,7 +181,8 @@ class baseScanner:
 				RUN_IN_BACKGROUND = False
 				break
 			self.clear_cache(True, force_clear=True)
-			df, signaldf = self.scanner_func(self.stocks)
+			scannerinstance = scanner(indicator=self.indicator)
+			df, signaldf = scannerinstance.scan(self.stocks, self.scanner_type)
 			self.scan_results(df, signaldf, should_cache= False)
 			time.sleep(wait_time)
 		click.secho('Finished all iterations of scanning {}.'.format(self.scanner_type.name), fg='green', nl=True)

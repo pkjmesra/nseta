@@ -4,16 +4,9 @@ from nseta.scanner.liveScanner import liveScanner
 from nseta.scanner.quoteScanner import quoteScanner
 from nseta.scanner.swingScanner import swingScanner
 from nseta.scanner.volumeScanner import volumeScanner
+from nseta.scanner.tiscanner import ScannerType
 
-__all__ = ['scannerFactory', 'ScannerType']
-
-class ScannerType(enum.Enum):
-	Intraday = 1
-	Live = 2
-	Quote = 3
-	Swing = 4
-	Volume = 5
-	Unknown = 6
+__all__ = ['scannerFactory']
 
 class scannerFactory:
 	@staticmethod
