@@ -41,31 +41,41 @@ class Teststockscanner(baseUnitTest):
 	# TODO: Takes 126 seconds to run
 	def test_scan_live_queue_all(self):
 		s = scanner('all')
-		df, signaldf = s.scan(['HDFC'], scanner_type=ScannerType.Live)
+		n = range(15)
+		for iteration in n:
+			df, signaldf = s.scan(['HDFC'], scanner_type=ScannerType.Live)
 		self.assertEqual(len(df), 1)
 		# self.assertEqual(len(signaldf), 1)
 
 	def test_scan_live_queue_rsi(self):
 		s = scanner('rsi')
-		df, signaldf = s.scan(['HDFC'], scanner_type=ScannerType.Live)
+		n = range(15)
+		for iteration in n:
+			df, signaldf = s.scan(['HDFC'], scanner_type=ScannerType.Live)
 		self.assertEqual(len(df), 1)
 		# self.assertEqual(len(signaldf), 1)
 
 	def test_scan_live_queue_ema(self):
 		s = scanner('emac')
-		df, signaldf = s.scan(['HDFC'], scanner_type=ScannerType.Live)
+		n = range(15)
+		for iteration in n:
+			df, signaldf = s.scan(['HDFC'], scanner_type=ScannerType.Live)
 		self.assertEqual(len(df), 1)
 		# self.assertEqual(len(signaldf), 1)
 
 	def test_scan_live_queue_macd(self):
 		s = scanner('macd')
-		df, signaldf = s.scan(['HDFC'], scanner_type=ScannerType.Live)
+		n = range(15)
+		for iteration in n:
+			df, signaldf = s.scan(['HDFC'], scanner_type=ScannerType.Live)
 		self.assertEqual(len(df), 1)
 		# self.assertEqual(len(signaldf), 1)
 
 	def test_scan_live_queue_bbands(self):
 		s = scanner('bbands')
-		df, signaldf = s.scan(['HDFC'], scanner_type=ScannerType.Live)
+		n = range(15)
+		for iteration in n:
+			df, signaldf = s.scan(['HDFC'], scanner_type=ScannerType.Live)
 		self.assertEqual(len(df), 1)
 
 	def test_scan_live_confidence_level_buy_route(self):
