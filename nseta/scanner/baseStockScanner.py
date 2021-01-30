@@ -35,6 +35,7 @@ class baseStockScanner:
 			indicator = 'all'
 		self._indicator = indicator
 		self._stocksdict = {}
+		self._total_counter = 0
 
 	@property
 	def total_counter(self):

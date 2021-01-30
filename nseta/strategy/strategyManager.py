@@ -13,6 +13,7 @@ from nseta.resources.resources import *
 from nseta.archives.archiver import *
 from nseta.common.log import tracelog, default_logger
 from nseta.scanner.stockscanner import scanner
+from nseta.scanner.intradayStockScanner import intradayStockScanner
 from nseta.common.multithreadedScanner import multithreaded_scan
 from nseta.strategy.simulatedorder import OrderType
 from nseta.common.ti import ti
@@ -241,7 +242,7 @@ class strategyManager:
 
 	@tracelog
 	def get_intraday_dataframe(self, symbol, strategy):
-		s = scanner(strategy)
+		s = intradayStockScanner(strategy)
 		df = s.ohlc_intraday_history(symbol)
 		if df is not None and len(df) > 0:
 			df.drop(['Open'], axis = 1, inplace = True)
