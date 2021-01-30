@@ -2,11 +2,11 @@
 import unittest
 import pandas as pd
 
-from nseta.scanner.tiscanner import *
+from nseta.scanner.stockscanner import *
 from nseta.common import urls
 from baseUnitTest import baseUnitTest
 
-class TestTIScanner(baseUnitTest):
+class Teststockscanner(baseUnitTest):
 	def setUp(self, redirect_logs=True):
 		super().setUp()
 
@@ -257,7 +257,7 @@ class TestTIScanner(baseUnitTest):
 
 if __name__ == '__main__':
 
-	suite = unittest.TestLoader().loadTestsFromTestCase(TestTIScanner)
+	suite = unittest.TestLoader().loadTestsFromTestCase(Teststockscanner)
 	result = unittest.TextTestRunner(verbosity=2).run(suite)
 	if six.PY2:
 		if result.wasSuccessful():

@@ -12,7 +12,7 @@ from nseta.strategy.macdSignalStrategy import *
 from nseta.resources.resources import *
 from nseta.archives.archiver import *
 from nseta.common.log import tracelog, default_logger
-from nseta.scanner.tiscanner import scanner
+from nseta.scanner.stockscanner import scanner
 from nseta.common.multithreadedScanner import multithreaded_scan
 from nseta.strategy.simulatedorder import OrderType
 from nseta.common.ti import ti

@@ -528,7 +528,7 @@ For example:
 - Scanning intraday based on Bollinger bands
 ```python
 nseta scan -i -t bbands
-INFO - tiscanner.py(scan_intraday - 123)
+INFO - stockscanner.py(scan_intraday - 123)
 This run of intraday scan took 10.7 sec
 
 INFO - livecli.py(scan_intraday_results - 150)

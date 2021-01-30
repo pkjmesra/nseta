@@ -4,7 +4,7 @@ from nseta.scanner.liveScanner import liveScanner
 from nseta.scanner.quoteScanner import quoteScanner
 from nseta.scanner.swingScanner import swingScanner
 from nseta.scanner.volumeScanner import volumeScanner
-from nseta.scanner.tiscanner import ScannerType
+from nseta.scanner.stockscanner import ScannerType
 
 __all__ = ['scannerFactory']
 

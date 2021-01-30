@@ -5,7 +5,7 @@ from click.testing import CliRunner
 
 from nseta.cli.livecli import live_quote, scan
 from nseta.common import urls
-from nseta.scanner.tiscanner import *
+from nseta.scanner.stockscanner import *
 from baseUnitTest import baseUnitTest
 from nseta.scanner.scannerFactory import *
 

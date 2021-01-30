@@ -4,7 +4,7 @@ import pandas as pd
 
 from nseta.archives.archiver import *
 from nseta.common.tradingtime import *
-from nseta.scanner.tiscanner import scanner
+from nseta.scanner.stockscanner import scanner
 from nseta.common.log import tracelog, default_logger
 
 class baseScanner:

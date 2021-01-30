@@ -1,7 +1,7 @@
 from nseta.scanner.baseScanner import baseScanner
 from nseta.resources.resources import resources
 from nseta.archives.archiver import *
-from nseta.scanner.tiscanner import scanner
+from nseta.scanner.stockscanner import scanner
 from nseta.common.log import tracelog, default_logger
 
 __all__ = ['swingScanner']
