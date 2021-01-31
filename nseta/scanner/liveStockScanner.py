@@ -12,7 +12,7 @@ __all__ = ['liveStockScanner']
 class liveStockScanner(baseStockScanner):
 	def __init__(self, indicator='all'):
 		super().__init__(indicator=indicator)
-		self._keys = ['symbol','previousClose', 'lastPrice', 'deliveryToTradedQuantity', 'BuySellDiffQty', 'totalTradedVolume', 'pChange']
+		self._keys = ['symbol','previousClose', 'lastPrice', 'deliveryToTradedQuantity', 'BuySellDiffQty', 'totalTradedVolume', 'pChange', 'FreeFloat']
 
 	@property
 	def keys(self):
@@ -30,7 +30,7 @@ class liveStockScanner(baseStockScanner):
 				self.update_progress(stock)
 				result, primary = get_live_quote(stock, keys = self.keys)
 				if primary is not None and len(primary) > 0:
-					row = pd.DataFrame(primary, columns = ['Updated', 'Symbol', 'Close', 'LTP', '% Delivery', 'Buy - Sell', 'TotalTradedVolume', 'pChange'], index = [''])
+					row = pd.DataFrame(primary, columns = ['Updated', 'Symbol', 'Close', 'LTP', '% Delivery', 'Buy - Sell', 'TotalTradedVolume', 'pChange', 'FreeFloat'], index = [''])
 					value = (row['LTP'][0]).replace(' ','').replace(',','')
 					if stock in self.stocksdict:
 						(self.stocksdict[stock]).append(float(value))

@@ -34,7 +34,7 @@ NAME_KEYS = ['symbol','companyName', 'isinCode']
 QUOTE_KEYS = ['previousClose', 'lastPrice', 'change', 'pChange', 'averagePrice', 'pricebandupper', 'pricebandlower', 'basePrice']
 OHLC_KEYS = ['open', 'dayHigh', 'dayLow', 'closePrice']
 WK52_KEYS = ['high52', 'low52']
-VOLUME_KEYS = ['quantityTraded', 'totalTradedVolume', 'totalTradedValue', 'deliveryQuantity', 'deliveryToTradedQuantity', 'totalBuyQuantity', 'totalSellQuantity']
+VOLUME_KEYS = ['quantityTraded', 'totalTradedVolume', 'totalTradedValue', 'deliveryQuantity', 'deliveryToTradedQuantity', 'totalBuyQuantity', 'totalSellQuantity', 'cm_ffm', 'faceValue']
 
 
 eq_quote_referer = "https://www1.nseindia.com/live_market/dynaContent/live_watch/get_quote/GetQuote.jsp?symbol={}&illiquid=0&smeFlag=0&itpFlag=0"
@@ -186,15 +186,26 @@ def get_data_list(orgdata, keys=[]):
 		for key in keys:
 			if key in data.keys():
 				primary.append(data[key])
+			elif key == 'FreeFloat':
+				try:
+					freeFloatMarketCapInCr = float((data['cm_ffm']).replace(' ','').replace(',','')) * 10000000
+					faceValue = float((data['faceValue']).replace(' ','').replace(',',''))
+					primary.append(int(freeFloatMarketCapInCr/faceValue))
+				except Exception as e:
+					default_logger().debug(e, exc_info=True)
+					primary.append(np.nan)
+					continue
 			elif key == 'BuySellDiffQty':
 				try:
 					totalBuyQuantity = float((data['totalBuyQuantity']).replace(' ','').replace(',',''))
 					totalSellQuantity = float((data['totalSellQuantity']).replace(' ','').replace(',',''))
 					primary.append(float(totalBuyQuantity - totalSellQuantity))
-				except Exception:
+				except Exception as e:
+					default_logger().debug(e, exc_info=True)
 					primary.append(np.nan)
 					continue
 		default_logger().debug('\nPrimary:\n{}'.format(primary))
+
 		return [primary], name_data, quote_data, ohlc_data, wk52_data, volume_data, pipeline_data
 	else:
 		primary = []
