@@ -14,7 +14,7 @@ from nseta.common.tradingtime import *
 
 __all__ = ['volumeStockScanner']
 
-VOLUME_KEYS = ['Remarks','PPoint', 'S1-R3','Symbol', 'Date', 'LTP', 'VWAP', 'Yst%Del', '7DayAvgVolume', 'Yst7DVol(%)', 'TodaysVolume','TDYVol(%)', '7DVol(%)', 'Tdy%Del', 'T0BuySellDiff', '%Change']
+VOLUME_KEYS = ['ATR','NATR','TRANGE','Volatility','ATRE-F','ATRE-S','ATRE','Avg7DVol','Remarks','PPoint', 'S1-R3','Symbol', 'Date', 'LTP', 'VWAP', 'Yst%Del', '7DayAvgVolume', 'Yst7DVol(%)', 'TodaysVolume','TDYVol(%)', '7DVol(%)', 'Tdy%Del', 'T0BuySellDiff', '%Change']
 
 class volumeStockScanner(baseStockScanner):
 	def __init__(self, indicator='all'):
@@ -34,7 +34,7 @@ class volumeStockScanner(baseStockScanner):
 		tiinstance = ti()
 		historyinstance = historicaldata()
 		# Time frame you want to pull data from
-		start_date = datetime.datetime.now()-datetime.timedelta(days=self.last_7_days_timedelta())
+		start_date = datetime.datetime.now()-datetime.timedelta(days=self.last_x_days_timedelta())
 		arch = archiver()
 		end_date = datetime.datetime.now()
 		for symbol in stocks:
@@ -47,6 +47,7 @@ class volumeStockScanner(baseStockScanner):
 				if df is not None and len(df) > 0:
 					df = tiinstance.update_ti(df)
 					default_logger().debug(df.to_string(index=False))
+					df = df.tail(7)
 					primary = arch.restore('{}_live_quote'.format(symbol), ResponseType.Volume)
 					if primary is None or len(primary) == 0:
 						result, primary = get_live_quote(symbol, keys = self.keys)
@@ -96,6 +97,7 @@ class volumeStockScanner(baseStockScanner):
 		df['7DVol(%)'] = np.nan
 		df['Remarks']='NA'
 		df['Yst7DVol(%)']= np.nan
+		df['Avg7DVol'] = np.nan
 		df['Yst%Del'] = df['%Deliverable'].apply(lambda x: round(x*100, 2))
 		df['Tdy%Del']= np.nan
 		df['PPoint']= df['PP']
@@ -111,6 +113,11 @@ class volumeStockScanner(baseStockScanner):
 		df['Date'].iloc[n-1] = df_today['Updated'].iloc[0]
 		df['%Change'].iloc[n-1] = df_today['pChange'].iloc[0]
 		df['LTP'].iloc[n-1] = ltp
+		if avg_volume >= 10000000:
+			avg_vol_disp = '{} Cr'.format(round(avg_volume/10000000,2))
+		else:
+			avg_vol_disp = '{} L'.format(round(avg_volume/100000,2))
+		df['Avg7DVol'].iloc[n-1] = avg_vol_disp
 		df['TDYVol(%)'].iloc[n-1] = today_vs_yest
 		df['7DVol(%)'].iloc[n-1] = round(100* (today_volume - avg_volume)/avg_volume)
 		df['Yst7DVol(%)'].iloc[n-1] = round((100 * (volume_yest - avg_volume)/avg_volume))

@@ -2,7 +2,7 @@
 
 [![Build Status](https://travis-ci.com/pkjmesra/nseta.svg?branch=main)](https://travis-ci.com/pkjmesra/nseta)
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/pkjmesra/nseta/blob/main/LICENSE)
-[![Downloads](https://pepy.tech/badge/nseta/month)](https://pepy.tech/project/nseta/month)
+[![Downloads](https://pepy.tech/badge/nseta)](https://pepy.tech/project/nseta)
 [![Python](https://img.shields.io/pypi/pyversions/nseta.svg?style=plastic)](https://badge.fury.io/py/nseta)
 [![PyPI](https://badge.fury.io/py/nseta.svg)](https://badge.fury.io/py/nseta)
 [![Codacy Badge](https://api.codacy.com/project/badge/Grade/14cc594e2dfe48519c699caa48136108)](https://app.codacy.com/gh/pkjmesra/nseta?utm_source=github.com&utm_medium=referral&utm_content=pkjmesra/nseta&utm_campaign=Badge_Grade)

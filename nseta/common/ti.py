@@ -1,6 +1,7 @@
 from nseta.common.log import default_logger
 import talib as ta
 import pandas as pd
+import numpy as np
 
 __all__ = ['ti']
 
@@ -23,6 +24,11 @@ class ti:
 					break
 			if can_have_pivots:
 				df = self.get_ppsr_df(df)
+				df['ATR'] = self.get_atr_df(df)
+				df['NATR'] = self.get_natr_df(df)
+				df['TRANGE'] = self.get_trange_df(df)
+				df['Volatility'] = self.get_atr_ratio(df)
+				df['ATRE-F'], df['ATRE-S'], df['ATRE'] = self.get_atr_extreme(df)
 		except Exception as e:
 			default_logger().debug(e, exc_info=True)
 		except SystemExit:
@@ -71,6 +77,62 @@ class ti:
 	def get_obv_df(self, df):
 		df['OBV'] = ta.OBV(df['Close'], df['Volume'])
 		return df['OBV']
+
+	def get_atr_df(self, df):
+		df['ATR'] = ta.ATR(df['High'], df['Low'], df['Close'], timeperiod=14).apply(lambda x: round(x, 2))
+		return df['ATR']
+
+	def get_natr_df(self, df):
+		df['NATR'] = ta.NATR(df['High'], df['Low'], df['Close'], timeperiod=14).apply(lambda x: round(x, 2))
+		return df['NATR']
+
+	def get_trange_df(self, df):
+		df['TRANGE'] = ta.TRANGE(df['High'], df['Low'], df['Close']).apply(lambda x: round(x, 2))
+		return df['TRANGE']
+
+	def get_atr_extreme(self, df):
+		"""
+			ATR Exterme: which is based on 《Volatility-Based Technical Analysis》
+			TTI is 'Trading The Invisible'
+
+			@return: fasts, slows
+		"""
+		highs = df['High']
+		lows = df['Low']
+		closes = df['Close']
+		atrPeriod=14
+		slowPeriod=30
+		fastPeriod=3
+		atr = self.get_atr_df(df)
+
+		highsMean = ta.EMA(highs, 5)
+		lowsMean = ta.EMA(lows, 5)
+		closesMean = ta.EMA(closes, 5)
+
+		atrExtremes = np.where(closes > closesMean,
+							   ((highs - highsMean)/closes * 100) * (atr/closes * 100),
+							   ((lows - lowsMean)/closes * 100) * (atr/closes * 100)
+							   )
+
+		fasts = ta.MA(atrExtremes, fastPeriod)
+		slows = ta.EMA(atrExtremes, slowPeriod)
+		return fasts, slows, np.std(atrExtremes[-slowPeriod:])
+
+	def get_atr_ratio(self, df):
+		"""
+			ATR(14)/MA(14)
+		"""
+		highs = df['High']
+		lows = df['Low']
+		closes = df['Close']
+
+		atr = self.get_atr_df(df)
+		ma = ta.MA(closes, timeperiod=14)
+
+		volatility = atr/ma
+
+		s = pd.Series(volatility, index=df.index, name='volatility').dropna()
+		return pd.DataFrame({'volatility':round(s,2)})
 
 	def get_ppsr_df(self, df):
 		PP = pd.Series((df['High'] + df['Low'] + df['Close']) / 3)

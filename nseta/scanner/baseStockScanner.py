@@ -111,12 +111,12 @@ class baseStockScanner:
 		sys.stdout.write("\r{}/{}. Fetching for {}".ljust(120).format(__scan_counter__, self.total_counter, symbol))
 		sys.stdout.flush()
 
-	def last_7_days_timedelta(self):
+	def last_x_days_timedelta(self):
 		delhi_now = IST_datetime()
 		if delhi_now.weekday() <= 1 or delhi_now.weekday() >= 6:
-			return 11
+			return 40
 		else:
-			return 9
+			return 36
 
 	@tracelog
 	def update_signals(self, signalframes, df_main, full_df=None):
