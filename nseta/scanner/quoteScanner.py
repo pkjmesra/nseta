@@ -14,7 +14,7 @@ NAME_LIST = ['Symbol', 'Name', 'ISIN']
 QUOTE_LIST = ['Last Updated', 'Prev Close', 'Last Trade Price','Change','% Change', 'Avg. Price', 'Upper Band','Lower Band', 'Adjusted Price']
 OHLC_LIST = ['Open', 'High', 'Low', 'Close']
 WK52_LIST = ['52 Wk High', '52 Wk Low']
-VOLUME_LIST = ['Quantity Traded', 'Total Traded Volume', 'Total Traded Value', 'Delivery Volume', '% Delivery', 'Total Buy Qty.', 'Total Sell Qty.', 'Buy - Sell']
+VOLUME_LIST = ['Quantity Traded', 'Total Traded Volume', 'Total Traded Value', 'Delivery Volume', '% Delivery', 'Total Buy Qty.', 'Total Sell Qty.', 'FF Market Cap(cr)', 'Face Value', 'Buy - Sell', 'Free Float']
 PIPELINE_LIST = ['Bid Quantity', 'Bid Price', 'Offer_Quantity', 'Offer_Price']
 
 class quoteScanner(baseScanner):

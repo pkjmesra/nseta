@@ -19,10 +19,10 @@ Background_Scan_Frequency_Quotes = 50
 Background_Scan_Frequency_Volume = 30
 enumerate_volume_scan_signals = no
 
-# Available columns : Symbol,Date,VWAP,LTP,%%Change,TDYVol(%%),7DVol(%%),Remarks,Yst7DVol(%%),Yst%%Del,Tdy%%Del,PPoint,S1-R3,ATR,NATR,TRANGE,Volatility,ATRE-F,ATRE-S,ATRE,Avg7DVol,FreeFloat
+# Available columns : Symbol,Date,VWAP,LTP,%%Change,TDYVol(%%),7DVol(%%),Remarks,Yst7DVol(%%),Yst%%Del,Tdy%%Del,PPoint,S1-R3,ATR,NATR,TRANGE,Volatility,ATRE-F,ATRE-S,ATRE,Avg7DVol,FreeFloat,TDYVol
 # You can also change the order of columns. Put two %% for 1 % to appear in the column name
 # You can provide your own custom names to column heads/keys in the format key1=YourKey1,key2=YourKey2 etc.
-volume_scan_columns = Symbol,FreeFloat,LTP,VWAP,%%Change=%%Chng,ATR,TDYVol(%%)=VolTDY%%,7DVol(%%)=Vol7D%%,Avg7DVol,S1-R3,Remarks,Tdy%%Del=Del_TDY%%
+volume_scan_columns = Symbol,FreeFloat,LTP,VWAP,%%Change=%%Chng,ATR,TDYVol(%%)=VolTDY%%,7DVol(%%)=Vol7D%%,TDYVol,Avg7DVol,S1-R3,Remarks,Tdy%%Del=Del_TDY%%
 
 # Available columns: Symbol,Date,RSI,MOM,EMA(9),macd(12),macdsignal(9),macdhist(26),BBands-U,BBands-L,LTP,Signal,Remarks,Confidence
 # You can also change the order of columns.  Put two %% for 1 % to appear in the column name

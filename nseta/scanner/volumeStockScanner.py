@@ -14,7 +14,7 @@ from nseta.common.tradingtime import *
 
 __all__ = ['volumeStockScanner']
 
-VOLUME_KEYS = ['FreeFloat','ATR','NATR','TRANGE','Volatility','ATRE-F','ATRE-S','ATRE','Avg7DVol','Remarks','PPoint', 'S1-R3','Symbol', 'Date', 'LTP', 'VWAP', 'Yst%Del', '7DayAvgVolume', 'Yst7DVol(%)', 'TodaysVolume','TDYVol(%)', '7DVol(%)', 'Tdy%Del', 'T0BuySellDiff', '%Change']
+VOLUME_KEYS = ['TDYVol','FreeFloat','ATR','NATR','TRANGE','Volatility','ATRE-F','ATRE-S','ATRE','Avg7DVol','Remarks','PPoint', 'S1-R3','Symbol', 'Date', 'LTP', 'VWAP', 'Yst%Del', '7DayAvgVolume', 'Yst7DVol(%)', 'TodaysVolume','TDYVol(%)', '7DVol(%)', 'Tdy%Del', 'T0BuySellDiff', '%Change']
 
 class volumeStockScanner(baseStockScanner):
 	def __init__(self, indicator='all'):
@@ -95,6 +95,7 @@ class volumeStockScanner(baseStockScanner):
 		df['LTP']=np.nan
 		df['%Change'] = np.nan
 		df['TDYVol(%)']= np.nan
+		df['TDYVol']= np.nan
 		df['7DVol(%)'] = np.nan
 		df['Remarks']='NA'
 		df['Yst7DVol(%)']= np.nan
@@ -123,6 +124,10 @@ class volumeStockScanner(baseStockScanner):
 			freeFloat_disp = '{} Cr'.format(int(freeFloat/10000000))
 		else:
 			freeFloat_disp = '{} L'.format(int(avg_volume/100000))
+		if today_volume >= 10000000:
+			today_volume_disp = '{} Cr'.format(int(today_volume/10000000))
+		else:
+			today_volume_disp = '{} L'.format(int(today_volume/100000))
 		df['FreeFloat'].iloc[n-1] = freeFloat_disp
 		df['Avg7DVol'].iloc[n-1] = avg_vol_disp
 		df['TDYVol(%)'].iloc[n-1] = today_vs_yest
@@ -130,6 +135,7 @@ class volumeStockScanner(baseStockScanner):
 		df['Yst7DVol(%)'].iloc[n-1] = round((100 * (volume_yest - avg_volume)/avg_volume), 1)
 		df['Tdy%Del'].iloc[n-1] = df_today['Tdy%Del'].iloc[0]
 		df['Yst%Del'].iloc[n-1] = df['Yst%Del'].iloc[0]
+		df['TDYVol']= today_volume_disp
 		r3 = df['R3'].iloc[n-1]
 		r2 = df['R2'].iloc[n-1]
 		r1 = df['R1'].iloc[n-1]

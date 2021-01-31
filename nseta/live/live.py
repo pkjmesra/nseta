@@ -234,8 +234,8 @@ def get_data_list(orgdata, keys=[]):
 
 		for key in VOLUME_KEYS:
 			try:
-				value = (data[key]).replace(' ','').replace(',','')
-				volume_data.append(float(value))
+				value = float((data[key]).replace(' ','').replace(',',''))
+				volume_data.append('{} cr'.format(round(value/10000000,2)) if value > 10000000 else value)
 			except Exception:
 				volume_data.append(np.nan)
 				continue
@@ -249,9 +249,15 @@ def get_data_list(orgdata, keys=[]):
 			totalSellQuantity = np.nan
 		try:
 			volume_data.append(float(totalBuyQuantity - totalSellQuantity))
-			volume_data = [volume_data]
 		except Exception:
 			volume_data.append(np.nan)
+		
+		freeFloatMarketCapInCr = float((data['cm_ffm']).replace(' ','').replace(',','')) * 10000000
+		faceValue = float((data['faceValue']).replace(' ','').replace(',',''))
+		freefloat = int(freeFloatMarketCapInCr/faceValue)
+		volume_data.append('{} cr'.format(round(freefloat/10000000,2)) if freefloat > 10000000 else freefloat)
+
+		volume_data = [volume_data]
 
 		for x in range(1,5):
 			buy_qty_key = 'buyQuantity' + str(x)
