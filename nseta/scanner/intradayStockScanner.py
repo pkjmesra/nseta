@@ -1,4 +1,5 @@
 import pandas as pd
+import numpy as np
 import datetime
 
 from nseta.common.ti import ti
@@ -46,11 +47,8 @@ class intradayStockScanner(baseStockScanner):
 	def __init__(self, indicator='all'):
 		super().__init__(indicator=indicator)
 
-	def get_func_name(self):
-		return self.scan_intraday_quanta
-
 	@tracelog
-	def scan_intraday_quanta(self, **kwargs):
+	def scan_quanta(self, **kwargs):
 		stocks = kwargs['items']
 		frames = []
 		signalframes = []

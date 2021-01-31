@@ -1,4 +1,3 @@
-import enum
 from nseta.scanner.intradayScanner import intradayScanner
 from nseta.scanner.liveScanner import liveScanner
 from nseta.scanner.quoteScanner import quoteScanner

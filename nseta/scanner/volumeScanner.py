@@ -19,8 +19,8 @@ class volumeScanner(baseScanner):
 		self.sortAscending = False
 		super().scan(option=option)
 
-	def scan_background(self, terminate_after_iter=0, wait_time=resources.scanner().background_scan_frequency_intraday):
-		return super().scan_background(terminate_after_iter=terminate_after_iter, wait_time=wait_time)
+	def scan_background(self, scannerinstance, terminate_after_iter=0, wait_time=resources.scanner().background_scan_frequency_intraday):
+		return super().scan_background(scannerinstance, terminate_after_iter=terminate_after_iter, wait_time=wait_time)
 
 	def scan_results(self, df, signaldf, should_cache=True):
 		if self.option == 'momentum':

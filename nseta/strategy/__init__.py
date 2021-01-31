@@ -1,2 +1,0 @@
-global __test_counter__
-global __download_counter__

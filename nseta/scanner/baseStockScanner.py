@@ -14,11 +14,10 @@ from nseta.resources.resources import *
 from nseta.strategy.rsiSignalStrategy import rsiSignalStrategy
 from nseta.strategy.bbandsSignalStrategy import bbandsSignalStrategy
 from nseta.strategy.macdSignalStrategy import macdSignalStrategy
-from nseta.common.commons import Recommendation
 from nseta.common.tradingtime import *
 
 __all__ = ['baseStockScanner', 'TECH_INDICATOR_KEYS', 'ScannerType']
-
+__scan_counter__ = 0
 TECH_INDICATOR_KEYS = ['rsi', 'smac', 'emac', 'macd', 'bbands', 'all']
 
 class ScannerType(enum.Enum):
@@ -35,6 +34,7 @@ class baseStockScanner:
 			indicator = 'all'
 		self._indicator = indicator
 		self._stocksdict = {}
+		self._instancedict = {}
 		self._total_counter = 0
 
 	@property
@@ -52,6 +52,10 @@ class baseStockScanner:
 	@indicator.setter
 	def indicator(self, value):
 		self._indicator = value
+
+	@property
+	def instancedict(self):
+		return self._instancedict
 
 	@property
 	def stocksdict(self):
@@ -73,11 +77,12 @@ class baseStockScanner:
 	def multithreadedScanner_callback(self, **kwargs):
 		scanner_type = kwargs['scanner_type']
 		del(kwargs['scanner_type'])
-		callback_func = self.get_func_name(scanner_type)
-		return callback_func(**kwargs)
+		callback_instance = self.get_instance(scanner_type=scanner_type)
+		callback_instance.total_counter = self.total_counter
+		return callback_instance.scan_quanta(**kwargs)
 
-	def get_func_name(self, scanner_type=ScannerType.Unknown):
-		default_logger().debug('Scanner will begin for scanner_type:{}'.format(scanner_type))
+	def get_instance(self, scanner_type=ScannerType.Unknown):
+		return self
 
 	@tracelog
 	def scan(self, stocks=[], scanner_type=ScannerType.Unknown):
@@ -219,9 +224,10 @@ class baseStockScanner:
 		default_logger().debug(summary.to_string(index=False))
 		if summary is not None and len(summary) > 0:
 			last_row = summary.tail(1)
-			return last_row['Recommendation'].iloc[0]
+			reco = last_row['Recommendation'].iloc[0]
+			return '-' if reco == 'Unknown' else reco
 		else:
-			return 'Unknown'
+			return '-'
 
 	def update_confidence_level(self, df):
 		rsi = round(df['RSI'].iloc[0],2)

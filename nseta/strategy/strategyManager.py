@@ -65,10 +65,15 @@ STRATEGY_MAPPING = {
 	"multi": multi_strategy
 }
 
+__test_counter__ = 0
+__download_counter__ = 0
+
 class strategyManager:
 
 	def __init__(self, order_type=OrderType.Delivery):
 		self._strict = False
+		self._total_stocks_counter = 0
+		self._total_tests_counter = 0
 
 	@property
 	def total_stocks_counter(self):
@@ -101,7 +106,7 @@ class strategyManager:
 		if end is not None:
 			ed = datetime.strptime(end, "%Y-%m-%d").date()
 		frames = []
-		instance = scanner('all') if intraday else historicaldata()
+		instance = intradayStockScanner('all') if intraday else historicaldata()
 		for stock in stocks:
 			df_summary_dict = {'Symbol':['?'], 'RSI-PnL':[np.nan],'MACD-PnL':[np.nan], 'BBANDS-PnL':[np.nan], 'Reco-RSI':[np.nan], 'Reco-MACD':[np.nan], 'Reco-BBANDS':[np.nan]}
 			df_summary = pd.DataFrame(df_summary_dict)
@@ -112,7 +117,8 @@ class strategyManager:
 					if summary is not None and len(summary) > 0:
 						df_summary['Symbol'].iloc[0] = stock
 						df_summary['{}-PnL'.format(strategy.upper())].iloc[0] = summary['PnL'].iloc[0]
-						df_summary['Reco-{}'.format(strategy.upper())].iloc[0] = str(summary['Recommendation'].iloc[0])
+						reco = summary['Recommendation'].iloc[0]
+						df_summary['Reco-{}'.format(strategy.upper())].iloc[0] = '-' if reco == 'Unknown' else reco
 				except Exception as e:
 					default_logger().debug(e, exc_info=True)
 					default_logger().debug('Failed to test trading strategy for symbol: {}.'.format(stock))
@@ -191,7 +197,7 @@ class strategyManager:
 			sd = datetime.strptime(start, "%Y-%m-%d").date()
 		if end is not None:
 			ed = datetime.strptime(end, "%Y-%m-%d").date()
-		instance = scanner('all') if intraday else historicaldata()
+		instance = intradayStockScanner('all') if intraday else historicaldata()
 		for stock in stocks:
 			try:
 				global __download_counter__

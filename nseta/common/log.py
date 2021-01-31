@@ -28,7 +28,7 @@ class filterlogger:
 
 	@level.setter
 	def level(self, level):
-		return self.logger.setlevel(level)
+		self.logger.setLevel(level)
 
 	@staticmethod
 	def getlogger(logger):

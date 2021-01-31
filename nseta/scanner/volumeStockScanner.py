@@ -21,15 +21,12 @@ class volumeStockScanner(baseStockScanner):
 		super().__init__(indicator=indicator)
 		self._keys = ['symbol','previousClose', 'lastPrice', 'deliveryToTradedQuantity', 'BuySellDiffQty', 'totalTradedVolume', 'pChange']
 
-	def get_func_name(self):
-		return self.scan_volume_quanta
-
 	@property
 	def keys(self):
 		return self._keys
 
 	@tracelog
-	def scan_volume_quanta(self, **kwargs):
+	def scan_quanta(self, **kwargs):
 		stocks = kwargs['items']
 		frames = []
 		signalframes = []
@@ -148,7 +145,7 @@ class volumeStockScanner(baseStockScanner):
 				elif ltp >= r1:
 					df['Remarks'].iloc[n-1]='LTP >= R1'
 					df['S1-R3'].iloc[n-1] = r1
-				elif ltp < r1:
+				else:
 					df['Remarks'].iloc[n-1]='PP <= LTP < R1'
 					df['S1-R3'].iloc[n-1] = r1
 			else:
@@ -163,7 +160,7 @@ class volumeStockScanner(baseStockScanner):
 				elif ltp >= s3:
 					df['Remarks'].iloc[n-1]='LTP >= S3'
 					df['S1-R3'].iloc[n-1] = s3
-				elif ltp < s3:
+				else:
 					df['Remarks'].iloc[n-1]='LTP < S3'
 					df['S1-R3'].iloc[n-1] = s3
 		if current_datetime_in_ist_trading_time_range():

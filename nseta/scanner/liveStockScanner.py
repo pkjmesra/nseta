@@ -2,7 +2,6 @@ import pandas as pd
 import talib as ta
 
 from nseta.live.live import get_live_quote
-from nseta.common.ti import ti
 from nseta.resources.resources import *
 from nseta.scanner.baseStockScanner import baseStockScanner
 from nseta.archives.archiver import *
@@ -15,15 +14,12 @@ class liveStockScanner(baseStockScanner):
 		super().__init__(indicator=indicator)
 		self._keys = ['symbol','previousClose', 'lastPrice', 'deliveryToTradedQuantity', 'BuySellDiffQty', 'totalTradedVolume', 'pChange']
 
-	def get_func_name(self):
-		return self.scan_live_quanta
-
 	@property
 	def keys(self):
 		return self._keys
 
 	@tracelog
-	def scan_live_quanta(self, **kwargs):
+	def scan_quanta(self, **kwargs):
 		stocks = kwargs['items']
 		frames = []
 		signalframes = []

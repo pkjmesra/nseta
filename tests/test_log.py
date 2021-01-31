@@ -22,6 +22,11 @@ class TestLog(baseUnitTest):
 
 	def test_debug_log_filter(self):
 		log.setup_custom_logger('nseta', logging.DEBUG, False, filter='test_log.py')
+		default_logger().setLevel(logging.INFO)
+		self.assertEqual(default_logger().level, logging.INFO)
+		default_logger().level = logging.WARN
+		self.assertEqual(default_logger().level, logging.WARN)
+		default_logger().setLevel(logging.DEBUG)
 		default_logger().debug('test_debug_log_filter')
 		self.assertIn('test_debug_log_filter', self.capturedOutput.getvalue())
 		self.assertIn('test_log.py', self.capturedOutput.getvalue())

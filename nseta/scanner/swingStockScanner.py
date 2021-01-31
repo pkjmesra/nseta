@@ -1,5 +1,4 @@
 import pandas as pd
-import talib as ta
 import datetime
 import sys
 
@@ -18,11 +17,8 @@ class swingStockScanner(baseStockScanner):
 	def __init__(self, indicator='all'):
 		super().__init__(indicator=indicator)
 
-	def get_func_name(self):
-		return self.scan_swing_quanta
-
 	@tracelog
-	def scan_swing_quanta(self, **kwargs):
+	def scan_quanta(self, **kwargs):
 		stocks = kwargs['items']
 		frames = []
 		signalframes = []

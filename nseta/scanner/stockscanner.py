@@ -13,9 +13,13 @@ class scanner(baseStockScanner):
 	def __init__(self, indicator='all'):
 		super().__init__(indicator=indicator)
 
-	def get_func_name(self, scanner_type=ScannerType.Unknown):
-		scn = scanner.stockScanner(scanner_type=scanner_type, indicator=self.indicator)
-		return scn.get_func_name()
+	def get_instance(self, scanner_type=ScannerType.Unknown):
+		if scanner_type.name in self.instancedict:
+			return self.instancedict[scanner_type.name]
+		else:
+			instance = scanner.stockScanner(scanner_type=scanner_type, indicator=self.indicator)
+			self.instancedict[scanner_type.name] = instance
+			return instance
 
 	@staticmethod
 	def stockScanner(scanner_type=ScannerType.Unknown, indicator=None):

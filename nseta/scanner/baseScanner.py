@@ -18,7 +18,6 @@ class baseScanner:
 		self._signal_columns = None
 		self._archiver = None
 		self._response_type = None
-		self._scanner_func = None
 		self._sortAscending = False
 
 	@property
@@ -81,26 +80,18 @@ class baseScanner:
 	def option(self, value):
 		self._option = value
 
-	@property
-	def scanner_func(self):
-		return self._scanner_func
-
-	@scanner_func.setter
-	def scanner_func(self, value):
-		self._scanner_func = value
-
 	@tracelog
 	def scan(self, option=None):
 		self.option = option
+		scannerinstance = scanner(indicator=self.indicator)
 		if self.background:
 			b = threading.Thread(name='scan_{}_background'.format(self.scanner_type.name), 
-					target=self.scan_background, args=[], daemon=True)
+					target=self.scan_background, args=[scannerinstance], daemon=True)
 			b.start()
 			b.join()
 		else:
 			df, signaldf = self.load_archived_scan_results()
-			if df is None or len(df) == 0 and self.scanner_func is not None:
-				scannerinstance = scanner(indicator=self.indicator)
+			if df is None or len(df) == 0:
 				df, signaldf = scannerinstance.scan(self.stocks, self.scanner_type)
 			self.scan_results(df, signaldf)
 
@@ -171,7 +162,7 @@ class baseScanner:
 			self.archiver.clearcache(response_type=self.response_type, force_clear=force_clear)
 
 	@tracelog
-	def scan_background(self, terminate_after_iter=0, wait_time=0):
+	def scan_background(self, scannerinstance, terminate_after_iter=0, wait_time=0):
 		global RUN_IN_BACKGROUND
 		RUN_IN_BACKGROUND = True
 		iteration = 0
@@ -180,8 +171,10 @@ class baseScanner:
 			if terminate_after_iter > 0 and iteration >= terminate_after_iter:
 				RUN_IN_BACKGROUND = False
 				break
+			if scannerinstance is None:
+				default_logger().debug('scannerinstance is None. Cannot proceed with background scanning')
+				break
 			self.clear_cache(True, force_clear=True)
-			scannerinstance = scanner(indicator=self.indicator)
 			df, signaldf = scannerinstance.scan(self.stocks, self.scanner_type)
 			self.scan_results(df, signaldf, should_cache= False)
 			time.sleep(wait_time)

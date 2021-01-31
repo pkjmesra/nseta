@@ -41,7 +41,7 @@ class TestLivecli(baseUnitTest):
 	def test_scan_intraday_background(self):
 		s = scannerFactory.scanner(ScannerType.Intraday, ['HDFC'], 'emac', True)
 		scannerinstance = scanner(indicator='rsi')
-		result = s.scan_background(terminate_after_iter=2, wait_time=2)
+		result = s.scan_background(scannerinstance, terminate_after_iter=2, wait_time=2)
 		self.assertEqual(result , 2)
 
 	def test_scan_live(self):
@@ -53,7 +53,7 @@ class TestLivecli(baseUnitTest):
 	def test_scan_live_background(self):
 		s = scannerFactory.scanner(ScannerType.Live, ['HDFC'], 'emac', True)
 		scannerinstance = scanner(indicator='rsi')
-		result = s.scan_background(terminate_after_iter=2, wait_time=2)
+		result = s.scan_background(scannerinstance, terminate_after_iter=2, wait_time=2)
 		self.assertEqual(result , 2)
 
 	def test_scan_swing(self):
@@ -65,7 +65,7 @@ class TestLivecli(baseUnitTest):
 	def test_scan_swing_background(self):
 		s = scannerFactory.scanner(ScannerType.Swing, ['HDFC'], 'emac', True)
 		scannerinstance = scanner(indicator='rsi')
-		result = s.scan_background(terminate_after_iter=2, wait_time=0)
+		result = s.scan_background(scannerinstance, terminate_after_iter=2, wait_time=0)
 		self.assertEqual(result , 0)
 		self.assertFalse(s.background)
 
@@ -84,7 +84,7 @@ class TestLivecli(baseUnitTest):
 	def test_scan_volume_background(self):
 		s = scannerFactory.scanner(ScannerType.Volume, ['HDFC'], 'emac', True)
 		scannerinstance = scanner(indicator='rsi')
-		result = s.scan_background(terminate_after_iter=2, wait_time=2)
+		result = s.scan_background(scannerinstance, terminate_after_iter=2, wait_time=2)
 		self.assertEqual(result , 2)
 
 	def test_live_quote_inputs(self):
