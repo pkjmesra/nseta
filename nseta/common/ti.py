@@ -100,7 +100,6 @@ class ti:
 		highs = df['High']
 		lows = df['Low']
 		closes = df['Close']
-		atrPeriod=14
 		slowPeriod=30
 		fastPeriod=3
 		atr = self.get_atr_df(df)
@@ -122,8 +121,6 @@ class ti:
 		"""
 			ATR(14)/MA(14)
 		"""
-		highs = df['High']
-		lows = df['Low']
 		closes = df['Close']
 
 		atr = self.get_atr_df(df)

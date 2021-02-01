@@ -125,9 +125,9 @@ class volumeStockScanner(baseStockScanner):
 		else:
 			freeFloat_disp = '{} L'.format(int(avg_volume/100000))
 		if today_volume >= 10000000:
-			today_volume_disp = '{} Cr'.format(int(today_volume/10000000))
+			today_volume_disp = '{} Cr'.format(round(today_volume/10000000, 1))
 		else:
-			today_volume_disp = '{} L'.format(int(today_volume/100000))
+			today_volume_disp = '{} L'.format(round(today_volume/100000, 1))
 		df['FreeFloat'].iloc[n-1] = freeFloat_disp
 		df['Avg7DVol'].iloc[n-1] = avg_vol_disp
 		df['TDYVol(%)'].iloc[n-1] = today_vs_yest
