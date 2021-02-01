@@ -162,6 +162,11 @@ class baseScanner:
 			self.archiver.clearcache(response_type=self.response_type, force_clear=force_clear)
 
 	@tracelog
+	def scan_background_interrupt(self):
+		global RUN_IN_BACKGROUND
+		RUN_IN_BACKGROUND = False
+
+	@tracelog
 	def scan_background(self, scannerinstance, terminate_after_iter=0, wait_time=0):
 		global RUN_IN_BACKGROUND
 		RUN_IN_BACKGROUND = True

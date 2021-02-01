@@ -163,13 +163,21 @@ class Teststockscanner(baseUnitTest):
 		self.assertEqual(df['Signal'].iloc[0], 'SELL')
 		self.assertEqual(df['Remarks'].iloc[0], '[RSI >= 75]')
 
-	def test_update_signal_indicator_rsi_false_value(self):
+	def test_update_signal_indicator_rsi_with_signalframes(self):
 		s = scanner('rsi')
-		df = pd.DataFrame({'Symbol':['Symbol'], 'RSI': [20], 'MOM': [-1], 'macd(12)':[1] , 'macdsignal(9)':[2], 'LTP': [101], 'BBands-L': [101.04],'BBands-U': [105.1], 'EMA(9)': [104], 'Signal': ['SELL'], 'Remarks': ['NA'], 'Confidence': ['NA']})
+		df = pd.DataFrame({'Symbol':['Symbol'], 'RSI': [20], 'MOM': [-1], 'macd(12)':[1] , 'macdsignal(9)':[2], 'LTP': [101], 'BBands-L': [101.04],'BBands-U': [105.1], 'EMA(9)': [104], 'Signal': ['BUY'], 'Remarks': ['BUY'], 'Confidence': [80]})
+		signalframes = s.update_signal_indicator(df, [df], 'rsi', 'RSI', 25, 75, '><', 'SELL', '[RSI >= 75]', 'BUY', '[RSI <= 25]')
+		df = pd.concat(signalframes)
+		self.assertEqual(df['Signal'].iloc[0], 'BUY,BUY')
+		self.assertEqual(df['Confidence'].iloc[0], 80)
+
+	def test_update_signal_indicator_rsi_true_value(self):
+		s = scanner('rsi')
+		df = pd.DataFrame({'Symbol':['Symbol'], 'RSI': [85], 'MOM': [-1], 'macd(12)':[1] , 'macdsignal(9)':[2], 'LTP': [101], 'BBands-L': [101.04],'BBands-U': [105.1], 'EMA(9)': [104], 'Signal': ['SELL'], 'Remarks': ['NA'], 'Confidence': ['NA']})
 		signalframes = s.update_signal_indicator(df, [], 'rsi', 'RSI', 25, 75, '><', 'SELL', '[RSI >= 75]', 'BUY', '[RSI <= 25]')
 		df = pd.concat(signalframes)
-		self.assertEqual(df['Signal'].iloc[0], 'BUY')
-		self.assertEqual(df['Remarks'].iloc[0], '[RSI <= 25]')
+		self.assertEqual(df['Signal'].iloc[0], 'SELL')
+		self.assertEqual(df['Remarks'].iloc[0], '[RSI >= 75]')
 
 	def test_update_signal_indicator_emac_true_value(self):
 		s = scanner('emac')

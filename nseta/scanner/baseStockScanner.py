@@ -49,9 +49,9 @@ class baseStockScanner:
 	def indicator(self):
 		return self._indicator
 
-	@indicator.setter
-	def indicator(self, value):
-		self._indicator = value
+	# @indicator.setter
+	# def indicator(self, value):
+	# 	self._indicator = value
 
 	@property
 	def instancedict(self):
@@ -61,9 +61,9 @@ class baseStockScanner:
 	def stocksdict(self):
 		return self._stocksdict
 
-	@stocksdict.setter
-	def stocksdict(self, value):
-		self._stocksdict = value
+	# @stocksdict.setter
+	# def stocksdict(self, value):
+	# 	self._stocksdict = value
 
 	@tracelog
 	def stocks_list(self, stocks=[]):

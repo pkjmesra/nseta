@@ -1,5 +1,8 @@
 # -*- coding: utf-8 -*-
 import unittest
+import time
+import threading
+import logging
 
 from click.testing import CliRunner
 
@@ -8,6 +11,7 @@ from nseta.common import urls
 from nseta.scanner.stockscanner import *
 from baseUnitTest import baseUnitTest
 from nseta.scanner.scannerFactory import *
+from nseta.common.log import default_logger
 
 class TestLivecli(baseUnitTest):
 	def setUp(self, redirect_logs=True):
@@ -110,9 +114,25 @@ class TestLivecli(baseUnitTest):
 		self.assertIn("Choose at least one of the --live, --intraday (recommended) , --volume or --swing options.", result.output, str(result.output))
 		self.assertIn("Usage:  [OPTIONS]", result.output, str(result.output))
 
+	def test_scan_base_background(self):
+		scanner_type= ScannerType.Intraday
+		s = scannerFactory.scanner(scanner_type, ['HDFC'], 'rsi', True)
+		b = threading.Thread(name='scan_test_background', 
+					target=s.scan, args=['Symbol'], daemon=True)
+		b.start()
+		time.sleep(0.5)
+		s.scan_background_interrupt()
+		b.join()
+		self.assertIn("This run of {} scan took".format(scanner_type.name), self.capturedOutput.getvalue())
+		self.assertIn("Finished all iterations of scanning {}".format(scanner_type.name), self.capturedOutput.getvalue())
+
+	def test_scan_background_None_instance(self):
+		scanner = scannerFactory.scanner(ScannerType.Intraday)
+		result = scanner.scan_background(None, terminate_after_iter=2, wait_time=2)
+		self.assertIn("Finished all iterations of scanning Intraday.", self.capturedOutput.getvalue())
+
 	def tearDown(self):
 		super().tearDown()
-
 
 if __name__ == '__main__':
 
