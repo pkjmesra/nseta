@@ -96,6 +96,14 @@ class TestTI(baseUnitTest):
 		self.assertTrue('OBV' in result.keys())
 		self.assertFalse(np.isnan(result['OBV'].iloc[0]))
 
+	def test_update_ti_obv_volume_none(self):
+		t = ti()
+		df = pd.DataFrame(self.sample_dict)
+		df.drop(['Volume'], axis = 1, inplace = True)
+		result = t.update_ti(df, obv=True)
+		self.assertTrue('OBV' in result.keys())
+		self.assertTrue(np.isnan(result['OBV'].iloc[0]))
+
 	def test_update_ti_no_pivots(self):
 		t = ti()
 		df = pd.DataFrame(self.sample_dict)
