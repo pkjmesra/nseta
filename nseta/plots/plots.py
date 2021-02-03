@@ -61,7 +61,7 @@ def plot_technical_indicators(df):
 	axs[0,0].legend(['RSI(14)'], loc='upper left', fontsize='x-small')
 
 	axs[1,0].plot(tiinstance.get_macd_df(df))
-	axs[1,0].bar(df['dt'], df['macdhist'])
+	axs[1,0].bar(df['dt'], df['macdhist(26)'])
 	axs[1,0].legend(['MACD(12,26)', 'EMA(9)', 'Divergence'], loc='upper left', fontsize='x-small')
 
 	axs[2,0].plot(tiinstance.get_sma_df(df))
@@ -139,7 +139,7 @@ def plot_macd(df):
 	fig, axs = plt.subplots(1,1, sharex=True)
 	tiinstance = ti()
 	axs.plot(tiinstance.get_macd_df(df))
-	axs.bar(df['dt'], df['macdhist'])
+	axs.bar(df['dt'], df['macdhist(26)'])
 	axs.legend(['MACD(12,26)', 'EMA(9)', 'Divergence'], loc='upper left', fontsize='x-small')
 	fig.suptitle('Moving Average Convergence Divergence for ' + df['Symbol'][0])
 	fig.align_labels()
