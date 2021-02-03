@@ -151,10 +151,7 @@ class baseScanner:
 		keys = df.keys()
 		for key in keys:
 			if key in column_keys:
-				# if df.dtypes['key'] == np.int64 or df.dtypes['key'] == np.float64:
 				user_df[column_dict[key]] = df[key].apply(lambda x: human_format(x))
-				# else:
-					# user_df[column_dict[key]] = df[key]
 		return user_df
 
 	@tracelog

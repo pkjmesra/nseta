@@ -68,11 +68,11 @@ class ti:
 		return df['DMI']
 
 	def get_macd_df(self, df):
-		df['macd'], df['macdsignal'], df['macdhist'] = ta.MACD(df['Close'], fastperiod=12, slowperiod=26, signalperiod=9)
-		df['macd'] = df['macd'].apply(lambda x: round(x, 2))
-		df['macdsignal']= df['macdsignal'].apply(lambda x: round(x, 2))
-		df['macdhist'] = df['macdhist'].apply(lambda x: round(x, 2))
-		return df[['macd','macdsignal', 'macdhist']]
+		df['macd(12)'], df['macdsignal(9)'], df['macdhist(26)'] = ta.MACD(df['Close'], fastperiod=12, slowperiod=26, signalperiod=9)
+		df['macd(12)'] = df['macd(12)'].apply(lambda x: round(x, 2))
+		df['macdsignal(9)']= df['macdsignal(9)'].apply(lambda x: round(x, 2))
+		df['macdhist(26)'] = df['macdhist(26)'].apply(lambda x: round(x, 2))
+		return df[['macd(12)','macdsignal(9)', 'macdhist(26)']]
 
 	def get_sma_df(self, df):
 		df['SMA(10)'] = ta.SMA(df['Close'],10).apply(lambda x: round(x, 2))
@@ -134,7 +134,8 @@ class ti:
 							   ((highs - highsMean)/closes * 100) * (atr/closes * 100),
 							   ((lows - lowsMean)/closes * 100) * (atr/closes * 100)
 							   )
-
+		print(atrExtremes)
+		print(np.std(atrExtremes[-slowPeriod:]))
 		fasts = ta.MA(atrExtremes, fastPeriod)
 		slows = ta.EMA(atrExtremes, slowPeriod)
 		return fasts, slows, np.std(atrExtremes[-slowPeriod:])

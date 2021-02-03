@@ -157,17 +157,12 @@ class ParseTables:
 						val = np.nan
 					else:
 						val = ''
-						#raise ValueError("Error in %d. %s(%s)"%(i, str(schema[i]), txt))
 				except SystemExit:
 					pass
 				lst.append(val)
 				i += 1
 			lists.append(lst)
 		self.lists = lists
-		
-		# for i in range(0, len(lists)):
-		#   for j in range(0, len(lists[i])):
-		#       lists[i][j] = schema[i](lists[i][j])
 		return lists
 
 	def parse_g1_g2(self, text, symbol):
@@ -197,7 +192,6 @@ class ParseTables:
 						val = np.nan
 					else:
 						val = ''
-						#raise ValueError("Error in %d. %s(%s)"%(i, str(schema[i]), txt))
 				except SystemExit:
 					pass
 				lst.append(val)
