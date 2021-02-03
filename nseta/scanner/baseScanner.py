@@ -1,8 +1,10 @@
 import threading, time
 import click
 import pandas as pd
+import numpy as np
 
 from nseta.archives.archiver import *
+from nseta.common.commons import human_format
 from nseta.common.tradingtime import *
 from nseta.scanner.stockscanner import scanner
 from nseta.common.log import tracelog, default_logger
@@ -149,7 +151,10 @@ class baseScanner:
 		keys = df.keys()
 		for key in keys:
 			if key in column_keys:
-				user_df[column_dict[key]] = df[key]
+				# if df.dtypes['key'] == np.int64 or df.dtypes['key'] == np.float64:
+				user_df[column_dict[key]] = df[key].apply(lambda x: human_format(x))
+				# else:
+					# user_df[column_dict[key]] = df[key]
 		return user_df
 
 	@tracelog

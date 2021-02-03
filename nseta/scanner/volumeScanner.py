@@ -17,16 +17,12 @@ class volumeScanner(baseScanner):
 	def scan(self, option=None):
 		self.signal_columns = resources.scanner().volume_scan_columns
 		self.sortAscending = False
-		super().scan(option=option)
+		super().scan(option='TDYVol(%)' if option is None else option)
 
 	def scan_background(self, scannerinstance, terminate_after_iter=0, wait_time=resources.scanner().background_scan_frequency_intraday):
 		return super().scan_background(scannerinstance, terminate_after_iter=terminate_after_iter, wait_time=wait_time)
 
 	def scan_results(self, df, signaldf, should_cache=True):
-		if self.option == 'momentum':
-			self.option = '7DVol(%)'
-		elif self.option == 'intraday':
-			self.option = 'TDYVol(%)'
 		if signaldf is not None and len(signaldf) > 0:
 			str_signal_stocks_list = '{}'.format(signaldf['Symbol'].tolist())
 			should_enum = resources.scanner().enumerate_volume_scan_signals

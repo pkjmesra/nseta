@@ -45,7 +45,7 @@ class volumeStockScanner(baseStockScanner):
 				self.update_progress(symbol)
 				df = historyinstance.daily_ohlc_history(symbol, start_date, end_date, type=ResponseType.Volume)
 				if df is not None and len(df) > 0:
-					df = tiinstance.update_ti(df)
+					df = tiinstance.update_ti(df, rsi=True, mom=True, bbands=True, obv=True, macd=True, ema=True, atr=True, pivots=True, trange=True, atre=True, volatility=True, natr=True)
 					default_logger().debug(df.to_string(index=False))
 					df = df.tail(7)
 					primary = arch.restore('{}_live_quote'.format(symbol), ResponseType.Volume)
@@ -108,34 +108,23 @@ class volumeStockScanner(baseStockScanner):
 
 		volume_yest = df['Volume'].iloc[0]
 		vwap = df['VWAP'].iloc[n-1]
+		df['VWAP'].iloc[n-1] = '₹ {}'.format(vwap)
 		ltp = str(df_today['LTP'].iloc[0]).replace(',','')
 		ltp = float(ltp)
 		today_volume = float(str(df_today['TotalTradedVolume'].iloc[0]).replace(',',''))
 		today_vs_yest = round(100* (today_volume - volume_yest)/volume_yest, 1)
 		df['Date'].iloc[n-1] = df_today['Updated'].iloc[0]
-		df['%Change'].iloc[n-1] = df_today['pChange'].iloc[0]
+		df['%Change'].iloc[n-1] = '{} %'.format(df_today['pChange'].iloc[0])
 		freeFloat = df_today['FreeFloat'].iloc[0]
-		df['LTP'].iloc[n-1] = ltp
-		if avg_volume >= 10000000:
-			avg_vol_disp = '{} Cr'.format(round(avg_volume/10000000,2))
-		else:
-			avg_vol_disp = '{} L'.format(round(avg_volume/100000,2))
-		if freeFloat >= 10000000:
-			freeFloat_disp = '{} Cr'.format(int(freeFloat/10000000))
-		else:
-			freeFloat_disp = '{} L'.format(int(avg_volume/100000))
-		if today_volume >= 10000000:
-			today_volume_disp = '{} Cr'.format(round(today_volume/10000000, 1))
-		else:
-			today_volume_disp = '{} L'.format(round(today_volume/100000, 1))
-		df['FreeFloat'].iloc[n-1] = freeFloat_disp
-		df['Avg7DVol'].iloc[n-1] = avg_vol_disp
+		df['FreeFloat'].iloc[n-1] = freeFloat
+		df['Avg7DVol'].iloc[n-1] = avg_volume
 		df['TDYVol(%)'].iloc[n-1] = today_vs_yest
 		df['7DVol(%)'].iloc[n-1] = round(100* (today_volume - avg_volume)/avg_volume, 1)
+		df['LTP'].iloc[n-1] = '₹ {}'.format(ltp)
 		df['Yst7DVol(%)'].iloc[n-1] = round((100 * (volume_yest - avg_volume)/avg_volume), 1)
 		df['Tdy%Del'].iloc[n-1] = df_today['Tdy%Del'].iloc[0]
 		df['Yst%Del'].iloc[n-1] = df['Yst%Del'].iloc[0]
-		df['TDYVol']= today_volume_disp
+		df['TDYVol']= today_volume
 		r3 = df['R3'].iloc[n-1]
 		r2 = df['R2'].iloc[n-1]
 		r1 = df['R1'].iloc[n-1]

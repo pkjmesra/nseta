@@ -23,6 +23,7 @@ __all__ = ['historicaldata', 'EQUITY_HEADERS', 'INTRADAY_EQUITY_HEADERS']
 dd_mmm_yyyy = StrDate.default_format(format="%d-%b-%Y")
 dd_mm_yyyy = StrDate.default_format(format="%d-%m-%Y")
 dd_mm_yyyy_H_M_S = StrDate.default_format(format="%d-%m-%Y %H:%M:%S")
+dd_mm_yyyy_H_M = StrDate.default_format(format="%d-%m-%Y %H:%M")
 
 EQUITY_SCHEMA = [str, str,
 				 dd_mmm_yyyy,
@@ -39,6 +40,9 @@ EQUITY_SCALING = {"Turnover": 100000,
 INTRADAY_EQUITY_SCHEMA = [dd_mm_yyyy_H_M_S,float, str, float, float]
 INTRADAY_EQUITY_HEADERS = ["Date", "Open", "High", "Low","Close"] # ["Date", "pltp", "nltp", "previousclose","allltp"]
 INTRADAY_EQUITY_SCALING = {}
+
+INTRADAY_EQUITY_SCHEMA_NEW = [dd_mm_yyyy_H_M,float, float, float, float, int, int, int]
+INTRADAY_EQUITY_HEADERS_NEW = ["Date", "Open", "High", "Low","Close", 'Volume', 'Cum_Volume', 'Candle', 'Cnt_Candle'] # ["Date", "pltp", "nltp", "previousclose","allltp"]
 
 FUTURES_SCHEMA = [str, dd_mmm_yyyy, dd_mmm_yyyy,
 				  float, float, float, float,
@@ -212,7 +216,10 @@ class historicaldata:
 						 schema=schema,
 						 headers=headers) # index="Date"
 		if csvnode is not None:
-			tp.parse_lists(bs.find(csvnode).text)
+			if csvnode == 'data':
+				tp.parse_lists(bs.find(csvnode).text)
+			elif csvnode == 'g2_CUMVOL':
+				tp.parse_g1_g2(bs.text, params['CDSymbol'])
 		df = tp.get_df()
 		for key, val in six.iteritems(scaling):
 			df[key] = val * df[key]
@@ -254,10 +261,10 @@ class historicaldata:
 		elif intraday:
 			params['CDSymbol'] = symbol
 			url = nse_intraday_url
-			schema = INTRADAY_EQUITY_SCHEMA
-			headers = INTRADAY_EQUITY_HEADERS
+			schema = INTRADAY_EQUITY_SCHEMA_NEW # INTRADAY_EQUITY_SCHEMA
+			headers = INTRADAY_EQUITY_HEADERS_NEW # INTRADAY_EQUITY_HEADERS
 			scaling = INTRADAY_EQUITY_SCALING
-			csvnode = "data"
+			csvnode = 'g2_CUMVOL' # "data"
 
 		return url, params, schema, headers, scaling, csvnode
 

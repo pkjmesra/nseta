@@ -6,10 +6,19 @@ from nseta.common.tradingtime import current_datetime_in_ist_trading_time_range
 from nseta.common.log import tracelog, default_logger
 from nseta.scanner.scannerFactory import *
 from nseta.scanner.stockscanner import ScannerType
+from nseta.resources.resources import *
 
 __all__ = ['live_quote', 'scan']
 
-ORDER_BY_KEYS = ['intraday', 'momentum']
+def split_keys(keystrings):
+	keys = []
+	for keystring in keystrings:
+		kvp = keystring.split('=')
+		if kvp[0] not in keys:
+			keys.append(kvp[0])
+	return keys
+
+ORDER_BY_KEYS = split_keys(resources.scanner().intraday_scan_columns + resources.scanner().volume_scan_columns + resources.scanner().swing_scan_columns + resources.scanner().live_scan_columns)
 RUN_IN_BACKGROUND = True
 
 @click.command(help='Get live price quote of a security')
@@ -36,7 +45,7 @@ def live_quote(symbol, general, ohlc, wk52, volume, orderbook, background):
 @click.option('--volume', '-v', default=False, is_flag=True, help='Scans (every 10 sec when in background) the past 7 days price history and lists those that meet the signal criteria')
 @click.option('--indicator', '-t', default='all', type=click.Choice(TECH_INDICATOR_KEYS),
 	help=', '.join(TECH_INDICATOR_KEYS) + ". Choose one.")
-@click.option('--orderby', '-o', default='intraday', type=click.Choice(ORDER_BY_KEYS),
+@click.option('--orderby', '-o', type=click.Choice(ORDER_BY_KEYS),
 	help=', '.join(ORDER_BY_KEYS) + ". Choose one.")
 @click.option('--clear', '-c', default=False, is_flag=True, help='Clears the cached data for the given options.')
 @click.option('--background', '-r', default=False, is_flag=True, help='Keep running the process in the background (Optional)')

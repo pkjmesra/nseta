@@ -3,6 +3,7 @@ version = 0.6
 DefaultStocksFilePath = stocks.txt
 # A valid folder path. If it does not exit, it will be created.
 UserDataDirectory = ~/Documents/GitHub/nseta/build/userdata/
+numeric_to_human_format = yes
 
 [RSI]
 # Any value between 0 to 100
@@ -28,9 +29,9 @@ volume_scan_columns = Symbol,FreeFloat,LTP,VWAP,%%Change=%%Chng,ATR,TDYVol(%%)=%
 # You can also change the order of columns.  Put two %% for 1 % to appear in the column name
 swing_scan_columns = Symbol,LTP,RSI,macd(12)=MACD(12),macdsignal(9)=MACD(9),BBands-U,BBands-L,Signal,Confidence
 
-# Available columns : Symbol,Date,RSI,MOM,EMA(9),macd(12),macdsignal(9),macdhist(26),BBands-U,BBands-L,LTP,Signal,Remarks,Confidence
+# Available columns : Symbol,Date,Open,High,Low,LTP,Volume,Cum_Volume,RSI,MOM,OBV,ATR,EMA(9),SMA(10),SMA(50),macd(12),macdsignal(9),macdhist(26),BBands-U,BBands-L,Signal,Remarks,Confidence,R3,R2R1,PP,S1,S2,S3,Candle,Cnt_Candle
 # You can also change the order of columns.  Put two %% for 1 % to appear in the column name
-intraday_scan_columns = Symbol,LTP,RSI,MOM,macd(12)=MACD(12),macdsignal(9)=MACD(9),BBands-U,BBands-L,Signal,Confidence
+intraday_scan_columns = Symbol,LTP,Cum_Volume,Candle,Cnt_Candle,RSI,MOM,OBV,macd(12)=MACD(12),macdsignal(9)=MACD(9),BBands-U,BBands-L,Signal,Confidence
 
 # Available columns : Updated,Symbol,Close,LTP,%% Delivery,Buy - Sell,TotalTradedVolume,pChange
 # You can also change the order of columns.  Put two %% for 1 % to appear in the column name

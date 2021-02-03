@@ -6,6 +6,7 @@ Created on Mon Aug 23 10:10:30 2020.
 """
 import requests
 from nseta.common.constants import NSE_INDICES, INDEX_DERIVATIVES
+from nseta.resources.resources import *
 import datetime
 from functools import partial
 try:
@@ -165,8 +166,65 @@ class ParseTables:
 		self.lists = lists
 		
 		# for i in range(0, len(lists)):
-		# 	for j in range(0, len(lists[i])):
-		# 		lists[i][j] = schema[i](lists[i][j])
+		#   for j in range(0, len(lists[i])):
+		#       lists[i][j] = schema[i](lists[i][j])
+		return lists
+
+	def parse_g1_g2(self, text, symbol):
+		rows = text.split('~')
+		lists = []
+		schema = self.schema
+		candle = None
+		cnt_candle = 0
+		for row in rows:
+			if not row:
+				continue
+			cols = row.split('|')
+			i = 0
+			lst = []
+			for cell in cols:
+				txt = cell
+				# date|g1_o|g1_h|g1_l|g1_c|g2|g2_CUMVOL
+				if txt == 'date':
+					# We don't want to parse the first header row.
+					break
+				if schema[i]==float or schema[i]==int:
+					txt = cell.replace(' ','').replace(',','')
+				try:
+					val = schema[i](txt)
+				except Exception:
+					if schema[i]==float or schema[i]==int:
+						val = np.nan
+					else:
+						val = ''
+						#raise ValueError("Error in %d. %s(%s)"%(i, str(schema[i]), txt))
+				except SystemExit:
+					pass
+				lst.append(val)
+				i += 1
+			if len(lst) > 0:
+				o = lst[1]
+				c = lst[4]
+				if c > o:
+					# Bullish candle
+					if candle is None or candle == '+':
+						cnt_candle += 1
+					else:
+						cnt_candle = 1
+					candle = '+'
+				elif o > c:
+					# Bearish candle
+					if candle is None or candle == '-':
+						cnt_candle += 1
+					else:
+						cnt_candle = 1
+					candle = '-'
+				lst.append(candle)
+				lst.append(cnt_candle)
+				lists.append(lst)
+		self.lists = lists
+		if len(lists) == 0:
+			print('\nFor {}, no response received for NSE Intraday request. Please report to the developer.\n'.format(symbol))
 		return lists
 
 def unzip_str(zipped_str, file_name = None):
@@ -252,3 +310,18 @@ def concatenated_dataframe(df1, df2):
 	else:
 		df = None
 	return df
+
+def human_format(num):
+	if not resources.default().numeric_to_human_format:
+		return num
+	try:
+		if abs(num) < 1000:
+			return num
+		num = float('{:.3g}'.format(num))
+		magnitude = 0
+		while abs(num) >= 1000:
+			magnitude += 1
+			num /= 1000.0
+		return '{}{}'.format('{:f}'.format(num).rstrip('0').rstrip('.'), ['', 'K', 'M', 'B', 'T'][magnitude])
+	except:
+		return num

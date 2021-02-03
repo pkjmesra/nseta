@@ -49,9 +49,9 @@ class TestUrls(baseUnitTest):
         self.assertGreaterEqual(resp.text.find(txt), 0, resp.text)
 
     def test_nse_intraday_url(self):
-        txt = '<columns><column>date</column><column>pltp</column><column>nltp</column><column>previousclose</column><column>allltp</column>'
+        txt = 'date|g1_o|g1_h|g1_l|g1_c|g2|g2_CUMVOL' #'<columns><column>date</column><column>pltp</column><column>nltp</column><column>previousclose</column><column>allltp</column>'
         resp = nse_intraday_url(CDSymbol='SBIN')
-        self.assertGreaterEqual(resp.text.find(txt), 0, resp.text)
+        self.assertIn(txt, resp.text)
 
     def test_price_list_url(self):
         resp = price_list_url('2019', 'DEC', '31DEC2019')

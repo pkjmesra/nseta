@@ -267,7 +267,7 @@ class strategyManager:
 
 	def test_signals(self, df, lower=resources.rsi().lower, upper=resources.rsi().upper, strategy='rsi', intraday = False, plot=False, show_detail=True):
 		tiinstance = ti()
-		df = tiinstance.update_ti(df)
+		df = tiinstance.update_ti(df, rsi=True, bbands=True, macd=True)
 		df = df.sort_values(by='Date',ascending=True)
 		symbol = df['Symbol'].iloc[0]
 		results = None

@@ -15,8 +15,8 @@ class intradayScanner(baseScanner):
 	@tracelog
 	def scan(self, option=None):
 		self.signal_columns = resources.scanner().intraday_scan_columns
-		self.sortAscending = True
-		super().scan(option='Symbol')
+		self.sortAscending = False
+		super().scan(option= 'Cnt_Candle' if option is None else option)
 
 	def scan_background(self, scannerinstance, terminate_after_iter=0, wait_time=resources.scanner().background_scan_frequency_intraday):
 		return super().scan_background(scannerinstance, terminate_after_iter=terminate_after_iter, wait_time=wait_time)

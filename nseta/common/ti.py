@@ -7,28 +7,48 @@ __all__ = ['ti']
 
 class ti:
 
-	def update_ti(self, df):
+	def update_ti(self, df, rsi=False,mom=False,sma=False,ema=False,macd=False,
+		bbands=False,obv=False,dmi=False,atr=False,natr=False,trange=False,
+		volatility=False,atre=False,adx=False,pivots=False):
 		if df is None or len(df) == 0:
 			return df
 		try:
-			df['RSI'] = self.get_rsi_df(df)
-			df['MOM'] = self.get_mom_df(df)
-			df[['Close','SMA(10)', 'SMA(50)']] = self.get_sma_df(df)
-			df[['Close','EMA(9)']] = self.get_ema_df(df)
-			df[['macd(12)','macdsignal(9)', 'macdhist(26)']] = self.get_macd_df(df)
-			df[['Close','BBands-U','BBands-M','BBands-L']] = self.get_bbands_df(df)
+			if rsi:
+				df['RSI'] = self.get_rsi_df(df)
+			if mom:
+				df['MOM'] = self.get_mom_df(df)
+			if sma:
+				df[['Close','SMA(10)', 'SMA(50)']] = self.get_sma_df(df)
+			if ema:
+				df[['Close','EMA(9)']] = self.get_ema_df(df)
+			if macd:
+				df[['macd(12)','macdsignal(9)', 'macdhist(26)']] = self.get_macd_df(df)
+			if bbands:
+				df[['Close','BBands-U','BBands-M','BBands-L']] = self.get_bbands_df(df)
+			if obv:
+				df['OBV'] = self.get_obv_df(df)
 			can_have_pivots = True
 			for key in ['Low', 'High', 'Close']:
 				if key not in df.keys():
 					can_have_pivots = False
 					break
 			if can_have_pivots:
-				df = self.get_ppsr_df(df)
-				df['ATR'] = self.get_atr_df(df)
-				df['NATR'] = self.get_natr_df(df)
-				df['TRANGE'] = self.get_trange_df(df)
-				df['Volatility'] = self.get_atr_ratio(df)
-				df['ATRE-F'], df['ATRE-S'], df['ATRE'] = self.get_atr_extreme(df)
+				if pivots:
+					df = self.get_ppsr_df(df)
+				if dmi:
+					df['DMI'] = self.get_dmi_df(df)
+				if atr:
+					df['ATR'] = self.get_atr_df(df)
+				if natr:
+					df['NATR'] = self.get_natr_df(df)
+				if trange:
+					df['TRANGE'] = self.get_trange_df(df)
+				if volatility:
+					df['Volatility'] = self.get_atr_ratio(df)
+				if atre:
+					df['ATRE-F'], df['ATRE-S'], df['ATRE'] = self.get_atr_extreme(df)
+				if adx:
+					df['ADX'] = self.get_adx_df(df)
 		except Exception as e:
 			default_logger().debug(e, exc_info=True)
 		except SystemExit:
@@ -75,6 +95,8 @@ class ti:
 		return df[['Close','BBands-U','BBands-M','BBands-L']]
 
 	def get_obv_df(self, df):
+		if ('Close' not in df.keys()) or ('Volume' not in df.keys()):
+			return np.nan
 		df['OBV'] = ta.OBV(df['Close'], df['Volume'])
 		return df['OBV']
 

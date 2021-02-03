@@ -45,17 +45,18 @@ NSE_SYMBOL_COUNT_URL = 'http://www1.nseindia.com/marketinfo/sym_map/symbolCount.
 # PeriodType=1: Weekly data from the beginning of the trading years
 # PeriodType=2/3: Daily data for a given periodicity
 nse_intraday_url_full = URLFetchSession(
-	url='https://www1.nseindia.com/charts/webtame/tame_intraday_getQuote_closing_redgreen.jsp')
+	url= 'https://www1.nseindia.com/ChartApp/install/charts/data/GetHistoricalNew.jsp',method='post')#'https://www1.nseindia.com/charts/webtame/tame_intraday_getQuote_closing_redgreen.jsp')
 """
 New NSE URL: https://www.nseindia.com/api/chart-databyindex?index=SBINEQN
 For Stocks, index={Symbol}NEQN. See https://www.nseindia.com/tcharts/04jan2020?index=NIFTY%2050
 Segment=CM&Series=EQ&CDExpiryMonth=&FOExpiryMonth=&IRFExpiryMonth=&CDDate1=&CDDate2=&Template=tame_intraday_getQuote_closing_redgreen.jsp&CDSymbol=%s&Periodicity=1&PeriodType=2
 """
 nse_intraday_url = partial(nse_intraday_url_full,
-							 Segment='CM', Series='EQ', CDExpiryMonth="", FOExpiryMonth="",
-							 IRFExpiryMonth="",CDDate1="",CDDate2="",
-							 Template="tame_intraday_getQuote_closing_redgreen.jsp",
-							 Periodicity="1", PeriodType="2")
+							Instrument='FUTSTK',
+							Segment='CM', Series='EQ', CDExpiryMonth="", FOExpiryMonth="",
+							IRFExpiryMonth="",CDDate1="",CDDate2="",
+							Template="tame_intraday_getQuote_closing_redgreen.jsp",
+							Periodicity="1", PeriodType="2", ct0='g1|1|1', ct1='g2|2|1',ctcount='2')
 
 nse_intraday_url_new = URLFetchSession(
 	url='https://www.nseindia.com/api/chart-databyindex')

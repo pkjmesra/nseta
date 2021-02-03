@@ -35,7 +35,7 @@ class swingStockScanner(baseStockScanner):
 				self.update_progress(symbol)
 				df = historyinstance.daily_ohlc_history(symbol, start_date, end_date, type=ResponseType.History)
 				if df is not None and len(df) > 0:
-					df = tiinstance.update_ti(df)
+					df = tiinstance.update_ti(df, rsi=True, mom=True, bbands=True, obv=True, macd=True, ema=True, atr=True)
 					df = df.sort_values(by='Date',ascending=True)
 					default_logger().debug(df.to_string(index=False))
 					for key in df.keys():

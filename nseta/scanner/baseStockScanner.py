@@ -26,7 +26,9 @@ class ScannerType(enum.Enum):
 	Quote = 3
 	Swing = 4
 	Volume = 5
-	Unknown = 6
+	TopReversal = 6
+	BottomReversal = 7
+	Unknown = 8
 
 class baseStockScanner:
 	def __init__(self, indicator='all'):
@@ -205,7 +207,7 @@ class baseStockScanner:
 
 	def get_quick_recommendation(self, df, indicator):
 		if indicator not in ['rsi', 'bbands', 'macd', 'all']:
-			return 'Unknown'
+			return '-'
 		sm = None
 		tiny_df = None
 		limited_df = df.tail(7)

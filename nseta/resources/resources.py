@@ -12,11 +12,13 @@ def split_into_range_str(str_val):
 	return sum((([a]) for a in str_val.split(',')), [])
 
 class Default:
-	def __init__(self, version=0.6, defaultstocks_path='stocks.txt', UserDataDirectory=None):
+	def __init__(self, version=0.6, defaultstocks_path='stocks.txt', UserDataDirectory=None,
+		numeric_to_human_format = False):
 		self._version = version
 		self._defaultstocks_filepath = defaultstocks_path
 		self._resources_dir = os.path.dirname(os.path.realpath(__file__))
 		self._user_data_dir = UserDataDirectory if len(UserDataDirectory) > 0 else None
+		self._numeric_to_human_format = numeric_to_human_format.lower() in ("yes", "true", "t", "1")
 
 	@property
 	def version(self):
@@ -42,6 +44,10 @@ class Default:
 		with open(file_path, 'r') as f:
 			stocks = [line.rstrip() for line in f]
 		return stocks
+
+	@property
+	def numeric_to_human_format(self):
+		return self._numeric_to_human_format
 
 class Scanner:
 	def __init__(self, userstocks_path='userstocks.txt',Background_Scan_Frequency_Intraday=10,
@@ -404,7 +410,8 @@ class resources:
 		version = r.config_valueforkey('DEFAULT',"version")
 		file_path = r.config_valueforkey('DEFAULT',"DefaultStocksFilePath")
 		user_dir = r.config_valueforkey('DEFAULT',"UserDataDirectory")
-		return Default(version, file_path,user_dir)
+		numeric_to_human_format = r.config_valueforkey('DEFAULT',"numeric_to_human_format")
+		return Default(version, file_path, user_dir, numeric_to_human_format)
 
 	@classmethod
 	def rsi(cls):
