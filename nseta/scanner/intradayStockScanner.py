@@ -36,8 +36,8 @@ INTRADAY_KEYS_MAPPING = {
 	'S1': 'S1',
 	'S2': 'S2',
 	'S3': 'S3',
-	'Candle' : 'Candle',
-	'Cnt_Candle' : 'Cnt_Candle',
+	'Cdl' : 'Cdl',
+	'Cnt_Cdl' : 'Cnt_Cdl',
 }
 
 # KEY_MAPPING = {
@@ -94,6 +94,7 @@ class intradayStockScanner(baseStockScanner):
 			tailed_df = pd.concat(frames)
 		if len(signalframes) > 0:
 			signaldf = pd.concat(signalframes)
+			signaldf = self.trim_columns(signaldf)
 		return [tailed_df, signaldf]
 
 	@tracelog

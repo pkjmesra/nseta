@@ -152,6 +152,8 @@ class baseScanner:
 		for key in keys:
 			if key in column_keys:
 				user_df[column_dict[key]] = df[key].apply(lambda x: human_format(x))
+		user_df = user_df.dropna(axis=1) 
+		user_df = user_df.reset_index(drop=True) 
 		return user_df
 
 	@tracelog
@@ -182,6 +184,9 @@ class baseScanner:
 				default_logger().debug('scannerinstance is None. Cannot proceed with background scanning')
 				break
 			self.clear_cache(True, force_clear=True)
+			if not current_datetime_in_ist_trading_time_range():
+				click.secho('Running the {} scan for one last time because it is outside the trading hours'.format(self.scanner_type.name), fg='red', nl=True)
+				terminate_after_iter = iteration
 			df, signaldf = scannerinstance.scan(self.stocks, self.scanner_type)
 			self.scan_results(df, signaldf, should_cache= False)
 			time.sleep(wait_time)

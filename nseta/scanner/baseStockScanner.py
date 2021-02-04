@@ -151,12 +151,10 @@ class baseStockScanner:
 			if self.indicator == 'macd' or self.indicator == 'all':
 				df['macd(12)'] = df['macd(12)'].apply(lambda x: round(x, decimals))
 				df['macdhist(26)'] = df['macdhist(26)'].apply(lambda x: round(x, decimals))
-			self.trim_columns(df)
-			df_main = df
 		except Exception as e:
 			default_logger().debug(e, exc_info=True)
-			return signalframes, df_main
-		return signalframes, df_main
+			return signalframes, df
+		return signalframes, df
 
 	@tracelog
 	def update_signal_indicator(self, df, signalframes, indicator, column, margin, comparator_value, ltp_label_comparator, true_type, true_remarks, false_type, false_remarks):
@@ -288,9 +286,13 @@ class baseStockScanner:
 			'rsi': ['RSI'], 
 			'emac': ['EMA(9)'], 
 			'macd': ['macdsignal(9)', 'macd(12)', 'macdhist(26)']}
-		for indicator in columns.keys():
+		col_keys = columns.keys()
+		df_keys = df.keys()
+		for indicator in col_keys:
 			if self.indicator != indicator and self.indicator != 'all':
 				for key in columns[indicator]:
-					if key in df.keys():
+					if key in df_keys:
 						df.drop([key], axis = 1, inplace = True)
-		df.drop(['MOM'], axis = 1, inplace = True)
+		if 'MOM' in df_keys:
+			df.drop(['MOM'], axis = 1, inplace = True)
+		return df

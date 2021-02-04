@@ -42,7 +42,7 @@ INTRADAY_EQUITY_HEADERS = ["Date", "Open", "High", "Low","Close"] # ["Date", "pl
 INTRADAY_EQUITY_SCALING = {}
 
 INTRADAY_EQUITY_SCHEMA_NEW = [dd_mm_yyyy_H_M,float, float, float, float, int, int, int]
-INTRADAY_EQUITY_HEADERS_NEW = ["Date", "Open", "High", "Low","Close", 'Volume', 'Cum_Volume', 'Candle', 'Cnt_Candle'] # ["Date", "pltp", "nltp", "previousclose","allltp"]
+INTRADAY_EQUITY_HEADERS_NEW = ["Date", "Open", "High", "Low","Close", 'Volume', 'Cum_Volume', 'Cdl', 'Cnt_Cdl'] # ["Date", "pltp", "nltp", "previousclose","allltp"]
 
 FUTURES_SCHEMA = [str, dd_mmm_yyyy, dd_mmm_yyyy,
 				  float, float, float, float,

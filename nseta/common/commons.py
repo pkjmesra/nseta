@@ -196,7 +196,7 @@ class ParseTables:
 					pass
 				lst.append(val)
 				i += 1
-			if len(lst) > 0:
+			if len(lst) > 4:
 				o = lst[1]
 				c = lst[4]
 				if c > o:
