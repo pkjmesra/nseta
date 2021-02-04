@@ -1,7 +1,6 @@
 import threading, time
 import click
 import pandas as pd
-import numpy as np
 
 from nseta.archives.archiver import *
 from nseta.common.commons import human_format
