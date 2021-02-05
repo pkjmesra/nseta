@@ -134,8 +134,6 @@ class ti:
 							   ((highs - highsMean)/closes * 100) * (atr/closes * 100),
 							   ((lows - lowsMean)/closes * 100) * (atr/closes * 100)
 							   )
-		print(atrExtremes)
-		print(np.std(atrExtremes[-slowPeriod:]))
 		fasts = ta.MA(atrExtremes, fastPeriod)
 		slows = ta.EMA(atrExtremes, slowPeriod)
 		return fasts, slows, np.std(atrExtremes[-slowPeriod:])
