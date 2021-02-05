@@ -32,23 +32,11 @@ RUN apk add --no-cache python3=${PYTHON_VERSION} \
 
 WORKDIR /root
 
-FROM python:3.6.6-alpine as base-python-talib
+FROM python:3.7.3 as base-python-talib
 ENV PYTHONUNBUFFERED 1
 
 COPY --from=python-builder ["/usr/lib/libta*", "/usr/lib/"]
 COPY --from=python-builder ["/usr/lib/python3.6/site-packages/numpy", "/usr/local/lib/python3.6/site-packages/numpy"]
-
-FROM scratch 
-
-COPY --from=base-python-talib ["/", "/"]
-COPY --from=python-builder ["/usr/lib/python3.6/site-packages/talib", "/usr/local/lib/python3.6/site-packages/talib"]
-
-CMD ["python3"]
-
-RUN python3 -c 'import numpy, talib; close = numpy.random.random(100); output = talib.SMA(close); print(output)'
-
-FROM python:3.7.3
-ENV PYTHONUNBUFFERED 1
 
 RUN apt-get update \
     && apt-get -y -q --allow-unauthenticated install build-essential libssl-dev gcc g++ python-dev python3-dev sudo \
@@ -84,25 +72,6 @@ ENV LD_LIBRARY_PATH=/usr/local/lib:$LD_LIBRARY_PATH
 RUN pip3 install timeout-decorator
 COPY requirements.txt /nseta-docker
 
-# RUN apt-get update \
-#     && apt-get install ruby-full locales --no-install-recommends -y \
-#     && rm -rf /var/lib/apt/lists/*
-# RUN localedef -i en_US -f UTF-8 en_US.UTF-8
-# RUN useradd -m -s /bin/zsh linuxbrew && \
-#     usermod -aG sudo linuxbrew &&  \
-#     mkdir -p /home/linuxbrew/.linuxbrew && \
-#     chown -R linuxbrew: /home/linuxbrew/.linuxbrew
-# USER linuxbrew
-# RUN /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install.sh)"
-# USER root
-# RUN echo 'eval $(/home/linuxbrew/.linuxbrew/bin/brew shellenv)' >> /home/linuxbrew/.zprofile
-# ENV PATH="/home/linuxbrew/.linuxbrew/bin:${PATH}"
-# USER root
-# RUN chown -R $CONTAINER_USER: /home/linuxbrew/.linuxbrew
-# RUN brew install ta-lib
-# ENV TA_LIBRARY_PATH=/usr/local/homebrew/lib
-# ENV TA_INCLUDE_PATH=/usr/local/homebrew/include
-
 RUN apt-get -y install libc-dev
 
 RUN pip3 install convertdate>=2.1.2 lunarcalendar holidays ipython==7.5.0
@@ -110,41 +79,29 @@ RUN pip3 install --upgrade plotly
 RUN pip3 uninstall pystan -y
 RUN pip3 install pystan==2.18
 
-# RUN apt-get install build-essential
-# RUN curl -L -O https://github.com/facebook/prophet/archive/0.6.tar.gz \
-#     && tar -xzf 0.6.tar.gz \
-#     && cd prophet-0.6/ \
-#     && pip3 install -U -r python/requirements.txt dask[dataframe] distributed \
-#     && cd python && python3 setup.py develop \
-#     && python3 setup.py clean \
-#     && rm -rf fbprophet/stan_model \
-#     && wget https://github.com/stan-dev/cmdstan/releases/download/v2.22.1/cmdstan-2.22.1.tar.gz -O /tmp/cmdstan.tar.gz > /dev/null \
-#     && tar -xvf /tmp/cmdstan.tar.gz -C /tmp > /dev/null \
-#     && make -C /tmp/cmdstan-2.22.1/ build > /dev/null \
-#     && CMDSTAN=/tmp/cmdstan-2.22.1 STAN_BACKEND=CMDSTANPY python setup.py develop
-
 FROM pkjmesra/fastquant:0.1.3.23 as fastquant-builder
-RUN python3 -c 'from fastquant import backtest;'
-FROM pkjmesra/fastquant:0.1.3.23 as fastquant-builder-base
-COPY --from=fastquant-builder ["/fastquant", "/usr/local/lib/python3.6/site-packages/fastquant"]
-
 FROM wajdikh/fbprophet:latest as fbprophet-builder
-RUN pip3 install --upgrade plotly
-FROM wajdikh/fbprophet:latest as fbprophet-builder-base
-# COPY --from=fbprophet-builder ["/fbprophet", "/usr/local/lib/python3.6/site-packages/fbprophet"]
-
-RUN python3 -c "from fbprophet import Prophet;m = Prophet();"
 
 WORKDIR /nseta-docker
 COPY requirements.txt /nseta-docker
 RUN pip3 install -r requirements.txt
+
+FROM scratch
+
+COPY --from=base-python-talib ["/", "/"]
+COPY --from=python-builder ["/usr/lib/python3.6/site-packages/talib", "/usr/local/lib/python3.6/site-packages/talib"]
+COPY --from=fastquant-builder ["/fastquant", "/usr/local/lib/python3.6/site-packages/fastquant"]
+COPY --from=fbprophet-builder ["/fbprophet", "/usr/local/lib/python3.6/site-packages/fbprophet"]
+RUN pip3 install --upgrade plotly
 
 # Build
 COPY . /nseta-docker
 RUN pip3 install -e .
 
 RUN python3 -c "import nseta; print(nseta.__version__);"
-# from nseta.scanner.volumeScanner import volumeScanner;s=volumeScanner(5,['HDFC']); s.scan();
-# RUN python3 -c 'import numpy, talib; close = numpy.random.random(100); output = talib.SMA(close); print(output)'
-
+CMD ["python3"]
+RUN python3 -c 'from fastquant import backtest;'
+RUN python3 -c 'import numpy, talib; close = numpy.random.random(100); output = talib.SMA(close); print(output)'
+RUN python3 -c "from fbprophet import Prophet;m = Prophet();"
+RUN from nseta.scanner.volumeScanner import volumeScanner;s=volumeScanner(5,['HDFC']); s.scan();
 WORKDIR /home

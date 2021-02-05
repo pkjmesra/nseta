@@ -11,9 +11,8 @@ cmdstanpy==0.9.5
 convertdate>=2.3.0
 croniter==0.3.35
 Cython>=0.22
-holidays>=0.10.2
 # fastquant git+git://github.com/enzoampil/fastquant.git@5f17e7087e1efb534e2db88775dba268d31de4be
-fbprophet==0.5
+fbprophet==0.7.1
 idna==2.8
 LunarCalendar>=0.0.9
 lxml==4.6.2
