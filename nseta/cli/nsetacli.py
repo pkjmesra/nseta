@@ -31,7 +31,7 @@ def nsetacli(debug, version, trace, filter):
 	else:
 		log.setup_custom_logger('nseta', logging.INFO, log_file_path=log_file_path)
 	if version:
-		click.echo('nseta ' + nseta.__version__)
+		click.echo('nseta '.format(nseta.__version__))
 
 @click.command(help='Force clears log files, downloaded contents etc. As good as a fresh install (with --deepclean option.)')
 @click.option('--deepclean','-d', default=False, is_flag=True, help='--deepclean if you want all files removed.')

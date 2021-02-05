@@ -105,16 +105,46 @@ COPY requirements.txt /nseta-docker
 
 RUN apt-get -y install libc-dev
 
-RUN pip3 install convertdate==2.2.0 lunarcalendar holidays ipython==7.5.0
+RUN pip3 install convertdate>=2.1.2 lunarcalendar holidays ipython==7.5.0
 RUN pip3 install --upgrade plotly
+RUN pip3 uninstall pystan -y
+RUN pip3 install pystan==2.18
+
+# RUN apt-get install build-essential
+# RUN curl -L -O https://github.com/facebook/prophet/archive/0.6.tar.gz \
+#     && tar -xzf 0.6.tar.gz \
+#     && cd prophet-0.6/ \
+#     && pip3 install -U -r python/requirements.txt dask[dataframe] distributed \
+#     && cd python && python3 setup.py develop \
+#     && python3 setup.py clean \
+#     && rm -rf fbprophet/stan_model \
+#     && wget https://github.com/stan-dev/cmdstan/releases/download/v2.22.1/cmdstan-2.22.1.tar.gz -O /tmp/cmdstan.tar.gz > /dev/null \
+#     && tar -xvf /tmp/cmdstan.tar.gz -C /tmp > /dev/null \
+#     && make -C /tmp/cmdstan-2.22.1/ build > /dev/null \
+#     && CMDSTAN=/tmp/cmdstan-2.22.1 STAN_BACKEND=CMDSTANPY python setup.py develop
+
+FROM pkjmesra/fastquant:0.1.3.23 as fastquant-builder
+RUN python3 -c 'from fastquant import backtest;'
+FROM pkjmesra/fastquant:0.1.3.23 as fastquant-builder-base
+COPY --from=fastquant-builder ["/fastquant", "/usr/local/lib/python3.6/site-packages/fastquant"]
+
+FROM wajdikh/fbprophet:latest as fbprophet-builder
+RUN pip3 install --upgrade plotly
+FROM wajdikh/fbprophet:latest as fbprophet-builder-base
+# COPY --from=fbprophet-builder ["/fbprophet", "/usr/local/lib/python3.6/site-packages/fbprophet"]
+
+RUN python3 -c "from fbprophet import Prophet;m = Prophet();"
+
+WORKDIR /nseta-docker
+COPY requirements.txt /nseta-docker
 RUN pip3 install -r requirements.txt
 
 # Build
 COPY . /nseta-docker
 RUN pip3 install -e .
 
-RUN python3 -c "import nseta; print(nseta.__version__); nseta --help"
-
-RUN python3 -c 'from fastquant import get_stock_data; df = get_stock_data("JFC", "2021-01-01", "2021-01-01"); print(df.head(1))'
+RUN python3 -c "import nseta; print(nseta.__version__);"
+# from nseta.scanner.volumeScanner import volumeScanner;s=volumeScanner(5,['HDFC']); s.scan();
+# RUN python3 -c 'import numpy, talib; close = numpy.random.random(100); output = talib.SMA(close); print(output)'
 
 WORKDIR /home
