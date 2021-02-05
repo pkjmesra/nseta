@@ -20,10 +20,10 @@ matplotlib==3.2.2
 networkx==2.4
 numpy==1.18.0
 oauthlib==3.1.0
-pandas==1.0.4
+pandas # ==1.1.2
 plotly==4.14.3
 PySocks==1.7.1
-pystan==2.18
+pystan>=2.18 #2.19.1.1
 python-dateutil>=2.8.0
 pytz==2019.3
 requests==2.22.0
@@ -33,7 +33,7 @@ setuptools-git>=1.2
 six==1.13.0
 soupsieve==1.9.5
 Sphinx==3.2.1
-# ta-lib==0.4.19 # Install this separately via pip
+ta-lib==0.4.19 # Install this separately via pip
 tqdm>=4.36.1
 tweepy==3.8.0
 urllib3==1.25.7

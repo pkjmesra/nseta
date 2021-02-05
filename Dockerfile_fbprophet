@@ -1,22 +1,20 @@
 FROM python:3.7-stretch
 
-RUN curl -L -O https://github.com/facebook/prophet/archive/0.6.tar.gz \
-    && tar -xzf 0.6.tar.gz \
-    && cd prophet-0.6/
+RUN curl -L -O https://files.pythonhosted.org/packages/1a/b5/9c3fefa8a7b839729df57deedf0a69815841dfb88f0df911f34d998230b7/fbprophet-0.7.1.tar.gz \
+    && tar -xzf fbprophet-0.7.1.tar.gz \
+    && cd fbprophet-0.7.1/
 
 RUN apt-get -y install libc-dev
 
 RUN pip install pip==19.1.1
 
-COPY python/requirements.txt .
+RUN cp fbprophet-0.7.1/requirements.txt .
 RUN pip install -r requirements.txt
 RUN pip install ipython==7.5.0
 
 COPY . .
-
-WORKDIR python
-
-RUN python setup.py install
+RUN cd fbprophet-0.7.1/ \
+    && python3 setup.py install
 
 WORKDIR /
 

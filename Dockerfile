@@ -82,21 +82,23 @@ RUN pip3 install pystan==2.18
 FROM pkjmesra/fastquant:0.1.3.23 as fastquant-builder
 FROM wajdikh/fbprophet:latest as fbprophet-builder
 
-WORKDIR /nseta-docker
-COPY requirements.txt /nseta-docker
-RUN pip3 install -r requirements.txt
-
 FROM scratch
 
 COPY --from=base-python-talib ["/", "/"]
 COPY --from=python-builder ["/usr/lib/python3.6/site-packages/talib", "/usr/local/lib/python3.6/site-packages/talib"]
 COPY --from=fastquant-builder ["/fastquant", "/usr/local/lib/python3.6/site-packages/fastquant"]
-COPY --from=fbprophet-builder ["/fbprophet", "/usr/local/lib/python3.6/site-packages/fbprophet"]
+COPY --from=fbprophet-builder ["/usr/local/lib/python3.6/site-packages/fbprophet", "/usr/local/lib/python3.6/site-packages/fbprophet"]
 RUN pip3 install --upgrade plotly
+
+WORKDIR /nseta-docker
+COPY requirements.txt /nseta-docker
+RUN pip3 install -r requirements.txt
 
 # Build
 COPY . /nseta-docker
-RUN pip3 install -e .
+USER root
+RUN cd nseta-docker \
+    && sudo python3 setup.py clean build install sdist bdist_wheel
 
 RUN python3 -c "import nseta; print(nseta.__version__);"
 CMD ["python3"]
