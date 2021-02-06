@@ -32,7 +32,8 @@ RUN cp -r fbprophet-0.7.1/fbprophet /usr/local/lib/python3.7/site-packages/fbpro
 RUN apt-get -y install unzip
 
 RUN wget https://github.com/pkjmesra/nseta/archive/main.zip && \
-  unzip main.zip
+  unzip main.zip && \
+  rm -rf main.zip
 
 WORKDIR nseta-main
 RUN pip3 install --upgrade pip
@@ -40,6 +41,7 @@ RUN pip3 install convertdate>=2.3.0
 RUN python3 setup.py clean build install
 
 WORKDIR /
+RUN rm - rf nseta*
 
 RUN python3 -c 'import numpy, talib; close = numpy.random.random(100); output = talib.SMA(close); print(output)'
 
