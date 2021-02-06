@@ -1,0 +1,18 @@
+FROM python:3.7.3 as python-builder
+ENV PYTHONUNBUFFERED 1
+ENV PYTHON_FASTQUANT_VERSION 0.1.3.25
+
+RUN apt-get -y install curl unzip
+
+RUN wget https://files.pythonhosted.org/packages/dc/4d/a667d96989c4d6d4a95536ffe779873d13378af0142a2b0e0876dd885243/fastquant-0.1.3.25-py3-none-any.whl && \
+  unzip fastquant-0.1.3.25-py3-none-any.whl && \
+  wget https://raw.githubusercontent.com/enzoampil/fastquant/master/python/requirements.txt && \
+  mv requirements.txt fastquant/requirements.txt && \
+  cd fastquant && \
+  pip3 install -r requirements.txt
+
+RUN cp -r fastquant /usr/local/lib/python3.7/site-packages/fastquant
+RUN rm -rf fastquant*
+
+CMD ["python3"]
+RUN python3 -c 'from fastquant import backtest, get_yahoo_data; data = get_yahoo_data("TSLA", "2020-11-01", "2021-01-30");backtest("smac", data, fast_period=15, slow_period=20, verbose=False, plot=False)'

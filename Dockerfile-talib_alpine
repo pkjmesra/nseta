@@ -1,7 +1,7 @@
 
-FROM alpine:3.8 as python-builder
+FROM python:3.7.3-alpine as python-builder
 
-ENV PYTHON_VERSION 3.6.9-r1
+ENV PYTHON_VERSION 3.7.7-r1
 ENV PYTHON_TA_LIB_VERSION 0.4.19
 ENV PYTHONUNBUFFERED 1
 
@@ -29,19 +29,6 @@ RUN apk add --no-cache python3=${PYTHON_VERSION} \
               /tmp/* \
               /var/cache/apk/* \
               /var/lib/apk/lists/*
-
-WORKDIR /root
-
-FROM python:3.6.6-alpine as base-python-talib
-ENV PYTHONUNBUFFERED 1
-
-COPY --from=python-builder ["/usr/lib/libta*", "/usr/lib/"]
-COPY --from=python-builder ["/usr/lib/python3.6/site-packages/numpy", "/usr/local/lib/python3.6/site-packages/numpy"]
-
-FROM scratch 
-
-COPY --from=base-python-talib ["/", "/"]
-COPY --from=python-builder ["/usr/lib/python3.6/site-packages/talib", "/usr/local/lib/python3.6/site-packages/talib"]
 
 CMD ["python3"]
 
