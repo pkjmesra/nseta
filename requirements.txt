@@ -20,7 +20,7 @@ matplotlib==3.2.2
 networkx==2.4
 numpy==1.18.0
 oauthlib==3.1.0
-pandas # ==1.1.2
+pandas==1.1.2
 plotly==4.14.3
 PySocks==1.7.1
 pystan>=2.18 #2.19.1.1
