@@ -29,8 +29,10 @@ WORKDIR /
 RUN cp -r fbprophet-0.7.1/fbprophet /usr/local/lib/python3.7/site-packages/fbprophet \
 	&& rm -rf fbprophet*
 
+RUN apt-get -y install unzip
+
 RUN wget https://github.com/pkjmesra/nseta/archive/main.zip && \
-  tar -xvzf nseta-main.zip
+  unzip main.zip
 
 WORKDIR nseta-main
 RUN pip3 install --upgrade pip
@@ -47,4 +49,4 @@ RUN python3 -c "from fbprophet import Prophet;m = Prophet();"
 
 RUN python3 -c "import nseta; print(nseta.__version__);"
 
-RUN python3 -c "from nseta.scanner.volumeScanner import volumeScanner; s=volumeScanner(5,['HDFC']); s.scan();"
+RUN python3 -c "from nseta.scanner.volumeScanner import volumeScanner; from nseta.scanner.baseStockScanner import ScannerType; s=volumeScanner(ScannerType.Volume,['HDFC']); s.scan();"
