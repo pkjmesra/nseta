@@ -16,7 +16,7 @@ fbprophet==0.7.1
 idna==2.8
 LunarCalendar>=0.0.9
 lxml==4.6.2
-matplotlib==3.2.2
+matplotlib>=3.2.2
 networkx==2.4
 numpy==1.18.0
 oauthlib==3.1.0

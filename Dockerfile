@@ -29,10 +29,12 @@ WORKDIR /
 RUN cp -r fbprophet-0.7.1/fbprophet /usr/local/lib/python3.7/site-packages/fbprophet \
 	&& rm -rf fbprophet*
 
-RUN wget https://files.pythonhosted.org/packages/fe/a7/883aabbeca3dbfdcc9432e2932e9e56d6fda6f474059deca45b79b122b00/nseta-0.6.236.tar.gz && \
-  tar -xvzf nseta-0.6.236.tar.gz
+RUN wget https://github.com/pkjmesra/nseta/archive/main.zip && \
+  tar -xvzf nseta-main.zip
 
-WORKDIR nseta-0.6.236
+WORKDIR nseta-main
+RUN pip3 install --upgrade pip
+RUN pip3 install convertdate>=2.3.0
 RUN python3 setup.py clean build install
 
 WORKDIR /
