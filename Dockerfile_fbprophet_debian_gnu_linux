@@ -1,4 +1,4 @@
-FROM python:3.7-stretch
+FROM python:3.7.3
 
 RUN curl -L -O https://files.pythonhosted.org/packages/1a/b5/9c3fefa8a7b839729df57deedf0a69815841dfb88f0df911f34d998230b7/fbprophet-0.7.1.tar.gz \
     && tar -xzf fbprophet-0.7.1.tar.gz \
@@ -6,11 +6,11 @@ RUN curl -L -O https://files.pythonhosted.org/packages/1a/b5/9c3fefa8a7b839729df
 
 RUN apt-get -y install libc-dev
 
-RUN pip install pip==19.1.1
+RUN pip3 install --upgrade pip
 
 RUN cp fbprophet-0.7.1/requirements.txt .
-RUN pip install -r requirements.txt
-RUN pip install ipython==7.5.0
+RUN pip3 install -r requirements.txt
+RUN pip3 install ipython==7.5.0
 
 COPY . .
 RUN cd fbprophet-0.7.1/ \
