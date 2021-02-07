@@ -321,6 +321,7 @@ Bid Quantity
 5,469           302.55            767      303.10
 ```
 - Scan live quotes of securities
+
 ```python
 nseta scan -S HDFC,ABB
               Updated Symbol     Close       LTP
@@ -328,6 +329,7 @@ nseta scan -S HDFC,ABB
  30-DEC-2020 16:00:00    ABB  1,203.05  1,205.30
 ```
 - Scan live quotes of a bunch of securities listed in a resource file(stocks.txt under scanner folder)
+
 ```python
 nseta scan -l
  All Stocks LTP and Signals:
@@ -489,6 +491,7 @@ Live scanning finished.
 - When LTP > higher BBand
 
 - Scanning options
+
 ```python
 nseta scan --help
 Usage:  [OPTIONS]
@@ -526,6 +529,7 @@ Options:
 
 For example:
 - Scanning intraday based on Bollinger bands
+
 ```python
 nseta scan -i -t bbands
 INFO - stockscanner.py(scan_intraday - 123)
@@ -548,6 +552,7 @@ We recommend taking the following BUY/SELL positions immediately for day trading
 2021-01-04 14:30:00  ULTRACEMCO  5313.098214  5301.341786  5313.15  (SELL) [LTP > BBands-U]
 ```
 - Scanning live-quotes during trading session
+
 ```python
 nseta scan -l
 All Stocks LTP and Signals:
@@ -579,6 +584,7 @@ All Stocks LTP and Signals:
  13-JAN-2021 15:30:02    GOODYEAR     959.15     955.95       51.76      2937.0            23,649
 ```
 - Scanning for swing trading
+
 ```python
 nseta scan -s
 This run of swing scan took 36.5 sec
@@ -614,6 +620,7 @@ Swing scanning finished.
 ```
 
 - Scanning based on volumes
+
 ```python
 $ nseta scan -v -c
 Done.                                                                                                                            
@@ -702,6 +709,7 @@ Volume scanning finished.
 - SELL : When LTP > higher BBand
 
 - Scanning and measuring PnL for a specific trading strategy
+
 ```python
 nseta scan-trading-strategy -s 2020-06-01 -e 2021-01-17 --strategy macd
      Symbol Strategy        PnL
@@ -849,7 +857,9 @@ nseta scan-trading-strategy -s 2020-06-01 -e 2021-01-17 --strategy macd
  WOCKPHARMA     MACD  111416.80
        ZEEL     MACD   42323.85
 ```
+
 - Scanning and measuring PnL for a specific trading strategy intraday
+
 ```python
 nseta scan-trading-strategy -i --strategy macd
 
@@ -999,7 +1009,9 @@ nseta scan-trading-strategy -i --strategy macd
  WOCKPHARMA     MACD -2918.15
        ZEEL     MACD -1279.65
 ```
+
 - Scanning for buy/sell signals and measuring those(backtesting) for a specific security
+
 ```python
 nseta test-trading-strategy -S TATAMOTORS -s 2020-06-01 -e 2021-01-17 --strategy macd
 # Using fastquant:
@@ -1075,6 +1087,7 @@ nseta test-trading-strategy -S TATAMOTORS -s 2020-06-01 -e 2021-01-17 --strategy
      Symbol Strategy      PnL
  TATAMOTORS     MACD  92873.2
 ```
+
 - Compare all trading strategies through backtesting
 
 ```python
@@ -1234,12 +1247,14 @@ This run of trading strategy scan took 124.9 sec
 ```
 
 - To view just the logs of your interest, you can filter those:
+
   ```python
     nseta --debug --filter filter_text_goes_here <command> [command options]
     nseta --debug --trace --filter filter_text_goes_here <command> [command options]
   ```
 
 - To view the time taken by each method:
+
   ```python
     nseta --debug --filter time_taken <command> [command options]
     nseta --debug --trace --filter time_taken <command> [command options]
