@@ -36,6 +36,8 @@ It takes a lot of time/effort to develop, implement, test and maintain the codeb
 This has been built and tested only on macOS Big Sur (v11+). You may wish to check the `.travis.yml` or the `python-publish.yml` file to understand how to build from source. If you test it on a platform other than macOS and find issues, please do report those in the `issues` tab above.
 
 ## Libraries Required
+- You need to install TA-LIB, fastquant and fbprophet aside from other libraries noted in requirements.txt. TA-LIB will need to be installed not just as a python package but separately as a library as well. See https://github.com/mrjbq7/ta-lib
+
 - (See requirements.txt file for more)
 
 For Windows systems you can install Anaconda, this will cover many dependancies (You'll have to install requests and beautifulsoup additionally though)
