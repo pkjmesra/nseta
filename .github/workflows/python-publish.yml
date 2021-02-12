@@ -44,6 +44,7 @@ jobs:
         brew install ta-lib
         pip3 install ta-lib==0.4.19
         pip3 install fastquant
+        pip3 install fbprophet>=0.7.1
         pip3 install -r requirements.txt
     - name: Declare env variables
       id: vars
