@@ -42,7 +42,11 @@ This has been built and tested only on macOS Big Sur (v11+). You may wish to che
 
 For Windows systems you can install Anaconda, this will cover many dependancies (You'll have to install requests and beautifulsoup additionally though)
 
+<details>
+<summary>
 ## Installation
+</summary>
+
 -  From code
 ```
 python3 setup.py clean build install
@@ -82,6 +86,14 @@ After installation you can check what version you got installed
 ```
 python3 -c "import nseta; print(nseta.__version__)"
 ```
+
+- Docker
+
+```
+docker run -it pkjmesra/nseta:latest sh
+```
+
+</details>
 
 ## Usage
 
@@ -1270,6 +1282,10 @@ This run of trading strategy scan took 124.9 sec
 ### Submit patches
 
 If you have fixed an issue or added a new feature, please fork this repository, make your changes and submit a pull request. [Here's good article on how to do this.](https://code.tutsplus.com/tutorials/how-to-collaborate-on-github--net-34267) 
+
+## Submit Feature Requests
+
+Write to pkjmesra@gmail.com with subject line ``` NSETA: Feature Request ```
 
 ## License
 [MIT License](https://github.com/pkjmesra/nseta/blob/main/LICENSE)

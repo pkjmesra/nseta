@@ -1,4 +1,4 @@
-FROM pkjmesra/fastquant_debian_gnu_linux:0.1.3.25 as fastquant-ready
+FROM pkjmesra/fastquant_debian_gnu_linux:latest as fastquant-ready
 ENV PYTHONUNBUFFERED 1
 ENV PYTHON_TA_LIB_VERSION 0.4.19
 
