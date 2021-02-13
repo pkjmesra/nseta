@@ -16,6 +16,8 @@ before_install:
 - pip3 install -r requirements.txt
 - pip3 install ta-lib>=0.4.19
 - pip3 install timeout-decorator
+- pip3 install sanic==19.12.2
+- pip3 install multidict==4.6
 install:
 - python3 setup.py clean build install sdist bdist_wheel
 - pip3 install codecov
