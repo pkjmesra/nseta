@@ -38,6 +38,8 @@ RUN wget https://github.com/pkjmesra/nseta/archive/main.zip && \
 WORKDIR nseta-main
 RUN pip3 install --upgrade pip
 RUN pip3 install convertdate>=2.3.0
+RUN pip3 install sanic<=19.12.3
+RUN pip3 install multidict==4.6
 RUN python3 setup.py clean build install
 
 WORKDIR /
