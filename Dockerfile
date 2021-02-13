@@ -43,7 +43,7 @@ RUN pip3 install multidict==4.6
 RUN python3 setup.py clean build install
 
 WORKDIR /
-RUN rm - rf nseta*
+RUN rm -rf nseta*
 
 RUN python3 -c 'import numpy, talib; close = numpy.random.random(100); output = talib.SMA(close); print(output)'
 
