@@ -44,7 +44,9 @@ For Windows systems you can install Anaconda, this will cover many dependancies 
 
 <details>
 <summary>
+
 ## Installation
+
 </summary>
 
 -  From code
