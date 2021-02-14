@@ -11,6 +11,8 @@
 [![Language grade: Python](https://img.shields.io/lgtm/grade/python/g/pkjmesra/nseta.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/pkjmesra/nseta/context:python)
 [![codecov](https://codecov.io/gh/pkjmesra/nseta/branch/main/graph/badge.svg)](https://codecov.io/gh/pkjmesra/nseta)
 [![Requirements Status](https://requires.io/github/pkjmesra/nseta/requirements.svg?branch=main)](https://requires.io/github/pkjmesra/nseta/requirements/?branch=main)
+[![Linter: Prospector](https://img.shields.io/badge/Linter-Prospector-green.svg)](http://prospector.landscape.io/en/master/)
+[![Donate PayPal](https://img.shields.io/badge/Donate%20%24-PayPal-brightgreen.svg)](https://www.paypal.com/paypalme/pkjmesra/5)
 
 
 Python Library (and console/CLI application) to 
@@ -29,8 +31,9 @@ Python Library (and console/CLI application) to
 
 ## Donate
 
-It takes a lot of time/effort to develop, implement, test and maintain the codebase. When possible, please donate as per your wishes.
+It takes a lot of time/effort to develop, implement, test and maintain the codebase. When possible, please donate and buy me a coffee :-)
 [![Otechie](https://api.otechie.com/pkjmes/badge.svg)](https://otechie.com/pkjmes)
+[![Donate PayPal](https://img.shields.io/badge/Donate%20%24-PayPal-brightgreen.svg)](https://www.paypal.com/paypalme/pkjmesra/5)
 
 ## Tech Disclaimer
 This has been built and tested only on macOS Big Sur (v11+). You may wish to check the `.travis.yml` or the `python-publish.yml` file to understand how to build from source. If you test it on a platform other than macOS and find issues, please do report those in the `issues` tab above.
