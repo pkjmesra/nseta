@@ -119,7 +119,8 @@ class Backtest:
 		multi_smac_slow_period_range=[10,50],multi_rsi_lower_range=[15,20],
 		multi_rsi_upper_range=[75,85],bbands_period=20,bbands_devfactor=2.0,
 		rsi_period=14,rsi_upper=75,rsi_lower=25, intraday_margin=0.2,
-		max_fund_utilization_per_tran=0.5, commission=0.00067471):
+		max_fund_utilization_per_tran=0.5, commission=0.00067471, strict_strategy = False,
+		profit_threshhold_percent = 5, loss_threshhold_percent = 1):
 		self._init_cash = float(init_cash)
 		self._smac_fast_period = int(smac_fast_period)
 		self._smac_slow_period= int(smac_slow_period)
@@ -142,6 +143,9 @@ class Backtest:
 		self._intraday_margin = float(intraday_margin)
 		self._max_fund_utilization_per_tran = float(max_fund_utilization_per_tran)
 		self._commission = float(commission)
+		self._strict_strategy = strict_strategy.lower() in ("yes", "true", "t", "1")
+		self._profit_threshhold_percent = float(profit_threshhold_percent)
+		self._loss_threshhold_percent = float(loss_threshhold_percent)
 
 	@property
 	def init_cash(self):
@@ -230,6 +234,18 @@ class Backtest:
 	@property
 	def commission(self):
 		return self._commission
+
+	@property
+	def strict_strategy(self):
+		return self._strict_strategy
+
+	@property
+	def profit_threshhold_percent(self):
+		return self._profit_threshhold_percent
+
+	@property
+	def loss_threshhold_percent(self):
+		return self._loss_threshhold_percent
 
 class RSI:
 	def __init__(self, lower=25, upper=75, period = 14):
@@ -473,7 +489,11 @@ class resources:
 		im = r.config_valueforkey('BACKTEST',"intraday_margin")
 		mfupt = r.config_valueforkey('BACKTEST',"max_fund_utilization_per_tran")
 		com = r.config_valueforkey('BACKTEST',"commission")
-		return Backtest(ic, sfp,ssp,efp,esp,mfp,msp,masp,msmap,mdp,msfpr,msspr,mrlr,mrur,bp,bd,rp,ru,rl, im, mfupt, com)
+		ss = r.config_valueforkey('BACKTEST',"strict_strategy")
+		ptp = r.config_valueforkey('BACKTEST',"profit_threshhold_percent")
+		ltp = r.config_valueforkey('BACKTEST',"loss_threshhold_percent")
+		
+		return Backtest(ic, sfp,ssp,efp,esp,mfp,msp,masp,msmap,mdp,msfpr,msspr,mrlr,mrur,bp,bd,rp,ru,rl,im,mfupt,com,ss,ptp,ltp)
 
 	@classmethod
 	def scanner(cls):

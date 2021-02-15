@@ -31,6 +31,11 @@ class simulatedorder:
 		return round(self.portfolio_value - INITIAL_FUNDS, 2)
 
 	@property
+	def pnl_percent(self):
+		diff = INITIAL_FUNDS - self.funds
+		return 0 if diff == 0 else round(100 * self.pnl/diff,2)
+
+	@property
 	def order_type(self):
 		return self._order_type
 

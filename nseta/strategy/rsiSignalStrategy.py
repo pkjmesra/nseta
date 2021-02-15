@@ -11,12 +11,14 @@ __all__ = ['rsiSignalStrategy']
 
 class rsiSignalStrategy(basesignalstrategy):
 	def __init__(self, strict=False, intraday=False, requires_ledger=False):
-		super().__init__(requires_ledger=requires_ledger)
-		self._strict = strict
-		self._prc = 0
+		order_queue = simulatedorder(OrderType.MIS if intraday else OrderType.Delivery)
 		self._lower = resources.rsi().lower
 		self._upper = resources.rsi().upper
-		self._order_queue = simulatedorder(OrderType.MIS if intraday else OrderType.Delivery)
+		super().__init__(requires_ledger=requires_ledger, order_queue=order_queue, 
+			crossover_lower = self._lower, crossover_upper = self._upper)
+		self._strict = strict
+		self._prc = 0
+		
 		if default_logger().level == logging.DEBUG:
 			self._ledger = {'DateTime':[],'Signal':[],'Price':[],'Pattern':[],'Direction':[], 'Funds':[], 'Order_Size':[], 'Holdings_Size':[], 'Portfolio_Value':[], 'P3':[], 'P2':[], 'P1':[], 'N1':[], 'N2':[], 'N3':[],'P-delta':[], 'N-delta':[], 'Base-delta':[]}
 		else:
@@ -30,6 +32,7 @@ class rsiSignalStrategy(basesignalstrategy):
 	@tracelog
 	def test_strategy(self, df):
 		# TODO: What if keys are in lowercase or dt/datetime is used instead of date/Date
+		self._target_met = False
 		try:
 			rowindex = 0
 			for rsi in (df['RSI']).values:
@@ -37,6 +40,8 @@ class rsiSignalStrategy(basesignalstrategy):
 					price =(df.iloc[rowindex])['Close']
 					ts =(df.iloc[rowindex])['Date']
 					self.index(rsi, price, ts)
+					if self._target_met:
+						break
 				rowindex = rowindex + 1
 			if self.order_queue.holdings_size < 0:
 				buy_sell = 'BUY'
@@ -91,17 +96,21 @@ class rsiSignalStrategy(basesignalstrategy):
 	def price(self, prc):
 		self._prc = prc
 
-	def update_direction(self):
-		if self.n3 >= self.upper:
+	def crossedover_lower(self, prev_pattern=Direction.Neutral):
+		if prev_pattern == Direction.Up:
 			self.direction = Direction.Up
+			self.pattern = Direction.OverSold
+			self.buy_signal()
+
+	def crossedover_upper(self, prev_pattern=Direction.Neutral):
+		if prev_pattern == Direction.Down:
+			self.direction = Direction.Down
 			self.pattern = Direction.OverBought
 			self.sell_signal()
 
-		if self.n3 <= self.lower:
-			self.direction = Direction.Down
-			self.pattern = Direction.OverSold
-			self.buy_signal()
-		super().update_direction()
+	def target_met(self, prev_pattern=Direction.Neutral):
+		self._target_met = True
+		self.order_queue.square_off(self.price)
 
 	def v_pattern(self, prev_pattern=Direction.Neutral):
 		if self.n3 >= 55:
@@ -109,20 +118,28 @@ class rsiSignalStrategy(basesignalstrategy):
 			self.buy_signal()
 		else:
 			self.recommendation = Recommendation.Hold
+		if self.order_queue.holdings_size <= 0:
+			self.order_queue.square_off(self.price)
 
 	def invertedv_pattern(self, prev_pattern=Direction.Neutral):
 		self.sell_signal()
+		if self.order_queue.holdings_size >= 0:
+			self.order_queue.square_off(self.price)
 
-	def higherhigh_pattern(self, prev_pattern=Direction.Neutral):
-		if not self.strict and self.n3 >= 55:
+	def possible_higherhigh_pattern(self, prev_pattern=Direction.Neutral):
+		if not self.strict and self.n1 <= self.lower:
 			self.recommendation = Recommendation.Buy
 			self.buy_signal()
 		else:
 			self.recommendation = Recommendation.Hold
+		if self.order_queue.holdings_size <= 0:
+			self.order_queue.square_off(self.price)
 
-	def lowerlow_direction(self, prev_pattern=Direction.Neutral):
-		if not self.strict:
+	def possible_lowerlow_direction(self, prev_pattern=Direction.Neutral):
+		if not self.strict and self.n1 >= self.upper:
 			self.sell_signal()
+		if self.order_queue.holdings_size >= 0:
+			self.order_queue.square_off(self.price)
 
 	def buy_signal(self):
 		holding_size = self.order_queue.holdings_size

@@ -10,12 +10,12 @@ __all__ = ['macdSignalStrategy']
 
 class macdSignalStrategy(basesignalstrategy):
 	def __init__(self, strict=False, intraday=False, requires_ledger=False):
-		super().__init__(requires_ledger=requires_ledger)
+		order_queue = simulatedorder(OrderType.MIS if intraday else OrderType.Delivery)
+		super().__init__(requires_ledger=requires_ledger, order_queue=order_queue)
 		# Cross over above zero line for buy or below zero line for sell
 		self._strict = strict
 		self._prc = 0
 		self._macd9 = 0
-		self._order_queue = simulatedorder(OrderType.MIS if intraday else OrderType.Delivery)
 		self._ledger = {'DateTime':[],'Signal':[],'Price':[],'Pattern':[],'Direction':[], 'Funds':[], 'Order_Size':[], 'Holdings_Size':[], 'Portfolio_Value':[]}
 
 	@tracelog
@@ -25,12 +25,15 @@ class macdSignalStrategy(basesignalstrategy):
 			rowindex = 0
 			df_summary = None
 			df = df.dropna()
+			self._target_met = False
 			for macd, macd9 in zip((df['macd(12)']).values, (df['macdsignal(9)']).values):
 				if macd is not None:
 					price =(df.iloc[rowindex])['Close']
 					ts =(df.iloc[rowindex])['Date']
 					self.macd9 = macd9
 					self.index(macd, price, ts)
+					if self._target_met:
+						break
 				rowindex = rowindex + 1
 			default_logger().debug("\n{}\n".format(self.basereport.to_string(index=False)))
 			if self.order_queue.holdings_size < 0:
@@ -88,6 +91,10 @@ class macdSignalStrategy(basesignalstrategy):
 
 	def update_direction(self):
 		super().update_direction()
+
+	def target_met(self, prev_pattern=Direction.Neutral):
+		self._target_met = True
+		self.order_queue.square_off(self.price)
 
 	@tracelog
 	def v_pattern(self, prev_pattern=Direction.Neutral):

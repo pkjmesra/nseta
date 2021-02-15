@@ -1,13 +1,14 @@
 import numpy as np
 import pandas as pd
 
+from nseta.resources.resources import *
 from nseta.common.log import tracelog, default_logger
 from nseta.common.commons import Direction, Recommendation
 
 __all__ = ['basesignalstrategy']
 
 class basesignalstrategy:
-	def __init__(self, requires_ledger=False):
+	def __init__(self, requires_ledger=False, order_queue=None, crossover_lower=0, crossover_upper=0):
 		self._pat = Direction.Neutral
 		self._dir = Direction.Neutral
 		self._p1 = np.nan
@@ -21,10 +22,32 @@ class basesignalstrategy:
 		self._requires_ledger = requires_ledger
 		self._baseledger = {'DateTime':[],'P3':[], 'P2':[], 'P1':[], 'N1':[], 'N2':[], 'N3':[]}
 		self._reco = Recommendation.Unknown
+		self._p_percent = resources.backtest().profit_threshhold_percent
+		self._l_percent = 0 - resources.backtest().loss_threshhold_percent
+		self._order_queue = order_queue
+		self._crossover_lower = crossover_lower
+		self._crossover_upper = crossover_upper
+
 
 	@property
 	def requires_ledger(self):
 		return self._requires_ledger
+
+	@property
+	def crossover_lower(self):
+		return self._crossover_lower
+
+	@property
+	def crossover_upper(self):
+		return self._crossover_upper
+
+	@property
+	def profit_threshhold(self):
+		return self._p_percent
+
+	@property
+	def loss_threshhold(self):
+		return self._l_percent
 
 	@property
 	def baseledger(self):
@@ -67,6 +90,14 @@ class basesignalstrategy:
 	@timestamp.setter
 	def timestamp(self, ts):
 		self._ts = ts
+
+	@property
+	def order_queue(self):
+		return self._order_queue
+
+	@order_queue.setter
+	def order_queue(self, oq):
+		self._order_queue = oq
 
 	@property
 	def pnl(self):
@@ -170,8 +201,10 @@ class basesignalstrategy:
 			(self.baseledger['N3']).append(str(round(self.n3,2)))
 		n1gtn2 = True if self.n1 > self.n2 else False
 		n2ltn3 = True if self.n2 < self.n3 else False
+		n1ltn3 = True if self.n1 < self.n3 else False
 		n1ltn2 = True if self.n1 < self.n2 else False
 		n2gtn3 = True if self.n2 > self.n3 else False
+		n1gtn3 = True if self.n1 > self.n3 else False
 		n3ltn2 = True if self.n3 < self.n2 else False
 		prev_pattern = self.pattern
 		if n1gtn2 and n2ltn3: # The last 3rd and 2nd values fell and last one reversed in direction
@@ -198,7 +231,7 @@ class basesignalstrategy:
 				self.recommendation = Recommendation.Sell
 				self.lowerlow_direction(prev_pattern=prev_pattern)
 
-		if n1ltn2 and n2ltn3:
+		if n1ltn2 and n2ltn3: # The last 3 values rose
 			self.direction = Direction.Up
 			self.possible_higherhigh_pattern(prev_pattern=prev_pattern)
 			self.recommendation = Recommendation.Hold
@@ -210,6 +243,28 @@ class basesignalstrategy:
 				self.pattern = Direction.HigherHigh
 				self.recommendation = Recommendation.Buy
 				self.higherhigh_pattern(prev_pattern=prev_pattern)
+		
+		if (n2ltn3 or n1ltn3) and self.n3 >= self.crossover_lower:
+			self.crossedover_lower(prev_pattern=Direction.Up)
+		if (n2gtn3 or n1gtn3) and self.n3 <= self.crossover_lower:
+			self.crossedover_lower(prev_pattern=Direction.Down)
+
+		if (n2ltn3 or n1ltn3) and self.n3 >= self.crossover_upper:
+			self.crossedover_upper(prev_pattern=Direction.Up)
+		if (n2gtn3 or n1gtn3) and self.n3 <= self.crossover_upper:
+			self.crossedover_upper(prev_pattern=Direction.Down)
+
+		if (self.order_queue.pnl_percent >= self.profit_threshhold) or (self.order_queue.pnl_percent <= self.loss_threshhold):
+			self.target_met(prev_pattern=prev_pattern)
+
+	def target_met(self, prev_pattern=Direction.Neutral):
+		default_logger().debug("\n{}".format(self.pattern))
+
+	def crossedover_lower(self, prev_pattern=Direction.Neutral):
+		default_logger().debug("\n{}".format(self.pattern))
+
+	def crossedover_upper(self, prev_pattern=Direction.Neutral):
+		default_logger().debug("\n{}".format(self.pattern))
 
 	def possible_higherhigh_pattern(self, prev_pattern=Direction.Neutral):
 		default_logger().debug("\n{}".format(self.pattern))

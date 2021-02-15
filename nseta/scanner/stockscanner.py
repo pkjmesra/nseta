@@ -31,7 +31,7 @@ class scanner(baseStockScanner):
 
 	# def buy_solid():
 		# OBV trending upwards
-		# RSI trending upwards. If not, then if it's closer to lower limit, strong buy
+		# RSI trending upwards. Should be in the range 45+
 		# MACD trending upwards and +ve. MACD > MACD 12
 		# LTP line > EMA9 and LTP > MA50
 		# MOM +ve and trending upwards

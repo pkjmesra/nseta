@@ -71,7 +71,7 @@ __download_counter__ = 0
 class strategyManager:
 
 	def __init__(self, order_type=OrderType.Delivery):
-		self._strict = False
+		self._strict = resources.backtest().strict_strategy
 		self._total_stocks_counter = 0
 		self._total_tests_counter = 0
 
@@ -113,7 +113,7 @@ class strategyManager:
 			for strategy in strategies:
 				try:
 					df = instance.ohlc_intraday_history(stock) if intraday else instance.daily_ohlc_history(stock, sd, ed, type=ResponseType.History)
-					summary = self.test_signals(df, lower, upper, strategy, plot=False, show_detail=False)
+					summary = self.test_signals(df, lower, upper, strategy, intraday= intraday, plot=False, show_detail=False)
 					if summary is not None and len(summary) > 0:
 						df_summary['Symbol'].iloc[0] = stock
 						df_summary['{}-PnL'.format(strategy.upper())].iloc[0] = summary['PnL'].iloc[0]
@@ -281,7 +281,7 @@ class strategyManager:
 		if strategy.lower() == 'rsi':
 			df_rsi_dict = {'Symbol':df['Symbol'], 'Date':df['Date'], 'RSI':df['RSI'], 'Close':df['Close']}
 			df_rsi = pd.DataFrame(df_rsi_dict)
-			rsisignal = rsiSignalStrategy(strict=self.strict, intraday=False, requires_ledger=show_detail)
+			rsisignal = rsiSignalStrategy(strict=self.strict, intraday=intraday, requires_ledger=show_detail)
 			rsisignal.set_limits(lower, upper)
 			results, summary = rsisignal.test_strategy(df_rsi)
 			if plot:
@@ -289,12 +289,12 @@ class strategyManager:
 		elif strategy.lower() == 'bbands':
 			df_bbands_dict = {'Symbol':df['Symbol'], 'Date':df['Date'], 'BBands-U':df['BBands-U'], 'BBands-M':df['BBands-M'], 'BBands-L':df['BBands-L'], 'Close':df['Close']}
 			df_bbands = pd.DataFrame(df_bbands_dict)
-			bbandsSignal = bbandsSignalStrategy(strict=self.strict, intraday=False, requires_ledger=show_detail)
+			bbandsSignal = bbandsSignalStrategy(strict=self.strict, intraday=intraday, requires_ledger=show_detail)
 			results, summary = bbandsSignal.test_strategy(df_bbands)
 		elif strategy.lower() == 'macd':
 			df_macd_dict = {'Symbol':df['Symbol'], 'Date':df['Date'], 'macd(12)':df['macd(12)'], 'macdsignal(9)':df['macdsignal(9)'], 'macdhist(26)':df['macdhist(26)'], 'Close':df['Close']}
 			df_macd = pd.DataFrame(df_macd_dict)
-			macdSignal = macdSignalStrategy(strict=self.strict, intraday=False, requires_ledger=show_detail)
+			macdSignal = macdSignalStrategy(strict=self.strict, intraday=intraday, requires_ledger=show_detail)
 			results, summary = macdSignal.test_strategy(df_macd)
 		sys.stdout.write("\r{}/{}. Finished testing {} trading strategy for {}.".ljust(120).format(__test_counter__, self.total_tests_counter, strategy, symbol))
 		sys.stdout.flush()

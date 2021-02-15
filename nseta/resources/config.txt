@@ -87,3 +87,6 @@ rsi_lower = 25
 intraday_margin = 0.2
 max_fund_utilization_per_tran = 0.5
 commission = 0.00067471
+strict_strategy = no
+profit_threshhold_percent = 3
+loss_threshhold_percent = 1

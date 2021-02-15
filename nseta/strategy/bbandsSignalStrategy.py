@@ -10,7 +10,8 @@ __all__ = ['bbandsSignalStrategy']
 
 class bbandsSignalStrategy(basesignalstrategy):
 	def __init__(self, strict=False, intraday=False, requires_ledger=False):
-		super().__init__(requires_ledger=requires_ledger)
+		order_queue = simulatedorder(OrderType.MIS if intraday else OrderType.Delivery)
+		super().__init__(requires_ledger=requires_ledger, order_queue=order_queue)
 		self._strict = strict
 		self._pat = Direction.Neutral
 		self._dir = Direction.Neutral
@@ -18,7 +19,6 @@ class bbandsSignalStrategy(basesignalstrategy):
 		self._ts = ''
 		self._bbands_u = 0
 		self._bbands_l = 0
-		self._order_queue = simulatedorder(OrderType.MIS if intraday else OrderType.Delivery)
 		if default_logger().level == logging.DEBUG:
 			self._ledger = {'DateTime':[],'Signal':[],'Price':[],'Funds':[], 'Order_Size':[], 'Holdings_Size':[], 'Portfolio_Value':[], 'BBands-U':[], 'BBands-L':[]}
 		else:
@@ -29,9 +29,12 @@ class bbandsSignalStrategy(basesignalstrategy):
 		# TODO: What if keys are in lowercase or dt/datetime is used instead of date/Date
 		try:
 			rowindex = 0
+			self._target_met = False
 			for lower_bband, upper_bband, price, ts in zip(df['BBands-L'], df['BBands-U'], df['Close'], df['Date']):
 				self.index(lower_bband, upper_bband, price, ts)
 				rowindex = rowindex + 1
+				if self._target_met:
+					break
 			if self.order_queue.holdings_size < 0:
 				buy_sell = 'BUY'
 			elif self.order_queue.holdings_size > 0:
@@ -122,6 +125,10 @@ class bbandsSignalStrategy(basesignalstrategy):
 	def invertedv_pattern(self, prev_pattern=Direction.Neutral):
 		if not self.strict:
 			self.sell_signal()
+
+	def target_met(self, prev_pattern=Direction.Neutral):
+		self._target_met = True
+		self.order_queue.square_off(self.price)
 
 	@tracelog
 	def update_ledger(self, signal):
