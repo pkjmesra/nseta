@@ -16,7 +16,7 @@ class macdSignalStrategy(basesignalstrategy):
 		self._strict = strict
 		self._prc = 0
 		self._macd9 = 0
-		self._ledger = {'DateTime':[],'Signal':[],'Price':[],'Pattern':[],'Direction':[], 'Funds':[], 'Order_Size':[], 'Holdings_Size':[], 'Portfolio_Value':[]}
+		self._ledger = {'DateTime':[],'Signal':[],'Price':[],'Pattern':[],'Direction':[], 'Funds':[], 'Order_Size':[], 'Holdings_Size':[], 'Portfolio_Value':[], 'Brokerage':[]}
 
 	@tracelog
 	def test_strategy(self, df):
@@ -156,9 +156,10 @@ class macdSignalStrategy(basesignalstrategy):
 		(self.ledger['DateTime']).append(self.timestamp)
 		(self.ledger['Signal']).append(signal)
 		(self.ledger['Price']).append(str(self.price))
-		(self.ledger['Pattern']).append(str(self.pattern))
-		(self.ledger['Direction']).append(str(self.direction))
+		(self.ledger['Pattern']).append(str(self.pattern.name))
+		(self.ledger['Direction']).append(str(self.direction.name))
 		(self.ledger['Funds']).append(str(round(self.order_queue.funds,2)))
 		(self.ledger['Order_Size']).append(str(round(self.order_queue.order_size,2)))
 		(self.ledger['Holdings_Size']).append(str(round(self.order_queue.holdings_size,2)))
 		(self.ledger['Portfolio_Value']).append(str(round(self.order_queue.portfolio_value,2)))
+		(self.ledger['Brokerage']).append(str(round(self.order_queue.brokerage,2)))

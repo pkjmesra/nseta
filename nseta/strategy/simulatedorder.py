@@ -20,6 +20,7 @@ class simulatedorder:
 		self._holdings_size = 0
 		self._order_size = 0
 		self._order_type = order_type
+		self._brokerage = 0
 		self._margin = resources.backtest().intraday_margin if self.order_type == OrderType.MIS else 1 # Only 20% margin is assumed to be required
 
 	@property
@@ -72,6 +73,14 @@ class simulatedorder:
 		self._stock_price = value
 
 	@property
+	def brokerage(self):
+		return self._brokerage
+
+	@brokerage.setter
+	def brokerage(self, value):
+		self._brokerage = value
+
+	@property
 	def stock_value(self):
 		return self.holdings_size * self.stock_price
 
@@ -116,10 +125,11 @@ class simulatedorder:
 				return
 			self.stock_price = price
 			# This is an MIS order and we have to square off
-			self.order_size = self.holdings_size
+			self.order_size = 0-self.holdings_size
 			self.holdings_size = 0
-			money_made = 0 - self.order_size * (self.stock_price * (1 - self.commission))
+			money_made = self.order_size * (self.stock_price *  (1 - self.commission))
 			self.funds = self.funds + money_made * self.margin
+		self.brokerage = self.order_size * self.stock_price * self.commission
 	
 	def sell(self, price, Sqr_off=False):
 		if price <= self.stock_price and not Sqr_off:
@@ -145,6 +155,7 @@ class simulatedorder:
 			used_funds = self.order_size * (self.stock_price * (1 + self.commission))
 			self.holdings_size = self.holdings_size - self.order_size
 			self.funds = self.funds - (used_funds) * self.margin
+		self.brokerage = self.order_size * self.stock_price * self.commission
 
 	def square_off(self, price):
 		if self.holdings_size == 0:

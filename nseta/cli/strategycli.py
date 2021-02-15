@@ -42,9 +42,9 @@ def test_trading_strategy(symbol, start, end, strategy, upper, lower, clear, plo
 		sm = strategyManager()
 		sm.strict = strict
 		if intraday:
-			sm.test_intraday_trading_strategy(symbol, strategy, lower, upper, plot=True)
+			sm.test_intraday_trading_strategy(symbol, strategy, lower, upper, plot=plot)
 		else:
-			sm.test_historical_trading_strategy(symbol, sd, ed, strategy, lower, upper, plot=True)
+			sm.test_historical_trading_strategy(symbol, sd, ed, strategy, lower, upper, plot=plot)
 		end_time = time()
 		time_spent = end_time-start_time
 		print("\nThis run of testing trading strategy took {:.1f} sec".format(time_spent))

@@ -20,9 +20,9 @@ class bbandsSignalStrategy(basesignalstrategy):
 		self._bbands_u = 0
 		self._bbands_l = 0
 		if default_logger().level == logging.DEBUG:
-			self._ledger = {'DateTime':[],'Signal':[],'Price':[],'Funds':[], 'Order_Size':[], 'Holdings_Size':[], 'Portfolio_Value':[], 'BBands-U':[], 'BBands-L':[]}
+			self._ledger = {'DateTime':[],'Signal':[],'Price':[],'Funds':[], 'Order_Size':[], 'Holdings_Size':[], 'Portfolio_Value':[], 'Brokerage':[], 'BBands-U':[], 'BBands-L':[]}
 		else:
-			self._ledger = {'DateTime':[],'Signal':[],'Price':[],'Funds':[], 'Order_Size':[], 'Holdings_Size':[], 'Portfolio_Value':[]}
+			self._ledger = {'DateTime':[],'Signal':[],'Price':[],'Funds':[], 'Order_Size':[], 'Holdings_Size':[], 'Portfolio_Value':[], 'Brokerage':[]}
 
 	@tracelog
 	def test_strategy(self, df):
@@ -141,6 +141,7 @@ class bbandsSignalStrategy(basesignalstrategy):
 		(self.ledger['Order_Size']).append(str(round(self.order_queue.order_size,2)))
 		(self.ledger['Holdings_Size']).append(str(round(self.order_queue.holdings_size,2)))
 		(self.ledger['Portfolio_Value']).append(str(round(self.order_queue.portfolio_value,2)))
+		(self.ledger['Brokerage']).append(str(round(self.order_queue.brokerage,2)))
 		if default_logger().level == logging.DEBUG:
 			(self.ledger['BBands-U']).append(str(round(self.bbands_u,2)))
 			(self.ledger['BBands-L']).append(str(round(self.bbands_l,2)))
