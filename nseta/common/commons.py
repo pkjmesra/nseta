@@ -7,6 +7,8 @@ Created on Mon Aug 23 10:10:30 2020.
 import requests
 from nseta.common.constants import NSE_INDICES, INDEX_DERIVATIVES
 from nseta.resources.resources import *
+from nseta.common.log import tracelog, default_logger
+from nseta.common.tradingtime import IST_datetime
 import datetime
 from functools import partial
 try:
@@ -23,7 +25,7 @@ import numpy as np
 
 from six.moves.urllib.parse import urlparse
 
-__all__ = ['Recommendation','months','Direction','concatenated_dataframe','is_index','is_index_derivative', 'StrDate', 'ParseTables', 'unzip_str', 'ThreadReturns', 'URLFetch']
+__all__ = ['ParseNews','Recommendation','months','Direction','concatenated_dataframe','is_index','is_index_derivative', 'StrDate', 'ParseTables', 'unzip_str', 'ThreadReturns', 'URLFetch']
 
 class Direction(enum.Enum):
 	Down = 1
@@ -231,6 +233,30 @@ def unzip_str(zipped_str, file_name = None):
 	if not file_name:
 		file_name = zf.namelist()[0]
 	return zf.read(file_name).decode('utf-8')
+
+class ParseNews:
+	def __init__(self, *args, **kwargs):
+		self.bs = kwargs.get('soup')
+
+	def parse_news(self):
+		try:
+			news_text = self.bs.find_all('script')
+			next_all_data = (news_text[1].text).split('__NEXT_DATA__ = ')
+			next_data = next_all_data[1].split(';__NEXT_LOADED_PAGES__')
+			false = False
+			true = True
+			null = None
+			news_dict = eval(next_data[0])
+			news = news_dict['props']['pageProps']['news'][0]
+			headline = news['headline']
+			pub_date = datetime.datetime.fromisoformat(news['date'].replace('Z', '+00:00'))
+			diff = (IST_datetime() - pub_date).total_seconds()
+			diff_hrs = int(divmod(diff, 3600)[0])
+			publisher = news['publisher']
+			default_logger().debug('news_dict:\n{}\n'.format(news_dict))
+		except Exception as e:
+			default_logger().debug(e, exc_info=True)
+		return '({}h ago){}'.format(diff_hrs, headline[:25])
 
 class ThreadReturns(threading.Thread):
 	def run(self):

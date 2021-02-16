@@ -3,9 +3,12 @@ import numpy as np
 import datetime
 import sys
 
+from bs4 import BeautifulSoup
+from nseta.common.commons import ParseNews
 from nseta.common.history import historicaldata
 from nseta.live.live import get_live_quote
 from nseta.common.ti import ti
+from nseta.common.urls import TICKERTAPE_NEWS_URL
 from nseta.resources.resources import *
 from nseta.scanner.baseStockScanner import baseStockScanner
 from nseta.archives.archiver import *
@@ -133,11 +136,12 @@ class volumeStockScanner(baseStockScanner):
 		s2 = df['S2'].iloc[n-1]
 		s3 = df['S3'].iloc[n-1]
 		crossover_point = False
+		symbol = df['Symbol'].iloc[n-1]
 		for pt, pt_name in zip([r3,r2,r1,pp,s1,s2,s3], ['R3', 'R2', 'R1', 'PP', 'S1', 'S2', 'S3']):
 			# Stocks that are within 0.075% of crossover points
 			if abs((ltp-pt)*100/ltp) - resources.scanner().crossover_reminder_percent <= 0:
 				crossover_point = True
-				df['Symbol'].iloc[n-1] = '** {}'.format(df['Symbol'].iloc[n-1])
+				df['Symbol'].iloc[n-1] = '** {}'.format(symbol)
 				df['Remarks'].iloc[n-1]= pt_name
 				df['S1-R3'].iloc[n-1] = pt
 				break
@@ -184,5 +188,9 @@ class volumeStockScanner(baseStockScanner):
 				df.drop([key], axis = 1, inplace = True)
 		default_logger().debug(df.to_string(index=False))
 		if today_vs_yest > 0 or ltp >= vwap or crossover_point:
+			resp = TICKERTAPE_NEWS_URL(symbol.upper())
+			bs = BeautifulSoup(resp.text, 'lxml')
+			news = ParseNews(soup=bs)
+			df['News'] = news.parse_news()
 			signalframescopy.append(df)
 		return df, df_today, signalframescopy

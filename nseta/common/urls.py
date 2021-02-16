@@ -37,6 +37,8 @@ URLFetchSession = partial(URLFetch, session=session,
 
 NSE_SYMBOL_COUNT_URL = 'http://www1.nseindia.com/marketinfo/sym_map/symbolCount.jsp'
 
+TICKERTAPE_NEWS_URL = URLFetchSession(
+	url='https://stocks.tickertape.in/%s?broker=kite&theme=default')
 # Periodicity= 1 : Every 1 minute
 # Periodicity= 2 : Every 5 minutes
 # Periodicity= 3 : Every 15 minutes

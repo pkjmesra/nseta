@@ -645,76 +645,126 @@ Swing scanning finished.
 ```python
 $ nseta scan -v -c
 Done.                                                                                                                            
-This run of volume scan took 38.4 sec
+This run of Volume scan took 32.7 sec
 
-As of 2021-01-28 14:16:39.955641+05:30, Volume Signals:
-
-        Symbol      LTP     VWAP   %Chng  Vol_TDY  Vol_7D    S1-R3         Remarks Del_TDY
-       HAVELLS  1176.90  1114.08    5.74    550.0   125.0  1153.70       LTP >= R3   16.62
-     TEAMLEASE  2813.10  2783.31    1.41    414.0   153.0  2826.67  PP <= LTP < R1   39.66
-         ABFRL   152.45   164.95   -5.95    209.0   161.0   148.48       LTP >= S3   50.51
-         IRCTC  1460.00  1433.52    1.51    205.0   269.0  1456.12       LTP >= R2   29.85
-        RADICO   496.75   496.43   -0.31    171.0    75.0   508.45  PP <= LTP < R1   28.40
-       DCBBANK   103.50   110.92   -5.00    170.0   335.0    99.38       LTP >= S3   69.16
-        ARVIND    53.90    49.46    8.56    134.0   149.0    53.32       LTP >= R3   33.39
-    MCDOWELL-N   597.80   642.02   -7.30    108.0   200.0   613.00        LTP < S3   30.90
-      AXISBANK   660.90   641.63    4.56    102.0   239.0   654.80       LTP >= R1   31.76
-       PRAJIND   116.85   113.56    3.68     77.0    36.0   114.90       LTP >= R1   36.69
-    BANKBARODA    66.15    73.84  -10.67     69.0   166.0    68.70        LTP < S3   26.11
-    MADRASFERT    29.30    28.66    3.17     66.0   -15.0    29.88  PP <= LTP < R1   39.44
-           PNB    32.55    33.70   -2.40     53.0    14.0    32.35       LTP >= S2   27.43
-   ** GLENMARK   480.60   490.14   -1.09     45.0    54.0   480.65              S1   23.19
-    FEDERALBNK    71.45    70.58    2.36     39.0    38.0    71.33       LTP >= R1   35.15
-     ** MARUTI  7655.00  7972.54   -2.74     39.0    89.0  7657.63              S2   19.78
-      HDFCBANK  1354.50  1437.02   -3.91     36.0    93.0  1320.78       LTP >= S3   55.02
-    CENTURYTEX   418.50   399.95    3.87     35.0   102.0   411.48       LTP >= R1   39.89
-     REPCOHOME   242.35   245.96   -2.06     32.0    -6.0   238.95       LTP >= S2   65.10
-        VOLTAS   934.00   926.47    2.24     26.0     0.0   936.03  PP <= LTP < R1   17.57
-          SAIL    56.90    58.24   -0.70     24.0    58.0    56.03  PP > LTP >= S1   53.29
-      ADANIENT   514.85   514.84    0.40     21.0    -8.0   520.55  PP <= LTP < R1   13.30
-    HEROMOTOCO  3411.95  3415.36    1.59     21.0     9.0  3451.72  PP <= LTP < R1   19.69
-    HINDUNILVR  2314.00  2376.31   -3.23     19.0    78.0  2293.77       LTP >= S2   42.49
-        ** PFC   108.95   112.24   -2.33     18.0    30.0   109.02              S2   30.12
-          NTPC    91.15    91.79   -0.16     17.0    35.0    90.37  PP > LTP >= S1   39.90
-           SRF  5401.00  5388.80    0.73     15.0    -6.0  5439.45  PP <= LTP < R1   38.47
-           ABB  1360.60  1376.47   -2.03     15.0    -8.0  1356.57  PP > LTP >= S1   57.69
-           PEL  1375.35  1458.75   -3.22     14.0    11.0  1357.72       LTP >= S2   29.32
-    BAJAJFINSV  8980.00  9160.23   -1.60     14.0   -19.0  8908.13       LTP >= S2   23.79
-    BANDHANBNK   311.70   306.90    2.63     12.0   -23.0   312.03  PP <= LTP < R1   38.21
-          BPCL   384.35   384.57    0.99     12.0    21.0   387.32  PP <= LTP < R1   41.09
-         DABUR   527.60   530.46    0.02      9.0    -1.0   522.93  PP > LTP >= S1   35.21
-     JKLAKSHMI   315.30   322.11   -1.47      7.0   -25.0   311.40       LTP >= S2   55.56
-  ** VISAKAIND   436.50   434.30   -0.16      6.0   -50.0   436.48              PP   56.08
-    TATACONSUM   563.90   578.75   -1.53      5.0     2.0   563.28  PP > LTP >= S1   45.95
-    BAJFINANCE  4839.10  4857.86   -0.12      3.0   -18.0  4788.80  PP > LTP >= S1   11.44
-    IDFCFIRSTB    47.70    48.01   -0.21      3.0   -25.0    46.73  PP > LTP >= S1   20.66
- ** OBEROIRLTY   526.35   544.23   -1.93      3.0    16.0   526.57              S1   69.43
-          IDBI    28.35    27.46    2.35      0.0     1.0    28.43  PP <= LTP < R1   37.41
- ** GODREJPROP  1243.35  1299.75   -4.15     -4.0    -8.0  1243.72              S2   24.19
-    CHAMBLFERT   238.90   236.28    3.38     -7.0    11.0   239.13  PP <= LTP < R1   40.73
-          BHEL    35.95    35.82    0.70    -11.0   -13.0    36.13  PP <= LTP < R1   22.06
-  ** SUNPHARMA   560.75   572.43   -1.59    -11.0    42.0   560.40              S1   22.73
-          SBIN   280.05   278.67    1.60    -12.0    11.0   282.77  PP <= LTP < R1   30.15
-           MCX  1670.60  1642.18    1.15    -14.0    21.0  1680.13  PP <= LTP < R1   59.88
-        ** TCS  3222.70  3265.48   -1.18    -24.0   -14.0  3223.22              S1   54.12
-        BIOCON   382.15   378.58    1.22    -27.0   -12.0   386.82  PP <= LTP < R1   28.90
-    CUMMINSIND   630.20   622.05    0.92    -27.0    62.0   632.75  PP <= LTP < R1   24.05
-           IOC    92.65    91.25    1.37    -32.0    -7.0    93.38  PP <= LTP < R1   34.78
-  ** BOMDYEING    74.20    74.15    0.34    -32.0   -52.0    74.15              PP   32.03
-   ** GODREJCP   775.50   776.00    0.20    -34.0   -51.0   775.25              PP   37.32
-      JSWSTEEL   379.70   377.59    0.92    -35.0   -28.0   381.65  PP <= LTP < R1   27.43
-       ** ONGC    90.15    90.09    0.50    -36.0    -5.0    90.12              PP   24.72
-    ** RAYMOND   325.30   325.19   -0.63    -36.0     0.0   325.52              PP   44.15
-      CROMPTON   423.65   417.12   -1.03    -37.0   -22.0   444.40  PP <= LTP < R1   66.16
-    INDUSTOWER   241.40   241.10    1.28    -38.0    25.0   245.23  PP <= LTP < R1   36.59
-     HINDPETRO   220.60   216.74    1.82    -42.0   -19.0   220.37       LTP >= R1   39.98
-      EVEREADY   192.90   189.48   -0.85    -43.0   -23.0   199.80  PP <= LTP < R1   68.86
-      ** CIPLA   840.95   843.08   -0.18    -52.0   -22.0   841.38              PP   25.68
-       ** INFY  1282.30  1308.99   -1.44    -57.0   -45.0  1281.55              S1   50.59
-    TRITURBINE    85.40    84.49    1.36    -61.0   -84.0    85.83  PP <= LTP < R1   57.39
-      GRAPHITE   314.80   312.42   -1.04    -64.0   -35.0   326.40  PP <= LTP < R1   34.02
-      ** SPARC   181.60   185.24   -1.33    -65.0   -47.0   181.58              S1   40.26
-    CASTROLIND   125.30   124.98    1.21    -68.0   -54.0   126.65  PP <= LTP < R1   48.23
+As of 2021-02-16 22:15:57.317234+05:30, Volume Signals:
+Symbols marked with (*) have just crossed a crossover point.
+        Symbol FreeFloat        LTP        VWAP    %Chng     ATR %Vol_TDY  %Vol_7D TDYVol Avg7DVol   S1-R3         Remarks  %Del_TDY                                 News
+     CENTRALBK      981M     ₹ 16.7     ₹ 16.11  19.71 %    0.72    3.95K    459.6   181M    32.4M   17.17  PP <= LTP < R1     26.35    (6h ago)Govt could raise up to ₹1
+           IOB      861M     ₹ 13.1     ₹ 12.76  19.63 %    0.55     3.9K    376.4   121M    25.3M    13.5  PP <= LTP < R1     25.53   (10h ago)Volumes spurt at Indian O
+     BANKINDIA     2.12B     ₹ 70.6      ₹ 59.2  19.97 %    3.08    1.31K    405.5  57.3M    11.3M   61.42       LTP >= R3     21.90    (4h ago)Nifty PSU Bank rallies on
+      MAHABANK      875M    ₹ 19.05      ₹ 18.5  19.81 %    0.98    581.9    228.8  20.4M    6.21M   19.52  PP <= LTP < R1     52.27    (4h ago)Nifty PSU Bank rallies on
+      GRAPHITE     14.9B   ₹ 483.75    ₹ 433.08   10.8 %   23.09      564     26.2  5.67M    4.49M  469.07       LTP >= R3     29.42  (100h ago)Graphite India Q3 PAT tur
+           HEG     1.91B   ₹ 1448.5   ₹ 1240.31  16.84 %   71.41    537.1     75.7  3.03M    1.72M    1.4K       LTP >= R3     18.49   (12h ago)HEG: From Value Play To R
+     UNIONBANK     2.44B    ₹ 34.55     ₹ 34.76   3.13 %    1.24    476.2    152.5  25.5M    10.1M    33.7  PP > LTP >= S1     20.94  (110h ago)India’s recovery reduces 
+       UCOBANK      783M    ₹ 13.15     ₹ 13.19   2.33 %    0.37    473.9    214.5  7.81M    2.48M   12.95  PP > LTP >= S1     33.04      (296h ago)UCO Bank spurts 1.13%
+    TORNTPOWER     5.61B    ₹ 345.8    ₹ 332.67   5.48 %   10.94    346.4    218.4  5.48M    1.72M  343.83       LTP >= R3     24.99  (149h ago)Torrent Power Q3 PAT down
+     NESTLEIND     62.4B  ₹ 17200.0  ₹ 17447.12   -1.6 %  305.16    320.8    133.7   229K    98.2K   17.2K       LTP >= S2     44.57    (4h ago)Nifty FMCG index trade lo
+          ONGC     71.8B   ₹ 103.35     ₹ 97.62   4.98 %    3.53      319    202.6  76.2M    25.2M  101.42       LTP >= R2     35.88    (5h ago)Top gainers today: PowerG
+    JINDALSTEL      126B    ₹ 330.2    ₹ 310.58    7.0 %   14.50      302    120.4  26.3M    11.9M   321.3       LTP >= R3     25.04    (7h ago)Stock market update: Nift
+         LUPIN      127B   ₹ 1099.9   ₹ 1063.56   3.91 %   33.38    297.2    114.6  3.82M    1.78M   1.09K       LTP >= R3     30.87  (111h ago)Bears take control on Nif
+  ** KOTAKBANK      582B   ₹ 2023.9   ₹ 1985.35   1.91 %   53.30    224.1     18.9  5.48M    4.61M   2.02K              R2     46.66    (5h ago)Top gainers today: PowerG
+     POWERGRID     54.5B   ₹ 225.75    ₹ 213.04   6.26 %    6.26    219.8    223.8  45.1M    13.9M  218.65       LTP >= R3     22.77    (4h ago)Buy Power Grid Corporatio
+      TATACHEM     9.42B    ₹ 584.2    ₹ 569.27   2.73 %   23.78    204.5     29.5   9.1M    7.03M   583.2       LTP >= R1     15.13  (157h ago)Trade Spotlight: What Sho
+       MPHASIS     13.7B   ₹ 1676.6   ₹ 1665.32   0.35 %   58.19    204.1    -25.9   231K     311K   1.69K  PP <= LTP < R1     50.10    (5h ago)IT stocks under pressure;
+     TEAMLEASE     3.16B   ₹ 3080.0   ₹ 3134.94    0.1 %  193.35    203.5    -38.7  51.2K    83.5K   3.02K  PP > LTP >= S1     78.76  (184h ago)BRIEF-Teamlease Services 
+          MFSL     86.2B    ₹ 859.0    ₹ 827.13   4.91 %   30.67    194.1     45.2  3.56M    2.45M  840.08       LTP >= R1     41.56  (125h ago)Buy Max Financial Service
+          NMDC      103B   ₹ 115.65    ₹ 112.37   3.17 %    4.66    189.7     35.2  15.8M    11.7M     115       LTP >= R3     28.52   (10h ago)IOB, NMDC, TechM among 30
+    PIDILITIND      269B   ₹ 1790.0   ₹ 1778.35   1.32 %   46.60    181.3     68.9  1.01M     600K   1.79K       LTP >= R1     31.44  (198h ago)Buy Pidilite Industries; 
+       HAVELLS      294B   ₹ 1220.6   ₹ 1166.34   4.12 %   45.47    158.4     97.0  3.72M    1.89M    1.2K       LTP >= R2     20.41   (10h ago)IOB, NMDC, TechM among 30
+      GODREJCP      281B   ₹ 721.95    ₹ 750.14  -2.87 %   21.16      154     22.4  1.63M    1.33M  720.02       LTP >= S3     47.16    (4h ago)Nifty FMCG index trade lo
+          VEDL      328B    ₹ 190.0    ₹ 184.78   3.23 %    6.51    150.6     80.8  24.1M    13.4M  188.48       LTP >= R2     29.10   (11h ago)Ind-Ra upgrades Vedanta’s
+      GLENMARK     73.4B   ₹ 505.05    ₹ 494.11   2.93 %   14.52      135     43.9   2.5M    1.74M  505.43  PP <= LTP < R1     28.21    (3h ago)Asset monetisation, sales
+     TATASTEEL     50.7B   ₹ 697.65    ₹ 678.28   3.79 %   28.11    128.9     29.8  33.7M    25.9M  694.72       LTP >= R2     17.73    (5h ago)Metal stocks drive market
+      JSWSTEEL      390B    ₹ 406.3    ₹ 404.62   0.64 %   14.14      127     58.0  10.6M     6.7M  407.37  PP <= LTP < R1     13.31   (38h ago)J&K removes 15 NoCs to pr
+        ASHOKA     2.76B    ₹ 117.5    ₹ 108.54  10.02 %    5.32    121.8     12.6  3.67M    3.26M  115.53       LTP >= R3     43.45   (26h ago)Buy Ashoka Buildcon; Targ
+    FEDERALBNK     85.1B     ₹ 85.4     ₹ 84.97   0.23 %    3.09    115.3     29.2  27.8M    21.5M    86.1  PP <= LTP < R1     23.79   (35h ago)D-Street Buzz: IndusInd B
+       PRAJIND     7.03B    ₹ 132.0    ₹ 128.63   3.17 %    6.17    109.8     13.0  2.15M     1.9M  131.62       LTP >= R2     52.53  (269h ago)Praj Industries reports o
+            LT      928B   ₹ 1550.0   ₹ 1534.34    0.8 %   43.60    105.6     25.5  3.84M    3.06M   1.55K       LTP >= R1     48.72    (8h ago)Markets trade in red: Met
+          SAIL     9.06B    ₹ 64.75     ₹ 63.92   3.27 %    3.68    104.6      2.5  53.6M    52.3M    64.8  PP <= LTP < R1     36.18    (5h ago)Metal stocks drive market
+           BEL      162B    ₹ 133.6    ₹ 136.22  -1.84 %    5.02     96.4     50.0  16.2M    10.8M  133.13       LTP >= S2     30.07   (13h ago)Centre launches E-Chhawan
+ ** HINDUNILVR     1.98T   ₹ 2197.0   ₹ 2238.32  -0.82 %   50.87     96.1     -4.2   2.4M     2.5M    2.2K              S1     63.87    (6h ago)Supreme Court Dismisses H
+          BHEL     25.1B    ₹ 39.95      ₹ 38.9    2.7 %    1.88     88.6    -23.4  46.7M      61M   39.83       LTP >= R2     34.36  (126h ago)BHEL bags order to supply
+        BIOCON     36.2B    ₹ 417.4    ₹ 408.49   2.32 %   13.23     80.2     36.0  5.41M    3.97M  415.87       LTP >= R3     31.99   (10h ago)Biocon, Bandhan Bank Amon
+      HINDALCO      426B    ₹ 302.0    ₹ 292.56   3.64 %   11.11     78.1     28.3  27.5M    21.4M   299.2       LTP >= R2     19.77    (5h ago)Top gainers today: PowerG
+    TATACONSUM      373B   ₹ 628.15    ₹ 616.32   0.81 %   18.12     77.2     53.4  6.42M    4.18M  629.93  PP <= LTP < R1     36.77   (11h ago)Why Tata Consumer’s Stock
+           PFC     15.2B   ₹ 133.95    ₹ 130.55   2.17 %    4.02     75.1      9.1  8.53M    7.82M  133.18       LTP >= R1     27.24   (88h ago)PFC, REC score over liste
+        MARUTI      202B   ₹ 7690.0   ₹ 7611.43   1.23 %  234.74     74.5     53.4  1.32M     861K   7.68K       LTP >= R2     25.09    (6h ago)Volkswagen Polo and Vento
+     ** VGUARD     35.4B    ₹ 220.7     ₹ 225.4  -1.19 %   11.28     72.8     26.1   865K     685K   220.7              S1     81.07  (167h ago)Buy V-Guard Industries; T
+     TATAELXSI     9.79B   ₹ 2889.0   ₹ 2869.73   1.06 %  143.03       71     20.0   583K     486K    2.9K  PP <= LTP < R1     23.87  (277h ago)ICRA withdraws ratings fo
+           M&M      175B    ₹ 912.3    ₹ 913.43   0.05 %   36.25       70    -52.9  4.22M    8.98M  921.82  PP <= LTP < R1     29.78   (12h ago)Share Market Live: Sensex
+      RAMCOCEM      124B    ₹ 990.0    ₹ 970.85   1.37 %   31.79     67.8      1.9  1.21M    1.19M  985.03       LTP >= R1     25.11   (36h ago)Buy The Ramco Cements, ta
+       SBILIFE     34.2B    ₹ 872.7    ₹ 882.93  -0.52 %   24.78       66    -35.9  1.63M    2.55M  867.78  PP > LTP >= S1     44.80   (10h ago)Biocon, Bandhan Bank Amon
+       DRREDDY      114B   ₹ 4693.0   ₹ 4735.41  -0.36 %  134.61     62.3    -37.9   813K    1.31M   4.66K  PP > LTP >= S1     29.01  (166h ago)Buy Dr Reddy’s Laboratori
+       DCBBANK     2.99B   ₹ 114.35    ₹ 113.64  -0.26 %    5.34     58.3      7.5  2.03M    1.89M  116.42  PP <= LTP < R1     42.05  (206h ago)DCB Bank revises MCLR on 
+      EXIDEIND     97.4B   ₹ 211.85    ₹ 213.51  -0.16 %    7.25     56.7    -26.4  5.87M    7.98M  210.33  PP > LTP >= S1     33.74  (137h ago)Saral Jeevan Bima for low
+      CROMPTON     91.7B   ₹ 397.15    ₹ 398.49   0.56 %   18.44     55.2     61.1  3.87M     2.4M  399.75  PP <= LTP < R1     71.81  (132h ago)Stocks in news: Aurobindo
+      AXISBANK      984B   ₹ 776.55    ₹ 777.14   -2.2 %   28.06       53     26.7    24M    18.9M   765.6  PP > LTP >= S1     49.11    (3h ago)Market Movers: What cause
+          NTPC     46.2B    ₹ 97.85     ₹ 95.71   2.78 %    3.10     51.7     10.3  32.9M    29.8M   97.33       LTP >= R2     38.18    (4h ago)NTPC starts disbursing co
+          SBIN     1.56T    ₹ 402.9    ₹ 403.08   -1.0 %   15.93     49.9      0.6  80.4M    79.9M  398.62  PP > LTP >= S1     26.33    (1h ago)SBI MF, Axis MF invest Rs
+        ** IGL     94.8B    ₹ 548.0    ₹ 546.07   1.15 %   19.76     46.5    -10.8  2.32M     2.6M  548.08              PP     26.25   (29h ago)Hold Indraprastha Gas: Ta
+       SIEMENS     83.5B   ₹ 1830.0   ₹ 1858.05  -2.42 %   61.79     46.4     57.5   558K     354K    1.8K       LTP >= S2     19.95   (29h ago)Siemens - Healthy Q3 Marg
+    CASTROLIND     12.3B    ₹ 126.7    ₹ 127.51  -0.08 %    3.53     45.7    -29.7   1.1M    1.56M  125.93  PP > LTP >= S1     59.07  (102h ago)Buy Castrol (India); Targ
+    ULTRACEMCO       74B  ₹ 6457.85   ₹ 6420.45   0.78 %  189.57     45.7    -16.8   596K     716K   6.45K       LTP >= R1     24.77    (5h ago)Top gainers today: PowerG
+       ESCORTS      9.8B   ₹ 1390.0    ₹ 1408.1  -0.52 %   50.49     45.4    -31.8   935K    1.37M   1.38K  PP > LTP >= S1     11.90  (277h ago)Escorts: Maintain ‘neutra
+           LTI      183B   ₹ 3956.0    ₹ 4050.5  -1.89 %  161.63     40.8     -4.7    92K    96.5K   3.92K       LTP >= S3     66.57    (5h ago)IT stocks under pressure;
+          JBMA      595M    ₹ 424.0     ₹ 397.4    7.9 %   19.33     40.7      6.2  59.3K    55.8K  414.23       LTP >= R3     63.03  (171h ago)JBM Auto Reports 33% Rise
+      HDFCBANK     7.03T   ₹ 1625.5   ₹ 1608.22   0.55 %   43.43     40.2    -16.6  6.95M    8.33M   1.63K  PP <= LTP < R1     31.00   (12h ago)Sensex, Nifty at record h
+      GMRINFRA     52.4B    ₹ 25.35     ₹ 25.53  -0.78 %    1.05     39.3    -15.7  9.99M    11.8M   25.23  PP > LTP >= S1     26.31    (7h ago)GMR Infra Consolidated De
+    BANDHANBNK       23B    ₹ 351.3    ₹ 340.45   3.34 %   15.11     38.8     28.8  13.1M    10.2M   348.8       LTP >= R3     38.25   (10h ago)Biocon, Bandhan Bank Amon
+          ZEEL      195B   ₹ 206.45    ₹ 212.31  -2.48 %   11.12     36.5    -28.6  22.9M    32.1M  203.63       LTP >= S3     28.59    (7h ago)Stock market update: Medi
+       RBLBANK     11.4B    ₹ 257.6    ₹ 250.25   1.42 %   12.92     34.8     40.4  22.6M    16.1M   259.2  PP <= LTP < R1     16.00   (35h ago)D-Street Buzz: IndusInd B
+    HEROMOTOCO      225B  ₹ 3467.75   ₹ 3477.96   0.07 %  115.57     34.1    -40.1   759K    1.27M   3.44K  PP > LTP >= S1     28.38   (38h ago)Hero MotoCorp’s Premium M
+  ** ICICIBANK     2.33T   ₹ 658.15    ₹ 665.53  -2.34 %   18.68     31.1      6.8    25M    23.4M  658.37              S1     44.22    (2h ago)Banks eye bigger home loa
+    BAJFINANCE      766B   ₹ 5768.0   ₹ 5731.57  -0.21 %  185.35     30.8    -21.5  2.13M    2.71M   5.85K  PP <= LTP < R1     15.37    (4h ago)Bajaj Housing Finance to 
+           IOC     23.9B     ₹ 95.8     ₹ 94.53   1.75 %    3.07     30.6     -9.9  24.9M    27.6M    95.5       LTP >= R1     28.34    (9h ago)‘IOC, HPCL, BPCL and othe
+       RAYMOND     1.15B    ₹ 331.6    ₹ 333.47  -0.12 %   10.37     26.9    -45.6   444K     816K  329.75  PP > LTP >= S1     46.77  (125h ago)Raymond raises Rs200cr th
+        ** TCS      3.3T   ₹ 3113.0    ₹ 3156.8  -0.86 %   74.93     23.7     48.0  3.44M    2.32M   3.11K              S1     51.96    (6h ago)TCS BaNCS solution to hel
+     LICHSGFIN     72.1B   ₹ 468.55    ₹ 464.94  -1.58 %   20.20     19.6     -2.4  6.49M    6.65M  489.17  PP <= LTP < R1     16.99  (103h ago)Macquarie Expects Over 20
+       ** INFY      971B   ₹ 1294.5   ₹ 1317.42  -1.16 %   32.70     18.9     17.3   6.9M    5.88M   1.29K              S2     61.51    (0h ago)Infosys’ US arm buys unde
+        ** PNB     47.7B    ₹ 39.55     ₹ 39.43    0.0 %    1.95     18.3    -16.1   188M     224M   39.53              PP     21.21    (8h ago)Karnataka HC rejects NRI 
+    ASIANPAINT     1.11T   ₹ 2453.0   ₹ 2481.34  -0.15 %   80.15     17.4    -51.0  1.62M     3.3M   2.43K  PP > LTP >= S1     34.57   (29h ago)Sensex finishes above 52,
+           DLF     98.2B    ₹ 318.6    ₹ 319.68   0.43 %   15.09       17     -9.6  19.3M    21.4M   324.7  PP <= LTP < R1     24.19   (73h ago)How you can use put optio
+    CUMMINSIND     51.7B    ₹ 767.4    ₹ 756.14   0.79 %   28.46     16.2     30.5  1.29M     991K  768.62  PP <= LTP < R1     17.50  (130h ago)Pujara was big wicket for
+      ADANIENT      210B    ₹ 783.0    ₹ 755.68   2.56 %   31.66     15.6    111.1  19.4M     9.2M  798.38  PP <= LTP < R1     10.44  (103h ago)Adani Enterprises enters 
+         CIPLA      214B    ₹ 849.0    ₹ 849.53   0.56 %   25.26     13.5    -38.3  2.81M    4.55M  853.27  PP <= LTP < R1     30.55  (111h ago)Bears take control on Nif
+      CADILAHC      120B    ₹ 468.5    ₹ 468.21   0.33 %   13.24       12     -7.9  3.39M    3.68M  471.58  PP <= LTP < R1     38.81  (102h ago)Buy Cadila Healthcare; Ta
+     BRITANNIA      403B  ₹ 3392.35   ₹ 3421.26  -0.72 %   75.21       12    -34.4   693K    1.06M   3.38K       LTP >= S2     60.22   (26h ago)Buy Britannia Industries;
+           SRF     16.3B   ₹ 5779.0   ₹ 5668.23   2.79 %  186.03     11.8     28.6   173K     134K   5.77K       LTP >= R2     36.16  (154h ago)SRF And Bandhan Bank Amon
+          GAIL     24.7B    ₹ 133.1    ₹ 133.95  -0.52 %    4.77      8.9    -35.4  15.2M    23.6M  131.97  PP > LTP >= S1     28.22   (30h ago)Hold Gail (India): Target
+     HINDPETRO     16.5B    ₹ 226.2    ₹ 223.18   1.62 %    7.11      7.3      7.6  7.11M    6.61M   225.2       LTP >= R1     36.43    (9h ago)‘IOC, HPCL, BPCL and othe
+    WOCKPHARMA     3.06B    ₹ 504.0    ₹ 495.33   2.18 %   22.67      6.9    -19.8   661K     824K  500.67       LTP >= R1     31.82  (147h ago)Fresh investments from TC
+     BOMDYEING     3.41B     ₹ 71.1     ₹ 72.31  -0.91 %    2.64      5.6    -25.6  1.16M    1.56M    70.9  PP > LTP >= S1     49.30  (179h ago)Bombay Dyeing Standalone 
+    SRTRANSFIN     28.3B   ₹ 1480.0   ₹ 1510.14   -2.2 %   77.42      4.4    -25.8  2.32M    3.13M   1.46K  PP > LTP >= S1     15.90  (124h ago)Shriram Transport Finance
+    IDFCFIRSTB     11.4B     ₹ 53.9      ₹ 53.6  -0.37 %    2.55        3    -14.4  46.9M    54.8M   55.07  PP <= LTP < R1     27.98  (650h ago)IDFC Bank Q3 Net Profit T
+    TATAMOTORS      299B    ₹ 329.0    ₹ 329.83   -1.3 %   17.92      2.8    -23.5  65.9M    86.2M   326.3  PP > LTP >= S1     22.35    (4h ago)What Jaguar Land Rover’s 
+    INDUSINDBK       60B   ₹ 1063.0   ₹ 1053.29   0.51 %   45.22     -0.5     36.2  13.9M    10.2M   1.07K  PP <= LTP < R1     20.99   (11h ago)Sensex crosses 52,500 mar
+        ** UPL      148B   ₹ 538.65    ₹ 538.21   0.22 %   21.47     -2.2    -47.7  2.98M    5.69M  538.65              PP     20.39  (172h ago)UPL only firm in crop pro
+ ** BAJAJFINSV      127B  ₹ 10460.0  ₹ 10486.75  -0.74 %  351.41     -5.7    -54.2   359K     783K   10.5K              PP     15.31   (28h ago)Top gainers today: 5 shar
+        ** OIL     4.15B   ₹ 118.25    ₹ 116.33    1.9 %    3.08     -6.5      6.5  1.49M     1.4M  118.17              R3     41.41    (5h ago)Hold Oil India: Target Of
+ ** BANKBARODA     47.8B    ₹ 79.65     ₹ 79.56   0.13 %    4.59     -7.6    -25.3  44.8M      60M   79.62              PP     21.11  (110h ago)India’s recovery reduces 
+     VISAKAIND      404M    ₹ 503.2    ₹ 469.36   8.23 %   20.06    -10.4     30.1   166K     128K   497.6       LTP >= R3     47.39  (127h ago)Buy Visaka Industries; Ta
+        RADICO     22.8B    ₹ 567.0    ₹ 562.36   -0.4 %   21.09    -12.6     12.2   497K     443K  579.82  PP <= LTP < R1     43.04  (166h ago)Buy Radico Khaitan; Targe
+    GODREJPROP     27.4B   ₹ 1531.5    ₹ 1522.7   1.43 %   58.71    -14.6    -58.3   582K     1.4M   1.54K  PP <= LTP < R1     28.26  (102h ago)Godrej Properties recogni
+ ** BERGEPAINT      186B    ₹ 757.9    ₹ 766.26   -0.8 %   23.88    -20.7    -55.0  1.19M    2.64M  758.07              S1     42.79   (30h ago)Hold Berger Paints India:
+          HDFC     2.57T  ₹ 2853.85   ₹ 2847.59  -0.23 %   84.66    -21.4    -41.1  2.29M     3.9M   2.88K  PP <= LTP < R1     50.43    (6h ago)Sensex sets record high, 
+           ABB       39B  ₹ 1494.45   ₹ 1485.24   1.38 %   50.82      -24    -16.6   171K     205K    1.5K  PP <= LTP < R1     52.45   (36h ago)ABB provides ventilation 
+         QUESS     4.45B    ₹ 722.8    ₹ 688.73   5.42 %   40.43    -25.2    -38.8   431K     705K  717.07       LTP >= R3     37.58  (193h ago)Why Shares Of Quess Corp,
+           MGL     6.47B   ₹ 1148.0   ₹ 1135.17    1.7 %   39.90    -28.9    -45.9   562K    1.04M   1.14K       LTP >= R1     15.13  (101h ago)Accumulate Mahanagar Gas;
+    KAJARIACER     79.5B    ₹ 975.0    ₹ 965.93   1.42 %   32.97    -28.9    -44.8   312K     565K  973.83       LTP >= R1     58.78  (363h ago)Buy Kajaria Ceramics; Tar
+  ** GODREJIND     33.2B    ₹ 444.0    ₹ 450.91  -0.88 %   12.65    -29.1    -61.2   122K     315K   444.1              S1     76.83   (36h ago)Stocks in news: Tata Moto
+      RELIANCE      657B   ₹ 2058.5   ₹ 2043.13   1.27 %   56.62    -29.8    -12.4  9.88M    11.3M   2.05K       LTP >= R1     26.42    (5h ago)Tata Group To Buy Majorit
+    AUROPHARMA      262B    ₹ 934.0    ₹ 933.34   0.19 %   33.42    -30.9    -51.5  1.83M    3.76M  925.63  PP > LTP >= S1     33.67    (4h ago)Buy Aurobindo Pharma; Tar
+      EVEREADY     3.15B    ₹ 233.9    ₹ 232.39   0.32 %   11.82    -33.1    -77.7   206K     924K  240.22  PP <= LTP < R1     58.64  (145h ago)Eveready posts 45% drop i
+         TECHM      121B    ₹ 986.5    ₹ 984.46   0.75 %   31.34    -33.3     18.7  3.91M     3.3M  990.97  PP <= LTP < R1     23.24    (9h ago)Top stocks in focus: Tita
+     AMBUJACEM      104B    ₹ 284.0    ₹ 283.12   0.21 %    9.44    -38.5     -3.4  6.11M    6.33M  286.53  PP <= LTP < R1     26.34   (13h ago)Ambuja Cements (₹283.4): 
+   ** GOODYEAR      586M    ₹ 963.0    ₹ 990.74  -1.51 %   35.12    -41.8    -41.9  20.2K    34.7K     963              S1     68.17   (83h ago)Goodyear India Q3 PAT soa
+           ACC     15.1B   ₹ 1820.0    ₹ 1786.1   1.79 %   55.88    -47.3     27.3  1.94M    1.52M   1.82K       LTP >= R2     15.22    (6h ago)ACC Ready Mix launches lo
+     JKLAKSHMI      4.7B    ₹ 378.0     ₹ 376.9   2.15 %   12.81    -52.1    -60.9   316K     808K  379.83  PP <= LTP < R1     64.65  (127h ago)Buy JK Lakshmi Cement; Ta
+           PEL      110B   ₹ 1842.0   ₹ 1807.29  -0.02 %   80.49    -63.4    -24.1     2M    2.63M   1.89K  PP <= LTP < R1     18.99  (104h ago)Piramal Enterprises Ltd u
+     REPCOHOME     1.05B    ₹ 270.5    ₹ 263.42   1.33 %   10.67    -64.3     19.1   344K     289K  271.83  PP <= LTP < R1     41.47    (4h ago)Buy Repco Home Finance; T
+ ** BHARATFORG       79B    ₹ 632.0    ₹ 624.94   0.63 %   28.62    -64.5    -34.5  2.21M    3.37M  631.95              PP     30.92    (5h ago)Bharat Forge Expects Indu
+     ** ARVIND     1.01B    ₹ 66.25      ₹ 71.7  -6.43 %    4.15    -75.6    -69.0  2.12M    6.83M   66.27              S2     61.79    (6h ago)Info Edge (India) Ltd lea
 Volume scanning finished.
 
 ```
