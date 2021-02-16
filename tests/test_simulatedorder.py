@@ -22,7 +22,7 @@ class TestSimulatedOrder(baseUnitTest):
 		self.assertTrue(s.funds > 32)
 		holdings_size = s.holdings_size
 		s.square_off(2*price)
-		self.assertEqual(s.order_size, holdings_size)
+		self.assertEqual(s.order_size, 0-holdings_size)
 		self.assertEqual(s.holdings_size, 0)
 		self.assertTrue(s.funds >= 199697.789413)
 
