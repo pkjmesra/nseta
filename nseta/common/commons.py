@@ -239,6 +239,7 @@ class ParseNews:
 		self.bs = kwargs.get('soup')
 
 	def parse_news(self):
+		diff_hrs = None
 		try:
 			news_text = self.bs.find_all('script')
 			next_all_data = (news_text[1].text).split('__NEXT_DATA__ = ')
@@ -256,7 +257,7 @@ class ParseNews:
 			default_logger().debug('news_dict:\n{}\n'.format(news_dict))
 		except Exception as e:
 			default_logger().debug(e, exc_info=True)
-		return '({}h ago){}'.format(diff_hrs, headline[:25])
+		return '' if diff_hrs is None else '({}h ago){}'.format(diff_hrs, headline[:25])
 
 class ThreadReturns(threading.Thread):
 	def run(self):
