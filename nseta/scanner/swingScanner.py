@@ -2,6 +2,8 @@ from nseta.scanner.baseScanner import baseScanner
 from nseta.resources.resources import resources
 from nseta.archives.archiver import *
 from nseta.common.log import tracelog, default_logger
+from nseta.scanner.topPickScanner import topPickScanner
+from nseta.scanner.baseStockScanner import ScannerType
 
 __all__ = ['swingScanner']
 
@@ -25,3 +27,8 @@ class swingScanner(baseScanner):
 		self.background = False
 		self.scan(self.option)
 		return 0
+
+	def scan_analysis(self, analysis_df):
+		scanner = topPickScanner(scanner_type=ScannerType.TopPick, stocks=analysis_df['Symbol'].tolist(), indicator='macd', background=self.background)
+		scanner.clear_cache(True, force_clear = True)
+		scanner.scan(option=None)
