@@ -58,7 +58,7 @@ nse_intraday_url = partial(nse_intraday_url_full,
 							Segment='CM', Series='EQ', CDExpiryMonth="", FOExpiryMonth="",
 							IRFExpiryMonth="",CDDate1="",CDDate2="",
 							Template="tame_intraday_getQuote_closing_redgreen.jsp",
-							Periodicity="1", PeriodType="2", ct0='g1|1|1', ct1='g2|2|1',ctcount='2')
+							PeriodType="2", ct0='g1|1|1', ct1='g2|2|1',ctcount='2')
 
 nse_intraday_url_new = URLFetchSession(
 	url='https://www.nseindia.com/api/chart-databyindex')

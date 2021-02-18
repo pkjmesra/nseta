@@ -1316,6 +1316,112 @@ This run of trading strategy scan took 124.9 sec
         FSL  61118.35   35050.20    58745.90     Sell   Unknown        Sell
      RADICO  18186.15    9358.40    29067.85  Unknown   Unknown     Unknown
 ```
+- Top-picks scanning (scanning for stocks for which 5-min and 1-min MACD are aligned)
+
+```
+$ nseta top-picks -i -c
+112/112. Fetching for INFY                                                                                                       
+As of 2021-02-19 00:14:10.506614+05:30, TopPick Signals:
+Symbols marked with (*) have just crossed a crossover point.
+
+     Symbol     LTP Cum_Volume Cdl  Cnt_Cdl    RSI   MOM     OBV  MACD(12)  MACD(9) Signal  Confidence
+  ICICIBANK     644      27.8M   -        1  46.34  0.80  -2.16M    -0.173   -0.077   SELL       100.0
+ BHARTIARTL  589.35      21.8M   +        1  53.24  0.15   -751K    -0.137   -0.265    BUY       100.0
+       SBIN   415.1      67.1M   -        2  46.56 -0.10  -1.77M    -0.292   -0.387    BUY       100.0
+        PFC   131.5      8.27M   -        1  59.67 -0.05    962K     0.141    0.082    BUY       100.0
+       MFSL   868.5       1.4M   +        1  45.44 -1.50  -49.4K    -0.191   -0.137   SELL       100.0
+     JKTYRE   123.8      3.81M   -        2  53.45  0.05   -957K    -0.145   -0.281    BUY       100.0
+   GLENMARK   492.1      1.43M   -        1  36.05 -0.05   36.8K    -0.683   -0.592   SELL       100.0
+       GAIL   143.8       115M   +        4  62.65  0.30   15.7M     0.082   -0.033    BUY       100.0
+   CROMPTON  397.55      2.77M   -        2  23.14 -1.05  -1.32M    -0.175   -0.064   SELL       100.0
+ CHAMBLFERT   233.4       444K   +        2  53.48  0.65  -18.2K     0.046    0.100    BUY       100.0
+ CASTROLIND   129.6      1.49M   +        2  46.74  0.05    408K     0.122    0.208   SELL       100.0
+ WOCKPHARMA  486.95       486K   +        2  58.60  0.85  -32.7K     0.150   -0.027    BUY       100.0
+ BERGEPAINT   756.6       1.5M   -        3  35.70 -1.15   29.7K    -0.484   -0.352   SELL       100.0
+  BATAINDIA   1.52K       595K   -        1  54.56  1.15   23.5K    -0.160   -0.277   HOLD       100.0
+  AMBUJACEM   283.9      7.07M   +        3  61.19  0.35   -234K     0.147   -0.016    BUY       100.0
+ BANKBARODA    95.3       257M   +        1  44.65  0.00   47.7M    -0.080   -0.023   SELL       100.0
+ BAJFINANCE   5.56K      2.31M   -        1  50.75  0.00   -104K     0.112    0.004    BUY       100.0
+ BHARATFORG   629.8      1.88M   -        1  31.88 -0.90    147K    -0.815   -0.532   SELL        80.0
+     INDIGO   1.59K      1.11M   +        1  38.69 -3.95  -67.2K    -1.568   -1.308   SELL        80.0
+        PEL   1.88K      2.09M   -        4  34.19 -8.05   33.5K    -2.957   -2.306   SELL        80.0
+   AXISBANK  774.65      19.7M   -        3  36.21 -1.90   2.42M    -0.056    0.266   SELL        80.0
+  LICHSGFIN     476       7.4M   -        2  30.48 -1.35    436K    -0.614   -0.371   SELL        80.0
+ CENTURYTEX  481.55      1.21M   -        8  34.40 -1.20  -2.48K    -0.824   -0.490   SELL        80.0
+ INDUSINDBK   1.04K       8.9M   -        3  35.89 -1.05    216K    -0.795   -0.602   SELL        80.0
+       INFY   1.29K      6.43M   -        1  39.14 -1.95    152K    -0.410   -0.189   SELL        80.0
+   GOODYEAR     958      15.1K   -        4  33.73 -1.60   -3.4K    -2.427   -1.906   SELL        80.0
+   ADANIENT   812.4      9.68M   +        9  71.09  0.95   1.09M     0.883    0.267    BUY        70.0
+    HCLTECH     951      5.13M   +        1  73.08  0.70    442K     0.849    0.613    BUY        70.0
+   SYMPHONY   1.05K      49.2K   +        3  62.96  0.05   3.61K     0.719   -0.063    BUY        70.0
+        ABB   1.55K       308K   -        1  74.39  5.20   61.1K     4.509    1.569    BUY        70.0
+
+
+Done.                                                                                                                  
+This run of TopPick scan took 141.7 sec
+```
+
+- Filter from the outputs of volume scan, those that are also in top-picks
+
+```
+$ nseta scan -v -c -a
+Last Modified: 2021-02-18 11:48:35.577805+05:30. Fetched LUPIN_live_quote from the disk cache.disk cache.                        
+As of 2021-02-19 01:12:13.961850+05:30, Volume Signals:
+Symbols marked with (*) have just crossed a crossover point.
+
+     Symbol FreeFloat        LTP       VWAP    %Chng     ATR  %Vol_TDY  %Vol_7D TDYVol Avg7DVol   S1-R3         Remarks  %Del_TDY                                    News
+        IGL     95.4B   ₹ 580.95   ₹ 578.32   6.56 %   22.08     754.8    126.9  10.8M    4.77M  591.28  PP <= LTP < R1     21.04  (8h ago)Why GST inclusion of natu...  
+        MGL     6.59B  ₹ 1206.95  ₹ 1202.04    5.7 %   43.05     454.0    107.0  2.92M    1.41M   1.22K  PP <= LTP < R1     15.27  (8h ago)Why GST inclusion of natu...  
+       GAIL     24.9B    ₹ 144.7   ₹ 143.71   7.66 %    5.30     269.5    117.4  79.9M    36.7M  147.93  PP <= LTP < R1     31.70  (8h ago)Why GST inclusion of natu...  
+       ONGC     74.6B   ₹ 108.95   ₹ 109.74   6.55 %    4.35     149.2     28.9  52.4M    40.6M   104.2  PP > LTP >= S1     47.45  (7h ago)Sensex skids for 3rd day ...  
+       MOIL     1.19B   ₹ 142.95   ₹ 143.24   2.69 %    4.20     119.0      9.5   356K     325K   146.8  PP <= LTP < R1     51.28  (8h ago)Nifty Metal in the fast l...  
+        ABB     39.7B   ₹ 1532.0  ₹ 1530.71    2.2 %   52.47      83.7    -25.0   171K     228K    1.5K  PP > LTP >= S1     41.10  (3d ago)ABB provides ventilation ...  
+        IOC     24.1B    ₹ 98.85    ₹ 98.45   4.05 %    3.01      50.6      1.3  24.8M    24.5M   100.8  PP <= LTP < R1     45.76  (6h ago)ICICI Pru MF dumps Tata P...  
+     RADICO     22.6B   ₹ 571.25   ₹ 565.76   1.42 %   20.51      44.0    -46.4   238K     444K  571.32           ** R1     60.07  (9d ago)Buy Radico Khaitan; Targe...  
+       SAIL     9.34B     ₹ 67.0    ₹ 66.98   3.72 %    3.51      36.9    -20.7    38M    47.9M    68.4  PP <= LTP < R1     60.11  (8h ago)Nifty Metal in the fast l...  
+ TRITURBINE     10.3B    ₹ 106.0   ₹ 107.67   6.32 %    5.19      30.7     41.3   937K     663K  101.55  PP > LTP >= S1     62.73  (10d ago)Volumes spurt at Triveni ... 
+      TECHM      121B   ₹ 989.35   ₹ 999.29   0.91 %   30.32      29.9    -22.3  2.89M    3.73M  989.57           ** S1     52.55  (8h ago)Sensex sheds 379 points; ...  
+        UPL      148B   ₹ 553.35   ₹ 546.24   2.66 %   21.45      26.3     -7.5  3.71M    4.01M  554.43  PP <= LTP < R1     35.03  (9d ago)UPL only firm in crop pro...  
+  HINDPETRO     17.4B    ₹ 247.5   ₹ 244.63   5.57 %    8.03      25.1     41.2  14.9M    10.6M  253.42  PP <= LTP < R1     33.11  (11h ago)ONGC, BPCL, HPCL: Oil and... 
+    DCBBANK     3.01B   ₹ 119.05   ₹ 118.17    3.3 %    5.25      16.6     12.8  2.19M    1.94M   119.7  PP <= LTP < R1     59.60  (10d ago)DCB Bank revises MCLR on ... 
+ CUMMINSIND     53.7B   ₹ 792.75   ₹ 788.79   0.21 %   30.12      15.6     11.5  1.54M    1.38M  797.55  PP <= LTP < R1     20.00  (4h ago)IPL 2021 Auction: Top 10 ...  
+       BPCL       33B    ₹ 420.4    ₹ 424.2   2.11 %   13.99       3.4      1.8  8.88M    8.72M  417.15  PP > LTP >= S1     42.11  (2h ago)Oil India, EIL to bid for...  
+    ESCORTS     9.66B  ₹ 1380.95  ₹ 1383.62    0.2 %   49.28      -2.2    -33.4   653K     980K   1.38K           ** PP     27.02  (13d ago)Escorts: Maintain ‘neutra... 
+  REPCOHOME     1.17B    ₹ 338.3   ₹ 336.27   14.0 %   15.81      -5.9     92.4  1.64M     850K   374.8  PP <= LTP < R1     39.96  (10h ago)Stock market update: Smal... 
+  UNIONBANK     2.69B     ₹ 43.2    ₹ 42.71  13.39 %    1.87     -21.1     88.0    73M    38.8M   45.22  PP <= LTP < R1     24.73  (12h ago)New India Assurance Compa... 
+ ASIANPAINT     1.08T  ₹ 2447.55  ₹ 2449.52   2.49 %   80.12     -24.2     -6.2  2.41M    2.57M   2.45K           ** PP     39.35  (3h ago)We want to scratch beyond...  
+ BERGEPAINT      183B    ₹ 760.0   ₹ 757.73   1.03 %   23.91     -26.1    -68.3   743K    2.34M  766.83  PP <= LTP < R1     24.45  (2d ago)Broker’s call: Berger Pai...  
+   GMRINFRA     51.4B    ₹ 25.05    ₹ 25.55    0.0 %    1.06     -27.3    -54.9  5.06M    11.2M   25.05           ** S1     40.61  (2d ago)GMR Infra Consolidated De...  
+        HAL     8.69B   ₹ 1058.0  ₹ 1057.84   1.74 %   35.96     -28.4    -24.8   535K     712K   1.08K  PP <= LTP < R1     52.40  (1d ago)Mutual Funds Bought And S...  
+ BHARTIARTL      285B    ₹ 590.4   ₹ 591.31  -0.58 %   18.53     -31.3    -42.9  11.1M    19.4M  590.75           ** PP     50.51  (1h ago)Bharti Airtel Beats Relia...  
+    UCOBANK      848M    ₹ 15.25    ₹ 15.33   7.02 %    0.58     -33.7    119.7  54.2M    24.7M   15.25           ** PP     37.84  (11h ago)UCO Bank spurts 6.67%...     
+ GODREJPROP     27.3B   ₹ 1508.5  ₹ 1512.54   0.21 %   57.23     -33.7    -47.2   497K     941K   1.51K           ** PP     18.00  (6d ago)Godrej Properties recogni...  
+  POWERGRID       59B   ₹ 234.35   ₹ 234.93   1.87 %    7.51     -33.9    -28.3  14.5M    20.2M  234.43           ** PP     29.99  (11h ago)Power Grid Corporation of... 
+   CROMPTON     91.8B    ₹ 400.0   ₹ 400.24   1.13 %   18.88     -34.8    -34.2   1.6M    2.43M   400.2           ** PP     85.05  (1d ago)Crompton Greaves Consumer...  
+        LTI      176B   ₹ 3900.0  ₹ 3890.27   0.62 %  154.30     -37.4    -31.6  66.1K    96.7K   3.95K  PP <= LTP < R1     65.25  (2d ago)IT stocks under pressure;...  
+        ITC      1.9T   ₹ 219.55   ₹ 219.17   0.83 %    6.65     -43.6    -74.4  11.2M    43.8M  220.33  PP <= LTP < R1     44.61  (8h ago)Share Market Highlights: ...  
+
+
+18/18. Fetching for LTI                                                                                                        
+As of 2021-02-19 01:12:40.466229+05:30, TopPick Signals:
+Symbols marked with (*) have just crossed a crossover point.
+
+     Symbol     LTP Cum_Volume Cdl  Cnt_Cdl    RSI   MOM     OBV  MACD(12)  MACD(9) Signal  Confidence
+       GAIL   143.8       115M   +        4  62.65  0.30   15.7M     0.082   -0.033    BUY       100.0
+        ABB   1.55K       308K   -        1  74.39  5.20   61.1K     4.509    1.569    BUY        70.0
+    ESCORTS   1.38K      1.16M   +        1  39.71  0.05  -30.8K    -0.926   -0.518   SELL        60.0
+ BERGEPAINT   756.6       1.5M   -        3  35.70 -1.15   29.7K    -0.484   -0.352   SELL       100.0
+ BHARTIARTL  589.35      21.8M   +        1  53.24  0.15   -751K    -0.137   -0.265    BUY       100.0
+   CROMPTON  397.55      2.77M   -        2  23.14 -1.05  -1.32M    -0.175   -0.064   SELL       100.0
+
+
+Done.                                                                                                                  
+This run of TopPick scan took 26.1 sec
+TopPick scanning finished.
+Done.                                                                                                                  
+This run of Volume scan took 32.7 sec
+Volume scanning finished.
+```
 
 - To view just the logs of your interest, you can filter those:
 

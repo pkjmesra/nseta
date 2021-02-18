@@ -105,8 +105,7 @@ class historicaldata:
 	"""
 
 	@tracelog
-	def daily_ohlc_history(self, symbol, start, end, index=False, futures=False, option_type="",
-					expiry_date=None, strike_price="", series='EQ', intraday=False, type=ResponseType.Default):
+	def daily_ohlc_history(self, symbol, start, end, periodicity="1", series='EQ', intraday=False, type=ResponseType.Default):
 		"""This is the function to get the historical prices of any security (index,
 			stocks, derviatives, VIX) etc.
 
@@ -229,8 +228,7 @@ class historicaldata:
 
 
 	@tracelog
-	def validate_params(self, symbol, start, end, index=False, futures=False, option_type="",
-						expiry_date=None, strike_price="", series='EQ', intraday=False, type=ResponseType.Default):
+	def validate_params(self, symbol, start, end, periodicity="1", series='EQ', intraday=False, type=ResponseType.Default):
 		"""
 					symbol = "SBIN" (stock name, index name and VIX)
 					start = date(yyyy,mm,dd)
@@ -260,6 +258,7 @@ class historicaldata:
 			scaling = EQUITY_SCALING
 		elif intraday:
 			params['CDSymbol'] = symbol
+			params['Periodicity'] = periodicity
 			url = nse_intraday_url
 			schema = INTRADAY_EQUITY_SCHEMA_NEW # INTRADAY_EQUITY_SCHEMA
 			headers = INTRADAY_EQUITY_HEADERS_NEW # INTRADAY_EQUITY_HEADERS

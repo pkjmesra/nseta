@@ -220,7 +220,7 @@ class ParseTables:
 				lists.append(lst)
 		self.lists = lists
 		if len(lists) == 0:
-			print('\nFor {}, no response received for NSE Intraday request. Please report to the developer.\n'.format(symbol))
+			default_logger().debug('\nFor {}, no response received for NSE Intraday request. Please report to the developer.\n'.format(symbol))
 		return lists
 
 def unzip_str(zipped_str, file_name = None):
@@ -238,7 +238,7 @@ class ParseNews:
 	def __init__(self, *args, **kwargs):
 		self.bs = kwargs.get('soup')
 
-	def parse_news(self):
+	def parse_news(self, symbol=None):
 		diff_hrs = None
 		try:
 			news_text = self.bs.find_all('script')
@@ -252,12 +252,15 @@ class ParseNews:
 			headline = news['headline']
 			pub_date = datetime.datetime.fromisoformat(news['date'].replace('Z', '+00:00'))
 			diff = (IST_datetime() - pub_date).total_seconds()
-			diff_hrs = int(divmod(diff, 3600)[0])
+			diff_hrs = abs(int(divmod(diff, 3600)[0]))
+			diff_hrs_str = '{}h ago'.format(diff_hrs) if diff_hrs <=24 else '{}d ago'.format(int(diff_hrs/24))
 			publisher = news['publisher']
+			lst=[symbol, diff_hrs, diff_hrs_str, publisher, headline]
+			self.news_list = [lst]
 			default_logger().debug('news_dict:\n{}\n'.format(news_dict))
 		except Exception as e:
 			default_logger().debug(e, exc_info=True)
-		return '' if diff_hrs is None else '({}h ago){}'.format(diff_hrs, headline[:25])
+		return '' if diff_hrs is None else '({}){}...'.format(diff_hrs_str, headline[:25])
 
 class ThreadReturns(threading.Thread):
 	def run(self):

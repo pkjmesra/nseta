@@ -5,6 +5,7 @@ import pandas as pd
 from nseta.archives.archiver import *
 from nseta.common.commons import human_format
 from nseta.common.tradingtime import *
+from nseta.resources.resources import *
 from nseta.scanner.stockscanner import scanner
 from nseta.common.log import tracelog, default_logger
 
@@ -17,17 +18,27 @@ class baseScanner:
 		self._background = background
 		self._option = None
 		self._signal_columns = None
+		self._scannerinstance = None
 		self._archiver = None
 		self._response_type = None
 		self._sortAscending = False
+		self._analyse = False
 
 	@property
 	def scanner_type(self):
 		return self._scanner_type
 
 	@property
+	def scannerinstance(self):
+		return self._scannerinstance
+
+	@property
 	def stocks(self):
 		return self._stocks
+
+	@stocks.setter
+	def stocks(self, value):
+		self._stocks = value
 
 	@property
 	def indicator(self):
@@ -81,20 +92,35 @@ class baseScanner:
 	def option(self, value):
 		self._option = value
 
+	@property
+	def analyse(self):
+		return self._analyse
+
+	@analyse.setter
+	def analyse(self, value):
+		self._analyse = value
+
 	@tracelog
-	def scan(self, option=None):
+	def scan(self, option=None, periodicity=None, analyse=False):
 		self.option = option
-		scannerinstance = scanner(indicator=self.indicator)
+		self.analyse = analyse
+		if self.scannerinstance is None:
+			self._scannerinstance = scanner(indicator=self.indicator)
+		if periodicity is not None:
+			self.scannerinstance.periodicity = periodicity
 		if self.background:
 			b = threading.Thread(name='scan_{}_background'.format(self.scanner_type.name), 
-					target=self.scan_background, args=[scannerinstance], daemon=True)
+					target=self.scan_background, args=[self.scannerinstance], daemon=True)
 			b.start()
 			b.join()
 		else:
 			df, signaldf = self.load_archived_scan_results()
 			if df is None or len(df) == 0:
-				df, signaldf = scannerinstance.scan(self.stocks, self.scanner_type)
+				df, signaldf = self.scannerinstance.scan(self.stocks, self.scanner_type)
 			self.scan_results(df, signaldf)
+
+	def scan_analysis(self, analysis_df):
+		default_logger().debug('Analysis should be done in the child class.')
 
 	def scan_results_file_names(self):
 		return 'df_Scan_Results.{}'.format(self.indicator), 'signaldf_Scan_Results.{}'.format(self.indicator)
@@ -125,13 +151,27 @@ class baseScanner:
 		else:
 			print('As of {}, nothing to show here.'.format(IST_datetime()))
 		if signaldf is not None and len(signaldf) > 0:
-			if self.option is not None:
-				signaldf = signaldf.sort_values(by=self.option, ascending=self.sortAscending)
-			user_signaldf = self.configure_user_display(signaldf, columns=self.signal_columns)
-			print("\nAs of {}, {} Signals:\nSymbols marked with (*) have just crossed a crossover point.\n{}".format(IST_datetime(),self.scanner_type.name, user_signaldf.to_string(index=False)))
+			ret = self.flush_signals(signaldf)
+			if not ret:
+				return
 		else:
 			print('As of {}, no signals to show here.'.format(IST_datetime()))
+		self.scan_finished()
+
+	def scan_finished(self):
+		self.scannerinstance.scan_finished(self.scanner_type)
 		click.secho('{} scanning finished.'.format(self.scanner_type.name), fg='green', nl=True)
+
+	def flush_signals(self, signaldf):
+		if self.option is not None and len(self.option) > 0:
+			signaldf = signaldf.sort_values(by=self.option, ascending=self.sortAscending)
+		signaldf = signaldf.head(resources.scanner().scan_results_max_count)
+		analysis_df = signaldf.copy(deep=True)
+		user_signaldf = self.configure_user_display(signaldf, columns=self.signal_columns)
+		print("\nAs of {}, {} Signals:\nSymbols marked with (*) have just crossed a crossover point.\n\n{}\n\n".format(IST_datetime(),self.scanner_type.name, user_signaldf.to_string(index=False)))
+		if self.analyse:
+			self.scan_analysis(analysis_df)
+		return True
 
 	@tracelog
 	def configure_user_display(self, df, columns=None):

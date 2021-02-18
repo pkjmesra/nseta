@@ -69,9 +69,9 @@ class ti:
 
 	def get_macd_df(self, df):
 		df['macd(12)'], df['macdsignal(9)'], df['macdhist(26)'] = ta.MACD(df['Close'], fastperiod=12, slowperiod=26, signalperiod=9)
-		df['macd(12)'] = df['macd(12)'].apply(lambda x: round(x, 2))
-		df['macdsignal(9)']= df['macdsignal(9)'].apply(lambda x: round(x, 2))
-		df['macdhist(26)'] = df['macdhist(26)'].apply(lambda x: round(x, 2))
+		df['macd(12)'] = df['macd(12)'].apply(lambda x: round(x, 3))
+		df['macdsignal(9)']= df['macdsignal(9)'].apply(lambda x: round(x, 3))
+		df['macdhist(26)'] = df['macdhist(26)'].apply(lambda x: round(x, 3))
 		return df[['macd(12)','macdsignal(9)', 'macdhist(26)']]
 
 	def get_sma_df(self, df):

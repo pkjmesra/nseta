@@ -141,8 +141,7 @@ class volumeStockScanner(baseStockScanner):
 			# Stocks that are within 0.075% of crossover points
 			if abs((ltp-pt)*100/ltp) - resources.scanner().crossover_reminder_percent <= 0:
 				crossover_point = True
-				df['Symbol'].iloc[n-1] = '** {}'.format(symbol)
-				df['Remarks'].iloc[n-1]= pt_name
+				df['Remarks'].iloc[n-1]= '** {}'.format(pt_name)
 				df['S1-R3'].iloc[n-1] = pt
 				break
 		if not crossover_point:
@@ -191,6 +190,6 @@ class volumeStockScanner(baseStockScanner):
 			resp = TICKERTAPE_NEWS_URL(symbol.upper())
 			bs = BeautifulSoup(resp.text, 'lxml')
 			news = ParseNews(soup=bs)
-			df['News'] = news.parse_news()
+			df['News'] = news.parse_news().ljust(38)
 			signalframescopy.append(df)
 		return df, df_today, signalframescopy

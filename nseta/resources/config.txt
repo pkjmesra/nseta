@@ -19,6 +19,7 @@ Background_Scan_Frequency_Live = 60
 Background_Scan_Frequency_Quotes = 60
 Background_Scan_Frequency_Volume = 60
 enumerate_volume_scan_signals = no
+scan_results_max_count = 30
 
 # Available columns : Symbol,Date,VWAP,LTP,%%Change,TDYVol(%%),7DVol(%%),Remarks,Yst7DVol(%%),Yst%%Del,Tdy%%Del,PPoint,S1-R3,ATR,NATR,TRANGE,Volatility,ATRE-F,ATRE-S,ATRE,Avg7DVol,FreeFloat,TDYVol,News
 # You can also change the order of columns. Put two %% for 1 % to appear in the column name

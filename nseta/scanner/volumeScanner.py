@@ -1,8 +1,10 @@
 from nseta.scanner.baseScanner import baseScanner
+from nseta.scanner.topPickScanner import topPickScanner
 from nseta.resources.resources import resources
 from nseta.archives.archiver import *
 from nseta.common.tradingtime import IST_datetime
 from nseta.common.log import tracelog
+from nseta.scanner.baseStockScanner import ScannerType
 
 __all__ = ['volumeScanner']
 
@@ -14,10 +16,10 @@ class volumeScanner(baseScanner):
 		self.archiver = archiver()
 
 	@tracelog
-	def scan(self, option=None):
+	def scan(self, option=None, analyse=False):
 		self.signal_columns = resources.scanner().volume_scan_columns
 		self.sortAscending = False
-		super().scan(option='TDYVol(%)' if option is None else option)
+		super().scan(option='TDYVol(%)' if option is None else option, analyse=analyse)
 
 	def scan_background(self, scannerinstance, terminate_after_iter=0, wait_time=resources.scanner().background_scan_frequency_intraday):
 		return super().scan_background(scannerinstance, terminate_after_iter=terminate_after_iter, wait_time=wait_time)
@@ -30,3 +32,8 @@ class volumeScanner(baseScanner):
 			if should_enum:
 				print("\nAs of {}, volume Signals: {}\n".format(IST_datetime(), csv_signals))
 		super().scan_results(df, signaldf, should_cache)
+
+	def scan_analysis(self, analysis_df):
+		scanner = topPickScanner(scanner_type=ScannerType.TopPick, stocks=analysis_df['Symbol'].tolist(), indicator='macd', background=self.background)
+		scanner.clear_cache(True, force_clear = True)
+		scanner.scan(option='')

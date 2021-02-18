@@ -8,7 +8,7 @@ from nseta.scanner.scannerFactory import *
 from nseta.scanner.stockscanner import ScannerType
 from nseta.resources.resources import *
 
-__all__ = ['live_quote', 'scan']
+__all__ = ['live_quote', 'scan', 'top_picks']
 
 def split_keys(keystrings):
 	keys = []
@@ -49,8 +49,9 @@ def live_quote(symbol, general, ohlc, wk52, volume, orderbook, background):
 	help=', '.join(ORDER_BY_KEYS) + ". Choose one.")
 @click.option('--clear', '-c', default=False, is_flag=True, help='Clears the cached data for the given options.')
 @click.option('--background', '-r', default=False, is_flag=True, help='Keep running the process in the background (Optional)')
+@click.option('--analyse', '-a', default=False, is_flag=True, help='Analyse to check which of the results have the best buy/sell confidence based on MACD (Optional)')
 @tracelog
-def scan(stocks, live, intraday, swing, volume, indicator, orderby, clear, background):
+def scan(stocks, live, intraday, swing, volume, indicator, orderby, clear, background, analyse):
 	if (live and intraday) or ( live and swing) or (intraday and swing) or (live and volume) or (intraday and volume) or (swing and volume):
 		click.secho('Choose only one of --live, --intraday, --swing or --volume options.', fg='red', nl=True)
 		print_help_msg(scan)
@@ -69,7 +70,7 @@ def scan(stocks, live, intraday, swing, volume, indicator, orderby, clear, backg
 		scanner_type = ScannerType.Volume if volume else (ScannerType.Intraday if intraday else (ScannerType.Swing if swing else ScannerType.Live))
 		scanner = scannerFactory.scanner(scanner_type, stocks, indicator, background)
 		scanner.clear_cache(clear, force_clear = current_datetime_in_ist_trading_time_range())
-		scanner.scan(option=orderby)
+		scanner.scan(option=orderby, analyse=analyse)
 	except Exception as e:
 		RUN_IN_BACKGROUND = False
 		default_logger().debug(e, exc_info=True)
@@ -78,6 +79,48 @@ def scan(stocks, live, intraday, swing, volume, indicator, orderby, clear, backg
 	except SystemExit:
 		RUN_IN_BACKGROUND = False
 		return
+
+@click.command(help='Scans for price action and signals for intraday or swing recommendations')
+@click.option('--stocks', '-S', default=[], help='Comma separated security codes(Optional). When skipped, all stocks configured in stocks.txt will be scanned.)')
+@click.option('--indicator', '-t', default='all', type=click.Choice(TECH_INDICATOR_KEYS),
+	help=', '.join(TECH_INDICATOR_KEYS) + ". Choose one.")
+@click.option('--intraday', '-i', default=False, is_flag=True, help='Scans (every 10 sec when in background) the intraday price history and lists those that meet the signal criteria')
+@click.option('--swing', '-s', default=False, is_flag=True, help='Scans (every 10 sec when in background) the past 90 days price history and lists those that meet the signal criteria')
+@click.option('--clear', '-c', default=False, is_flag=True, help='Clears the cached data for the given options.')
+@click.option('--background', '-r', default=False, is_flag=True, help='Keep running the process in the background (Optional)')
+@tracelog
+def top_picks(stocks, intraday, swing, indicator, clear, background):
+	if (intraday and swing):
+		click.secho('Choose only one of --intraday or --swing options.', fg='red', nl=True)
+		print_help_msg(top_picks)
+		return
+	elif not intraday and not swing:
+		click.secho('Choose at least one of the --intraday (recommended) or --swing options.', fg='red', nl=True)
+		print_help_msg(top_picks)
+		return
+
+	if stocks is not None and len(stocks) > 0:
+		stocks = [x.strip() for x in stocks.split(',')]
+	else:
+		stocks = []
+	global RUN_IN_BACKGROUND
+	try:
+		scanner = scannerFactory.scanner(ScannerType.TopPick, stocks, indicator, background)
+		scanner.clear_cache(clear, force_clear = current_datetime_in_ist_trading_time_range())
+		scanner.scan()
+	except Exception as e:
+		RUN_IN_BACKGROUND = False
+		default_logger().debug(e, exc_info=True)
+		click.secho('Failed to scan.\n', fg='red', nl=True)
+		return
+	except SystemExit:
+		RUN_IN_BACKGROUND = False
+		return
+
+# @click.command(help='Scans for news for the given tickers or all tickers from stocks.txt')
+# @click.option('--stocks', '-S', default=[], help='Comma separated security codes(Optional). When skipped, all stocks configured in stocks.txt will be scanned.)')
+# @tracelog
+# def news(stocks):
 
 '''
 TODO:

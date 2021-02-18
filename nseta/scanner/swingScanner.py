@@ -13,10 +13,10 @@ class swingScanner(baseScanner):
 		self.archiver = archiver()
 
 	@tracelog
-	def scan(self, option=None):
+	def scan(self, option=None, analyse=False):
 		self.signal_columns = resources.scanner().swing_scan_columns
 		self.sortAscending = True
-		super().scan(option='Symbol')
+		super().scan(option='Symbol', analyse=analyse)
 		# TODO: Include get-quote results for OHLC of today before market closing hours for better accuracy
 
 	@tracelog

@@ -25,6 +25,8 @@ class macdSignalStrategy(basesignalstrategy):
 			rowindex = 0
 			df_summary = None
 			df = df.dropna()
+			if df is None or len(df) ==0:
+				return self.report, None
 			self._target_met = False
 			for macd, macd9 in zip((df['macd(12)']).values, (df['macdsignal(9)']).values):
 				if macd is not None:

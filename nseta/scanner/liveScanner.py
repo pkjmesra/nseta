@@ -13,10 +13,10 @@ class liveScanner(baseScanner):
 		self.archiver = archiver()
 
 	@tracelog
-	def scan(self, option=None):
+	def scan(self, option=None, analyse=False):
 		self.signal_columns = resources.scanner().live_scan_columns
 		self.sortAscending = False
-		super().scan(option='% Delivery')
+		super().scan(option='% Delivery', analyse=analyse)
 
 	@tracelog
 	def scan_background(self, scannerinstance, terminate_after_iter=0, wait_time=resources.scanner().background_scan_frequency_live):

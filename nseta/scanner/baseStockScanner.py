@@ -28,7 +28,8 @@ class ScannerType(enum.Enum):
 	Volume = 5
 	TopReversal = 6
 	BottomReversal = 7
-	Unknown = 8
+	TopPick = 8
+	Unknown = 9
 
 class baseStockScanner:
 	def __init__(self, indicator='all'):
@@ -38,6 +39,16 @@ class baseStockScanner:
 		self._stocksdict = {}
 		self._instancedict = {}
 		self._total_counter = 0
+		self._periodicity = None
+		self._time_spent = 0
+
+	@property
+	def time_spent(self):
+		return self._time_spent
+
+	@time_spent.setter
+	def time_spent(self, value):
+		self._time_spent = value
 
 	@property
 	def total_counter(self):
@@ -54,6 +65,14 @@ class baseStockScanner:
 	# @indicator.setter
 	# def indicator(self, value):
 	# 	self._indicator = value
+
+	@property
+	def periodicity(self):
+		return self._periodicity
+
+	@periodicity.setter
+	def periodicity(self, value):
+		self._periodicity = value
 
 	@property
 	def instancedict(self):
@@ -81,6 +100,8 @@ class baseStockScanner:
 		del(kwargs['scanner_type'])
 		callback_instance = self.get_instance(scanner_type=scanner_type)
 		callback_instance.total_counter = self.total_counter
+		if self.periodicity is not None:
+			callback_instance.periodicity = self.periodicity
 		return callback_instance.scan_quanta(**kwargs)
 
 	def get_instance(self, scanner_type=ScannerType.Unknown):
@@ -101,10 +122,13 @@ class baseStockScanner:
 		list_returned = multithreaded_scan(**kwargs)
 		end_time = time()
 		time_spent = end_time-start_time
+		self.time_spent += time_spent
+		return list_returned.pop(0), list_returned.pop(0)
+
+	def scan_finished(self, scanner_type):
 		sys.stdout.write("\rDone.".ljust(120))
 		sys.stdout.flush()
-		print("\nThis run of {} scan took {:.1f} sec".format(scanner_type.name, time_spent))
-		return list_returned.pop(0), list_returned.pop(0)
+		print("\nThis run of {} scan took {:.1f} sec".format(scanner_type.name, self.time_spent))
 
 	def update_progress(self, symbol):
 		global __scan_counter__
@@ -129,28 +153,24 @@ class baseStockScanner:
 			df['Signal'] = 'NA'
 			df['Remarks'] = 'NA'
 			df['Confidence'] = np.nan
-			decimals = 2
 			ltp = df['LTP'].iloc[0]
 			length_old = len(signalframes)
 			bbands_reco = self.get_quick_recommendation(full_df, 'bbands')
 			signalframes = self.update_signal_indicator(df, signalframes, 'bbands', 'BBands-L', 0.05, ltp, '<=', 'BUY', '[LTP < BBands-L].{}'.format(bbands_reco), 'BUY', '[LTP ~ BBands-L].{}'.format(bbands_reco))
 			signalframes = self.update_signal_indicator(df, signalframes, 'bbands', 'BBands-U', 0.05, ltp, '<=', 'SELL', '[LTP ~ BBands-U].{}'.format(bbands_reco), 'SELL', '[LTP > BBands-U].{}'.format(bbands_reco))
 			rsi_reco = self.get_quick_recommendation(full_df, 'rsi')
-			signalframes = self.update_signal_indicator(df, signalframes, 'rsi', 'RSI', resources.rsi().lower, resources.rsi().upper, '><', '* SELL' if rsi_reco.endswith('Buy') else 'SELL', '[RSI >= {}].{}'.format(resources.rsi().upper, rsi_reco), '* BUY' if rsi_reco.endswith('Buy') else 'BUY', '[RSI <= {}].{}'.format(resources.rsi().lower,rsi_reco))
+			signalframes = self.update_signal_indicator(df, signalframes, 'rsi', 'RSI', resources.rsi().lower, resources.rsi().upper, '><', rsi_reco.upper(), '[RSI >= {}].{}'.format(resources.rsi().upper, rsi_reco), rsi_reco.upper(), '[RSI <= {}].{}'.format(resources.rsi().lower,rsi_reco))
 			signalframes = self.update_signal_indicator(df, signalframes, 'emac', 'EMA(9)', 0.1, ltp, '>=', 'BUY', '[LTP > EMA(9)]', 'SELL', '[LTP < EMA(9)]')
 			macd12 = df['macd(12)'].iloc[0]
 			macd_reco = self.get_quick_recommendation(full_df, 'macd')
-			signalframes = self.update_signal_indicator(df, signalframes, 'macd', 'macdsignal(9)', 0.05, macd12, '>=', '* BUY' if macd_reco.endswith('Buy') else 'BUY', '[MACD > EMA].{}'.format(macd_reco), '* SELL' if macd_reco.endswith('Buy') else 'SELL', '[MACD < EMA].{}'.format(macd_reco))
+			signalframes = self.update_signal_indicator(df, signalframes, 'macd', 'macdsignal(9)', 0.05, macd12, '>=', macd_reco.upper(), '[MACD > EMA].{}'.format(macd_reco), macd_reco.upper(), '[MACD < EMA].{}'.format(macd_reco))
 			length_new = len(signalframes)
 			
 			if length_new > length_old:
 				saved_df = signalframes[len(signalframes) - 1]
 				if saved_df.loc[:,'macd(12)'].iloc[0] > saved_df.loc[:,'macdsignal(9)'].iloc[0]:
-					saved_df.loc[:,'Signal'].iloc[0] = '{}*'.format(saved_df.loc[:,'Signal'].iloc[0])
+					saved_df.loc[:,'Signal'].iloc[0] = '{}'.format(saved_df.loc[:,'Signal'].iloc[0])
 					signalframes[len(signalframes) - 1] = saved_df
-			if self.indicator == 'macd' or self.indicator == 'all':
-				df['macd(12)'] = df['macd(12)'].apply(lambda x: round(x, decimals))
-				df['macdhist(26)'] = df['macdhist(26)'].apply(lambda x: round(x, decimals))
 		except Exception as e:
 			default_logger().debug(e, exc_info=True)
 			return signalframes, df
@@ -160,7 +180,7 @@ class baseStockScanner:
 	def update_signal_indicator(self, df, signalframes, indicator, column, margin, comparator_value, ltp_label_comparator, true_type, true_remarks, false_type, false_remarks):
 		deep_df = df.copy(deep=True)
 		if self.indicator == indicator or self.indicator == 'all':
-			value = round(deep_df[column].iloc[0],2)
+			value = round(deep_df[column].iloc[0],3)
 			if ltp_label_comparator == '><':
 				if (value is not None) and (value > comparator_value or value < margin):
 					deep_df['Remarks'].iloc[0] = true_remarks if value > comparator_value else false_remarks
@@ -220,9 +240,10 @@ class baseStockScanner:
 			tiny_df = pd.DataFrame({'Symbol':limited_df['Symbol'],'Date':limited_df['Date'],'BBands-L':limited_df['BBands-L'], 'BBands-U':limited_df['BBands-U'], 'Close':limited_df['LTP']})
 			sm = bbandsSignalStrategy(strict=True, intraday=False, requires_ledger=False)
 
+		default_logger().debug('tiny_df:\n{}'.format(tiny_df.to_string(index=False)))
 		results, summary = sm.test_strategy(tiny_df)
-		default_logger().debug(summary.to_string(index=False))
 		if summary is not None and len(summary) > 0:
+			default_logger().debug(summary.to_string(index=False))
 			last_row = summary.tail(1)
 			reco = last_row['Recommendation'].iloc[0]
 			return '-' if reco == 'Unknown' else reco
@@ -234,8 +255,8 @@ class baseStockScanner:
 		bbandsl = round(df['BBands-L'].iloc[0],2)
 		bbandsu = round(df['BBands-U'].iloc[0],2)
 		ema = round(df['EMA(9)'].iloc[0],2)
-		macdsignal = round(df['macdsignal(9)'].iloc[0],2)
-		macd12 = round(df['macd(12)'].iloc[0],2)
+		macdsignal = round(df['macdsignal(9)'].iloc[0],3)
+		macd12 = round(df['macd(12)'].iloc[0],3)
 		mom = round(df['MOM'].iloc[0],2)
 		signal = df['Signal'].iloc[0]
 		ltp = df['LTP'].iloc[0]
@@ -283,9 +304,10 @@ class baseStockScanner:
 
 	def trim_columns(self, df):
 		columns = {'bbands':['BBands-L', 'BBands-U'], 
-			'rsi': ['RSI'], 
+			# 'rsi': ['RSI'], 
 			'emac': ['EMA(9)'], 
-			'macd': ['macdsignal(9)', 'macd(12)', 'macdhist(26)']}
+			# 'macd': ['macdsignal(9)', 'macd(12)', 'macdhist(26)']}
+			'macd': ['macdhist(26)']}
 		col_keys = columns.keys()
 		df_keys = df.keys()
 		for indicator in col_keys:
@@ -293,6 +315,6 @@ class baseStockScanner:
 				for key in columns[indicator]:
 					if key in df_keys:
 						df.drop([key], axis = 1, inplace = True)
-		if 'MOM' in df_keys:
-			df.drop(['MOM'], axis = 1, inplace = True)
+		# if 'MOM' in df_keys:
+		# 	df.drop(['MOM'], axis = 1, inplace = True)
 		return df

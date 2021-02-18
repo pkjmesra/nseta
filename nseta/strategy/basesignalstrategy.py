@@ -207,6 +207,7 @@ class basesignalstrategy:
 		n1gtn3 = True if self.n1 > self.n3 else False
 		n3ltn2 = True if self.n3 < self.n2 else False
 		prev_pattern = self.pattern
+		self.recommendation = Recommendation.Hold if n2ltn3 else Recommendation.Sell
 		if n1gtn2 and n2ltn3: # The last 3rd and 2nd values fell and last one reversed in direction
 			if (self.p1 < self.p2) and (self.p2 < self.p3): # All previous values were falling.
 				self.pattern = Direction.PossibleReversalUpward

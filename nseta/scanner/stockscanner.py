@@ -4,6 +4,7 @@ from nseta.scanner.intradayStockScanner import intradayStockScanner
 from nseta.scanner.liveStockScanner import liveStockScanner
 from nseta.scanner.swingStockScanner import swingStockScanner
 from nseta.scanner.volumeStockScanner import volumeStockScanner
+from nseta.scanner.topPickStockScanner import topPickStockScanner
 
 __all__ = ['scanner', 'TECH_INDICATOR_KEYS', 'ScannerType']
 
@@ -26,7 +27,8 @@ class scanner(baseStockScanner):
 		scanner_dict = {(ScannerType.Intraday).name:intradayStockScanner,
 			(ScannerType.Live).name:liveStockScanner,
 			(ScannerType.Swing).name:swingStockScanner,
-			(ScannerType.Volume).name:volumeStockScanner}
+			(ScannerType.Volume).name:volumeStockScanner,
+			(ScannerType.TopPick).name:topPickStockScanner}
 		return scanner_dict[scanner_type.name](indicator=indicator)
 
 	# def buy_solid():
