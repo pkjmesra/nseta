@@ -1,7 +1,6 @@
 from nseta.scanner.intradayScanner import intradayScanner
 from nseta.resources.resources import resources
 import pandas as pd
-from nseta.common.tradingtime import current_datetime_in_ist_trading_time_range
 from nseta.common.log import tracelog, default_logger
 
 __all__ = ['topPickScanner']

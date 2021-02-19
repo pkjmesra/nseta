@@ -1,5 +1,4 @@
 from nseta.scanner.intradayStockScanner import intradayStockScanner
-from nseta.common.log import tracelog, default_logger
 
 __all__ = ['topPickStockScanner']
 
