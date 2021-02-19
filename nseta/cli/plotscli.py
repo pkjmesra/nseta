@@ -21,6 +21,7 @@ PLOT_KEY_TO_FUNC = {"ALL": plot_technical_indicators,
 			   "MACD": plot_macd,
 			   "MOM": plot_mom,
 			   "DMI": plot_dmi,
+			   "OBV": plot_obv,
 			   "BBANDS": plot_bbands}
 PLOT_TI_KEYS = list(PLOT_KEY_TO_FUNC.keys())
 

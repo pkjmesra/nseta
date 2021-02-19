@@ -83,6 +83,13 @@ class TestStrategycli(baseUnitTest):
 		self.assertIn("Technical indicator(s): ADX, plotted.", result.output, str(result.output))
 
 	@patch('matplotlib.pyplot.show')
+	def test_plot_ta_obv(self, mock_pyplot):
+		runner = CliRunner()
+		result = runner.invoke(plot_ta, args=['--symbol', 'BANDHANBNK', '--start', '2020-11-01', '--end', '2021-01-01', '--plot-type', 'OBV'])
+		self.assertEqual(result.exit_code , 0)
+		self.assertIn("Technical indicator(s): OBV, plotted.", result.output, str(result.output))
+
+	@patch('matplotlib.pyplot.show')
 	def test_plot_ta_macd(self, mock_pyplot):
 		runner = CliRunner()
 		result = runner.invoke(plot_ta, args=['--symbol', 'BANDHANBNK', '--start', '2020-11-01', '--end', '2021-01-01', '--plot-type', 'MACD'])
