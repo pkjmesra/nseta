@@ -62,7 +62,7 @@ class TestLivecli(baseUnitTest):
 
 	def test_scan_swing(self):
 		runner = CliRunner()
-		result = runner.invoke(scan, args=['--stocks', 'BANDHANBNK,HDFC', '--swing', '--indicator', 'all', '--clear'])
+		result = runner.invoke(scan, args=['--stocks', 'BANDHANBNK,HDFC', '--swing', '--indicator', 'all', '--clear', '--analyse'])
 		self.assertEqual(result.exit_code , 0)
 		self.assertIn("Swing scanning finished.", result.output, str(result.output))
 
@@ -75,13 +75,13 @@ class TestLivecli(baseUnitTest):
 
 	def test_scan_volume(self):
 		runner = CliRunner()
-		result = runner.invoke(scan, args=['--stocks', 'BANDHANBNK', '--volume', '--clear', '--orderby', '7DVol(%)'])
+		result = runner.invoke(scan, args=['--stocks', 'BANDHANBNK', '--volume', '--clear', '--orderby', '7DVol(%)', '--analyse'])
 		self.assertEqual(result.exit_code , 0)
 		self.assertIn("Volume scanning finished.", result.output, str(result.output))
 
 	def test_scan_volume_intraday(self):
 		runner = CliRunner()
-		result = runner.invoke(scan, args=['--stocks', 'BANDHANBNK', '--volume', '--clear', '--orderby', 'TDYVol(%)'])
+		result = runner.invoke(scan, args=['--stocks', 'BANDHANBNK', '--volume', '--clear', '--orderby', 'TDYVol(%)', '--analyse'])
 		self.assertEqual(result.exit_code , 0)
 		self.assertIn("Volume scanning finished.", result.output, str(result.output))
 	
@@ -124,6 +124,16 @@ class TestLivecli(baseUnitTest):
 		result = runner.invoke(scan, args=['--stocks', 'BANDHANBNK,HDFC', '--indicator', 'all', '--clear'])
 		self.assertEqual(result.exit_code , 0)
 		self.assertIn("Choose at least one of the --live, --intraday (recommended) , --volume or --swing options.", result.output, str(result.output))
+		self.assertIn("Usage:  [OPTIONS]", result.output, str(result.output))
+
+		result = runner.invoke(top_picks, args=['--stocks', 'BANDHANBNK,HDFC', '--indicator', 'all', '--clear'])
+		self.assertEqual(result.exit_code , 0)
+		self.assertIn("Choose at least one of the --intraday (recommended) or --swing options.", result.output, str(result.output))
+		self.assertIn("Usage:  [OPTIONS]", result.output, str(result.output))
+
+		result = runner.invoke(top_picks, args=['--stocks', 'BANDHANBNK,HDFC', '--swing', '--intraday', '--indicator', 'all', '--clear'])
+		self.assertEqual(result.exit_code , 0)
+		self.assertIn("Choose only one of --intraday or --swing options.", result.output, str(result.output))
 		self.assertIn("Usage:  [OPTIONS]", result.output, str(result.output))
 
 	def test_scan_base_background(self):
