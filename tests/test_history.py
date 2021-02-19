@@ -42,16 +42,6 @@ class TestHistory(baseUnitTest):
 				# start>end
 				negative_args.append({'symbol': 'SBIN', 'end': date(2020, 12, 30),
 															'start': date(2021, 1, 8)})
-				# expiry date missing for future contract
-				negative_args.append({'symbol': 'SBIN', 'end': date(2020, 12, 30),
-															'start': date(2021, 1, 8), 'futures': True})
-				# Strike price missing for options
-				negative_args.append({'symbol': 'SBIN', 'end': date(2020, 12, 30),
-															'start': date(2021, 1, 8), 'option_type': 'CE'})
-				# option_type!=None and futures=True
-				negative_args.append({'symbol': 'SBIN', 'end': date(2020, 12, 30),
-															'start': date(2021, 1, 8),
-															'option_type': 'CE', 'futures': True})
 				# test for exceptions
 				for n_arg in negative_args:
 						with self.assertRaises(ValueError):

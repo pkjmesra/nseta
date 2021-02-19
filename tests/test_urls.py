@@ -50,7 +50,7 @@ class TestUrls(baseUnitTest):
 
     def test_nse_intraday_url(self):
         txt = 'date|g1_o|g1_h|g1_l|g1_c|g2|g2_CUMVOL' #'<columns><column>date</column><column>pltp</column><column>nltp</column><column>previousclose</column><column>allltp</column>'
-        resp = nse_intraday_url(CDSymbol='SBIN')
+        resp = nse_intraday_url(CDSymbol='SBIN', Periodicity="1")
         self.assertIn(txt, resp.text)
 
     def test_price_list_url(self):

@@ -23,6 +23,7 @@ class Teststockscanner(baseUnitTest):
 
 	def test_scan_intraday_more_than_n(self):
 		s = scanner('bbands')
+		s.periodicity = "1"
 		n = 4
 		df, signaldf = s.scan(['HDFC', 'SBIN','BANDHANBNK', 'PNB'], scanner_type=ScannerType.Intraday)
 		self.assertEqual(len(df), n)

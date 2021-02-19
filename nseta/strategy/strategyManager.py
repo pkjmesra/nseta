@@ -249,6 +249,7 @@ class strategyManager:
 	@tracelog
 	def get_intraday_dataframe(self, symbol, strategy):
 		s = intradayStockScanner(strategy)
+		s.periodicity = "1"
 		df = s.ohlc_intraday_history(symbol)
 		if df is not None and len(df) > 0:
 			df.drop(['Open'], axis = 1, inplace = True)

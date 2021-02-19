@@ -149,13 +149,13 @@ class baseScanner:
 			self.save_scan_results_archive(df, signaldf, should_cache)
 			default_logger().debug("\nAs of {}, all Stocks LTP and Signals:\n{}".format(IST_datetime(),df.to_string(index=False)))
 		else:
-			print('As of {}, nothing to show here.'.format(IST_datetime()))
+			print('\nAs of {}, nothing to show here.'.format(IST_datetime()))
 		if signaldf is not None and len(signaldf) > 0:
 			ret = self.flush_signals(signaldf)
 			if not ret:
 				return
 		else:
-			print('As of {}, no signals to show here.'.format(IST_datetime()))
+			print('\nAs of {}, no signals to show here.'.format(IST_datetime()))
 		self.scan_finished()
 
 	def scan_finished(self):
@@ -222,6 +222,7 @@ class baseScanner:
 			if scannerinstance is None:
 				default_logger().debug('scannerinstance is None. Cannot proceed with background scanning')
 				break
+			self._scannerinstance = scannerinstance
 			self.clear_cache(True, force_clear=True)
 			if not current_datetime_in_ist_trading_time_range():
 				click.secho('Running the {} scan for one last time because it is outside the trading hours'.format(self.scanner_type.name), fg='red', nl=True)
