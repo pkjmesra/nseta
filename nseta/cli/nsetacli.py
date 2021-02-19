@@ -8,7 +8,7 @@ from nseta.cli.historycli import history, pe_history
 from nseta.cli.modelcli import create_cdl_model
 from nseta.cli.plotscli import plot_ta
 from nseta.cli.strategycli import test_trading_strategy, forecast_strategy, scan_trading_strategy
-from nseta.cli.livecli import live_quote, scan, top_picks
+from nseta.cli.livecli import live_quote, scan, top_picks, news
 from nseta.common import log
 from nseta.archives.archiver import archiver
 
@@ -48,6 +48,7 @@ nsetacli.add_command(create_cdl_model)
 nsetacli.add_command(forecast_strategy)
 nsetacli.add_command(history)
 nsetacli.add_command(live_quote)
+nsetacli.add_command(news)
 nsetacli.add_command(pe_history)
 nsetacli.add_command(plot_ta)
 nsetacli.add_command(scan)

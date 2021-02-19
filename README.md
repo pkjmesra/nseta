@@ -1365,64 +1365,244 @@ This run of TopPick scan took 141.7 sec
 
 ```
 $ nseta scan -v -c -a
-Last Modified: 2021-02-18 11:48:35.577805+05:30. Fetched LUPIN_live_quote from the disk cache.disk cache.                        
-As of 2021-02-19 01:12:13.961850+05:30, Volume Signals:
+Last Modified: 2021-02-19 21:26:02.131207+05:30. Fetched SRF_live_quote from the disk cache.ache.cache.ache.                     
+As of 2021-02-19 22:07:51.027198+05:30, Volume Signals:
 Symbols marked with (*) have just crossed a crossover point.
 
-     Symbol FreeFloat        LTP       VWAP    %Chng     ATR  %Vol_TDY  %Vol_7D TDYVol Avg7DVol   S1-R3         Remarks  %Del_TDY                                    News
-        IGL     95.4B   ₹ 580.95   ₹ 578.32   6.56 %   22.08     754.8    126.9  10.8M    4.77M  591.28  PP <= LTP < R1     21.04  (8h ago)Why GST inclusion of natu...  
-        MGL     6.59B  ₹ 1206.95  ₹ 1202.04    5.7 %   43.05     454.0    107.0  2.92M    1.41M   1.22K  PP <= LTP < R1     15.27  (8h ago)Why GST inclusion of natu...  
-       GAIL     24.9B    ₹ 144.7   ₹ 143.71   7.66 %    5.30     269.5    117.4  79.9M    36.7M  147.93  PP <= LTP < R1     31.70  (8h ago)Why GST inclusion of natu...  
-       ONGC     74.6B   ₹ 108.95   ₹ 109.74   6.55 %    4.35     149.2     28.9  52.4M    40.6M   104.2  PP > LTP >= S1     47.45  (7h ago)Sensex skids for 3rd day ...  
-       MOIL     1.19B   ₹ 142.95   ₹ 143.24   2.69 %    4.20     119.0      9.5   356K     325K   146.8  PP <= LTP < R1     51.28  (8h ago)Nifty Metal in the fast l...  
-        ABB     39.7B   ₹ 1532.0  ₹ 1530.71    2.2 %   52.47      83.7    -25.0   171K     228K    1.5K  PP > LTP >= S1     41.10  (3d ago)ABB provides ventilation ...  
-        IOC     24.1B    ₹ 98.85    ₹ 98.45   4.05 %    3.01      50.6      1.3  24.8M    24.5M   100.8  PP <= LTP < R1     45.76  (6h ago)ICICI Pru MF dumps Tata P...  
-     RADICO     22.6B   ₹ 571.25   ₹ 565.76   1.42 %   20.51      44.0    -46.4   238K     444K  571.32           ** R1     60.07  (9d ago)Buy Radico Khaitan; Targe...  
-       SAIL     9.34B     ₹ 67.0    ₹ 66.98   3.72 %    3.51      36.9    -20.7    38M    47.9M    68.4  PP <= LTP < R1     60.11  (8h ago)Nifty Metal in the fast l...  
- TRITURBINE     10.3B    ₹ 106.0   ₹ 107.67   6.32 %    5.19      30.7     41.3   937K     663K  101.55  PP > LTP >= S1     62.73  (10d ago)Volumes spurt at Triveni ... 
-      TECHM      121B   ₹ 989.35   ₹ 999.29   0.91 %   30.32      29.9    -22.3  2.89M    3.73M  989.57           ** S1     52.55  (8h ago)Sensex sheds 379 points; ...  
-        UPL      148B   ₹ 553.35   ₹ 546.24   2.66 %   21.45      26.3     -7.5  3.71M    4.01M  554.43  PP <= LTP < R1     35.03  (9d ago)UPL only firm in crop pro...  
-  HINDPETRO     17.4B    ₹ 247.5   ₹ 244.63   5.57 %    8.03      25.1     41.2  14.9M    10.6M  253.42  PP <= LTP < R1     33.11  (11h ago)ONGC, BPCL, HPCL: Oil and... 
-    DCBBANK     3.01B   ₹ 119.05   ₹ 118.17    3.3 %    5.25      16.6     12.8  2.19M    1.94M   119.7  PP <= LTP < R1     59.60  (10d ago)DCB Bank revises MCLR on ... 
- CUMMINSIND     53.7B   ₹ 792.75   ₹ 788.79   0.21 %   30.12      15.6     11.5  1.54M    1.38M  797.55  PP <= LTP < R1     20.00  (4h ago)IPL 2021 Auction: Top 10 ...  
-       BPCL       33B    ₹ 420.4    ₹ 424.2   2.11 %   13.99       3.4      1.8  8.88M    8.72M  417.15  PP > LTP >= S1     42.11  (2h ago)Oil India, EIL to bid for...  
-    ESCORTS     9.66B  ₹ 1380.95  ₹ 1383.62    0.2 %   49.28      -2.2    -33.4   653K     980K   1.38K           ** PP     27.02  (13d ago)Escorts: Maintain ‘neutra... 
-  REPCOHOME     1.17B    ₹ 338.3   ₹ 336.27   14.0 %   15.81      -5.9     92.4  1.64M     850K   374.8  PP <= LTP < R1     39.96  (10h ago)Stock market update: Smal... 
-  UNIONBANK     2.69B     ₹ 43.2    ₹ 42.71  13.39 %    1.87     -21.1     88.0    73M    38.8M   45.22  PP <= LTP < R1     24.73  (12h ago)New India Assurance Compa... 
- ASIANPAINT     1.08T  ₹ 2447.55  ₹ 2449.52   2.49 %   80.12     -24.2     -6.2  2.41M    2.57M   2.45K           ** PP     39.35  (3h ago)We want to scratch beyond...  
- BERGEPAINT      183B    ₹ 760.0   ₹ 757.73   1.03 %   23.91     -26.1    -68.3   743K    2.34M  766.83  PP <= LTP < R1     24.45  (2d ago)Broker’s call: Berger Pai...  
-   GMRINFRA     51.4B    ₹ 25.05    ₹ 25.55    0.0 %    1.06     -27.3    -54.9  5.06M    11.2M   25.05           ** S1     40.61  (2d ago)GMR Infra Consolidated De...  
-        HAL     8.69B   ₹ 1058.0  ₹ 1057.84   1.74 %   35.96     -28.4    -24.8   535K     712K   1.08K  PP <= LTP < R1     52.40  (1d ago)Mutual Funds Bought And S...  
- BHARTIARTL      285B    ₹ 590.4   ₹ 591.31  -0.58 %   18.53     -31.3    -42.9  11.1M    19.4M  590.75           ** PP     50.51  (1h ago)Bharti Airtel Beats Relia...  
-    UCOBANK      848M    ₹ 15.25    ₹ 15.33   7.02 %    0.58     -33.7    119.7  54.2M    24.7M   15.25           ** PP     37.84  (11h ago)UCO Bank spurts 6.67%...     
- GODREJPROP     27.3B   ₹ 1508.5  ₹ 1512.54   0.21 %   57.23     -33.7    -47.2   497K     941K   1.51K           ** PP     18.00  (6d ago)Godrej Properties recogni...  
-  POWERGRID       59B   ₹ 234.35   ₹ 234.93   1.87 %    7.51     -33.9    -28.3  14.5M    20.2M  234.43           ** PP     29.99  (11h ago)Power Grid Corporation of... 
-   CROMPTON     91.8B    ₹ 400.0   ₹ 400.24   1.13 %   18.88     -34.8    -34.2   1.6M    2.43M   400.2           ** PP     85.05  (1d ago)Crompton Greaves Consumer...  
-        LTI      176B   ₹ 3900.0  ₹ 3890.27   0.62 %  154.30     -37.4    -31.6  66.1K    96.7K   3.95K  PP <= LTP < R1     65.25  (2d ago)IT stocks under pressure;...  
-        ITC      1.9T   ₹ 219.55   ₹ 219.17   0.83 %    6.65     -43.6    -74.4  11.2M    43.8M  220.33  PP <= LTP < R1     44.61  (8h ago)Share Market Highlights: ...  
+ Symbol      FreeFloat  LTP       VWAP       %Chng    ATR    %Vol_TDY  %Vol_7D  TDYVol  Avg7DVol  S1-R3   Remarks         %Del_TDY  News                                                                    
+ MAHABANK    1.07B      ₹ 23.2    ₹ 25.37    -7.57 %    1.52    2.92K    317.9  117M    28M        21.43  PP > LTP >= S1     23.09  (5h ago)Bank of Maharashtra, Vayana Network tie up for channel finan... 
+ RAYMOND     1.25B      ₹ 366.05  ₹ 366.36   7.27 %    13.07    1.37K    422.4  11M     2.1M      383.83  PP <= LTP < R1     17.80  (1d ago)Still long way to go for economy to be back on track, says G... 
+ EVEREADY    3.18B      ₹ 236.5   ₹ 241.71   4.99 %    11.64    658.9    184.3  1.84M   647K      223.83  PP > LTP >= S1     33.77  (9d ago)Eveready posts 45% drop in profit at ₹50 crore...               
+ BOMDYEING   3.61B      ₹ 76.55   ₹ 76.96    4.65 %     2.81    515.1    265.4  9.29M   2.54M      79.58  PP <= LTP < R1     25.10  (10d ago)Bombay Dyeing Standalone December 2020 Net Sales At Rs 386.2...
+ IOB         1.16B      ₹ 17.55   ₹ 19.34    -6.65 %    1.07    372.4    157.6  161M    62.4M      16.15  PP > LTP >= S1     23.45  (6h ago)Bank of India leads losers in ‘A’ group...                      
+ DABUR       290B       ₹ 513.05  ₹ 511.03   -1.35 %   11.59    305.3    184.2  13.8M   4.87M     516.35  PP <= LTP < R1     40.70  (10h ago)Volumes jump at Dabur India Ltd counter...                     
+ IDFCFIRSTB  13.1B      ₹ 62.65   ₹ 62.5     7.83 %     3.16    302.4    188.1  261M    90.7M      66.93  PP <= LTP < R1     13.06  (30d ago)IDFC Bank Q3 Net Profit To Rs. 135.6 Cr: ICICI Direct...       
+ FSL         2.97B      ₹ 97.35   ₹ 97.27    2.58 %     4.40    235.4    100.5  5.81M   2.9M       99.53  PP <= LTP < R1     28.46  (9h ago)Firstsource Solutions Shares Up 3% After Arm Wins Consulting... 
+ TATACHEM    10.2B      ₹ 625.0   ₹ 614.08   5.74 %    24.41    186.5    152.4  22.4M   8.86M     636.17  PP <= LTP < R1      7.99  (2d ago)Is Tata Chemicals going to be the next jewel in Tata crown?...  
+ UPL         152B       ₹ 554.9   ₹ 556.12   2.56 %    21.74    160.9    190.0  16.7M   5.76M     565.37  PP <= LTP < R1     19.64  (10d ago)UPL only firm in crop protection sector to enter in S&P Glob...
+ CONCOR      31.2B      ₹ 567.65  ₹ 577.31   2.08 %    24.41    160.4     71.0  9.88M   5.78M     554.47  PP > LTP >= S1     16.60  (7d ago)Buy Container Corporation; Target Of Rs 555: Motilal Oswal...   
+ MOIL        1.23B      ₹ 144.0   ₹ 147.46   0.14 %     4.58    157.5    216.6  1.75M   552K       140.1  PP > LTP >= S1     22.35  (5h ago)Nifty Metal witness bearish tone, index dips 1%; Tata Steel,... 
+ AMBUJACEM   101B       ₹ 275.2   ₹ 279.35   -2.69 %    9.91    154.4     97.0  18M     9.15M      269.4  PP > LTP >= S1     18.97  (9h ago)Top stocks in focus: Oil India, DLF, NMDC, Ambuja Cements, A... 
+ SRF         16B        ₹ 5533.0  ₹ 5562.64  -2.6 %   194.97    144.8     19.4  186K    155K       5.39K  PP > LTP >= S1     34.53  (9d ago)SRF And Bandhan Bank Among Six Buying Ideas By Various Broke... 
+ KAJARIACER  80.1B      ₹ 967.0   ₹ 980.92   0.03 %    34.51      140    -22.6  320K    414K       951.7  PP > LTP >= S1     60.60  (18d ago)Buy Kajaria Ceramics; Target Of Rs 950: Sharekhan...           
+ NMDC        108B       ₹ 117.6   ₹ 120.56   -2.0 %     4.84    122.9    123.8  27.9M   12.5M      114.9  PP > LTP >= S1     23.39  (6h ago)NMDC resumes iron ore mining at Donimalai in Karnataka; stoc... 
+ GLENMARK    72.1B      ₹ 482.0   ₹ 490.0    -2.34 %   15.09    110.4     62.5  3.01M   1.85M     472.98  PP > LTP >= S1     21.22  (1d ago)Broker’s call: Glenmark Pharma (Sell)...                        
+ ADANIENT    215B       ₹ 785.5   ₹ 787.61   -2.81 %   38.24    108.5     41.0  20.2M   14.3M      832.1  PP <= LTP < R1      5.68  (7d ago)Adani Enterprises enters top-50 most-valued companies list...   
+ GODREJIND   33.2B      ₹ 450.0   ₹ 447.31   2.49 %    12.25    107.2     36.1  199K    146K      454.48  PP <= LTP < R1     41.64  (4d ago)Stocks in news: Tata Motors, Airtel, Vodafone, PowerGrid, ON... 
+ ABFRL       5.21B      ₹ 166.25  ₹ 165.24   1.56 %     7.42     91.5     62.3  2.92M   1.8M       169.9  PP <= LTP < R1     38.44  (2d ago)Polyplex Corporation Ltd leads losers in ‘A’ group...           
+ AUROPHARMA  250B       ₹ 886.0   ₹ 901.29   -2.82 %   32.66     91.1     17.7  3.29M   2.8M      873.77  PP > LTP >= S1     41.61  (8h ago)Aurobindo Pharma gets USFDA nod for generic Droxidopa capsul... 
+ RBLBANK     11B        ₹ 247.2   ₹ 252.55   -1.18 %   12.83     89.3     32.7  20.7M   15.6M      239.7  PP > LTP >= S1      6.41  (4d ago)D-Street Buzz: IndusInd Bank & Axis Bank Power Bank Nifty To... 
+ VGUARD      37.2B      ₹ 232.75  ₹ 232.78   1.64 %    11.29     71.8     16.9  1.29M   1.11M     238.62  PP <= LTP < R1     39.78  (5h ago)V-Guard Industries promoter Chittilappilly sells shares wort... 
+ JKLAKSHMI   4.78B      ₹ 376.65  ₹ 380.09   -1.45 %   13.60     70.1     39.3  520K    374K      390.27  PP <= LTP < R1     36.98  (8d ago)Buy JK Lakshmi Cement; Target Of Rs 453: Anand Rathi...         
+ INDUSINDBK  60.5B      ₹ 1069.8  ₹ 1055.69  2.27 %    47.01     63.4     27.3  14.6M   11.4M      1.08K  PP <= LTP < R1     31.99  (1d ago)Promoters inject Rs 2,021 crore in IndusInd Bank via convers... 
+ TATAMOTORS  279B       ₹ 312.45  ₹ 313.32   -3.52 %   17.24     63.1     26.1  80.3M   63.7M     322.07  PP <= LTP < R1     14.27  (10h ago)SBI Cards m-cap tops Rs 1-trillion; Five factors that are dr...
+ EXIDEIND    93.8B      ₹ 205.0   ₹ 207.49   -2.47 %    7.13       63     12.7  4.97M   4.41M     200.42  PP > LTP >= S1     19.59  (8d ago)Saral Jeevan Bima for low-income earners fills need gap; ins... 
+ CHAMBLFERT  3.81B      ₹ 237.0   ₹ 232.34   1.61 %     9.96     59.2    -26.4  714K    971K      238.87  PP <= LTP < R1     54.03  (9d ago)Chambal Fertilisers & Chemicals receives NCLT approval for d... 
+ DLF         93B        ₹ 300.4   ₹ 304.36   -1.91 %   14.51     57.6     21.2  20.6M   17M        292.1  PP > LTP >= S1     14.93  (9h ago)Top stocks in focus: Oil India, DLF, NMDC, Ambuja Cements, A... 
+ BHARATFORG  75.8B      ₹ 603.8   ₹ 610.86   -4.62 %   27.79     55.7    -12.1  2.93M   3.34M     588.42  PP > LTP >= S1     21.72  (12h ago)Bharat Forge — Wait For Correction To Enter...                 
 
 
-18/18. Fetching for LTI                                                                                                        
-As of 2021-02-19 01:12:40.466229+05:30, TopPick Signals:
+17/17. Fetching for DABUR                                                                                                      
+As of 2021-02-19 22:08:14.203159+05:30, TopPick Signals:
 Symbols marked with (*) have just crossed a crossover point.
 
-     Symbol     LTP Cum_Volume Cdl  Cnt_Cdl    RSI   MOM     OBV  MACD(12)  MACD(9) Signal  Confidence
-       GAIL   143.8       115M   +        4  62.65  0.30   15.7M     0.082   -0.033    BUY       100.0
-        ABB   1.55K       308K   -        1  74.39  5.20   61.1K     4.509    1.569    BUY        70.0
-    ESCORTS   1.38K      1.16M   +        1  39.71  0.05  -30.8K    -0.926   -0.518   SELL        60.0
- BERGEPAINT   756.6       1.5M   -        3  35.70 -1.15   29.7K    -0.484   -0.352   SELL       100.0
- BHARTIARTL  589.35      21.8M   +        1  53.24  0.15   -751K    -0.137   -0.265    BUY       100.0
-   CROMPTON  397.55      2.77M   -        2  23.14 -1.05  -1.32M    -0.175   -0.064   SELL       100.0
+ Symbol      LTP     Cum_Volume  Cdl  Cnt_Cdl  RSI    MOM    OBV     MACD(12)  MACD(9)  Signal  Confidence
+ RAYMOND     366.05  11M         -          2  66.37  -0.15    894K     1.241    1.000  BUY           50.0
+ EVEREADY     236.5  1.84M       -          1  58.17  -0.70    211K     0.546    0.411  BUY          100.0
+ UPL          554.9  16.7M       +          1  56.65   0.15    1.3M     0.385    0.136  BUY           50.0
+ SRF          5.53K  186K        +          1  61.91  31.00  -12.7K     1.118    0.580  BUY           70.0
+ KAJARIACER     967  320K        -          1  36.38  -3.00  -55.5K     0.111    0.256  SELL         100.0
+ GODREJIND      450  199K        +          2  57.90   1.70   35.2K     0.309    0.169  BUY          100.0
+ RBLBANK      247.2  20.7M       -          1  57.02  -0.20   -518K     0.289    0.205  BUY          100.0
+ VGUARD      232.75  1.29M       +          1  45.52   0.15    -623     0.097    0.355  SELL          30.0
+ INDUSINDBK   1.07K  14.5M       +          3  59.87   2.60   1.42M     1.942    2.199  BUY           40.0
+ CHAMBLFERT     237  714K        -          3  70.02  -0.05  -74.6K     0.979    0.792  BUY           50.0
 
 
 Done.                                                                                                                  
-This run of TopPick scan took 26.1 sec
+This run of TopPick scan took 22.6 sec
 TopPick scanning finished.
 Done.                                                                                                                  
-This run of Volume scan took 32.7 sec
+This run of Volume scan took 36.2 sec
 Volume scanning finished.
 ```
 
+- View latest news for the stocks
+
+```
+$ nseta news
+165/165. Fetching for SYMPHONY                                                                                                   
+As of 2021-02-19 21:52:44.119415+05:30, News:
+ Symbol      Hours_ago  Publisher               Headline                                                                                                           
+ IOC         0h ago     The Hindu Businessline  MNCs keen on IOC tech for converting CO2 into Omega-3 fatty acids and lipids                                       
+ SBIN        0h ago     The Hindu Businessline  General insurance sector may revive in Q4                                                                          
+ BHARTIARTL  2h ago     Business Today          Vi Rs 148 prepaid plan now available on pan-India basis, here is what it offers                                    
+ LT          3h ago     Zee News                Indian Coast Guard commissions 105-ton indigenous Interceptor Boat C-453 for eastern fleet                         
+ TATASTEEL   3h ago     Business Today          Top losers today: List of 5 shares that fell up to 5%; ONGC, Tata Steel, SBI, Axis Bank, ICICI Bank                
+ ICICIBANK   3h ago     India Infoline          Nifty Bank sheds 270 pts as ICICI Bank, SBI, Axis Bank drags the index; Nifty PSU Bank pulls back from record highs
+ HINDUNILVR  3h ago     India Infoline          Nifty FMCG resists market bears, index tops 115 pts; Jubilant Foodworks, Varun Beverages shine                     
+ AXISBANK    3h ago     India Infoline          Nifty Bank sheds 270 pts as ICICI Bank, SBI, Axis Bank drags the index; Nifty PSU Bank pulls back from record highs
+ SBILIFE     3h ago     Business Standard       SBI Life Insurance Company allots 11,071 equity shares under ESOS                                                  
+ ONGC        3h ago     Business Today          Top losers today: List of 5 shares that fell up to 5%; ONGC, Tata Steel, SBI, Axis Bank, ICICI Bank                
+ OIL         4h ago     India Infoline          Oil India - Engineers India consortium to acquire 61.65% stake of BPCL in Numaligarh Refinery; Stocks surge        
+ LUPIN       4h ago     Economic Times          Lupin gets USFDA nod for generic drug                                                                              
+ ITC         4h ago     Business Standard       After honey, Marico gets into instant noodles under Saffola brand                                                  
+ NESTLEIND   4h ago     Business Standard       After honey, Marico gets into instant noodles under Saffola brand                                                  
+ BPCL        4h ago     India Infoline          Oil India - Engineers India consortium to acquire 61.65% stake of BPCL in Numaligarh Refinery; Stocks surge        
+ HDFCBANK    4h ago     Economic Times          More and more officials of private banks come under CBI scanner on corruption charges                              
+ TITAN       4h ago     Economic Times          Facebook’s Australia news blackout: a shock four years in the making                                               
+ DRREDDY     4h ago     News18                  Dr Reddy’s Begins Process for Emergency Use Authorisation of Russian Covid-19 Vaccine Sputnik V                    
+ TCS         5h ago     Economic Times          Offices will morph into collaborative and networking spaces: TCS CMO                                               
+ HINDALCO    5h ago     India Infoline          Nifty Metal witness bearish tone, index dips 1%; Tata Steel, Hindalco drags; MOIL top gainer                       
+ BEL         5h ago     India Infoline          ICRA reaffirms credit rating for Rs4,300cr borrowing programme of Bharat Electronics                               
+ MCX         5h ago     Economic Times          Gold demand drops up to 15% in metros in a fortnight on price volatility                                           
+ MAHABANK    5h ago     Financial Express       Bank of Maharashtra, Vayana Network tie up for channel financing                                                   
+ VGUARD      5h ago     Economic Times          V-Guard Industries promoter Chittilappilly sells shares worth Rs 90 crore to fund social causes                    
+ MOIL        5h ago     India Infoline          Nifty Metal witness bearish tone, index dips 1%; Tata Steel, Hindalco drags; MOIL top gainer                       
+ MUTHOOTFIN  5h ago     Economic Times          Muthoot Finance plans to raise Rs 6,000 crore via bonds                                                            
+ IOB         6h ago     Business Standard       Bank of India leads losers in ‘A’ group                                                                            
+ TVSMOTOR    6h ago     Moneycontrol            Buy TVS Motor Company; Target Of Rs 688: Sharekhan                                                                 
+ LICHSGFIN   6h ago     Business Standard       LIC Housing Finance disburses Rs 1,331 cr of loans via mobile app                                                  
+ REPCOHOME   6h ago     Moneycontrol            Buy Repco Home Finance; Target Of Rs 400: Sharekhan                                                                
+ CENTRALBK   6h ago     Business Standard       Bank of India leads losers in ‘A’ group                                                                            
+ HDFC        6h ago     Zee News                Oppo Fantastic Days: Last day to grab smartphone worth Rs 12,990 at just Rs 790                                    
+ IGL         6h ago     Economic Times          Is there a case for margin expansion in IGL?                                                                       
+ NMDC        6h ago     India Infoline          NMDC resumes iron ore mining at Donimalai in Karnataka; stock gains over 1%                                        
+ BANKBARODA  6h ago     Economic Times          Stock market update: Nifty Bank index falls over 2%; Bank of Baroda dips over 5%                                   
+ BAJFINANCE  6h ago     India Infoline          Bajaj Finance to raise Rs36cr through allotment of NCDs; stock trades lower                                        
+ INFY        7h ago     Economic Times          GMO’s Jeremy Grantham throws weight behind Infosys, ICICI Bank                                                     
+ SAIL        7h ago     Business Standard       MOIL to shut JVC formed with SAIL                                                                                  
+ BANKINDIA   7h ago     Economic Times          Stock market update: BSE MidCap index falls nearly 2%; Bank of India tumbles 10%                                   
+ LTI         7h ago     Business Standard       Larsen & Toubro Infotech Ltd falls 0.5%                                                                            
+ ASHOKLEY    7h ago     Business Standard       Ashok Leyland tumbles over 5% in two days                                                                          
+ MRF         7h ago     Business Standard       MRF Ltd stays slippery                                                                                             
+ UNIONBANK   8h ago     Business Standard       Union Bank of India spurts extends winning spree                                                                   
+ ACC         8h ago     India Infoline          Top stocks in focus: Oil India, DLF, NMDC, Ambuja Cements, ACC                                                     
+ GAIL        8h ago     Business Standard       GAIL (India) Ltd spurts 3.39%, rises for third straight session                                                    
+ AUROPHARMA  8h ago     Economic Times          Aurobindo Pharma gets USFDA nod for generic Droxidopa capsules                                                     
+ DLF         8h ago     India Infoline          Top stocks in focus: Oil India, DLF, NMDC, Ambuja Cements, ACC                                                     
+ PNB         8h ago     Business Standard       Punjab National Bank in demand                                                                                     
+ PVR         8h ago     Moneycontrol            Neutral PVR; Target Of Rs 1620: Motilal Oswal                                                                      
+ AMBUJACEM   8h ago     India Infoline          Top stocks in focus: Oil India, DLF, NMDC, Ambuja Cements, ACC                                                     
+ FSL         9h ago     Moneycontrol            Firstsource Solutions Shares Up 3% After Arm Wins Consulting Work From US Firm; Anand Rathi Sees 24% Upside        
+ TATAMOTORS  10h ago    Business Standard       SBI Cards m-cap tops Rs 1-trillion; Five factors that are driving the stock                                        
+ CADILAHC    10h ago    Business Standard       Cadila Healthcare gets USFDA nod for droxidopa capsules                                                            
+ DABUR       10h ago    Business Standard       Volumes jump at Dabur India Ltd counter                                                                            
+ JSWSTEEL    10h ago    Business Standard       SBI Cards m-cap tops Rs 1-trillion; Five factors that are driving the stock                                        
+ MINDTREE    10h ago    Economic Times          10 midcaps & smallcaps seeing margin expansion for 4 quarters now: Worth a look?                                   
+ NTPC        10h ago    Firstpost               Sensex drops over 250 points in early trade; Nifty slips below 15,050 - Business News , Firstpost                  
+ JINDALSTEL  11h ago    Business Standard       Jindal Steel & Power Ltd Slides 3.29%, S&P BSE Metal index Shed 1.53%                                              
+ BANDHANBNK  11h ago    Business Standard       Bandhan Bank allots 1.16 lakh equity shares under EOSP                                                             
+ ESCORTS     11h ago    India Infoline          Escorts receives ‘AA/Stable’ rating on bank loan facilities from CRISIL                                            
+ RELIANCE    12h ago    Economic Times          Reliance Industries gains as company finalising O2C hiveoff                                                        
+ TORNTPOWER  12h ago    Economic Times          Power companies’ shares rally as PM Modi vows to delicense distribution                                            
+ BHARATFORG  12h ago    Moneycontrol            Bharat Forge — Wait For Correction To Enter                                                                        
+ ABB         13h ago    The Hindu Businessline  ABB India (₹1,532.8): Buy                                                                                          
+ PFC         13h ago    Free Press Journal      Power Finance Corporation organises intra-divisional cricket tournament                                            
+ FORTIS      13h ago    Free Press Journal      Supreme Court asks 17 lenders to explain Fortis Healthcare’s Malvinder Singh and Shivinder Singh stake sale        
+ WIPRO       13h ago    India Infoline          Nifty IT scraps early gains as bears hover, index dips 190 pts; Tech Mahindra, Wipro, L&T Infotech drags           
+ HCLTECH     13h ago    India Infoline          Nifty IT scraps early gains as bears hover, index dips 190 pts; Tech Mahindra, Wipro, L&T Infotech drags           
+ BIOCON      13h ago    India Infoline          Nifty Pharma plummets 200 pts on broad-based selloff; Biocon, Cadila drags most                                    
+ TECHM       13h ago    India Infoline          Nifty IT scraps early gains as bears hover, index dips 190 pts; Tech Mahindra, Wipro, L&T Infotech drags           
+ HEROMOTOCO  14h ago    India Infoline          Nifty Auto nosedives 2% as heavyweights Maruti, Eicher, Bajaj Auto, Hero MotoCorp weighs                           
+ MGL         15h ago    Economic Times          Why GST inclusion of natural gas is a crucial factor for gas producers and distributors                            
+ ASIANPAINT  23h ago    Economic Times          We want to scratch beyond the surface in the consumer home space: Asian Paints’ Amit Syngle                        
+ INDIGO      23h ago    The Hindu               Jan. local air traffic grows 5% over Dec.                                                                          
+ M&M         24h ago    Business Standard       Ford puts projects with M&M on hold as it reassesses India strategy: Report                                        
+ CUMMINSIND  24h ago    Free Press Journal      IPL 2021 Auction: Top 10 most expensive buys in IPL history                                                        
+ MARUTI      1d ago     Business Today          Maruti Suzuki looking for options to launch Jimny in India                                                         
+ GLENMARK    1d ago     The Hindu Businessline  Broker’s call: Glenmark Pharma (Sell)                                                                              
+ BHEL        1d ago     Economic Times          ICICI Pru MF dumps Tata Power, IOC, BHEL in Jan; makes a killing on SBI                                            
+ INDUSINDBK  1d ago     Business Today          Promoters inject Rs 2,021 crore in IndusInd Bank via conversion of warrants                                        
+ KOTAKBANK   1d ago     Business Today          Top losers today: Bajaj Finance, Kotak Mahindra Bank, Mahindra & Mahindra fall up to 2.5%                          
+ CIPLA       1d ago     India Infoline          Cipla Health’s Naselin launches ColdPlus Rub for effective cold relief & relaxation for adults                     
+ BAJAJFINSV  1d ago     Business Today          Share Market Highlights: Sensex ends 379 points lower, Nifty at 15,118; Maruti, TCS, Axis Bank top losers          
+ BAJAJELEC   1d ago     India Infoline          ICRA revises credit rating of Bajaj Electricals bank facilities                                                    
+ BEML        1d ago     Business Today          BEML land securitised against NCDs to be part of strategic sale process                                            
+ TORNTPHARM  1d ago     Economic Times          Stock market update: Pharma stocks mixed; Torrent Pharma slips 1%                                                  
+ BRITANNIA   1d ago     Business Standard       Britannia Industries Ltd down for fifth straight session                                                           
+ GODREJCP    1d ago     Business Standard       Godrej Consumer Products Ltd down for fifth straight session                                                       
+ HINDPETRO   1d ago     Business Standard       ONGC, BPCL, HPCL: Oil and Gas stocks could surge up to 30%, charts show                                            
+ GRAPHITE    1d ago     Moneycontrol            Buy Graphite India; Target Of Rs 590: Anand Rathi                                                                  
+ POWERGRID   1d ago     Business Standard       Power Grid Corporation of India Ltd gains for third straight session                                               
+ UCOBANK     1d ago     Business Standard       UCO Bank spurts 6.67%                                                                                              
+ HDFCLIFE    1d ago     Business Standard       HDFC Life Insurance Company Ltd in demand                                                                          
+ RAYMOND     1d ago     The Hindu Businessline  Still long way to go for economy to be back on track, says Gautam Hari Singhania of Raymond                        
+ SYMPHONY    1d ago     Zee News                OMG! Citibank transfers over Rs 3,600 crore by mistake, the court ruling is equally astonishing                    
+ IRCTC       1d ago     Indian Express          How CoRover handles the pressures of building a bot for irctc.co.in                                                
+ HAVELLS     1d ago     The Hindu Businessline  Havells India: Buy (₹1,194.5)                                                                                      
+ MPHASIS     1d ago     India Infoline          Nifty IT tops 175 pts despite heavyweight TCS diving 1%; Naukri, Mphasis, Tech Mahindra lifts performance          
+ ASHOKA      1d ago     Hindustan Times         Brookfield, NIIF, Actis place bids to buy Ashoka Concessions                                                       
+ VEDL        1d ago     Economic Times          Stocks in the news: Ambuja Cements, Airtel, Magma Fincorp, GIC Re, Dish TV and Vedanta                             
+ IDBI        1d ago     Economic Times          View: A robust ecosystem for project implementation is a must for efficient development of infrastructure          
+ ADANIPORTS  2d ago     India Infoline          Adani Ports skyrockets 5% on 100% acquisition of Dighi Port for Rs705cr; Plans to invest Rs10,000cr further        
+ CROMPTON    2d ago     Business Standard       Crompton Greaves Consumer Electrical allots 48,000 equity shares under ESOS                                        
+ SRTRANSFIN  2d ago     Economic Times          Umesh Revankar of Shriram Transport Fin on how CV financiers are poised for growth                                 
+ VOLTAS      2d ago     Moneycontrol            Buy Voltas; Target Of Rs 1260: ICICI Direct                                                                        
+ ULTRACEMCO  2d ago     India Infoline          UltraTech Cement approves fundraising of Rs2900cr through allotment of USD Notes                                   
+ PEL         2d ago     Moneycontrol            Mutual Funds Bought And Sold These 10 Stocks Each From Large, Mid And Smallcap Space In January                    
+ HAL         2d ago     Moneycontrol            Mutual Funds Bought And Sold These 10 Stocks Each From Large, Mid And Smallcap Space In January                    
+ ABFRL       2d ago     Business Standard       Polyplex Corporation Ltd leads losers in ‘A’ group                                                                 
+ GLAND       2d ago     Bloomberg Quint         Gland Pharma: A Master Injector - Motilal Oswal Initiates Coverage                                                 
+ TATACONSUM  2d ago     Moneycontrol            D-Street Buzz: Over 200 Stocks Hit 52-week High On BSE; Bank Of Maharashtra, IOB Hit Upper Circuit                 
+ FEDERALBNK  2d ago     Business Standard       Federal Bank Ltd up for third consecutive session                                                                  
+ TATACHEM    2d ago     Economic Times          Is Tata Chemicals going to be the next jewel in Tata crown?                                                        
+ SUNPHARMA   2d ago     Zee News                Sensex falls 260 points, Nifty trades below 15,300                                                                 
+ EICHERMOT   2d ago     India Infoline          Nifty Auto holds steady amid volatile trade; Motherson, Hero MotoCorp, Ashok Leyland shine                         
+ PIDILITIND  2d ago     Moneycontrol            Hot Stocks | Lupin, Ambuja Cements And Pidilite Can Give Up To 11% Return In Short Term                            
+ SIEMENS     2d ago     Business Today          PM Modi talks to stakeholders to expedite infra creation                                                           
+ BERGEPAINT  3d ago     The Hindu Businessline  Broker’s call: Berger Paints (Sell)                                                                                
+ APOLLOTYRE  3d ago     Moneycontrol            Buy Apollo Tyres; Target Of Rs 289: Geojit                                                                         
+ ZEEL        3d ago     Economic Times          Stock market update: Media stocks slip; Zee Entertainment down 3%                                                  
+ ARVIND      3d ago     Business Standard       Info Edge (India) Ltd leads losers in ‘A’ group                                                                    
+ GMRINFRA    3d ago     Moneycontrol            GMR Infra Consolidated December 2020 Net Sales At Rs 1,481.03 Crore, Down 32.57% Y-o-Y                             
+ HEG         3d ago     Moneycontrol            HEG: From Value Play To Recovery Play                                                                              
+ OBEROIRLTY  3d ago     India Infoline          Nifty Realty index trades flat; Oberoi Realty, Prestige weighs down; Phoenix, Brigade, Sobha limits losses         
+ INDOCO      4d ago     Moneycontrol            Buy Indoco Remedies; Target Of Rs 358: Prabhudas Lilladher                                                         
+ RBLBANK     4d ago     Moneycontrol            D-Street Buzz: IndusInd Bank & Axis Bank Power Bank Nifty To Record High; ICICI Bank Climbs New Peak               
+ GODREJIND   4d ago     Business Today          Stocks in news: Tata Motors, Airtel, Vodafone, PowerGrid, ONGC, Godrej Industries                                  
+ RAMCOCEM    4d ago     Economic Times          Buy The Ramco Cements, target price Rs 1010: Motilal Oswal                                                         
+ GOODYEAR    6d ago     Business Standard       Goodyear India Q3 PAT soars to Rs 48 cr                                                                            
+ BATAINDIA   7d ago     Moneycontrol            Accumulate Bata India; Target Of Rs 1697: Dolat Capital Market                                                     
+ CASTROLIND  7d ago     Moneycontrol            Buy Castrol (India); Target Of Rs 170: Motilal Oswal                                                               
+ CONCOR      7d ago     Moneycontrol            Buy Container Corporation; Target Of Rs 555: Motilal Oswal                                                         
+ GODREJPROP  7d ago     Business Standard       Godrej Properties recognized as Masters of Risk in Real Estate category                                            
+ ADANIENT    7d ago     Business Standard       Adani Enterprises enters top-50 most-valued companies list                                                         
+ MFSL        8d ago     Moneycontrol            Buy Max Financial Services; Target Of Rs 1000: Sharekhan                                                           
+ VISAKAIND   8d ago     Moneycontrol            Buy Visaka Industries; Target Of Rs 572: Anand Rathi                                                               
+ JKLAKSHMI   8d ago     Moneycontrol            Buy JK Lakshmi Cement; Target Of Rs 453: Anand Rathi                                                               
+ EXIDEIND    8d ago     Business Today          Saral Jeevan Bima for low-income earners fills need gap; insurers ready policies                                   
+ EVEREADY    9d ago     The Hindu Businessline  Eveready posts 45% drop in profit at ₹50 crore                                                                     
+ WOCKPHARMA  9d ago     The Hindu Businessline  Fresh investments from TCS, Wockhardt to create more jobs in the UK                                                
+ CHAMBLFERT  9d ago     Business Standard       Chambal Fertilisers & Chemicals receives NCLT approval for dissolution of subsidiary                               
+ SRF         9d ago     Moneycontrol            SRF And Bandhan Bank Among Six Buying Ideas By Various Brokerages                                                  
+ ATUL        9d ago     Business Standard       Volumes jump at Atul Ltd counter                                                                                   
+ RADICO      9d ago     Moneycontrol            Buy Radico Khaitan; Target Of Rs 625: Dolat Capital Market                                                         
+ JBMA        10d ago    Moneycontrol            JBM Auto Reports 33% Rise In Q3 Profit At Rs 22 Crore                                                              
+ UPL         10d ago    India Infoline          UPL only firm in crop protection sector to enter in S&P Global Sustainability Yearbook 2021; Stock surge 2%        
+ INDIACEM    10d ago    Economic Times          How long can Damani’s Midas touch sustain investor interest in India Cements?                                      
+ BOMDYEING   10d ago    Moneycontrol            Bombay Dyeing Standalone December 2020 Net Sales At Rs 386.22 Crore, Up 2.26% Y-o-Y                                
+ SPARC       10d ago    Business Standard       Sun Pharma Advanced Research Company reports standalone net loss of Rs 67.62 crore in the December 2020 quarter    
+ TEAMLEASE   10d ago    Investing.com           BRIEF-Teamlease Services CFO Narayanaswamy Ravi Vishwanath Steps Down                                              
+ QUESS       11d ago    Bloomberg Quint         Why Shares Of Quess Corp, TeamLease Rallied Over 20% In Last Three Sessions                                        
+ TRITURBINE  11d ago    Business Standard       Volumes spurt at Triveni Turbine Ltd counter                                                                       
+ DCBBANK     11d ago    India Infoline          DCB Bank revises MCLR on various tenor; Stock dips 1%                                                              
+ PRAJIND     14d ago    India Infoline          Praj Industries reports order inflows of Rs605cr; sales at Rs348cr in Q3                                           
+ TATAELXSI   14d ago    India Infoline          ICRA withdraws ratings for Tata Elxsi’s Rs55cr borrowing programme                                                 
+ MCDOWELL-N  15d ago    Business Standard       United Spirits Ltd soars 2.07%                                                                                     
+ INDUSTOWER  16d ago    Economic Times          Bharti Airtel board okays plan to raise up to Rs 7,500 crore via bonds                                             
+ MADRASFERT  16d ago    Investing.com           BRIEF-India’s Madras Fertilizers Dec-Qtr Profit Rises                                                              
+ JKTYRE      17d ago    Free Press Journal      Madhya Pradesh: JK Tyre enters into synergic partnership with NATRAX in Pithampur                                  
+ KAJARIACER  18d ago    Moneycontrol            Buy Kajaria Ceramics; Target Of Rs 950: Sharekhan                                                                  
+ HOCL        22d ago    Business Standard       Hindustan Organic Chemicals reports consolidated net profit of Rs 14.80 crore in the December 2020 quarter         
+ FCL         27d ago    Business Standard       Fineotex Chemical consolidated net profit rises 70.98% in the December 2020 quarter                                
+ CENTURYTEX  28d ago    India Infoline          Century Textiles Q3 PAT down 12% yoy at Rs36.53cr on lower revenues                                                
+ IDFCFIRSTB  30d ago    Moneycontrol            IDFC Bank Q3 Net Profit To Rs. 135.6 Cr: ICICI Direct                                                              
+
+Done.                                                                                                                  
+This run of News scan took 5.1 sec
+News scanning finished.
+```
 - To view just the logs of your interest, you can filter those:
 
   ```python

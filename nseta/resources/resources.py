@@ -54,7 +54,7 @@ class Scanner:
 		Background_Scan_Frequency_Live=60,Background_Scan_Frequency_Quotes=60,
 		Background_Scan_Frequency_Volume=30,volume_scan_columns=None,swing_scan_columns=None,
 		enumerate_volume_scan_signals=False, intraday_scan_columns = None, live_scan_columns=None,
-		crossover_reminder_percent=0.075, scan_results_max_count = 30):
+		crossover_reminder_percent=0.075, scan_results_max_count = 30, max_column_length=55):
 		self._userstocks_filepath = userstocks_path
 		self._Background_Scan_Frequency_Intraday = int(Background_Scan_Frequency_Intraday)
 		self._Background_Scan_Frequency_Live = int(Background_Scan_Frequency_Live)
@@ -67,6 +67,7 @@ class Scanner:
 		self._live_scan_columns = live_scan_columns
 		self._crossover_reminder_percent = float(crossover_reminder_percent)
 		self._scan_results_max_count = int(scan_results_max_count)
+		self._max_column_length = int(max_column_length)
 
 	@property
 	def userstocks_filepath(self):
@@ -116,6 +117,9 @@ class Scanner:
 	def scan_results_max_count(self):
 		return self._scan_results_max_count
 		
+	@property
+	def max_column_length(self):
+		return self._max_column_length
 
 class Backtest:
 	def __init__(self, init_cash=100000, smac_fast_period=10,smac_slow_period=50,
@@ -516,4 +520,5 @@ class resources:
 		lsc = split_into_range_str(r.config_valueforkey('SCANNER',"live_scan_columns"))
 		crp = r.config_valueforkey('SCANNER',"crossover_reminder_percent")
 		srmc = r.config_valueforkey('SCANNER',"scan_results_max_count")
-		return Scanner(usfp, bsfi, bsfl,bsfq, bsfv,vsc,ssc, evss,isc,lsc,crp, srmc)
+		mcl = r.config_valueforkey('SCANNER',"max_column_length")
+		return Scanner(usfp, bsfi, bsfl,bsfq, bsfv,vsc,ssc, evss,isc,lsc,crp,srmc,mcl)

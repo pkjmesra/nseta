@@ -7,7 +7,7 @@ Created on Mon Aug 23 10:10:30 2020.
 import requests
 from nseta.common.constants import NSE_INDICES, INDEX_DERIVATIVES
 from nseta.resources.resources import *
-from nseta.common.log import tracelog, default_logger
+from nseta.common.log import default_logger
 from nseta.common.tradingtime import IST_datetime
 import datetime
 from functools import partial
@@ -247,6 +247,7 @@ class ParseNews:
 			false = False
 			true = True
 			null = None
+			default_logger().debug('false:{}:true{}:null:{}'.format(false, true, null))
 			news_dict = eval(next_data[0])
 			news = news_dict['props']['pageProps']['news'][0]
 			headline = news['headline']
@@ -260,7 +261,7 @@ class ParseNews:
 			default_logger().debug('news_dict:\n{}\n'.format(news_dict))
 		except Exception as e:
 			default_logger().debug(e, exc_info=True)
-		return '' if diff_hrs is None else '({}){}...'.format(diff_hrs_str, headline[:25])
+		return '' if diff_hrs is None else '({}){}...'.format(diff_hrs_str, headline[:resources.scanner().max_column_length])
 
 class ThreadReturns(threading.Thread):
 	def run(self):

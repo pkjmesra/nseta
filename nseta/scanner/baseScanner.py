@@ -162,13 +162,41 @@ class baseScanner:
 		self.scannerinstance.scan_finished(self.scanner_type)
 		click.secho('{} scanning finished.'.format(self.scanner_type.name), fg='green', nl=True)
 
+	def left_align(self, df, max_col_width=80):
+		#convert tuple to dictionary
+		# dict( 
+		# 	[
+		# 		#create a tuple such that (column name, max length of values in column or the column header itself)
+		# 		(v, df[v].apply(lambda r: len(str(r)) if r!=None else 0).max()) 
+		# 			for v in df.columns.values #iterates over all column values
+		# 	])
+		res1 = dict([(v, max(len(v),df[v].apply(lambda r: len(str(r)) if r!=None else 0).max()))for v in df.columns.values])
+		#dict(zip(df, measurer(df.values.astype(str)).max(axis=0)))
+		pd.set_option('display.max_colwidth', max_col_width)
+		pd.set_option('display.max_rows', len(self.stocks))
+		# pd.set_option('display.width', 1000)
+		for key in res1.keys():
+			old_key = key
+			adj_key = old_key.ljust(res1[key])
+			s = df[key]
+			try:
+				if adj_key == key:
+					df.drop([key], axis = 1, inplace = True)
+				df[adj_key] = s.apply(lambda x: x.ljust(res1[key]))
+			except Exception:
+				df[adj_key] = s
+			finally:
+				if adj_key != key:
+					df.drop([key], axis = 1, inplace = True)
+		return df
+
 	def flush_signals(self, signaldf):
 		if self.option is not None and len(self.option) > 0:
 			signaldf = signaldf.sort_values(by=self.option, ascending=self.sortAscending)
 		signaldf = signaldf.head(resources.scanner().scan_results_max_count)
 		analysis_df = signaldf.copy(deep=True)
 		user_signaldf = self.configure_user_display(signaldf, columns=self.signal_columns)
-		print("\nAs of {}, {} Signals:\nSymbols marked with (*) have just crossed a crossover point.\n\n{}\n\n".format(IST_datetime(),self.scanner_type.name, user_signaldf.to_string(index=False)))
+		print("\nAs of {}, {} Signals:\nSymbols marked with (*) have just crossed a crossover point.\n\n{}\n\n".format(IST_datetime(),self.scanner_type.name, self.left_align(user_signaldf, resources.scanner().max_column_length).to_string(index=False)))
 		if self.analyse:
 			self.scan_analysis(analysis_df)
 		return True

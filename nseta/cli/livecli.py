@@ -117,10 +117,22 @@ def top_picks(stocks, intraday, swing, indicator, clear, background):
 		RUN_IN_BACKGROUND = False
 		return
 
-# @click.command(help='Scans for news for the given tickers or all tickers from stocks.txt')
-# @click.option('--stocks', '-S', default=[], help='Comma separated security codes(Optional). When skipped, all stocks configured in stocks.txt will be scanned.)')
-# @tracelog
-# def news(stocks):
+@click.command(help='Scans for news for the given tickers or all tickers from stocks.txt')
+@click.option('--stocks', '-S', default=[], help='Comma separated security codes(Optional). When skipped, all stocks configured in stocks.txt will be scanned.)')
+@tracelog
+def news(stocks):
+	if stocks is not None and len(stocks) > 0:
+		stocks = [x.strip() for x in stocks.split(',')]
+	else:
+		stocks = []
+	try:
+		scanner = scannerFactory.scanner(ScannerType.News, stocks, None, False)
+		scanner.clear_cache(True, force_clear = True)
+		scanner.scan()
+	except Exception as e:
+		default_logger().debug(e, exc_info=True)
+		click.secho('Failed to scan for news.\n', fg='red', nl=True)
+		return
 
 '''
 TODO:

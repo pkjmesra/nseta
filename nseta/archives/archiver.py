@@ -18,6 +18,7 @@ class ResponseType(enum.Enum):
 	Quote = 3
 	Volume = 4
 	Default = 5
+	Unknown = 6
 
 class archiver:
 
@@ -121,6 +122,8 @@ class archiver:
 			return os.path.join(self.quote_directory, symbol.upper())
 		elif response_type == ResponseType.Volume:
 			return os.path.join(self.volume_directory, symbol.upper())
+		elif response_type == ResponseType.Unknown:
+			return None
 		else:
 			return os.path.join(self.run_directory, symbol.upper())
 
@@ -134,6 +137,8 @@ class archiver:
 			return self.quote_directory
 		elif response_type == ResponseType.Volume:
 			return self.volume_directory
+		elif response_type == ResponseType.Unknown:
+			return None
 		else:
 			return self.run_directory
 
@@ -154,6 +159,8 @@ class archiver:
 	def restore(self, symbol, response_type=ResponseType.Default):
 		df = None
 		file_path = self.get_path(symbol, response_type)
+		if file_path is None:
+			return None
 		if os.path.exists(file_path):
 			try:
 				df = pd.read_csv(file_path)
@@ -191,6 +198,8 @@ class archiver:
 	@tracelog
 	def clear_all(self, deep_clean=True,response_type=ResponseType.Default):
 		directory = self.get_directory(response_type)
+		if directory is None:
+			return
 		self.remove_cached_file(directory, force_clear=deep_clean, prefix= None if deep_clean else 'DF_')
 		self.remove_cached_file(directory, force_clear=deep_clean, prefix= None if deep_clean else 'SIGNALDF_')
 		if deep_clean:
@@ -202,12 +211,16 @@ class archiver:
 		try:
 			if symbol is not None:
 				file_path = self.get_path(symbol, response_type)
+				if file_path is None:
+					return
 				if os.path.exists(file_path):
 					self.remove_cached_file(file_path, force_clear)
 				else:
 					default_logger().debug("File path does not exist:{}".format(file_path))
 			else:
 				dir_path = self.get_directory(response_type)
+				if dir_path is None:
+					return
 				# shutil.rmtree(dir_path) # For some reason even if it succeeds, many a time, the directory remains there.
 				# # Let's iterate and remove each individual file.
 				# default_logger().debug("Directory removed:{}".format(dir_path))

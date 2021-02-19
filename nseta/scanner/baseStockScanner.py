@@ -29,7 +29,8 @@ class ScannerType(enum.Enum):
 	TopReversal = 6
 	BottomReversal = 7
 	TopPick = 8
-	Unknown = 9
+	News = 9
+	Unknown = 10
 
 class baseStockScanner:
 	def __init__(self, indicator='all'):
