@@ -124,11 +124,14 @@ Commands:
   forecast-strategy      Forecast & measure performance of a trading model
   history                Get price history of a security for given dates
   live-quote             Get live price quote of a security
+  news                   Scans for news for the given tickers or all
+                         tickers from stocks.txt
   pe-history             Get PE history of a security for given dates
   plot-ta                Plot various technical analysis indicators
   scan                   Scan live and intraday for prices and signals.
-  scan-trading-strategy  Test/Measure the performance of your trading strategies
+  scan-trading-strategy  Test/Measure the performance of your trading...
   test-trading-strategy  Measure the performance of your trading strategy
+  top-picks              Scans for price action and signals for intraday or swing trading recommendations.
 ```
 - Sample commands
 ```python
