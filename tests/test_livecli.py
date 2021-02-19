@@ -6,7 +6,7 @@ import logging
 
 from click.testing import CliRunner
 
-from nseta.cli.livecli import live_quote, scan
+from nseta.cli.livecli import live_quote, scan, news, top_picks
 from nseta.common import urls
 from nseta.scanner.stockscanner import *
 from baseUnitTest import baseUnitTest
@@ -96,6 +96,18 @@ class TestLivecli(baseUnitTest):
 		result = runner.invoke(live_quote, args=['-gowvb'])
 		self.assertEqual(result.exit_code , 0)
 		self.assertIn("Usage:  [OPTIONS]", result.output, str(result.output))
+
+	def test_news(self):
+		runner = CliRunner()
+		result = runner.invoke(news, args=['--stocks', 'BANDHANBNK,ICICIBANK,ESCORTS,FSL,TCS,OIL,MOIL,ABB,ACC,DLF'])
+		self.assertEqual(result.exit_code , 0)
+		self.assertIn("Headline", result.output, str(result.output))
+
+	def test_top_picks(self):
+		runner = CliRunner()
+		result = runner.invoke(top_picks, args=['--stocks', 'BANDHANBNK,ICICIBANK,ESCORTS,FSL,TCS,OIL,MOIL,ABB,ACC,DLF', '--intraday', '--indicator', 'macd', '--clear'])
+		self.assertEqual(result.exit_code , 0)
+		self.assertIn("TopPick scanning finished", result.output, str(result.output))
 
 	def test_scan_live_quote_background(self):
 		scanner = scannerFactory.scanner(ScannerType.Quote)
