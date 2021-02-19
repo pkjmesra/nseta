@@ -1157,164 +1157,165 @@ nseta test-trading-strategy -S TATAMOTORS -s 2020-06-01 -e 2021-01-17 --strategy
 
      Symbol Strategy      PnL
  TATAMOTORS     MACD  92873.2
+
+$ nseta test-trading-strategy -S TATAMOTORS -s 2020-06-01 -e 2021-01-17 --strategy macd -c --strict
+
+   fast_period  slow_period  signal_period  init_cash    final_value       pnl
+0           12           26              9     100000  131719.153375  31719.15
+1/1. Finished testing macd trading strategy for TATAMOTORS.                                                                    
+  DateTime   Signal   Price                   Pattern Direction      Funds Order_Size Holdings_Size Portfolio_Value Brokerage
+2020-07-28      BUY  106.45    PossibleReversalUpward      Down   50041.27        469           469        99966.32     33.68
+2020-08-17     SELL  123.55  PossibleReversalDownward        Up  107947.12        469             0       107947.12      39.1
+2020-08-17  SQR-OFF  123.55  PossibleReversalDownward        Up  107947.12          0             0       107947.12      39.1
+
+
+     Symbol Strategy      PnL Recommendation
+ TATAMOTORS     MACD  7947.12           Sell
 ```
 
 - Compare all trading strategies through backtesting
 
 ```python
-nseta scan-trading-strategy -s 2020-06-01 -e 2021-01-22
+$ nseta scan-trading-strategy -s 2020-06-01 -e 2021-01-22
+Done.                                                                                                                                
+This run of trading strategy scan took 167.0 sec
 
-
- Done.                                                                                                                                
-This run of trading strategy scan took 124.9 sec
-
-     Symbol   RSI-PnL   MACD-PnL  BBANDS-PnL Reco-RSI Reco-MACD Reco-BBANDS
-        ABB   2001.65   10381.40     8419.90  Unknown       Buy     Unknown
-  EICHERMOT -65228.45  -15406.95   -30387.85      Buy       Buy         Buy
-        MRF      0.00       0.00        0.00  Unknown       Buy     Unknown
-   MINDTREE  18711.95   13120.65    17001.25  Unknown       Buy     Unknown
-   CROMPTON  12021.85   -2428.30    17970.65  Unknown       Buy     Unknown
-   RELIANCE   2592.05   -6538.90    -2374.05     Sell       Buy        Sell
-  GODREJIND  16671.80   21816.40    26177.55      Buy       Buy         Buy
- CHAMBLFERT  16565.85   22188.80    30350.80      Buy       Buy         Buy
-   GOODYEAR   9890.85   26561.75     2804.05  Unknown       Buy     Unknown
-  BRITANNIA  -4414.30   -7655.70     -218.55  Unknown       Buy     Unknown
-    HAVELLS  38824.50   14944.75    39997.35     Sell       Buy        Sell
- MADRASFERT  -1987.85    3819.30    24400.60      Buy       Buy         Buy
- HEROMOTOCO  12380.95    7190.65    23257.40  Unknown       Buy     Unknown
- TATAMOTORS  72553.15  125909.35    47051.45  Unknown       Buy     Unknown
- HINDUNILVR    816.80    -365.30     6380.25      Buy       Buy         Buy
- BHARATFORG  51284.30   37607.55    55649.10  Unknown       Buy     Unknown
-   ASHOKLEY  26382.90   37486.45    12371.50  Unknown       Buy     Unknown
-  BAJAJELEC  14848.05   24464.40     7105.90  Unknown       Buy     Unknown
-     VOLTAS  25630.15   11733.20    10959.25     Sell       Buy        Sell
- KAJARIACER  29899.35    6014.95    18198.15      Buy       Buy         Buy
-  VISAKAIND  39846.30   14623.15    45640.85      Buy       Buy         Buy
-     VGUARD   9702.40    2542.45     6752.60  Unknown       Buy     Unknown
- APOLLOTYRE  36391.15   22442.35    28386.05      Buy       Buy         Buy
-     JKTYRE  22340.80   99510.55    26563.35      Buy       Buy         Buy
-        UPL  19662.55    6522.75     2230.80     Sell       Buy        Sell
-  NESTLEIND  -3636.95   -7961.75     1337.10  Unknown      Sell     Unknown
- JINDALSTEL  14071.85   23148.30    31277.05     Sell      Sell        Sell
- MUTHOOTFIN  -7348.95   -8294.40    -8255.35     Sell      Sell        Sell
-    MPHASIS  20840.75   -3853.55    10362.70     Sell      Sell        Sell
-       MOIL  -2411.95  -10175.70   -13105.55     Sell      Sell        Sell
-  JKLAKSHMI  15080.45    7366.70     9165.35     Sell      Sell        Sell
-        LTI  21342.45   20271.20     6096.40     Sell      Sell        Sell
-         LT  -5743.25   21459.75     5938.55     Sell      Sell        Sell
-       MFSL  -1270.15   12190.70    14175.50     Sell      Sell        Sell
-        MCX  -2070.85   -1863.05     2027.90  Unknown      Sell     Unknown
-   JSWSTEEL  30158.70   50909.55    21781.55     Sell      Sell        Sell
- MCDOWELL-N   9771.85    7303.55     4796.40  Unknown      Sell     Unknown
-     MARUTI   6509.50    4483.05     5651.05     Sell      Sell        Sell
-       NMDC  17227.00   22252.20    15177.85     Sell      Sell        Sell
-  KOTAKBANK   9750.65   16006.10    19880.95     Sell      Sell        Sell
-        M&M   2888.25   15932.60    14378.45     Sell      Sell        Sell
-      LUPIN  20286.30    6448.20     5136.45  Unknown      Sell     Unknown
-  LICHSGFIN  12547.80   31683.15     6849.50     Sell      Sell        Sell
-        MGL   -276.95   10999.05    -7390.50     Sell      Sell        Sell
-       NTPC  32334.15    7878.15    18086.50     Sell      Sell        Sell
-  POWERGRID   -517.05    1997.05     3999.85     Sell      Sell        Sell
-        PEL  -2506.20   -4936.90    11560.90     Sell      Sell        Sell
-      WIPRO  33190.85   38708.70    20412.25  Unknown      Sell     Unknown
-       VEDL  18468.65   56375.75    34460.20     Sell      Sell        Sell
- ULTRACEMCO  21509.75   10356.05     9070.75     Sell      Sell        Sell
- TRITURBINE  24789.15   22530.00    23231.05  Unknown      Sell     Unknown
- TORNTPOWER  -2795.50    7296.20    -2500.20     Sell      Sell        Sell
- TORNTPHARM  11024.95   -1035.75    11807.30  Unknown      Sell     Unknown
-      TITAN  11782.60    8714.45    13886.40     Sell      Sell        Sell
-      TECHM  28612.60   27675.60    14190.40     Sell      Sell        Sell
-  TEAMLEASE  28422.90   17050.30     8771.40     Sell      Sell        Sell
-  TATASTEEL  32270.30   76080.75     9378.60     Sell      Sell        Sell
-  TATAELXSI  36476.95   93427.40    15800.25     Sell      Sell        Sell
- TATACONSUM   4169.75   32354.45      452.15     Sell      Sell        Sell
-   TATACHEM   2013.65   36156.90    -1991.30     Sell      Sell        Sell
-       ONGC  20577.20   33639.75      736.10     Sell      Sell        Sell
-   SYMPHONY  -2720.60   -3843.00     1463.80  Unknown      Sell     Unknown
- SRTRANSFIN  26921.05   38725.70    40349.50     Sell      Sell        Sell
-        SRF   7892.20    4602.15    -1200.40     Sell      Sell        Sell
-      SPARC  -5107.55   -6680.00     2692.00     Sell      Sell        Sell
-    SIEMENS  12188.80    7822.70     8987.00     Sell      Sell        Sell
-       SBIN  27090.15   30052.60    28696.65     Sell      Sell        Sell
-    SBILIFE  -2242.30    1368.10     6883.45     Sell      Sell        Sell
-       SAIL  11021.50   86778.75    14752.55     Sell      Sell        Sell
-    RBLBANK  25275.90     920.80    55111.85     Sell      Sell        Sell
-    PRAJIND  14660.40   56713.40    35471.10     Sell      Sell        Sell
-        ITC   4965.80    5179.80    -5404.95     Sell      Sell        Sell
-        PNB   1244.20   15302.55    -2017.45     Sell      Sell        Sell
- PIDILITIND   3723.60    4443.40     7504.55  Unknown      Sell     Unknown
-        PFC  25937.00   18628.85    15473.40     Sell      Sell        Sell
-  SUNPHARMA  10176.55    8764.25    11934.85     Sell      Sell        Sell
-      IRCTC   5889.50   -7910.80     5381.90  Unknown      Sell     Unknown
-     INDOCO  36822.30   16298.35    18239.35     Sell      Sell        Sell
-       INFY  23501.60    9045.90     6037.15      Buy      Sell         Buy
- CUMMINSIND  28357.75   50103.70    22421.25  Unknown      Sell     Unknown
-     CONCOR   3958.15   -7644.10    12931.75  Unknown      Sell     Unknown
-      CIPLA   -863.90  -11001.30    -1615.70     Sell      Sell        Sell
- CENTURYTEX  -1534.10   -7385.15     -277.95     Sell      Sell        Sell
- CASTROLIND   7748.55   16730.20     2313.65      Buy      Sell         Buy
-   CADILAHC  11190.45   -4418.00     3921.05     Sell      Sell        Sell
-       BPCL   8059.85    8036.85    -4497.15     Sell      Sell        Sell
-  BOMDYEING  -6737.00  -12670.20     2696.05     Sell      Sell        Sell
-     BIOCON -13393.40    5797.00    -9141.10     Sell      Sell        Sell
-       BHEL  -8407.15   26815.25   -10605.35     Sell      Sell        Sell
- BHARTIARTL  -3680.55   -3268.95   -14718.10     Sell      Sell        Sell
- BERGEPAINT  28668.65   18113.10    17560.65  Unknown      Sell     Unknown
-       BEML   8935.70   43903.25    10403.80  Unknown      Sell     Unknown
-        IOC  13763.95   20124.65    11087.05     Sell      Sell        Sell
-        BEL  25612.35   26593.00    20960.45     Sell      Sell        Sell
-  BANKINDIA  -8490.60   10402.65     1421.55     Sell      Sell        Sell
- BANKBARODA  -1982.90   18592.05     -414.45     Sell      Sell        Sell
- BANDHANBNK   7075.00   29110.25    27895.70     Sell      Sell        Sell
-   AXISBANK  10243.80   30327.15    13906.45  Unknown      Sell     Unknown
- AUROPHARMA   5399.60    4011.95    10874.30  Unknown      Sell     Unknown
-       ATUL   7856.85   17283.40     4561.70      Buy      Sell         Buy
- ASIANPAINT  18558.10   21408.20     9758.05  Unknown      Sell     Unknown
-     ASHOKA  18267.15   59326.95    20278.60     Sell      Sell        Sell
-     ARVIND  40644.55   19603.10    27942.25     Sell      Sell        Sell
-  AMBUJACEM    948.15   21780.15    15247.05  Unknown      Sell     Unknown
-   ADANIENT  26281.95   58859.20    39130.70     Sell      Sell        Sell
-        ACC  21227.55   11803.15    11822.90  Unknown      Sell     Unknown
-      ABFRL  14611.75    2862.35    -5585.80  Unknown      Sell     Unknown
-  BATAINDIA   4438.65       2.95     5548.70     Sell      Sell        Sell
-      DABUR   4908.15   -1420.00     6744.50     Sell      Sell        Sell
-       ZEEL  37259.95   38965.80     1523.75     Sell      Sell        Sell
-        DLF  19716.05   11898.85    11771.65     Sell      Sell        Sell
- INDUSTOWER  16502.15   31680.60    24006.85     Sell      Sell        Sell
- INDUSINDBK  29827.65   18584.20    43392.45     Sell      Sell        Sell
- WOCKPHARMA   5274.15   66126.90    11580.35     Sell      Sell        Sell
-   INDIACEM  19836.30   11050.80    27692.95     Sell      Sell        Sell
-        IGL  -3178.95   11829.45   -20391.55  Unknown      Sell     Unknown
- IDFCFIRSTB  25145.55   27393.10    30041.65     Sell      Sell        Sell
-       IDBI  15280.40  -10982.05    10550.85      Buy      Sell         Buy
-  ICICIBANK  17175.95   11631.65    17862.15  Unknown      Sell     Unknown
-  HINDPETRO   1399.65   -3863.15   -13296.90     Sell      Sell        Sell
-   HINDALCO  40117.50   37981.95    18571.20     Sell      Sell        Sell
-   HDFCBANK   2504.35   18294.15     2456.80     Sell      Sell        Sell
-       HDFC  11953.15   35841.10    23806.40     Sell      Sell        Sell
-    DCBBANK  24698.10   26477.50     2014.35     Sell      Sell        Sell
-        HAL  64975.60   41141.35    11387.05     Sell      Sell        Sell
-    HCLTECH   9045.00   13588.75     3366.50     Sell      Sell        Sell
- GODREJPROP  20744.25    1375.40    16732.95     Sell      Sell        Sell
-    DRREDDY  29046.30   11387.80    20607.60     Sell      Sell        Sell
-    ESCORTS   -678.15   -8119.60    -1496.70  Unknown      Sell     Unknown
-   EVEREADY  24017.50   24217.60    37900.65  Unknown      Sell     Unknown
-   EXIDEIND  23685.95   12995.70    15756.20  Unknown      Sell     Unknown
-        FCL  41558.75    5484.55    35716.05  Unknown      Sell     Unknown
-   GRAPHITE   3464.05   33707.65    27880.65     Sell      Sell        Sell
-     FORTIS  11551.40   -1273.40     -732.10  Unknown      Sell     Unknown
- FEDERALBNK  14979.60   30841.25    40875.20     Sell      Sell        Sell
-       GAIL   1118.45   28179.15     6749.95  Unknown      Sell     Unknown
-   GLENMARK  -4047.55    8135.60     7957.45     Sell      Sell        Sell
-   GMRINFRA   7569.15   -5216.65    12415.65     Sell      Sell        Sell
-   GODREJCP   1456.80    5730.00    16351.60     Sell      Sell        Sell
- BAJFINANCE  10279.00   18712.05     5742.30  Unknown   Unknown     Unknown
-   TVSMOTOR   7782.35    2295.35    11448.50      Buy   Unknown         Buy
-  REPCOHOME  71396.60   49798.70    49716.15  Unknown   Unknown     Unknown
-     INDIGO   8979.00   29612.90    11815.05  Unknown   Unknown     Unknown
-        TCS   5153.20   17996.65     1796.85  Unknown   Unknown     Unknown
-        FSL  61118.35   35050.20    58745.90     Sell   Unknown        Sell
-     RADICO  18186.15    9358.40    29067.85  Unknown   Unknown     Unknown
+     Symbol   RSI-PnL  MACD-PnL  BBANDS-PnL Reco-RSI Reco-MACD Reco-BBANDS
+  BRITANNIA   1038.36  -4557.26     2727.50     Sell       Buy         Buy
+        ABB   7673.39   1228.12     6111.26     Sell      Sell         Buy
+        PEL   1262.72   1274.19     2879.71     Sell      Sell         Buy
+       ONGC  -2426.94  11556.15     1416.32     Sell      Sell         Buy
+        OIL    117.60    216.77      302.14     Hold      Sell         Buy
+       NTPC    849.00   6122.00     1224.55     Sell      Sell        Hold
+       NMDC  -2114.39   5816.98     1581.65     Sell      Sell         Buy
+  NESTLEIND    319.90    295.52      374.16     Sell      Sell        Sell
+    MPHASIS   1591.14   4751.86     3595.79     Sell      Sell         Buy
+       MOIL  -2878.31   1291.68     1069.41     Sell      Sell        Hold
+   MINDTREE   -667.52   4248.18     1573.55     Sell      Sell        Hold
+        MGL   -546.18    -53.99      531.20     Sell      Sell         Buy
+        MCX   1838.38   8389.08     3324.79     Sell      Sell         Buy
+ MCDOWELL-N  -2179.22   1216.13      862.13     Sell      Sell        Sell
+     MARUTI   -730.55   1228.72     2840.54     Sell      Sell         Buy
+        PFC  -1526.53   7307.02      311.35     Sell      Sell         Buy
+ MADRASFERT  -2792.47   2781.41      806.29     Sell      Sell         Buy
+      LUPIN   -630.96   5025.28       86.52     Sell      Sell         Buy
+        LTI    331.66    202.53     1302.16     Sell      Sell        Hold
+         LT   2576.37   3677.89     2401.17     Sell      Sell        Sell
+  LICHSGFIN   -921.89   4456.12     3090.17     Sell      Sell        Hold
+  KOTAKBANK    882.12    -61.48     2396.07     Hold      Sell         Buy
+ KAJARIACER   1055.93    897.84     5036.10     Hold      Sell         Buy
+   JSWSTEEL  -1175.37  18742.15      -28.66     Sell      Sell        Sell
+     JKTYRE    244.43    308.83     3011.56     Sell      Sell        Hold
+  JKLAKSHMI   4364.96   8305.98     4598.60     Sell      Sell         Buy
+ JINDALSTEL   2249.94  12835.88     3826.16     Sell      Sell        Hold
+       JBMA   6909.66   4893.69     7311.21     Sell      Sell        Sell
+        ITC   2684.74   2993.57     1167.95     Sell      Sell         Buy
+      IRCTC  -1372.98   2678.08     1163.41     Sell      Sell         Buy
+        IOC  -1767.22     73.83     4626.70     Sell      Sell         Buy
+        M&M   -944.70    -33.75     5663.85     Sell      Sell         Buy
+ PIDILITIND  -1037.17    103.79      466.21     Sell      Sell         Buy
+        PNB    908.45   3194.10     1679.58     Sell      Sell         Buy
+  POWERGRID    141.87    668.81     1241.31     Hold      Sell        Sell
+      WIPRO   -281.83   1909.43     7913.39     Sell      Sell        Hold
+  VISAKAIND  -2156.85    284.01     1152.26     Sell      Sell        Sell
+     VGUARD   1011.98    902.18      304.15     Sell      Sell        Hold
+       VEDL   -339.64   3740.68      523.55     Sell      Sell         Buy
+        UPL   -432.89   3581.61     2539.04     Sell      Sell        Sell
+  UNIONBANK     84.79    102.38       17.34     Sell      Sell        Sell
+    UCOBANK   3499.17  -4654.62     7600.75     Sell      Sell        Hold
+   TVSMOTOR   -365.97   1809.91      190.72     Sell      Sell        Sell
+ TORNTPOWER    722.97   5204.22      827.11     Sell      Sell         Buy
+ TORNTPHARM  -2492.96   8588.84     5165.66     Sell      Sell         Buy
+      TITAN    375.99   1831.23       14.38     Sell      Sell        Sell
+  TEAMLEASE  -1145.46   4974.79     2800.67     Sell      Sell         Buy
+        TCS   1525.41   2875.71     1637.73     Sell      Sell        Hold
+ TATAMOTORS    491.20   7947.12     2546.79     Sell      Sell        Sell
+        IOB   9721.97   2223.03    10010.57     Sell      Sell         Buy
+  TATAELXSI   -586.79    699.03      889.66     Sell      Sell        Sell
+   TATACHEM    476.31   1738.39     1423.22     Sell      Sell        Hold
+   SYMPHONY  -1005.71   1397.43     1012.96     Sell      Sell        Hold
+ SRTRANSFIN    672.37  11132.42      898.12     Sell      Sell        Hold
+        SRF    263.91    538.63     1689.94     Sell      Sell        Hold
+    SIEMENS    413.10   1400.03     1301.35     Sell      Sell        Sell
+    SBILIFE    111.89   2264.07     2815.88     Sell      Sell        Hold
+       SAIL  -2707.27   7725.09     6572.26     Sell      Sell         Buy
+  REPCOHOME  -2703.95   5188.27     5514.82     Sell      Sell        Sell
+   RELIANCE    320.85   2157.20      207.38      Buy      Sell        Sell
+    RBLBANK  -2476.98    273.64    11622.03     Sell      Sell        Sell
+   RAMCOCEM   -886.59   1666.78     2291.39     Sell      Sell        Sell
+     RADICO   -905.05    -18.13     6772.08     Sell      Sell        Hold
+      QUESS   2427.08    116.12    12332.34     Sell      Sell         Buy
+    PRAJIND  -2290.21  11158.81     3237.12     Sell      Sell         Buy
+ TATACONSUM    194.45  13623.41     4355.30     Sell      Sell         Buy
+       INFY  -1456.51   1612.15      -63.87     Sell      Sell        Sell
+ INDUSTOWER   1186.19   2349.20      331.40     Sell      Sell        Sell
+ INDUSINDBK  -1555.51   8312.30     1847.03     Sell      Sell        Sell
+      CIPLA  -2258.39   6625.14     3209.56     Sell      Sell         Buy
+ CHAMBLFERT  -2180.35    281.24     3542.81     Sell      Sell        Sell
+  CENTRALBK   1269.98 -11502.79     8848.56     Sell      Sell        Hold
+ CASTROLIND     90.94   2919.20     1238.59     Sell      Sell         Buy
+   CADILAHC  -2561.28   1381.55     2392.75     Sell      Sell         Buy
+       BPCL  -1987.85   1812.46      990.94     Sell      Sell        Sell
+  BOMDYEING  -2131.82   4858.25     6453.99     Sell      Sell        Sell
+     BIOCON    233.66    199.62     2287.35     Sell      Sell         Buy
+       BHEL   4752.36    252.90    13861.80     Sell      Sell        Sell
+ BHARTIARTL  -2079.79   1265.06      289.64     Sell      Sell         Buy
+ BHARATFORG  -5755.26    114.74     1433.01     Sell      Sell        Sell
+ BERGEPAINT   1382.59   1622.72     3737.05     Sell      Sell         Buy
+        BEL    668.94   4507.35     4609.44     Sell      Sell         Buy
+  BATAINDIA  -1102.56    182.00      515.68     Sell      Sell         Buy
+     CONCOR    142.50    171.65      700.63     Sell      Sell        Sell
+  BANKINDIA  -3182.00    191.70     2599.92     Sell      Sell         Buy
+ BANDHANBNK   3146.63   2495.87    17722.03     Sell      Sell         Buy
+ BAJFINANCE   1534.31    958.81     6135.01     Sell      Sell         Buy
+ BAJAJFINSV  -1365.08  15883.95     1243.16     Sell      Sell        Sell
+  BAJAJELEC  -2420.62   1014.46      541.15     Sell      Sell        Sell
+   AXISBANK  -1046.87   1429.37     1936.26     Sell      Sell        Sell
+ AUROPHARMA    266.80   3564.10     1339.92     Sell      Sell         Buy
+       ATUL    540.84   4990.88     2266.97     Sell      Sell        Hold
+   ASHOKLEY  -1118.96  18282.75     6131.66     Sell      Sell         Buy
+     ASHOKA  -3098.98  13512.98    10149.90     Sell      Sell        Sell
+     ARVIND  -2556.23   4555.09      229.21     Sell      Sell        Sell
+ ADANIPORTS    252.29   4672.13     1997.76     Sell      Sell         Buy
+   ADANIENT    -18.99   1406.83     4748.61     Sell      Sell         Buy
+        ACC  -2007.26    731.66     2212.91     Sell      Sell         Buy
+      ABFRL  -1285.31   6722.02       75.45     Sell      Sell         Buy
+ BANKBARODA   -218.94  18565.67     2265.26     Sell      Sell        Sell
+ WOCKPHARMA  -1087.33   9861.88     1966.22     Sell      Sell         Buy
+ CUMMINSIND     51.76   9724.04     3867.43     Sell      Sell         Buy
+   DIVISLAB   -461.11  19691.97      384.16     Sell      Sell        Sell
+     INDOCO  -1290.65  10724.78     2491.54     Sell      Sell         Buy
+   INDIACEM  -1866.20  12530.38      868.03     Sell      Sell        Hold
+ IDFCFIRSTB  -2275.91   4352.82     2152.91     Sell      Sell        Sell
+       IDBI  23110.81   1367.96     7770.51     Sell      Sell         Buy
+  ICICIBANK  -3365.48   1523.61     1693.80     Sell      Sell         Buy
+ HINDUNILVR    612.84   1286.48      553.67     Sell      Sell        Hold
+  HINDPETRO  -2197.65    207.39      284.34     Sell      Sell         Buy
+   HINDALCO  -3766.06   3293.69     5691.62     Sell      Sell         Buy
+ HEROMOTOCO   2490.16   1796.33     3056.54     Sell      Sell        Sell
+        HEG  -1920.09   2125.17     4994.45     Sell      Sell        Hold
+   HDFCLIFE     58.07   1442.25     2819.22     Hold      Sell        Sell
+   HDFCBANK   -702.53   1524.45      233.87     Sell      Sell         Buy
+    HCLTECH  -2662.79   3322.17     6159.11     Sell      Sell        Hold
+    HAVELLS    147.91    272.94     1760.09     Sell      Sell         Buy
+    DCBBANK  -6018.62    586.33     2528.04     Sell      Sell         Buy
+   GOODYEAR   1097.99  14681.70     1924.95     Sell      Sell         Buy
+  GODREJIND    707.07   1504.85     1675.16     Sell      Sell         Buy
+   GODREJCP   3395.69   2641.75     5331.09     Sell      Sell        Sell
+   GMRINFRA  -2833.93    163.15     1597.64     Sell      Sell         Buy
+   GLENMARK  -5876.21   2558.17     6010.21     Sell      Sell        Sell
+       GAIL   2119.21   8795.61     2686.27     Sell      Sell         Buy
+     FORTIS  -2031.08   1708.05      466.57     Sell      Sell         Buy
+ FEDERALBNK  -1998.11   1261.38     3796.24     Sell      Sell        Sell
+        FCL    117.16   3873.14       25.38     Sell      Sell        Sell
+   EXIDEIND  -2317.70   3521.23      175.42     Sell      Sell        Sell
+   EVEREADY    632.84    100.94     6261.94     Hold      Sell         Buy
+    ESCORTS   1412.36    328.79       53.14     Sell      Sell        Hold
+  EICHERMOT    955.35   1441.61     2559.17     Sell      Sell         Buy
+    DRREDDY     52.22   5975.26     2823.11     Sell      Sell         Buy
+        DLF  -3439.49   5406.41     1333.61     Sell      Sell         Buy
+ GODREJPROP  -1299.59   3503.52     1736.45     Sell      Sell        Hold
+       ZEEL  -1391.88  13927.60     6263.33     Sell      Sell         Buy
 ```
 - Top-picks scanning (scanning for stocks for which 5-min and 1-min MACD are aligned)
 
