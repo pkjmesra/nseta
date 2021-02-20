@@ -1,7 +1,7 @@
-# This workflows will upload a Python Package using Twine when a commit is pushed
+# This workflows will run tests on Ubuntu
 # For more information see: https://help.github.com/en/actions/language-and-framework-guides/using-python-with-github-actions#publishing-to-package-registries
 
-name: macOS
+name: Windows
 
 on: push
 #   release:
@@ -10,7 +10,7 @@ on: push
 jobs:
   tests:
 
-    runs-on: macos-latest
+    runs-on: windows-latest
 
     steps:
     - uses: actions/checkout@v2
@@ -21,7 +21,7 @@ jobs:
     - name: Cache pip
       uses: actions/cache@v2
       with:
-        path: ~/Library/Caches/pip
+        path: c:\Users\runner\Local\AppData\pip\Cache
         # Look to see if there is a cache hit for the corresponding requirements file
         key: ${{ runner.os }}-pip-${{ hashFiles('requirements.txt') }}
         restore-keys: |
@@ -31,26 +31,49 @@ jobs:
       run: |
         # Somehow the brew install fails when running action. Let's try and increment buffer size.
         git config --global http.postBuffer 524288000
-    - name: Update or Install Homebrew
-      run: |
-        # sudo rm -rf /usr/local/homebrew
-        # Check if brew is already installed. If not, update or install it now
-        which brew || /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install.sh)"
     - name: Install setuptools
       run: |
-        pip install setuptools wheel twine
+        sudo pip3 install setuptools wheel twine
+    - name: Install ta-lib extension
+      run: |
+        - name: Install ta-lib
+      run: |
+          pip3 install numpy && \
+          curl http://prdownloads.sourceforge.net/ta-lib/ta-lib-0.4.0-src.tar.gz && \
+            tar -xvzf ta-lib-0.4.0-src.tar.gz && \
+            cd ta-lib/ && \
+            ./configure --prefix=/usr && \
+            sudo make install
+    - name: Install ta-lib python lib
+      run: |
+        export TA_LIBRARY_PATH=/home/linuxbrew/.linuxbrew/Cellar/ta-lib/0.4.0/lib
+        export TA_INCLUDE_PATH=/home/linuxbrew/.linuxbrew/Cellar/ta-lib/0.4.0/include
+        python3 -m pip install ta-lib>=0.4.19
+        python3 -c 'import numpy, talib; close = numpy.random.random(100); output = talib.SMA(close); print(output)'
+    - name: Install fastquant
+      run: |
+        pip3 install fastquant git+git://github.com/enzoampil/fastquant.git@5f17e7087e1efb534e2db88775dba268d31de4be
+    - name: Install fbprophet
+      run: |
+        pip3 install fbprophet>=0.7.1
+        pip3 install ipython==7.5.0
     - name: Install project dependencies
       run: |
-        brew install ta-lib
-        pip3 install ta-lib==0.4.19
-        pip3 install fastquant
-        pip3 install fbprophet>=0.7.1
+        pwd
         pip3 install -r requirements.txt
+        python3 -m pip install ta-lib>=0.4.19
+        pip3 install --upgrade pip
+        pip3 install convertdate>=2.3.0
+        pip3 install sanic==19.12.2
+        pip3 install multidict==4.6
+        python3 setup.py clean build install sdist bdist_wheel
+        pip3 install numpy==1.20.0
+        python3 -c "from nseta.scanner.volumeScanner import volumeScanner; from nseta.scanner.baseStockScanner import ScannerType; s=volumeScanner(ScannerType.Volume,['HDFC']); s.scan();"
     - name: Generate test coverage report
       run: |
         pip3 install timeout-decorator
         pip3 install coverage
-        python setup.py clean build install
+        pip3 install codecov
         coverage run -m unittest discover -s tests -p 'test_*.py'
         coverage report -m
         coverage html
@@ -74,3 +97,7 @@ jobs:
       run: |
         coverage xml
         bash <(curl -Ls https://coverage.codacy.com/get.sh) report -l Python -r coverage.xml
+    - name: clean up
+      run: |
+        sudo rm -rf build
+        sudo rm -rf dist
