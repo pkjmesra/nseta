@@ -50,7 +50,7 @@ jobs:
       run: |
         export TA_LIBRARY_PATH=/home/linuxbrew/.linuxbrew/Cellar/ta-lib/0.4.0/lib
         export TA_INCLUDE_PATH=/home/linuxbrew/.linuxbrew/Cellar/ta-lib/0.4.0/include
-        pip3 install ta-lib>=0.4.19
+        python3 -m pip install ta-lib>=0.4.19
         python3 -c 'import numpy, talib; close = numpy.random.random(100); output = talib.SMA(close); print(output)'
     - name: Install fastquant
       run: |
@@ -63,12 +63,13 @@ jobs:
       run: |
         pwd
         pip3 install -r requirements.txt
-        pip3 install ta-lib>=0.4.19
+        python3 -m pip install ta-lib>=0.4.19
         pip3 install --upgrade pip
         pip3 install convertdate>=2.3.0
         pip3 install sanic==19.12.2
         pip3 install multidict==4.6
         python3 setup.py clean build install sdist bdist_wheel
+        pip3 install numpy==1.20.0
         python3 -c "from nseta.scanner.volumeScanner import volumeScanner; from nseta.scanner.baseStockScanner import ScannerType; s=volumeScanner(ScannerType.Volume,['HDFC']); s.scan();"
     - name: Generate test coverage report
       run: |

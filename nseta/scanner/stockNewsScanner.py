@@ -15,7 +15,6 @@ class stockNewsScanner(baseStockScanner):
 	@tracelog
 	def scan_quanta(self, **kwargs):
 		stocks = kwargs['items']
-		frames = []
 		signalframes = []
 		df = None
 		signaldf = None
