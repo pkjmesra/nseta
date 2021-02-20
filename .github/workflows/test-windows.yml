@@ -36,8 +36,6 @@ jobs:
         sudo pip3 install setuptools wheel twine
     - name: Install ta-lib extension
       run: |
-        - name: Install ta-lib
-      run: |
           pip3 install numpy && \
           curl http://prdownloads.sourceforge.net/ta-lib/ta-lib-0.4.0-src.tar.gz && \
             tar -xvzf ta-lib-0.4.0-src.tar.gz && \
