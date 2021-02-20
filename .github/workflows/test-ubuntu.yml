@@ -61,10 +61,10 @@ jobs:
           cd .. && \
           pip3 install ./fastquant-0.1.3.25-py3-none-any.whl
         python3 -m site --user-site
-        sudo rm -rf fastquant* && cd ..
         sudo python3 -c 'from fastquant import backtest, get_yahoo_data; data = get_yahoo_data("TSLA", "2020-11-01", "2021-01-30");backtest("smac", data, fast_period=15, slow_period=20, verbose=False, plot=False)'
     - name: Install fbprophet
       run: |
+        cd /home/runner/work/nseta/nseta
         mkdir -p fbprophet && cd fbprophet && \
           curl -L -O https://files.pythonhosted.org/packages/1a/b5/9c3fefa8a7b839729df57deedf0a69815841dfb88f0df911f34d998230b7/fbprophet-0.7.1.tar.gz \
             && tar -xzf fbprophet-0.7.1.tar.gz \
