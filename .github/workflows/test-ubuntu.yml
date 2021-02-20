@@ -44,49 +44,36 @@ jobs:
         echo "eval \$($(brew --prefix)/bin/brew shellenv)" >>~/.profile
     - name: Install ta-lib
       run: |
-        mkdir -p talib && cd talib && \
-          pip3 install numpy && \
-          wget http://prdownloads.sourceforge.net/ta-lib/ta-lib-0.4.0-src.tar.gz && \
-          tar -xvzf ta-lib-0.4.0-src.tar.gz && \
-          cd ta-lib/ && \
-          ./configure --prefix=/usr && \
-          sudo make && \
-          sudo make install && \
-          cd /home/runner/work/nseta/nseta
         brew install ta-lib
-        sudo rm -rf talib
-        pip3 install ta-lib==0.4.19
+        pip3 install ta-lib>=0.4.19
         python3 -c 'import numpy, talib; close = numpy.random.random(100); output = talib.SMA(close); print(output)'
     - name: Install fastquant
       run: |
-        cd /home/runner/work/nseta/nseta
-        pip3 install fastquant==0.1.3.25
+        pip3 install fastquant git+git://github.com/enzoampil/fastquant.git@5f17e7087e1efb534e2db88775dba268d31de4be
     - name: Install fbprophet
       run: |
-        cd /home/runner/work/nseta/nseta
-        mkdir -p fbprophet && cd fbprophet && \
-          curl -L -O https://files.pythonhosted.org/packages/1a/b5/9c3fefa8a7b839729df57deedf0a69815841dfb88f0df911f34d998230b7/fbprophet-0.7.1.tar.gz \
-            && tar -xzf fbprophet-0.7.1.tar.gz \
-            && rm -rf fbprophet-0.7.1.tar.gz
-        pip3 install -r fbprophet-0.7.1/requirements.txt
+        pip3 install fbprophet>=0.7.1
         pip3 install ipython==7.5.0
-        pip3 install fbprophet==0.7.1
     - name: Install project dependencies
       run: |
         pwd
+        pip3 install -r requirements.txt
+        pip3 install ta-lib>=0.4.19
         pip3 install --upgrade pip
         pip3 install convertdate>=2.3.0
         pip3 install sanic==19.12.2
         pip3 install multidict==4.6
-        python3 setup.py clean build install
+        python3 setup.py clean build install sdist bdist_wheel
         python3 -c "from nseta.scanner.volumeScanner import volumeScanner; from nseta.scanner.baseStockScanner import ScannerType; s=volumeScanner(ScannerType.Volume,['HDFC']); s.scan();"
     - name: Generate test coverage report
       run: |
         pip3 install timeout-decorator
         pip3 install coverage
+        pip3 install codecov
         coverage run -m unittest discover -s tests -p 'test_*.py'
         coverage report -m
         coverage html
+        coverage xml
         bash <(curl -s https://codecov.io/bash)
     - name: "Upload test coverage to Codecov"
       uses: codecov/codecov-action@v1
