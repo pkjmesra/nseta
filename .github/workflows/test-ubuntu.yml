@@ -42,9 +42,11 @@ jobs:
         test -d /home/linuxbrew/.linuxbrew && eval $(/home/linuxbrew/.linuxbrew/bin/brew shellenv)
         test -r ~/.bash_profile && echo "eval \$($(brew --prefix)/bin/brew shellenv)" >>~/.bash_profile
         echo "eval \$($(brew --prefix)/bin/brew shellenv)" >>~/.profile
-    - name: Install ta-lib
+    - name: Install ta-lib extension
       run: |
         brew install ta-lib
+    - name: Install ta-lib python lib
+      run: |
         pip3 install ta-lib>=0.4.19
         python3 -c 'import numpy, talib; close = numpy.random.random(100); output = talib.SMA(close); print(output)'
     - name: Install fastquant
