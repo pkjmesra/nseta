@@ -43,8 +43,8 @@ jobs:
           ./configure --prefix=/usr && \
           sudo make && \
           sudo make install && \
-          cd ..\..
-        sudo rm -rf ta-lib ta-lib-0.4.0-src.tar.gz
+          cd /home/runner/work/nseta/nseta
+        sudo rm -rf talib
         sudo pip3 install ta-lib==0.4.19
         python3 -c 'import numpy, talib; close = numpy.random.random(100); output = talib.SMA(close); print(output)'
     - name: Install fastquant
