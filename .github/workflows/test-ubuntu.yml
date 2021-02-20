@@ -36,19 +36,22 @@ jobs:
         sudo pip3 install setuptools wheel twine
     - name: Install ta-lib
       run: |
-        sudo wget http://prdownloads.sourceforge.net/ta-lib/ta-lib-0.4.0-src.tar.gz && \
+        mkdir -p talib && cd talib && \
+          sudo wget http://prdownloads.sourceforge.net/ta-lib/ta-lib-0.4.0-src.tar.gz && \
           tar -xvzf ta-lib-0.4.0-src.tar.gz && \
           cd ta-lib/ && \
           ./configure --prefix=/usr && \
-          make && \
-          make install
+          sudo make && \
+          sudo make install && \
+          cd ..\..
         sudo rm -rf ta-lib ta-lib-0.4.0-src.tar.gz
         sudo pip3 install ta-lib==0.4.19
         python3 -c 'import numpy, talib; close = numpy.random.random(100); output = talib.SMA(close); print(output)'
     - name: Install fastquant
       run: |
         sudo apt-get -y install curl unzip
-        sudo wget https://files.pythonhosted.org/packages/dc/4d/a667d96989c4d6d4a95536ffe779873d13378af0142a2b0e0876dd885243/fastquant-0.1.3.25-py3-none-any.whl && \
+        mkdir -p fastquant && cd fastquant && \
+          sudo wget https://files.pythonhosted.org/packages/dc/4d/a667d96989c4d6d4a95536ffe779873d13378af0142a2b0e0876dd885243/fastquant-0.1.3.25-py3-none-any.whl && \
           unzip -o fastquant-0.1.3.25-py3-none-any.whl && \
           wget https://raw.githubusercontent.com/enzoampil/fastquant/master/python/requirements.txt && \
           mv requirements.txt fastquant/requirements.txt && \
@@ -59,13 +62,14 @@ jobs:
         python3 -m site --user-site
         sudo mkdir -p /home/runner/.local/lib/python3.8/site-packages/fastquant
         sudo cp -r fastquant /home/runner/.local/lib/python3.8/site-packages/fastquant
-        sudo rm -rf fastquant*
+        sudo rm -rf fastquant* && cd ..
         python3 -c 'from fastquant import backtest, get_yahoo_data; data = get_yahoo_data("TSLA", "2020-11-01", "2021-01-30");backtest("smac", data, fast_period=15, slow_period=20, verbose=False, plot=False)'
     - name: Install fbprophet
       run: |
-        curl -L -O https://files.pythonhosted.org/packages/1a/b5/9c3fefa8a7b839729df57deedf0a69815841dfb88f0df911f34d998230b7/fbprophet-0.7.1.tar.gz \
-          && tar -xzf fbprophet-0.7.1.tar.gz \
-          && rm -rf fbprophet-0.7.1.tar.gz
+        mkdir -p fbprophet && cd fbprophet && \
+          curl -L -O https://files.pythonhosted.org/packages/1a/b5/9c3fefa8a7b839729df57deedf0a69815841dfb88f0df911f34d998230b7/fbprophet-0.7.1.tar.gz \
+            && tar -xzf fbprophet-0.7.1.tar.gz \
+            && rm -rf fbprophet-0.7.1.tar.gz
         sudo apt-get -y install libc-dev
         sudo apt-get update && apt-get -y install build-essential
         sudo pip3 install -r fbprophet-0.7.1/requirements.txt
@@ -76,30 +80,24 @@ jobs:
           && tar -xvf /tmp/cmdstan.tar.gz -C /tmp > /dev/null \
           && make -C /tmp/cmdstan-2.22.1/ build > /dev/null \
           && CMDSTAN=/tmp/cmdstan-2.22.1 STAN_BACKEND=CMDSTANPY python3 setup.py install \
-          && cd /
+          && cd ..
         cp -r fbprophet-0.7.1/build/lib/fbprophet/stan_model fbprophet-0.7.1/fbprophet/stan_model 
-        cd /
         sudo mkdir -p /home/runner/.local/lib/python3.8/site-packages/fbprophet
         cp -r fbprophet-0.7.1/fbprophet /home/runner/.local/lib/python3.8/site-packages/fbprophet \
-          && rm -rf fbprophet*
+          && cd .. && rm -rf fbprophet*
     - name: Install project dependencies
       run: |
-        sudo wget https://github.com/pkjmesra/nseta/archive/main.zip && \
-          unzip main.zip && \
-          rm -rf main.zip
-        cd nseta-main
+        pwd
         sudo pip3 install --upgrade pip
         sudo pip3 install convertdate>=2.3.0
         sudo pip3 install sanic==19.12.2
         sudo pip3 install multidict==4.6
         sudo python3 setup.py clean build install
-        cd /
         python3 -c "from nseta.scanner.volumeScanner import volumeScanner; from nseta.scanner.baseStockScanner import ScannerType; s=volumeScanner(ScannerType.Volume,['HDFC']); s.scan();"
     - name: Generate test coverage report
       run: |
         sudo pip3 install timeout-decorator
         sudo pip3 install coverage
-        cd nseta-main
         coverage run -m unittest discover -s tests -p 'test_*.py'
         coverage report -m
         coverage html
@@ -126,5 +124,3 @@ jobs:
       run: |
         sudo rm -rf build
         sudo rm -rf dist
-        cd /
-        sudo rm -rf nseta*
