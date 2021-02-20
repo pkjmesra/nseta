@@ -34,12 +34,14 @@ jobs:
     - name: Install fastquant
       run: |
         sudo apt-get -y install curl unzip
-        sudo wget https://files.pythonhosted.org/packages/dc/4d/a667d96989c4d6d4a95536ffe779873d13378af0142a2b0e0876dd885243/fastquant-0.1.3.25-py3-none-any.whl && \
+        sudo wget -y https://files.pythonhosted.org/packages/dc/4d/a667d96989c4d6d4a95536ffe779873d13378af0142a2b0e0876dd885243/fastquant-0.1.3.25-py3-none-any.whl && \
           unzip fastquant-0.1.3.25-py3-none-any.whl && \
           wget https://raw.githubusercontent.com/enzoampil/fastquant/master/python/requirements.txt && \
           mv requirements.txt fastquant/requirements.txt && \
           cd fastquant && \
-          pip3 install -r requirements.txt
+          pip3 install -r requirements.txt && \
+          cd .. && \
+          pip3 install ./fastquant-0.1.3.25-py3-none-any.whl
         python3 -m site --user-site
         sudo mkdir -p /home/runner/.local/lib/python3.8/site-packages/fastquant
         sudo cp -r fastquant /home/runner/.local/lib/python3.8/site-packages/fastquant
