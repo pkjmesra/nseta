@@ -34,7 +34,7 @@ jobs:
     - name: Install fastquant
       run: |
         sudo apt-get -y install curl unzip
-        sudo wget -y https://files.pythonhosted.org/packages/dc/4d/a667d96989c4d6d4a95536ffe779873d13378af0142a2b0e0876dd885243/fastquant-0.1.3.25-py3-none-any.whl && \
+        sudo wget https://files.pythonhosted.org/packages/dc/4d/a667d96989c4d6d4a95536ffe779873d13378af0142a2b0e0876dd885243/fastquant-0.1.3.25-py3-none-any.whl && \
           unzip fastquant-0.1.3.25-py3-none-any.whl && \
           wget https://raw.githubusercontent.com/enzoampil/fastquant/master/python/requirements.txt && \
           mv requirements.txt fastquant/requirements.txt && \
