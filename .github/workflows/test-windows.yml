@@ -37,11 +37,11 @@ jobs:
     - name: Install ta-lib extension
       run: |
           pip3 install numpy
-          curl http://prdownloads.sourceforge.net/ta-lib/ta-lib-0.4.0-msvc.zip --output ta-lib-0.4.0-msvc.zip && unzip ta-lib-0.4.0-msvc.zip && cp ta-lib\* c:\ta-lib\* && ./configure --prefix=/usr && make install
+          curl https://excellmedia.dl.sourceforge.net/project/ta-lib/ta-lib/0.4.0/ta-lib-0.4.0-msvc.zip && unzip ta-lib-0.4.0-msvc.zip && mv ta-lib c:\
     - name: Install ta-lib python lib
       run: |
-        export TA_LIBRARY_PATH=/home/linuxbrew/.linuxbrew/Cellar/ta-lib/0.4.0/lib
-        export TA_INCLUDE_PATH=/home/linuxbrew/.linuxbrew/Cellar/ta-lib/0.4.0/include
+        export TA_LIBRARY_PATH=c:\ta-lib\c\lib
+        export TA_INCLUDE_PATH=c:\ta-lib\c\include
         python3 -m pip install ta-lib>=0.4.19
         python3 -c 'import numpy, talib; close = numpy.random.random(100); output = talib.SMA(close); print(output)'
     - name: Install fastquant
