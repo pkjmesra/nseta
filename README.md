@@ -301,7 +301,7 @@ After installation you can check what version you got installed
   $ nseta forecast-strategy -S bandhanbnk -s 2019-01-01 -e 2020-09-30 --upper 1.5 --lower 1.5
      init_cash   final_value       pnl
   0     100000  137220.87825  37220.88
-```
+  ```
   ![](./docs/assets/forecast-closing.png)
   ![](./docs/assets/forecast.png)
   ![](./docs/assets/forecast-predictions.png)
@@ -327,6 +327,7 @@ After installation you can check what version you got installed
     -r, --background   Keep running the process in the background (Optional)
     --help             Show this message and exit.
   ```
+
 -  Get live quotes with multiple options along with intraday history
 
   ```python
