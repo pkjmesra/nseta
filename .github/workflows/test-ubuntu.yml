@@ -33,36 +33,36 @@ jobs:
         git config --global http.postBuffer 524288000
     - name: Install fastquant
       run: |
-        apt-get -y install curl unzip
-        wget https://files.pythonhosted.org/packages/dc/4d/a667d96989c4d6d4a95536ffe779873d13378af0142a2b0e0876dd885243/fastquant-0.1.3.25-py3-none-any.whl && \
+        sudo apt-get -y install curl unzip
+        sudo wget https://files.pythonhosted.org/packages/dc/4d/a667d96989c4d6d4a95536ffe779873d13378af0142a2b0e0876dd885243/fastquant-0.1.3.25-py3-none-any.whl && \
           unzip fastquant-0.1.3.25-py3-none-any.whl && \
           wget https://raw.githubusercontent.com/enzoampil/fastquant/master/python/requirements.txt && \
           mv requirements.txt fastquant/requirements.txt && \
           cd fastquant && \
           pip3 install -r requirements.txt
-        cp -r fastquant /usr/local/lib/python3.7/site-packages/fastquant
-        rm -rf fastquant*
+        sudo cp -r fastquant /usr/local/lib/python3.7/site-packages/fastquant
+        sudo rm -rf fastquant*
         python3 -c 'from fastquant import backtest, get_yahoo_data; data = get_yahoo_data("TSLA", "2020-11-01", "2021-01-30");backtest("smac", data, fast_period=15, slow_period=20, verbose=False, plot=False)'
     - name: Install ta-lib
       run: |
-        wget http://prdownloads.sourceforge.net/ta-lib/ta-lib-0.4.0-src.tar.gz && \
+        sudo wget http://prdownloads.sourceforge.net/ta-lib/ta-lib-0.4.0-src.tar.gz && \
           tar -xvzf ta-lib-0.4.0-src.tar.gz && \
           cd ta-lib/ && \
           ./configure --prefix=/usr && \
           make && \
           make install
-        rm -rf ta-lib ta-lib-0.4.0-src.tar.gz
-        pip3 install ta-lib==0.4.19
+        sudo rm -rf ta-lib ta-lib-0.4.0-src.tar.gz
+        sudo pip3 install ta-lib==0.4.19
         python3 -c 'import numpy, talib; close = numpy.random.random(100); output = talib.SMA(close); print(output)'
     - name: Install fbprophet
       run: |
         curl -L -O https://files.pythonhosted.org/packages/1a/b5/9c3fefa8a7b839729df57deedf0a69815841dfb88f0df911f34d998230b7/fbprophet-0.7.1.tar.gz \
           && tar -xzf fbprophet-0.7.1.tar.gz \
           && rm -rf fbprophet-0.7.1.tar.gz
-        apt-get -y install libc-dev
-        apt-get update && apt-get -y install build-essential
-        pip3 install -r fbprophet-0.7.1/requirements.txt
-        pip3 install ipython==7.5.0
+        sudo apt-get -y install libc-dev
+        sudo apt-get update && apt-get -y install build-essential
+        sudo pip3 install -r fbprophet-0.7.1/requirements.txt
+        sudo pip3 install ipython==7.5.0
         cd fbprophet-0.7.1 \
           && rm -rf fbprophet/stan_model \
           && wget https://github.com/stan-dev/cmdstan/releases/download/v2.22.1/cmdstan-2.22.1.tar.gz -O /tmp/cmdstan.tar.gz > /dev/null \
@@ -76,24 +76,24 @@ jobs:
           && rm -rf fbprophet*
     - name: Install setuptools
       run: |
-        pip install setuptools wheel twine
+        sudo pip3 install setuptools wheel twine
     - name: Install project dependencies
       run: |
-        wget https://github.com/pkjmesra/nseta/archive/main.zip && \
+        sudo wget https://github.com/pkjmesra/nseta/archive/main.zip && \
           unzip main.zip && \
           rm -rf main.zip
         cd nseta-main
-        pip3 install --upgrade pip
-        pip3 install convertdate>=2.3.0
-        pip3 install sanic==19.12.2
-        pip3 install multidict==4.6
-        python3 setup.py clean build install
+        sudo pip3 install --upgrade pip
+        sudo pip3 install convertdate>=2.3.0
+        sudo pip3 install sanic==19.12.2
+        sudo pip3 install multidict==4.6
+        sudo python3 setup.py clean build install
         cd /
         python3 -c "from nseta.scanner.volumeScanner import volumeScanner; from nseta.scanner.baseStockScanner import ScannerType; s=volumeScanner(ScannerType.Volume,['HDFC']); s.scan();"
     - name: Generate test coverage report
       run: |
-        pip3 install timeout-decorator
-        pip3 install coverage
+        sudo pip3 install timeout-decorator
+        sudo pip3 install coverage
         cd nseta-main
         coverage run -m unittest discover -s tests -p 'test_*.py'
         coverage report -m
@@ -119,7 +119,7 @@ jobs:
         bash <(curl -Ls https://coverage.codacy.com/get.sh) report -l Python -r coverage.xml
     - name: clean up
       run: |
-        rm -rf build
-        rm -rf dist
+        sudo rm -rf build
+        sudo rm -rf dist
         cd /
-        rm -rf nseta*
+        sudo rm -rf nseta*

@@ -1,6 +1,8 @@
 # nseta :nerd_face:
 
 [![Build Status](https://travis-ci.com/pkjmesra/nseta.svg?branch=main)](https://travis-ci.com/pkjmesra/nseta)
+[![Ubuntu](https://github.com/pkjmesra/nseta/workflows/Ubuntu/badge.svg)](https://github.com/pkjmesra/nseta/actions?query=workflow%3AUbuntu)
+[![macOS](https://github.com/pkjmesra/nseta/workflows/macOS/badge.svg)](https://github.com/pkjmesra/nseta/actions?query=workflow%3AmacOS)
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/pkjmesra/nseta/blob/main/LICENSE)
 [![Downloads](https://pepy.tech/badge/nseta)](https://pepy.tech/project/nseta)
 [![Python](https://img.shields.io/pypi/pyversions/nseta.svg?style=plastic)](https://badge.fury.io/py/nseta)
