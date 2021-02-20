@@ -53,7 +53,6 @@ jobs:
       run: |
         cd /home/runner/work/nseta/nseta
         pip3 install fastquant==0.1.3.25
-        python3 -c 'from fastquant import backtest, get_yahoo_data; data = get_yahoo_data("TSLA", "2020-11-01", "2021-01-30");backtest("smac", data, fast_period=15, slow_period=20, verbose=False, plot=False)'
     - name: Install fbprophet
       run: |
         cd /home/runner/work/nseta/nseta
@@ -66,7 +65,6 @@ jobs:
         pip3 install -r fbprophet-0.7.1/requirements.txt
         pip3 install ipython==7.5.0
         pip3 install fbprophet==0.7.1
-        python3 -c "from fbprophet import Prophet;m = Prophet();"
     - name: Install project dependencies
       run: |
         pwd
