@@ -36,8 +36,10 @@ jobs:
           pip3 install setuptools wheel twine
     - name: Install ta-lib extension
       run: |
+          pwd
           pip3 install numpy
-          curl https://excellmedia.dl.sourceforge.net/project/ta-lib/ta-lib/0.4.0/ta-lib-0.4.0-msvc.zip && unzip -qo ta-lib-0.4.0-msvc.zip >>log.txt && mv ta-lib c:\
+          curl https://excellmedia.dl.sourceforge.net/project/ta-lib/ta-lib/0.4.0/ta-lib-0.4.0-msvc.zip && unzip -qo ta-lib-0.4.0-msvc.zip >>log.txt
+          mv ta-lib c:\
     - name: Install ta-lib python lib
       run: |
         export TA_LIBRARY_PATH=c:\ta-lib\c\lib
