@@ -38,10 +38,11 @@ jobs:
       run: |
           pwd
           pip3 install numpy
-          curl https://excellmedia.dl.sourceforge.net/project/ta-lib/ta-lib/0.4.0/ta-lib-0.4.0-msvc.zip && unzip -qo ta-lib-0.4.0-msvc.zip >>log.txt
-          mv ta-lib c:\
+          curl https://excellmedia.dl.sourceforge.net/project/ta-lib/ta-lib/0.4.0/ta-lib-0.4.0-msvc.zip && unzip -qqo ta-lib-0.4.0-msvc.zip >>log.txt
     - name: Install ta-lib python lib
       run: |
+        pwd
+        mv ta-lib c:\
         export TA_LIBRARY_PATH=c:\ta-lib\c\lib
         export TA_INCLUDE_PATH=c:\ta-lib\c\include
         python3 -m pip install ta-lib>=0.4.19
