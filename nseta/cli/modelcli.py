@@ -36,7 +36,7 @@ def create_cdl_model(symbol, start, end, file_name, steps, clear, format):
 		df = df.sort_values(by='Date',ascending=True)
 		df.set_index('Date', inplace=True)
 		df = model_candlestick(df, steps)
-		click.echo(df.to_string(index=False))
+		click.echo('\n{}\n'.format(df.to_string(index=False)))
 	except Exception as e:
 		default_logger().debug(e, exc_info=True)
 		click.secho('Failed to create candlestick model', fg='red', nl=True)

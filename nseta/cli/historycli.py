@@ -4,6 +4,7 @@ from nseta.common.log import tracelog, default_logger
 from nseta.cli.inputs import *
 from nseta.archives.archiver import *
 from datetime import datetime
+from nseta.common.commons import human_readable_df
 
 __all__ = ['history', 'pe_history']
 
@@ -31,8 +32,9 @@ def history(symbol, start, end, file_name, index, clear, format): #, futures, ex
 		historyinstance = historicaldata()
 		df = historyinstance.daily_ohlc_history(symbol, sd, ed, type=ResponseType.History)
 		df = df.sort_values(by='Date',ascending=True)
+		df = human_readable_df(df)
 		default_logger().debug(df.to_string(index=False))
-		click.echo("History for symbol:{}\n{}\n".format(symbol, df.to_string(index=False)))
+		click.echo("\nHistory for symbol:{}\n{}\n".format(symbol, df.to_string(index=False)))
 	except Exception as e:
 		default_logger().debug(e, exc_info=True)
 		click.secho('Failed to fetch history', fg='red', nl=True)
@@ -66,7 +68,8 @@ def pe_history(symbol, start, end, format, file_name):
 		historyinstance = historicaldata()
 		df = historyinstance.get_index_pe_history(symbol, sd, ed)
 		df = df.sort_values(by='Date',ascending=True)
-		click.echo("PE History for symbol:{}\n{}\n".format(symbol, df.to_string(index=False)))
+		df = human_readable_df(df)
+		click.echo("\nPE History for symbol:{}\n{}\n".format(symbol, df.to_string(index=False)))
 	except Exception as e:
 		default_logger().debug(e, exc_info=True)
 		click.secho('Failed to fetch PE history.', fg='red', nl=True)

@@ -7,6 +7,7 @@ from nseta.common.tradingtime import IST_datetime
 from nseta.resources.resources import resources
 from nseta.archives.archiver import *
 from nseta.common.log import tracelog, default_logger
+from nseta.common.commons import human_readable_df
 
 __all__ = ['quoteScanner']
 
@@ -85,6 +86,7 @@ class quoteScanner(baseScanner):
 
 	def add_frame(self, frames, list_data, column_names, should_transpose=True):
 		df = self.formatted_dataframe(list_data, column_names)
+		df = human_readable_df(df)
 		frames.append(df.transpose() if should_transpose else df)
 		return frames
 

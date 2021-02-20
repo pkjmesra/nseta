@@ -311,7 +311,7 @@ class historicaldata:
 		resp = index_pe_history_url(indexName=index_name,
 									fromDate=start.strftime('%d-%m-%Y'),
 									toDate=end.strftime('%d-%m-%Y'))
-
+		print(resp.text)
 		bs = BeautifulSoup(resp.text, 'lxml')
 		tp = ParseTables(soup=bs,
 						 schema=INDEX_PE_SCHEMA,

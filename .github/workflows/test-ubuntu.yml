@@ -1,0 +1,125 @@
+# This workflows will run tests on Ubuntu
+# For more information see: https://help.github.com/en/actions/language-and-framework-guides/using-python-with-github-actions#publishing-to-package-registries
+
+name: Ubuntu
+
+on: push
+#   release:
+#     types: [created]
+
+jobs:
+  tests:
+
+    runs-on: ubuntu-18.04
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: Set up Python
+      uses: actions/setup-python@v2
+      with:
+        python-version: '3.8'
+    - name: Cache pip
+      uses: actions/cache@v2
+      with:
+        path: ~/.cache/pip
+        # Look to see if there is a cache hit for the corresponding requirements file
+        key: ${{ runner.os }}-pip-${{ hashFiles('requirements.txt') }}
+        restore-keys: |
+          ${{ runner.os }}-pip-
+          ${{ runner.os }}-
+    - name: Update git buffer
+      run: |
+        # Somehow the brew install fails when running action. Let's try and increment buffer size.
+        git config --global http.postBuffer 524288000
+    - name: Install fastquant
+      run: |
+        apt-get -y install curl unzip
+        wget https://files.pythonhosted.org/packages/dc/4d/a667d96989c4d6d4a95536ffe779873d13378af0142a2b0e0876dd885243/fastquant-0.1.3.25-py3-none-any.whl && \
+          unzip fastquant-0.1.3.25-py3-none-any.whl && \
+          wget https://raw.githubusercontent.com/enzoampil/fastquant/master/python/requirements.txt && \
+          mv requirements.txt fastquant/requirements.txt && \
+          cd fastquant && \
+          pip3 install -r requirements.txt
+        cp -r fastquant /usr/local/lib/python3.7/site-packages/fastquant
+        rm -rf fastquant*
+        python3 -c 'from fastquant import backtest, get_yahoo_data; data = get_yahoo_data("TSLA", "2020-11-01", "2021-01-30");backtest("smac", data, fast_period=15, slow_period=20, verbose=False, plot=False)'
+    - name: Install ta-lib
+      run: |
+        wget http://prdownloads.sourceforge.net/ta-lib/ta-lib-0.4.0-src.tar.gz && \
+          tar -xvzf ta-lib-0.4.0-src.tar.gz && \
+          cd ta-lib/ && \
+          ./configure --prefix=/usr && \
+          make && \
+          make install
+        rm -rf ta-lib ta-lib-0.4.0-src.tar.gz
+        pip3 install ta-lib==0.4.19
+        python3 -c 'import numpy, talib; close = numpy.random.random(100); output = talib.SMA(close); print(output)'
+    - name: Install fbprophet
+      run: |
+        curl -L -O https://files.pythonhosted.org/packages/1a/b5/9c3fefa8a7b839729df57deedf0a69815841dfb88f0df911f34d998230b7/fbprophet-0.7.1.tar.gz \
+          && tar -xzf fbprophet-0.7.1.tar.gz \
+          && rm -rf fbprophet-0.7.1.tar.gz
+        apt-get -y install libc-dev
+        apt-get update && apt-get -y install build-essential
+        pip3 install -r fbprophet-0.7.1/requirements.txt
+        pip3 install ipython==7.5.0
+        cd fbprophet-0.7.1 \
+          && rm -rf fbprophet/stan_model \
+          && wget https://github.com/stan-dev/cmdstan/releases/download/v2.22.1/cmdstan-2.22.1.tar.gz -O /tmp/cmdstan.tar.gz > /dev/null \
+          && tar -xvf /tmp/cmdstan.tar.gz -C /tmp > /dev/null \
+          && make -C /tmp/cmdstan-2.22.1/ build > /dev/null \
+          && CMDSTAN=/tmp/cmdstan-2.22.1 STAN_BACKEND=CMDSTANPY python3 setup.py install \
+          && cd /
+        cp -r fbprophet-0.7.1/build/lib/fbprophet/stan_model fbprophet-0.7.1/fbprophet/stan_model 
+        cd /
+        cp -r fbprophet-0.7.1/fbprophet /usr/local/lib/python3.7/site-packages/fbprophet \
+          && rm -rf fbprophet*
+    - name: Install setuptools
+      run: |
+        pip install setuptools wheel twine
+    - name: Install project dependencies
+      run: |
+        wget https://github.com/pkjmesra/nseta/archive/main.zip && \
+          unzip main.zip && \
+          rm -rf main.zip
+        cd nseta-main
+        pip3 install --upgrade pip
+        pip3 install convertdate>=2.3.0
+        pip3 install sanic==19.12.2
+        pip3 install multidict==4.6
+        python3 setup.py clean build install
+        cd /
+        python3 -c "from nseta.scanner.volumeScanner import volumeScanner; from nseta.scanner.baseStockScanner import ScannerType; s=volumeScanner(ScannerType.Volume,['HDFC']); s.scan();"
+    - name: Generate test coverage report
+      run: |
+        pip3 install timeout-decorator
+        pip3 install coverage
+        cd nseta-main
+        coverage run -m unittest discover -s tests -p 'test_*.py'
+        coverage report -m
+        coverage html
+        bash <(curl -s https://codecov.io/bash)
+    - name: "Upload test coverage to Codecov"
+      uses: codecov/codecov-action@v1
+      with:
+        token: ${{ secrets.CODECOV_TOKEN }}
+        # files: ./coverage1.xml,./coverage2.xml
+        # directory: ./coverage/reports/
+        flags: unittests
+        env_vars: THIS_VERSION,GITHUB_REF
+        name: codecov-umbrella
+        fail_ci_if_error: false
+        # path_to_write_report: ./coverage/codecov_report.txt
+        verbose: true
+    - name: "Upload test coverage to Codacy"
+      env:
+        CODACY_PROJECT_TOKEN: ${{ secrets.CODACY_PROJECT_TOKEN }}
+      run: |
+        coverage xml
+        bash <(curl -Ls https://coverage.codacy.com/get.sh) report -l Python -r coverage.xml
+    - name: clean up
+      run: |
+        rm -rf build
+        rm -rf dist
+        cd /
+        rm -rf nseta*

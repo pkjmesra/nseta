@@ -151,21 +151,27 @@ After installation you can check what version you got installed
 
     Example:
     nseta clear -d
-    nseta create-cdl-model -S bandhanbnk -s 2019-07-30 -e 2020-11-20 --steps
-    nseta forecast-strategy -S bandhanbnk -s 2019-07-30 -e 2020-11-20 --strategy rsi
+    nseta create-cdl-model -S bandhanbnk -s 2019-07-30 -e 2020-11-20
+    nseta forecast-strategy -S bandhanbnk -s 2019-07-30 -e 2020-11-20 --strategy rsi -c
     nseta history -S bandhanbnk -s 2019-07-30 -e 2020-11-20
-    nseta live-quote -S bandhanbnk
+    nseta live-quote -S bandhanbnk -gowvb
+    nseta news
+    nseta news -S HDFCBANK,BANDHANBNK
     nseta pe-history -S bandhanbnk -s 2019-07-30 -e 2020-11-20
     nseta plot-ta -S bandhanbnk -s 2019-07-30 -e 2020-11-20
-    nseta scan -S HDFC,ABB -s
-    nseta scan -i
-    nseta scan -l
-    nseta scan -s
-    nseta scan -v
-    nseta scan-trading-strategy -S bandhanbnk -s 2019-07-30 -e 2020-11-20 --strategy rsi
-    nseta scan-trading-strategy -s 2019-07-30 -e 2020-11-20 --strategy rsi
-    nseta scan-trading-strategy -s 2019-07-30 -e 2020-11-20
-    nseta test-trading-strategy -S bandhanbnk -s 2019-07-30 -e 2020-11-20 --strategy rsi
+    nseta scan -S HDFC,ABB -s -c -a 
+    nseta scan -i -c
+    nseta scan -l -c
+    nseta scan -s -c -a
+    nseta scan -v -c -a
+    nseta scan-trading-strategy -S bandhanbnk -s 2019-07-30 -e 2020-11-20 --strategy rsi -c
+    nseta scan-trading-strategy -s 2019-07-30 -e 2020-11-20 --strategy rsi -c
+    nseta scan-trading-strategy -s 2019-07-30 -e 2020-11-20 -c
+    nseta scan-trading-strategy -i -c
+    nseta test-trading-strategy -S bandhanbnk -s 2019-07-30 -e 2020-11-20 --strategy rsi -c
+    nseta top-picks -i -c
+    nseta top-picks -s -c
+    nseta top-picks -S HDFCBANK,BANDHANBNK -i -c 
   ```
 
 - Test your trading strategies

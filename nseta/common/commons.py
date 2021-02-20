@@ -25,7 +25,7 @@ import numpy as np
 
 from six.moves.urllib.parse import urlparse
 
-__all__ = ['ParseNews','Recommendation','months','Direction','concatenated_dataframe','is_index','is_index_derivative', 'StrDate', 'ParseTables', 'unzip_str', 'ThreadReturns', 'URLFetch']
+__all__ = ['human_readable_df','ParseNews','Recommendation','months','Direction','concatenated_dataframe','is_index','is_index_derivative', 'StrDate', 'ParseTables', 'unzip_str', 'ThreadReturns', 'URLFetch']
 
 class Direction(enum.Enum):
 	Down = 1
@@ -335,6 +335,15 @@ def concatenated_dataframe(df1, df2):
 	else:
 		df = None
 	return df
+
+def human_readable_df(df):
+	model_df = df.copy(deep=True)
+	keys = model_df.keys()
+	for key in keys:
+		model_df[key] = model_df[key].apply(lambda x: human_format(x))
+	model_df = model_df.dropna(axis=1)
+	model_df = model_df.reset_index(drop=True)
+	return model_df
 
 def human_format(num):
 	if not resources.default().numeric_to_human_format:

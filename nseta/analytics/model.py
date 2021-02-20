@@ -3,6 +3,7 @@ from nseta.analytics.candle_rankings import candle_rankings
 from nseta.common.log import *
 import talib
 from itertools import compress
+from nseta.common.commons import human_readable_df
 
 __all__ = ['model_candlestick', 'get_candle_funcs','create_pattern_data', 'pick_best_rank_from_pattern', 'recognize_candlestick_pattern']
 
@@ -118,5 +119,7 @@ def recognize_candlestick_pattern(data_frame, steps):
 
 @tracelog
 def model_candlestick(df, steps):
-	return recognize_candlestick_pattern(df, steps)
+	model_df = recognize_candlestick_pattern(df, steps)
+	model_df = human_readable_df(model_df)
+	return model_df
 
