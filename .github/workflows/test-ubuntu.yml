@@ -58,10 +58,9 @@ jobs:
           mv requirements.txt fastquant/requirements.txt && \
           cd fastquant && \
           pip3 install -r requirements.txt && \
-          cd .. && \
-          pip3 install ./fastquant-0.1.3.25-py3-none-any.whl
+          cd ..
+        pip3 install fastquant==0.1.3.25
         python3 -m site --user-site
-        sudo pip3 install pandas
         sudo python3 -c 'from fastquant import backtest, get_yahoo_data; data = get_yahoo_data("TSLA", "2020-11-01", "2021-01-30");backtest("smac", data, fast_period=15, slow_period=20, verbose=False, plot=False)'
     - name: Install fbprophet
       run: |
