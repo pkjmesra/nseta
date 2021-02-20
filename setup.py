@@ -40,15 +40,16 @@ setup(
 	include_package_data = True,    # include everything in source control
 	package_data={'nseta.resources': ['config.txt', 'stocks.txt']},
 	# ...but exclude README.txt from all packages
-    exclude_package_data = { '': ['*.yml'] },
+	exclude_package_data = { '': ['*.yml'] },
 	version = nseta.__version__,
-	description = 'Library to analyse and predict financial data from National Stock Exchange (NSE - India) in pandas dataframe ',
+	description = 'Library to scan, analyse and predict financial data from National Stock Exchange (NSE - India) in pandas dataframe ',
 	long_description = long_description,
 	long_description_content_type="text/markdown",
 	author = 'Praveen K Jha',
 	author_email = __USERNAME__+'@gmail.com',
 	license = 'OSI Approved (MIT)',
 	url = 'https://github.com/'+__USERNAME__+'/nseta', # use the URL to the github repo
+	zip_safe=False,
 	entry_points='''
 	[console_scripts]
 	nsetacli=nseta.cli.nsetacli:nsetacli
@@ -56,9 +57,12 @@ setup(
 	''',
 	download_url = 'https://github.com/'+__USERNAME__+'/nseta/archive/v' + nseta.__version__ + '.zip',
 	classifiers=[
-	"Programming Language :: Python :: 3",
 	"License :: OSI Approved :: MIT License",
 	"Operating System :: OS Independent",
+	'Programming Language :: Python',
+	'Programming Language :: Python :: 3',
+	'Programming Language :: Python :: 3.7'
+	'Programming Language :: Python :: 3.8',
 	],
 	install_requires = install_requires,
 	keywords = ['NSE', 'Technical Indicators', 'Backtesting', 'Forecasting'],
