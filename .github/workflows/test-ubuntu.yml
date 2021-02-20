@@ -41,7 +41,7 @@ jobs:
           cd fastquant && \
           pip3 install -r requirements.txt
         python3 -m site --user-site
-        sudo cp -r fastquant /usr/local/lib/python3.7/dist-packages/fastquant
+        sudo cp -r fastquant /home/runner/.local/lib/python3.8/site-packages/fastquant
         sudo rm -rf fastquant*
         python3 -c 'from fastquant import backtest, get_yahoo_data; data = get_yahoo_data("TSLA", "2020-11-01", "2021-01-30");backtest("smac", data, fast_period=15, slow_period=20, verbose=False, plot=False)'
     - name: Install ta-lib
@@ -73,7 +73,7 @@ jobs:
           && cd /
         cp -r fbprophet-0.7.1/build/lib/fbprophet/stan_model fbprophet-0.7.1/fbprophet/stan_model 
         cd /
-        cp -r fbprophet-0.7.1/fbprophet /usr/local/lib/python3.7/dist-packages/fbprophet \
+        cp -r fbprophet-0.7.1/fbprophet /home/runner/.local/lib/python3.8/site-packages/fbprophet \
           && rm -rf fbprophet*
     - name: Install setuptools
       run: |
