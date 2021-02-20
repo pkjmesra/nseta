@@ -31,6 +31,20 @@ jobs:
       run: |
         # Somehow the brew install fails when running action. Let's try and increment buffer size.
         git config --global http.postBuffer 524288000
+    - name: Install setuptools
+      run: |
+        sudo pip3 install setuptools wheel twine
+    - name: Install ta-lib
+      run: |
+        sudo wget http://prdownloads.sourceforge.net/ta-lib/ta-lib-0.4.0-src.tar.gz && \
+          tar -xvzf ta-lib-0.4.0-src.tar.gz && \
+          cd ta-lib/ && \
+          ./configure --prefix=/usr && \
+          make && \
+          make install
+        sudo rm -rf ta-lib ta-lib-0.4.0-src.tar.gz
+        sudo pip3 install ta-lib==0.4.19
+        python3 -c 'import numpy, talib; close = numpy.random.random(100); output = talib.SMA(close); print(output)'
     - name: Install fastquant
       run: |
         sudo apt-get -y install curl unzip
@@ -47,17 +61,6 @@ jobs:
         sudo cp -r fastquant /home/runner/.local/lib/python3.8/site-packages/fastquant
         sudo rm -rf fastquant*
         python3 -c 'from fastquant import backtest, get_yahoo_data; data = get_yahoo_data("TSLA", "2020-11-01", "2021-01-30");backtest("smac", data, fast_period=15, slow_period=20, verbose=False, plot=False)'
-    - name: Install ta-lib
-      run: |
-        sudo wget http://prdownloads.sourceforge.net/ta-lib/ta-lib-0.4.0-src.tar.gz && \
-          tar -xvzf ta-lib-0.4.0-src.tar.gz && \
-          cd ta-lib/ && \
-          ./configure --prefix=/usr && \
-          make && \
-          make install
-        sudo rm -rf ta-lib ta-lib-0.4.0-src.tar.gz
-        sudo pip3 install ta-lib==0.4.19
-        python3 -c 'import numpy, talib; close = numpy.random.random(100); output = talib.SMA(close); print(output)'
     - name: Install fbprophet
       run: |
         curl -L -O https://files.pythonhosted.org/packages/1a/b5/9c3fefa8a7b839729df57deedf0a69815841dfb88f0df911f34d998230b7/fbprophet-0.7.1.tar.gz \
@@ -79,9 +82,6 @@ jobs:
         sudo mkdir -p /home/runner/.local/lib/python3.8/site-packages/fbprophet
         cp -r fbprophet-0.7.1/fbprophet /home/runner/.local/lib/python3.8/site-packages/fbprophet \
           && rm -rf fbprophet*
-    - name: Install setuptools
-      run: |
-        sudo pip3 install setuptools wheel twine
     - name: Install project dependencies
       run: |
         sudo wget https://github.com/pkjmesra/nseta/archive/main.zip && \
