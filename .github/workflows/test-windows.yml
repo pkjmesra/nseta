@@ -33,7 +33,7 @@ jobs:
         git config --global http.postBuffer 524288000
     - name: Install setuptools
       run: |
-        sudo pip3 install setuptools wheel twine
+          pip3 install setuptools wheel twine
     - name: Install ta-lib extension
       run: |
           pip3 install numpy && \
@@ -41,7 +41,7 @@ jobs:
             tar -xvzf ta-lib-0.4.0-src.tar.gz && \
             cd ta-lib/ && \
             ./configure --prefix=/usr && \
-            sudo make install
+            make install
     - name: Install ta-lib python lib
       run: |
         export TA_LIBRARY_PATH=/home/linuxbrew/.linuxbrew/Cellar/ta-lib/0.4.0/lib
@@ -97,5 +97,5 @@ jobs:
         bash <(curl -Ls https://coverage.codacy.com/get.sh) report -l Python -r coverage.xml
     - name: clean up
       run: |
-        sudo rm -rf build
-        sudo rm -rf dist
+        rm -rf build
+        rm -rf dist
