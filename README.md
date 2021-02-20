@@ -1,6 +1,7 @@
 # nseta :nerd_face:
 
 [![Build Status](https://travis-ci.com/pkjmesra/nseta.svg?branch=main)](https://travis-ci.com/pkjmesra/nseta)
+[![CI](https://github.com/pkjmesra/nseta/workflows/CI/badge.svg)](https://github.com/pkjmesra/nseta/actions?query=CI)
 [![Ubuntu](https://github.com/pkjmesra/nseta/workflows/Ubuntu/badge.svg)](https://github.com/pkjmesra/nseta/actions?query=workflow%3AUbuntu)
 [![macOS](https://github.com/pkjmesra/nseta/workflows/macOS/badge.svg)](https://github.com/pkjmesra/nseta/actions?query=workflow%3AmacOS)
 [![Windows](https://github.com/pkjmesra/nseta/workflows/Windows/badge.svg)](https://github.com/pkjmesra/nseta/actions?query=workflow%3AWindows)
@@ -13,8 +14,10 @@
 [![Total alerts](https://img.shields.io/lgtm/alerts/g/pkjmesra/nseta.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/pkjmesra/nseta/alerts/)
 [![Language grade: Python](https://img.shields.io/lgtm/grade/python/g/pkjmesra/nseta.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/pkjmesra/nseta/context:python)
 [![codecov](https://codecov.io/gh/pkjmesra/nseta/branch/main/graph/badge.svg)](https://codecov.io/gh/pkjmesra/nseta)
+[![Test Coverage](https://api.codeclimate.com/v1/badges/6b7b7e68c16ca755de12/test_coverage)](https://codeclimate.com/github/pkjmesra/nseta/test_coverage)
 [![Requirements Status](https://requires.io/github/pkjmesra/nseta/requirements.svg?branch=main)](https://requires.io/github/pkjmesra/nseta/requirements/?branch=main)
 [![Linter: Prospector](https://img.shields.io/badge/Linter-Prospector-green.svg)](http://prospector.landscape.io/en/master/)
+[![Maintainability](https://api.codeclimate.com/v1/badges/6b7b7e68c16ca755de12/maintainability)](https://codeclimate.com/github/pkjmesra/nseta/maintainability)
 [![Donate PayPal](https://img.shields.io/badge/Donate%20%24-PayPal-brightgreen.svg)](https://www.paypal.com/paypalme/pkjmesra/5)
 
 
