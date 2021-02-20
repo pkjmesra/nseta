@@ -38,7 +38,7 @@ jobs:
       run: |
           pwd
           pip3 install numpy
-          curl https://excellmedia.dl.sourceforge.net/project/ta-lib/ta-lib/0.4.0/ta-lib-0.4.0-msvc.zip && unzip -qqo ta-lib-0.4.0-msvc.zip >>log.txt
+          curl https://excellmedia.dl.sourceforge.net/project/ta-lib/ta-lib/0.4.0/ta-lib-0.4.0-msvc.zip --output ta-lib-0.4.0-msvc.zip && unzip -qqo ta-lib-0.4.0-msvc.zip >>log.txt
     - name: Install ta-lib python lib
       run: |
         pwd
