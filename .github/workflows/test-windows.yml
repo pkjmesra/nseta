@@ -37,10 +37,9 @@ jobs:
     - name: Install ta-lib extension
       run: |
           pip3 install numpy
-          curl https://excellmedia.dl.sourceforge.net/project/ta-lib/ta-lib/0.4.0/ta-lib-0.4.0-msvc.zip --output ta-lib-0.4.0-msvc.zip && unzip -qqo ta-lib-0.4.0-msvc.zip >>log.txt
+          curl https://excellmedia.dl.sourceforge.net/project/ta-lib/ta-lib/0.4.0/ta-lib-0.4.0-msvc.zip --output ta-lib-0.4.0-msvc.zip && mv ta-lib-0.4.0-msvc.zip c:\ && unzip -o c:\ta-lib-0.4.0-msvc.zip
     - name: Install ta-lib python lib
       run: |
-        mv ta-lib c:\
         python3 -m pip install ta-lib>=0.4.19
         python3 -c 'import numpy, talib; close = numpy.random.random(100); output = talib.SMA(close); print(output)'
     - name: Install fastquant
