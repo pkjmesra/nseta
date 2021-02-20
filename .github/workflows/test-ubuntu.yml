@@ -34,7 +34,14 @@ jobs:
     - name: Install setuptools
       run: |
         sudo pip3 install setuptools wheel twine
-        sudo apt-get -y install curl unzip
+        sudo apt-get update && sudo apt-get -y install curl unzip build-essential file git libc-dev
+    - name: Install brew
+      run: |
+        which brew || /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+        test -d ~/.linuxbrew && eval $(~/.linuxbrew/bin/brew shellenv)
+        test -d /home/linuxbrew/.linuxbrew && eval $(/home/linuxbrew/.linuxbrew/bin/brew shellenv)
+        test -r ~/.bash_profile && echo "eval \$($(brew --prefix)/bin/brew shellenv)" >>~/.bash_profile
+        echo "eval \$($(brew --prefix)/bin/brew shellenv)" >>~/.profile
     - name: Install ta-lib
       run: |
         mkdir -p talib && cd talib && \
@@ -46,6 +53,7 @@ jobs:
           sudo make && \
           sudo make install && \
           cd /home/runner/work/nseta/nseta
+        brew install ta-lib
         sudo rm -rf talib
         pip3 install ta-lib==0.4.19
         python3 -c 'import numpy, talib; close = numpy.random.random(100); output = talib.SMA(close); print(output)'
@@ -60,8 +68,6 @@ jobs:
           curl -L -O https://files.pythonhosted.org/packages/1a/b5/9c3fefa8a7b839729df57deedf0a69815841dfb88f0df911f34d998230b7/fbprophet-0.7.1.tar.gz \
             && tar -xzf fbprophet-0.7.1.tar.gz \
             && rm -rf fbprophet-0.7.1.tar.gz
-        sudo apt-get -y install libc-dev
-        sudo apt-get update && sudo apt-get -y install build-essential
         pip3 install -r fbprophet-0.7.1/requirements.txt
         pip3 install ipython==7.5.0
         pip3 install fbprophet==0.7.1
