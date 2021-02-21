@@ -1,7 +1,7 @@
 # nseta :nerd_face:
 
 [![Build Status](https://travis-ci.com/pkjmesra/nseta.svg?branch=main)](https://travis-ci.com/pkjmesra/nseta)
-[![CI](https://github.com/pkjmesra/nseta/workflows/CI/badge.svg)](https://github.com/pkjmesra/nseta/actions?query=workflow%3ACI)
+[![CI/CD](https://github.com/pkjmesra/nseta/workflows/CI%2FCD/badge.svg)](https://github.com/pkjmesra/nseta/actions?query=workflow%3ACI%2FCD)
 [![Ubuntu](https://github.com/pkjmesra/nseta/workflows/Ubuntu/badge.svg)](https://github.com/pkjmesra/nseta/actions?query=workflow%3AUbuntu)
 [![macOS](https://github.com/pkjmesra/nseta/workflows/macOS/badge.svg)](https://github.com/pkjmesra/nseta/actions?query=workflow%3AmacOS)
 [![Windows](https://github.com/pkjmesra/nseta/workflows/Windows/badge.svg)](https://github.com/pkjmesra/nseta/actions?query=workflow%3AWindows)

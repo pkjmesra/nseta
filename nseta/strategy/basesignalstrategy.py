@@ -196,14 +196,7 @@ class basesignalstrategy:
 
 	@tracelog
 	def update_direction(self):
-		if self.requires_ledger:
-			(self.baseledger['DateTime']).append(self.timestamp)
-			(self.baseledger['P3']).append(str(round(self.p3,2)))
-			(self.baseledger['P2']).append(str(round(self.p2,2)))
-			(self.baseledger['P1']).append(str(round(self.p1,2)))
-			(self.baseledger['N1']).append(str(round(self.n1,2)))
-			(self.baseledger['N2']).append(str(round(self.n2,2)))
-			(self.baseledger['N3']).append(str(round(self.n3,2)))
+		self.update_ledger_log()
 		n1gtn2 = True if self.n1 > self.n2 else False
 		n2ltn3 = True if self.n2 < self.n3 else False
 		n1ltn3 = True if self.n1 < self.n3 else False
@@ -211,44 +204,16 @@ class basesignalstrategy:
 		n2gtn3 = True if self.n2 > self.n3 else False
 		n1gtn3 = True if self.n1 > self.n3 else False
 		n3ltn2 = True if self.n3 < self.n2 else False
-		prev_pattern = self.pattern
+
 		self.recommendation = Recommendation.Hold if n2ltn3 else Recommendation.Sell
 		if n1gtn2 and n2ltn3: # The last 3rd and 2nd values fell and last one reversed in direction
-			if (self.p1 < self.p2) and (self.p2 < self.p3): # All previous values were falling.
-				self.pattern = Direction.PossibleReversalUpward
-				self.recommendation = Recommendation.Buy
-				self.possibleReversalUpward_pattern(prev_pattern=prev_pattern)
+			self.check_reversal_upward()
 		if n1ltn2 and n3ltn2: # The last 3rd and 2nd values fell and last one reversed in direction
-			if (self.p1 > self.p2) and (self.p2 > self.p3): # All previous values were falling.
-				self.pattern = Direction.PossibleReversalDownward
-				self.recommendation = Recommendation.Sell
-				self.possibleReversalDownward_pattern(prev_pattern=prev_pattern)
-
+			self.check_reversal_downward()
 		if n1gtn2 and n2gtn3: # The last 3 values fell
-			self.direction = Direction.Down
-			self.recommendation = Recommendation.Sell
-			self.possible_lowerlow_direction(prev_pattern=prev_pattern)
-			if ((self.p1 > self.p2) and (self.p2 > self.p3)) or ((self.p1 > self.p2) and (self.p1 > self.p3)): # The last 6th, 5th and 4th values were rising
-				self.pattern = Direction.InvertedV
-				self.recommendation = Recommendation.Sell
-				self.invertedv_pattern(prev_pattern=prev_pattern)
-			elif (self.p1 < self.p2) or (self.p1 < self.p3): # All last 5/6 values fell
-				self.pattern = Direction.LowerLow
-				self.recommendation = Recommendation.Sell
-				self.lowerlow_direction(prev_pattern=prev_pattern)
-
+			self.check_lowerlow_fall()
 		if n1ltn2 and n2ltn3: # The last 3 values rose
-			self.direction = Direction.Up
-			self.possible_higherhigh_pattern(prev_pattern=prev_pattern)
-			self.recommendation = Recommendation.Hold
-			if ((self.p1 < self.p2) and (self.p2 < self.p3)) or ((self.p1 < self.p2) and (self.p1 < self.p3)):
-				self.pattern = Direction.V
-				self.recommendation = Recommendation.Buy
-				self.v_pattern(prev_pattern=prev_pattern)
-			elif (self.p1 > self.p2) or (self.p1 > self.p3):
-				self.pattern = Direction.HigherHigh
-				self.recommendation = Recommendation.Buy
-				self.higherhigh_pattern(prev_pattern=prev_pattern)
+			self.check_higherhigh_rise()
 		
 		if (n2ltn3 or n1ltn3) and self.n3 >= self.crossover_lower:
 			self.crossedover_lower(prev_pattern=Direction.Up)
@@ -261,7 +226,55 @@ class basesignalstrategy:
 			self.crossedover_upper(prev_pattern=Direction.Down)
 
 		if (self.order_queue.pnl_percent >= self.profit_threshhold) or (self.order_queue.pnl_percent <= self.loss_threshhold):
-			self.target_met(prev_pattern=prev_pattern)
+			self.target_met(prev_pattern=self.pattern)
+	
+	def check_reversal_upward(self):
+		if (self.p1 < self.p2) and (self.p2 < self.p3): # All previous values were falling.
+			self.pattern = Direction.PossibleReversalUpward
+			self.recommendation = Recommendation.Buy
+			self.possibleReversalUpward_pattern(prev_pattern=self.pattern)
+
+	def check_reversal_downward(self):
+		if (self.p1 > self.p2) and (self.p2 > self.p3): # All previous values were falling.
+			self.pattern = Direction.PossibleReversalDownward
+			self.recommendation = Recommendation.Sell
+			self.possibleReversalDownward_pattern(prev_pattern=self.pattern)
+	
+	def check_lowerlow_fall(self):
+		self.direction = Direction.Down
+		self.recommendation = Recommendation.Sell
+		self.possible_lowerlow_direction(prev_pattern=self.pattern)
+		if ((self.p1 > self.p2) and (self.p2 > self.p3)) or ((self.p1 > self.p2) and (self.p1 > self.p3)): # The last 6th, 5th and 4th values were rising
+			self.pattern = Direction.InvertedV
+			self.recommendation = Recommendation.Sell
+			self.invertedv_pattern(prev_pattern=self.pattern)
+		elif (self.p1 < self.p2) or (self.p1 < self.p3): # All last 5/6 values fell
+			self.pattern = Direction.LowerLow
+			self.recommendation = Recommendation.Sell
+			self.lowerlow_direction(prev_pattern=self.pattern)
+	
+	def check_higherhigh_rise(self):
+		self.direction = Direction.Up
+		self.possible_higherhigh_pattern(prev_pattern=self.pattern)
+		self.recommendation = Recommendation.Hold
+		if ((self.p1 < self.p2) and (self.p2 < self.p3)) or ((self.p1 < self.p2) and (self.p1 < self.p3)):
+			self.pattern = Direction.V
+			self.recommendation = Recommendation.Buy
+			self.v_pattern(prev_pattern=self.pattern)
+		elif (self.p1 > self.p2) or (self.p1 > self.p3):
+			self.pattern = Direction.HigherHigh
+			self.recommendation = Recommendation.Buy
+			self.higherhigh_pattern(prev_pattern=self.pattern)
+
+	def update_ledger_log(self):
+		if self.requires_ledger:
+			(self.baseledger['DateTime']).append(self.timestamp)
+			(self.baseledger['P3']).append(str(round(self.p3,2)))
+			(self.baseledger['P2']).append(str(round(self.p2,2)))
+			(self.baseledger['P1']).append(str(round(self.p1,2)))
+			(self.baseledger['N1']).append(str(round(self.n1,2)))
+			(self.baseledger['N2']).append(str(round(self.n2,2)))
+			(self.baseledger['N3']).append(str(round(self.n3,2)))
 
 	def target_met(self, prev_pattern=Direction.Neutral):
 		default_logger().debug('\n{}'.format(self.pattern))

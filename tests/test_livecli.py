@@ -101,7 +101,7 @@ class TestLivecli(baseUnitTest):
 		runner = CliRunner()
 		result = runner.invoke(news, args=['--stocks', 'BANDHANBNK,ICICIBANK,ESCORTS,FSL,TCS,OIL,MOIL,ABB,ACC,DLF'])
 		self.assertEqual(result.exit_code , 0)
-		self.assertIn('Headline', result.output, str(result.output))
+		self.assertIn('News scanning finished', result.output, str(result.output))
 
 	def test_top_picks(self):
 		runner = CliRunner()
