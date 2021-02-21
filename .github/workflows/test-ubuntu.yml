@@ -76,10 +76,11 @@ jobs:
       shell: bash
       run: |
         echo "::set-output name=sha_short::$(git rev-parse --short HEAD)"
+        echo "::set-output name=committed_at::$(git log -1 --pretty=format:%ct)"
     - name: Code climate before-build
       env:
         CC_TEST_REPORTER_ID: ${{ secrets.CC_TEST_REPORTER_ID }}
-        GIT_COMMITTED_AT: "${{ steps.vars.outputs.sha_short }}"
+        GIT_COMMITTED_AT: ${{ steps.vars.outputs.committed_at }}
       run: |
         curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
         chmod +x ./cc-test-reporter
@@ -115,7 +116,7 @@ jobs:
     - name: Upload test coverage to code climate
       env:
         CC_TEST_REPORTER_ID: ${{ secrets.CC_TEST_REPORTER_ID }}
-        GIT_COMMITTED_AT: "${{ steps.vars.outputs.sha_short }}"
+        GIT_COMMITTED_AT: "${{ steps.vars.outputs.committed_at }}"
       run: |
         ./cc-test-reporter after-build -t coverage.py --exit-code 0
     - name: clean up
