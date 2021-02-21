@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 import enum
 import inspect
 import sys
@@ -127,15 +128,15 @@ class baseStockScanner:
 		return list_returned.pop(0), list_returned.pop(0)
 
 	def scan_finished(self, scanner_type):
-		sys.stdout.write("\rDone.".ljust(120))
+		sys.stdout.write('\rDone.'.ljust(120))
 		sys.stdout.flush()
-		print("\nThis run of {} scan took {:.1f} sec".format(scanner_type.name, self.time_spent))
+		print('\nThis run of {} scan took {:.1f} sec'.format(scanner_type.name, self.time_spent))
 
 	def update_progress(self, symbol):
 		global __scan_counter__
 		with threading.Lock():
 			__scan_counter__ += 1
-		sys.stdout.write("\r{}/{}. Fetching for {}".ljust(120).format(__scan_counter__, self.total_counter, symbol))
+		sys.stdout.write('\r{}/{}. Fetching for {}'.ljust(120).format(__scan_counter__, self.total_counter, symbol))
 		sys.stdout.flush()
 
 	def last_x_days_timedelta(self):

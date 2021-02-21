@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 import inspect
 from nseta.common.commons import *
 from nseta.common.log import tracelog

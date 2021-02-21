@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 from nseta.scanner.intradayScanner import intradayScanner
 from nseta.resources.resources import resources
 import pandas as pd
@@ -35,7 +36,7 @@ class topPickScanner(intradayScanner):
 			self._period_1_signals = signaldf
 			default_logger().debug('Period_1_signals:\n{}\n'.format(signaldf))
 			self.stocks = signaldf['Symbol'].tolist()
-			self.scan(self.option, periodicity="2")
+			self.scan(self.option, periodicity='2')
 			return False
 		else:
 			default_logger().debug('Period_1_signals:\n{}\n'.format(self.period_1_signals))

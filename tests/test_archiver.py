@@ -41,7 +41,7 @@ class TestArchiver(baseUnitTest):
 		test_dir = os.path.dirname(os.path.realpath(__file__))
 		res_dir = os.path.join(test_dir, 'fixtures')
 		res = resources(res_dir=res_dir)
-		user_dir = res.config_valueforkey('DEFAULT',"UserDataDirectory")
+		user_dir = res.config_valueforkey('DEFAULT','UserDataDirectory')
 		a = archiver(data_dir=user_dir)
 		self.assertTrue(os.path.exists(a.archival_directory))
 		self.assertTrue(os.path.exists(a.run_directory))
@@ -165,13 +165,13 @@ if __name__ == '__main__':
 	result = unittest.TextTestRunner(verbosity=2).run(suite)
 	if six.PY2:
 		if result.wasSuccessful():
-			print("tests OK")
+			print('tests OK')
 		for (test, error) in result.errors:
-			print("=========Error in: %s===========" % test)
+			print('=========Error in: %s===========' % test)
 			print(error)
-			print("======================================")
+			print('======================================')
 
 		for (test, failures) in result.failures:
-			print("=========Error in: %s===========" % test)
+			print('=========Error in: %s===========' % test)
 			print(failures)
-			print("======================================")
+			print('======================================')

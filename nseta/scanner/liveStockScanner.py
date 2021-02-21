@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 import pandas as pd
 import talib as ta
 
@@ -42,12 +43,12 @@ class liveStockScanner(baseStockScanner):
 						rsi = ta.RSI(dfclose['Close'],resources.rsi().period)
 						rsivalue = rsi[index -1]
 						row['RSI'] = rsivalue
-						default_logger().debug(stock + " RSI:" + str(rsi))
+						default_logger().debug(stock + ' RSI:' + str(rsi))
 						if rsivalue > resources.rsi().upper or rsivalue < resources.rsi().lower:
 							signalframes.append(row)
 					frames.append(row)
 			except Exception as e:
-				default_logger().debug("Exception encountered for " + stock)
+				default_logger().debug('Exception encountered for ' + stock)
 				default_logger().debug(e, exc_info=True)
 		if len(frames) > 0:
 			df = pd.concat(frames)

@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 from nseta.common.commons import *
 from nseta.common.urls import *
 from nseta.common.constants import NSE_INDICES, INDEX_DERIVATIVES
@@ -65,7 +66,7 @@ class TestCommons(baseUnitTest):
 	def test_ParseTables(self):
 		# test equity tables
 
-		dd_mmm_yyyy = StrDate.default_format(format="%d-%b-%Y")
+		dd_mmm_yyyy = StrDate.default_format(format='%d-%b-%Y')
 		schema = [str, str,
 				  dd_mmm_yyyy,
 				  float, float, float, float,
@@ -100,7 +101,7 @@ class TestCommons(baseUnitTest):
 
 	def test_ParseTables_headers(self):
 		# test equity tables
-		dd_mmm_yyyy = StrDate.default_format(format="%d-%b-%Y")
+		dd_mmm_yyyy = StrDate.default_format(format='%d-%b-%Y')
 		# schema for equity history values
 		schema = [str, str,
 				  dd_mmm_yyyy,
@@ -123,7 +124,7 @@ class TestCommons(baseUnitTest):
 			'07-01-2021 09:15:00,2662.4500,,2638.8500,2662.4500', 
 			'07-01-2021 09:16:00,2658.6000,,2638.8500,2658.6000', 
 			'07-01-2021 09:17:00,2660.0500,,2638.8500,2660.0500')
-		dd_mm_yyyy_H_M_S = StrDate.default_format(format="%d-%m-%Y %H:%M:%S")
+		dd_mm_yyyy_H_M_S = StrDate.default_format(format='%d-%m-%Y %H:%M:%S')
 		INTRADAY_EQUITY_SCHEMA = [dd_mm_yyyy_H_M_S,float, str, float, float]
 		INTRADAY_EQUITY_HEADERS = ["Date", "Open", "High", "Low","Close"]
 		bs = BeautifulSoup(htmls.html_equity, features='lxml')
@@ -135,8 +136,8 @@ class TestCommons(baseUnitTest):
 		self.assertEqual(lst, t.parse_lists(csv_data_node))
 
 	def test_StrDate(self):
-		dd_mmm_yyyy = StrDate.default_format(format="%d-%b-%Y")
-		dt1 = dd_mmm_yyyy(date="12-Nov-2012")
+		dd_mmm_yyyy = StrDate.default_format(format='%d-%b-%Y')
+		dt1 = dd_mmm_yyyy(date='12-Nov-2012')
 		dt2 = datetime.datetime(2012, 11, 12)
 		self.assertEqual(dt1, dt2)
 
@@ -276,13 +277,13 @@ if __name__ == '__main__':
 	if six.PY2:
 
 		if result.wasSuccessful():
-			print("tests OK")
+			print('tests OK')
 		for (test, error) in result.errors:
-			print("=========Error in: %s===========" % test)
+			print('=========Error in: %s===========' % test)
 			print(error)
-			print("======================================")
+			print('======================================')
 
 		for (test, failures) in result.failures:
-			print("=========Error in: %s===========" % test)
+			print('=========Error in: %s===========' % test)
 			print(failures)
-			print("======================================")
+			print('======================================')

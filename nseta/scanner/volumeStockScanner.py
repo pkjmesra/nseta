@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 import pandas as pd
 import numpy as np
 import datetime
@@ -63,9 +64,9 @@ class volumeStockScanner(baseStockScanner):
 						df, df_today, signalframes = self.format_scan_volume_df(df, df_today, signalframes)
 						frames.append(df)
 				else:
-					default_logger().debug("Could not fetch daily_ohlc_history for {}".format(symbol))
+					default_logger().debug('Could not fetch daily_ohlc_history for {}'.format(symbol))
 			except Exception as e:
-				default_logger().debug("Exception encountered for {}".format(symbol))
+				default_logger().debug('Exception encountered for {}'.format(symbol))
 				default_logger().debug(e, exc_info=True)
 				continue
 			except SystemExit:

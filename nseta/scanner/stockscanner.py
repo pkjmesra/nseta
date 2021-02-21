@@ -1,4 +1,4 @@
-
+# -*- coding: utf-8 -*-
 from nseta.scanner.baseStockScanner import baseStockScanner, TECH_INDICATOR_KEYS, ScannerType
 from nseta.scanner.intradayStockScanner import intradayStockScanner
 from nseta.scanner.liveStockScanner import liveStockScanner

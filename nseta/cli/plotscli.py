@@ -1,4 +1,4 @@
-
+# -*- coding: utf-8 -*-
 from nseta.common.history import historicaldata
 from nseta.common.log import tracelog, default_logger
 from nseta.plots.plots import *
@@ -30,14 +30,14 @@ PLOT_TI_KEYS = list(PLOT_KEY_TO_FUNC.keys())
 @click.option('--start', '-s', help='Start date in yyyy-mm-dd format')
 @click.option('--end', '-e', help='End date in yyyy-mm-dd format')
 @click.option('--clear', '-c', default=False, is_flag=True, help='Clears the cached data for the given options.')
-@click.option('--plot-type', '-p','plot_type', default='ALL', help=', '.join(PLOT_TI_KEYS) + ". Choose one.")
+@click.option('--plot-type', '-p','plot_type', default='ALL', help=', '.join(PLOT_TI_KEYS) + '. Choose one.')
 @tracelog
-def plot_ta(symbol, start, end, clear, plot_type="ALL"):
+def plot_ta(symbol, start, end, clear, plot_type='ALL'):
 	if not validate_inputs(start, end, symbol):
 		print_help_msg(plot_ta)
 		return
-	sd = datetime.strptime(start, "%Y-%m-%d").date()
-	ed = datetime.strptime(end, "%Y-%m-%d").date()
+	sd = datetime.strptime(start, '%Y-%m-%d').date()
+	ed = datetime.strptime(end, '%Y-%m-%d').date()
 
 	try:
 		if clear:

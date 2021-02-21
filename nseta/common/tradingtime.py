@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 import pytz
 from datetime import datetime, time
 
@@ -8,12 +9,12 @@ __all__ = ['IST_time', 'IST_date', 'IST_datetime', 'current_datetime_in_ist_trad
 def IST_time():
 	tz = pytz.timezone(IST_TIMEZONE)
 	delhi_now = datetime.now(tz)
-	return datetime.strptime(delhi_now.strftime("%H:%M:%S"), "%H:%M:%S").time()
+	return datetime.strptime(delhi_now.strftime('%H:%M:%S'), '%H:%M:%S').time()
 
 def IST_date():
 	tz = pytz.timezone(IST_TIMEZONE)
 	delhi_now = datetime.now(tz)
-	return datetime.strptime(delhi_now.strftime("%d-%m-%Y"), "%d-%m-%Y").date()
+	return datetime.strptime(delhi_now.strftime('%d-%m-%Y'), '%d-%m-%Y').date()
 
 def IST_datetime():
 	tz = pytz.timezone(IST_TIMEZONE)

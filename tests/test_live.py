@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 import datetime
 import unittest
 import json
@@ -26,7 +27,7 @@ class TestLive(baseUnitTest):
 	def test_get_quote_eq(self):
 		q = get_quote(symbol='SBIN')
 		comp_name = q['data'][0]['companyName']
-		self.assertEqual(comp_name, "State Bank of India")
+		self.assertEqual(comp_name, 'State Bank of India')
 
 	def test_get_futures_chain(self):
 		"""
@@ -91,13 +92,13 @@ if __name__ == '__main__':
 	result = unittest.TextTestRunner(verbosity=2).run(suite)
 	if six.PY2:
 		if result.wasSuccessful():
-			print("tests OK")
+			print('tests OK')
 		for (test, error) in result.errors:
-			print("=========Error in: %s===========" % test)
+			print('=========Error in: %s===========' % test)
 			print(error)
-			print("======================================")
+			print('======================================')
 
 		for (test, failures) in result.failures:
-			print("=========Error in: %s===========" % test)
+			print('=========Error in: %s===========' % test)
 			print(failures)
-			print("======================================")
+			print('======================================')

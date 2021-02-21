@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 from nseta.scanner.baseScanner import baseScanner
 from nseta.common.log import tracelog
 from nseta.archives.archiver import *
@@ -24,6 +25,6 @@ class newsScanner(baseScanner):
 		user_signaldf = self.configure_user_display(signaldf, columns=self.signal_columns)
 		user_signaldf.drop(['h'], axis = 1, inplace = True)
 		df = self.left_align(user_signaldf)
-		print("\nAs of {}, {}:\n{}\n".format(IST_datetime(),self.scanner_type.name, df.to_string(index=False)))
+		print('\nAs of {}, {}:\n{}\n'.format(IST_datetime(),self.scanner_type.name, df.to_string(index=False)))
 		return True
 

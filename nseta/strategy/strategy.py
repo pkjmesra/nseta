@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 from nseta.common.log import tracelog, default_logger, suppress_stdout_stderr
 from fastquant import backtest
 from fbprophet import Prophet
@@ -21,7 +22,7 @@ def backtest_smac_strategy(df, fast_period=resources.backtest().smac_fast_period
 	else:
 		with suppress_stdout_stderr():
 			result = backtest('smac', df.dropna(), fast_period=fast_period, slow_period=slow_period, verbose=__VERBOSE__, plot=plot)
-	print("\n{}".format(result[['fast_period', 'slow_period', 'init_cash', 'final_value', 'pnl']].head()))
+	print('\n{}'.format(result[['fast_period', 'slow_period', 'init_cash', 'final_value', 'pnl']].head()))
 	return result
 
 @tracelog
@@ -31,7 +32,7 @@ def backtest_emac_strategy(df, fast_period=resources.backtest().emac_fast_period
 	else:
 		with suppress_stdout_stderr():
 			result = backtest('emac', df.dropna(), fast_period=fast_period, slow_period=slow_period, verbose=__VERBOSE__, plot=plot)
-	print("\n{}".format(result[['fast_period', 'slow_period', 'init_cash', 'final_value', 'pnl']].head()))
+	print('\n{}'.format(result[['fast_period', 'slow_period', 'init_cash', 'final_value', 'pnl']].head()))
 	return result
 
 @tracelog
@@ -41,7 +42,7 @@ def backtest_rsi_strategy(df, rsi_period=resources.backtest().rsi_period, rsi_lo
 	else:
 		with suppress_stdout_stderr():
 			result = backtest('rsi', df.dropna(), rsi_period=rsi_period, rsi_upper=rsi_upper, rsi_lower=rsi_lower, verbose=__VERBOSE__, plot=plot)
-	print("\n{}".format(result[['rsi_period', 'rsi_upper', 'rsi_lower', 'init_cash', 'final_value', 'pnl']].head()))
+	print('\n{}'.format(result[['rsi_period', 'rsi_upper', 'rsi_lower', 'init_cash', 'final_value', 'pnl']].head()))
 	return result
 
 @tracelog
@@ -53,7 +54,7 @@ def backtest_macd_strategy(df, fast_period=resources.backtest().macd_fast_period
 		with suppress_stdout_stderr():
 			result = backtest('macd', df.dropna(), fast_period=fast_period, slow_period=slow_period, signal_period=resources.backtest().macd_signal_period,
 				sma_period=resources.backtest().macd_sma_period, dir_period=resources.backtest().macd_dir_period, verbose=__VERBOSE__, plot=plot)
-	print("\n{}".format(result[['fast_period', 'slow_period', 'signal_period', 'init_cash', 'final_value', 'pnl']].head()))
+	print('\n{}'.format(result[['fast_period', 'slow_period', 'signal_period', 'init_cash', 'final_value', 'pnl']].head()))
 	return result
 
 @tracelog
@@ -63,7 +64,7 @@ def backtest_bbands_strategy(df, period=resources.backtest().bbands_period, devf
 	else:
 		with suppress_stdout_stderr():
 			result = backtest('bbands', df.dropna(), period=period, devfactor=devfactor, verbose=__VERBOSE__, plot=plot)
-	print("\n{}".format(result[['period', 'devfactor', 'init_cash', 'final_value', 'pnl']].head()))
+	print('\n{}'.format(result[['period', 'devfactor', 'init_cash', 'final_value', 'pnl']].head()))
 	return result
 
 @tracelog
@@ -102,7 +103,7 @@ Predictions based on any model can be used as a custom indicator to
 be backtested using fastquant. You just need to add a custom column 
 in the input dataframe, and set values for upper_limit and lower_limit.
 The strategy is structured similar to RSIStrategy where you can set an 
-upper_limit, above which the asset is sold (considered "overbought"), 
+upper_limit, above which the asset is sold (considered "overbought'), 
 and a lower_limit, below which the asset is bought (considered "underbought). 
 upper_limit is set to 95 by default, while lower_limit is set to 5 by default.
 
@@ -121,7 +122,7 @@ def daily_forecast(df, symbol, strategy, upper_limit=resources.forecast().upper,
 	# ts = df[['dt', 'close']].rename(columns={'date':'ds', 'close':'y'})
 	ts.columns = ['ds', 'y']
 	if not ts['y'].count() >= 2:
-		click.secho("Dataframe has less than 2 non-NaN rows. Cannot fit the model.", fg='red', nl=True)
+		click.secho('Dataframe has less than 2 non-NaN rows. Cannot fit the model.', fg='red', nl=True)
 		return
 
 	# changepoint_prior_scale_list = [0.05, 0.5, 1, 1.5, 2.5]     # for hyperparameter tuning
@@ -148,7 +149,7 @@ def daily_forecast(df, symbol, strategy, upper_limit=resources.forecast().upper,
 	else:
 		with suppress_stdout_stderr():
 			result = predict_buy_sell_1day_returns(df, forecast, strategy, upper_limit, lower_limit, plot=plot)
-	print("\n{}".format(result[['init_cash', 'final_value', 'pnl']].head()))
+	print('\n{}'.format(result[['init_cash', 'final_value', 'pnl']].head()))
 	# get_error_metrics(ts, periods, train_size, val_size, 2.5, 10, None)
 
 	return plt, result
@@ -220,8 +221,8 @@ def plot_forecast(m, forecast, symbol, strategy, df, train_val_size, periods):
 		fig1 = m.plot(forecast, uncertainty=True)
 		# fig2 = m.plot_components(forecast)
 		add_changepoints_to_plot(fig1.gca(), m, forecast) # Returns a = add_changepoints_to_plot...
-		# fig1.axes[0].set_xlim(datestring_to_datetime("2020-02-01"),
-		#                       datestring_to_datetime("2020-04-30")
+		# fig1.axes[0].set_xlim(datestring_to_datetime("2020-02-01'),
+		#                       datestring_to_datetime("2020-04-30')
 		#                      )
 		fig1.axes[0].set_xlabel('Date')
 		fig1.axes[0].set_ylabel('Price')
@@ -240,15 +241,15 @@ def plot_forecast(m, forecast, symbol, strategy, df, train_val_size, periods):
 		preds_list = forecast['yhat'][train_val_size:train_val_size+periods]
 		ax.plot(df['datetime'][train_val_size:train_val_size+periods], preds_list, marker='x')
 
-		ax.set_xlabel("Date")
-		ax.set_ylabel("INR")
+		ax.set_xlabel('Date')
+		ax.set_ylabel('INR')
 		ax.legend(['Close', 'Predictions'])
 	return plt
 
 @tracelog
 def predict_buy_sell_1day_returns(df, forecast, strategy, upper_limit, lower_limit, plot=False):
 	# Convert predictions to expected 1 day returns
-	expected_1day_return = forecast.set_index("ds").yhat.pct_change().shift(-1).multiply(100)
+	expected_1day_return = forecast.set_index('ds').yhat.pct_change().shift(-1).multiply(100)
 
 	# Backtest the predictions, given that we buy the given symbol when the predicted 
 	# next day return is > +1.5%, and sell when it's < -1.5%.

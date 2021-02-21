@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 from nseta.common.log import tracelog
 from nseta.common.ti import ti
 
@@ -25,7 +26,7 @@ using TA-Lib. We should have ranked them based on the
 for each candle.
 '''
 @tracelog
-def plot_candlestick(df, symbol_name="", plot_title=""):
+def plot_candlestick(df, symbol_name="", plot_title=''):
 	o = df['Open'].astype(float)
 	h = df['High'].astype(float)
 	l = df['Low'].astype(float)
@@ -98,7 +99,7 @@ def plot_technical_indicators(df):
 	return plt
 
 @tracelog
-def plot_history(df, plot_points=['Close'], secondary_y="Turnover"):
+def plot_history(df, plot_points=['Close'], secondary_y='Turnover'):
 	df[plot_points].plot(secondary_y=secondary_y)
 	plt.title('Price History')
 	plt.grid(True)

@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 import inspect
 import pandas as pd
 import numpy as np
@@ -102,9 +103,9 @@ class strategyManager:
 		strategies = kwargs['items']
 
 		if start is not None:
-			sd = datetime.strptime(start, "%Y-%m-%d").date()
+			sd = datetime.strptime(start, '%Y-%m-%d').date()
 		if end is not None:
-			ed = datetime.strptime(end, "%Y-%m-%d").date()
+			ed = datetime.strptime(end, '%Y-%m-%d').date()
 		frames = []
 		instance = intradayStockScanner('all') if intraday else historicaldata()
 		for stock in stocks:
@@ -161,7 +162,7 @@ class strategyManager:
 		summary = list_returned.pop(0)
 		summary = summary.groupby('Symbol').first()
 		summary.reset_index(inplace=True)
-		sys.stdout.write("\rDone.".ljust(120))
+		sys.stdout.write('\rDone.'.ljust(120))
 		sys.stdout.flush()
 		return summary
 
@@ -194,16 +195,16 @@ class strategyManager:
 		intraday = kwargs['intraday']
 		stocks = kwargs['items']
 		if start is not None:
-			sd = datetime.strptime(start, "%Y-%m-%d").date()
+			sd = datetime.strptime(start, '%Y-%m-%d').date()
 		if end is not None:
-			ed = datetime.strptime(end, "%Y-%m-%d").date()
+			ed = datetime.strptime(end, '%Y-%m-%d').date()
 		instance = intradayStockScanner('all') if intraday else historicaldata()
 		for stock in stocks:
 			try:
 				global __download_counter__
 				with threading.Lock():
 					__download_counter__ += 1
-				sys.stdout.write("\r{}/{}. Fetching for {}".ljust(120).format(__download_counter__, self.total_stocks_counter, stock))
+				sys.stdout.write('\r{}/{}. Fetching for {}'.ljust(120).format(__download_counter__, self.total_stocks_counter, stock))
 				sys.stdout.flush()
 				instance.ohlc_intraday_history(stock) if intraday else instance.daily_ohlc_history(stock, sd, ed, type=ResponseType.History)
 			except Exception as e:
@@ -241,7 +242,7 @@ class strategyManager:
 		historyinstance = historicaldata()
 		df = historyinstance.daily_ohlc_history(symbol, sd, ed, type=ResponseType.History)
 		if df is not None and len(df) > 0:
-			default_logger().debug("\n{}\n".format(df.to_string(index=False)))
+			default_logger().debug('\n{}\n'.format(df.to_string(index=False)))
 			df = df.sort_values(by='Date',ascending=True)
 			df['datetime'] = df['Date']
 		return df
@@ -276,7 +277,7 @@ class strategyManager:
 		global __test_counter__
 		with threading.Lock():
 			__test_counter__ += 1
-		sys.stdout.write("\r{}/{}. Testing {} trading strategy for {}.".ljust(120).format(__test_counter__, self.total_tests_counter, strategy, symbol))
+		sys.stdout.write('\r{}/{}. Testing {} trading strategy for {}.'.ljust(120).format(__test_counter__, self.total_tests_counter, strategy, symbol))
 		sys.stdout.flush()
 
 		if strategy.lower() == 'rsi':
@@ -297,12 +298,12 @@ class strategyManager:
 			df_macd = pd.DataFrame(df_macd_dict)
 			macdSignal = macdSignalStrategy(strict=self.strict, intraday=intraday, requires_ledger=show_detail)
 			results, summary = macdSignal.test_strategy(df_macd)
-		sys.stdout.write("\r{}/{}. Finished testing {} trading strategy for {}.".ljust(120).format(__test_counter__, self.total_tests_counter, strategy, symbol))
+		sys.stdout.write('\r{}/{}. Finished testing {} trading strategy for {}.'.ljust(120).format(__test_counter__, self.total_tests_counter, strategy, symbol))
 		sys.stdout.flush()
 		if results is not None and show_detail:
-			print("\n{}\n".format(results.to_string(index=False)))
+			print('\n{}\n'.format(results.to_string(index=False)))
 		if summary is not None and show_detail:
-			print("\n{}\n".format(summary.to_string(index=False)))
+			print('\n{}\n'.format(summary.to_string(index=False)))
 		return summary
 
 	def prepare_for_historical_strategy(self, df, symbol):
@@ -338,7 +339,7 @@ class strategyManager:
 			kwargs['max_per_thread'] = CONCURRENT_STOCK_COUNT
 			multithreaded_scan(**kwargs)
 			if terminate_after_iter > 0 and iteration >= terminate_after_iter:
-				sys.stdout.write("\rDownload Finished.".ljust(120))
+				sys.stdout.write('\rDownload Finished.'.ljust(120))
 				sys.stdout.flush()
 				break
 		default_logger().debug('Finished downloading for all stocks.')

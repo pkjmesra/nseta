@@ -96,11 +96,11 @@ symbolCount=get_symbol_count(SBIN)
 series="EQ"
 fromDate="dd-mm-yyyy"
 toDate="dd-mm-yyyy"
-dd = equity_history_url(symbol='SBIN', series="EQ", fromDate="01-01-2017", toDate="01-01-2017")
+dd = equity_history_url(symbol='SBIN', series="EQ", fromDate="01-01-2017", toDate="01-01-2017')
 """
 equity_history_url = partial(equity_history_url_full,
 							 dataType='PRICEVOLUMEDELIVERABLE',
-							 segmentLink=3, dateRange="")
+							 segmentLink=3, dateRange='')
 
 """
 1. YYYY
@@ -159,7 +159,7 @@ index_pe_history_url = partial(
 	yield1="undefined",
 	yield2="undefined",
 	yield3="undefined",
-	yield4="all")
+	yield4='all')
 """
 http://www1.nseindia.com/products/dynaContent/equities/indices/hist_vix_data.jsp?&fromDate=01-Nov-2015&toDate=19-Nov-2015
 fromDate = 'dd-Mmm-yyyy'
@@ -172,7 +172,7 @@ equity_symbol_list_url = URLFetchSession(
 	url='https://www1.nseindia.com/content/equities/EQUITY_L.csv')
 
 index_constituents_url = URLFetchSession(
-	"https://www1.nseindia.com/content/indices/ind_%slist.csv")
+	'https://www1.nseindia.com/content/indices/ind_%slist.csv')
 
 """
 --------------------------DERIVATIVES---------------------------------------
@@ -208,7 +208,7 @@ http://www1.nseindia.com/content/historical/DERIVATIVES/2015/NOV/fo18NOV2015bhav
 
 """
 derivative_price_list_url = URLFetchSession(
-	url="http://www1.nseindia.com/content/historical/DERIVATIVES/%s/%s/fo%sbhav.csv.zip")
+	url='http://www1.nseindia.com/content/historical/DERIVATIVES/%s/%s/fo%sbhav.csv.zip')
 
 
 """
@@ -219,4 +219,4 @@ fromDate dd-mm-yyyy (from date)
 toDate dd-mm-yyyy (to date)
 """
 rbi_rate_history_url = URLFetchSession(
-	"https://www1.nseindia.com/products/dynaContent/derivatives/currency/fxRbiRateHist.jsp")
+	'https://www1.nseindia.com/products/dynaContent/derivatives/currency/fxRbiRateHist.jsp')

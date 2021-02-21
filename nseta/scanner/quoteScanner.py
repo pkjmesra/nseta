@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 import threading, time
 import click
 import pandas as pd
@@ -82,7 +83,7 @@ class quoteScanner(baseScanner):
 		click.secho('------------------------------------------', fg='red', nl=True)
 
 	def format_column(self, columnname, width):
-		return columnname.ljust(width) + "|"
+		return columnname.ljust(width) + '|'
 
 	def add_frame(self, frames, list_data, column_names, should_transpose=True):
 		df = self.formatted_dataframe(list_data, column_names)

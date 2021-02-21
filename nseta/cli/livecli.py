@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 import click
 
 from nseta.scanner.stockscanner import TECH_INDICATOR_KEYS
@@ -44,9 +45,9 @@ def live_quote(symbol, general, ohlc, wk52, volume, orderbook, background):
 @click.option('--swing', '-s', default=False, is_flag=True, help='Scans (every 10 sec when in background) the past 90 days price history and lists those that meet the signal criteria')
 @click.option('--volume', '-v', default=False, is_flag=True, help='Scans (every 10 sec when in background) the past 7 days price history and lists those that meet the signal criteria')
 @click.option('--indicator', '-t', default='all', type=click.Choice(TECH_INDICATOR_KEYS),
-	help=', '.join(TECH_INDICATOR_KEYS) + ". Choose one.")
+	help=', '.join(TECH_INDICATOR_KEYS) + '. Choose one.')
 @click.option('--orderby', '-o', type=click.Choice(ORDER_BY_KEYS),
-	help=', '.join(ORDER_BY_KEYS) + ". Choose one.")
+	help=', '.join(ORDER_BY_KEYS) + '. Choose one.')
 @click.option('--clear', '-c', default=False, is_flag=True, help='Clears the cached data for the given options.')
 @click.option('--background', '-r', default=False, is_flag=True, help='Keep running the process in the background (Optional)')
 @click.option('--analyse', '-a', default=False, is_flag=True, help='Analyse to check which of the results have the best buy/sell confidence based on MACD (Optional)')
@@ -83,7 +84,7 @@ def scan(stocks, live, intraday, swing, volume, indicator, orderby, clear, backg
 @click.command(help='Scans for price action and signals for intraday or swing recommendations')
 @click.option('--stocks', '-S', default=[], help='Comma separated security codes(Optional). When skipped, all stocks configured in stocks.txt will be scanned.)')
 @click.option('--indicator', '-t', default='all', type=click.Choice(TECH_INDICATOR_KEYS),
-	help=', '.join(TECH_INDICATOR_KEYS) + ". Choose one.")
+	help=', '.join(TECH_INDICATOR_KEYS) + '. Choose one.')
 @click.option('--intraday', '-i', default=False, is_flag=True, help='Scans (every 10 sec when in background) the intraday price history and lists those that meet the signal criteria')
 @click.option('--swing', '-s', default=False, is_flag=True, help='Scans (every 10 sec when in background) the past 90 days price history and lists those that meet the signal criteria')
 @click.option('--clear', '-c', default=False, is_flag=True, help='Clears the cached data for the given options.')

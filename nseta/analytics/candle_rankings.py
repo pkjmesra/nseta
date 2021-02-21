@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 # https://github.com/CanerIrfanoglu/medium
 # Note - 1
 # Only some patterns have bull and bear versions. 

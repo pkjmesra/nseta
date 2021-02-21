@@ -12,9 +12,9 @@ import nseta
 
 __USERNAME__ = 'pkjmesra'
 
-with open("README.md", "r") as fh:
+with open('README.md', 'r') as fh:
 	long_description = fh.read()
-with open("requirements.txt", "r") as fh:
+with open('requirements.txt', 'r') as fh:
 	install_requires = fh.read().splitlines()
 
 SYS_MAJOR_VERSION = str(sys.version_info.major)

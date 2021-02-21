@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 import pandas as pd
 import datetime
 
@@ -85,7 +86,7 @@ class intradayStockScanner(baseStockScanner):
 					frames.append(tailed_df)
 					signalframes, df = self.update_signals(signalframes, tailed_df, df)
 			except Exception as e:
-				default_logger().debug("Exception encountered for " + symbol)
+				default_logger().debug('Exception encountered for ' + symbol)
 				default_logger().debug(e, exc_info=True)
 			except SystemExit:
 				sys.exit(1)
@@ -106,11 +107,11 @@ class intradayStockScanner(baseStockScanner):
 			if df is None or len(df) == 0:
 				df = historyinstance.daily_ohlc_history(symbol, start=datetime.date.today(), end = datetime.date.today(), intraday=True, type=ResponseType.Intraday, periodicity=self.periodicity)
 			if df is not None and len(df) > 0:
-				# default_logger().debug("Dataframe for " + symbol + "\n" + str(df))
+				# default_logger().debug('Dataframe for ' + symbol + '\n' + str(df))
 				df = self.map_keys(df, symbol)
 				arch.archive(df, symbol, ResponseType.Intraday)
 			else:
-				default_logger().debug("Empty dataframe for " + symbol)
+				default_logger().debug('Empty dataframe for ' + symbol)
 		except Exception as e:
 			default_logger().debug(e, exc_info=True)
 			return None
@@ -133,5 +134,5 @@ class intradayStockScanner(baseStockScanner):
 			df['datetime'] = df['Date']
 		except Exception as e:
 			default_logger().debug(e, exc_info=True)
-			default_logger().debug('Exception encountered for key: ' + searchkey + "\n")
+			default_logger().debug('Exception encountered for key: ' + searchkey + '\n')
 		return df

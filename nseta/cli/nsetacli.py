@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 import signal
 import os
 import warnings
@@ -58,8 +59,8 @@ nsetacli.add_command(scan_trading_strategy)
 
 
 def sigint_handler(signum, frame):
-	warnings.filterwarnings("ignore")
-	warnings.simplefilter("ignore")
+	warnings.filterwarnings('ignore')
+	warnings.simplefilter('ignore')
 	click.secho('[sigint_handler] Keyboard Interrupt received. Exiting.', fg='red', nl=True)
 	signal.signal(signum, signal.SIG_DFL)
 	os.kill(os.getpid(), signum)

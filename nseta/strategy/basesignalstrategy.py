@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 import numpy as np
 import pandas as pd
 
@@ -259,34 +260,34 @@ class basesignalstrategy:
 			self.target_met(prev_pattern=prev_pattern)
 
 	def target_met(self, prev_pattern=Direction.Neutral):
-		default_logger().debug("\n{}".format(self.pattern))
+		default_logger().debug('\n{}'.format(self.pattern))
 
 	def crossedover_lower(self, prev_pattern=Direction.Neutral):
-		default_logger().debug("\n{}".format(self.pattern))
+		default_logger().debug('\n{}'.format(self.pattern))
 
 	def crossedover_upper(self, prev_pattern=Direction.Neutral):
-		default_logger().debug("\n{}".format(self.pattern))
+		default_logger().debug('\n{}'.format(self.pattern))
 
 	def possible_higherhigh_pattern(self, prev_pattern=Direction.Neutral):
-		default_logger().debug("\n{}".format(self.pattern))
+		default_logger().debug('\n{}'.format(self.pattern))
 
 	def possible_lowerlow_direction(self, prev_pattern=Direction.Neutral):
-		default_logger().debug("\n{}".format(self.pattern))
+		default_logger().debug('\n{}'.format(self.pattern))
 
 	def possibleReversalUpward_pattern(self, prev_pattern=Direction.Neutral):
-		default_logger().debug("\n{}".format(self.pattern))
+		default_logger().debug('\n{}'.format(self.pattern))
 
 	def possibleReversalDownward_pattern(self, prev_pattern=Direction.Neutral):
-		default_logger().debug("\n{}".format(self.pattern))
+		default_logger().debug('\n{}'.format(self.pattern))
 
 	def v_pattern(self, prev_pattern=Direction.Neutral):
-		default_logger().debug("\n{}".format(self.pattern))
+		default_logger().debug('\n{}'.format(self.pattern))
 
 	def invertedv_pattern(self, prev_pattern=Direction.Neutral):
-		default_logger().debug("\n{}".format(self.pattern))
+		default_logger().debug('\n{}'.format(self.pattern))
 
 	def higherhigh_pattern(self, prev_pattern=Direction.Neutral):
-		default_logger().debug("\n{}".format(self.pattern))
+		default_logger().debug('\n{}'.format(self.pattern))
 
 	def lowerlow_direction(self, prev_pattern=Direction.Neutral):
-		default_logger().debug("\n{}".format(self.pattern))
+		default_logger().debug('\n{}'.format(self.pattern))

@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 from nseta.scanner.baseScanner import baseScanner
 from nseta.resources.resources import resources
 from nseta.archives.archiver import *

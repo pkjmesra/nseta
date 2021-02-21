@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 import pandas as pd
 import datetime
 import sys
@@ -52,7 +53,7 @@ class swingStockScanner(baseStockScanner):
 					frames.append(tailed_df)
 					signalframes, df = self.update_signals(signalframes, tailed_df, df)
 			except Exception as e:
-				default_logger().debug("Exception encountered for " + symbol)
+				default_logger().debug('Exception encountered for ' + symbol)
 				default_logger().debug(e, exc_info=True)
 			except SystemExit:
 				sys.exit(1)

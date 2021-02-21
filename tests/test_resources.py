@@ -39,14 +39,14 @@ class TestResources(unittest.TestCase):
 		self.assertTrue(len(result) > 0)
 
 	def test_rsi_config(self):
-		self.assertEqual(resources.rsi().lower, int(resources().config_valueforkey('RSI',"Lower")))
-		self.assertEqual(resources.rsi().upper, int(resources().config_valueforkey('RSI',"Upper")))
+		self.assertEqual(resources.rsi().lower, int(resources().config_valueforkey('RSI','Lower')))
+		self.assertEqual(resources.rsi().upper, int(resources().config_valueforkey('RSI','Upper')))
 
 	def test_forecast_config(self):
-		self.assertEqual(resources.forecast().lower, float(resources().config_valueforkey('FORECAST',"Lower")))
-		self.assertEqual(resources.forecast().upper, float(resources().config_valueforkey('FORECAST',"Upper")))
-		self.assertEqual(resources.forecast().training_percent, float(resources().config_valueforkey('FORECAST',"Training_percent")))
-		self.assertEqual(resources.forecast().test_percent, float(resources().config_valueforkey('FORECAST',"Test_percent")))
+		self.assertEqual(resources.forecast().lower, float(resources().config_valueforkey('FORECAST','Lower')))
+		self.assertEqual(resources.forecast().upper, float(resources().config_valueforkey('FORECAST','Upper')))
+		self.assertEqual(resources.forecast().training_percent, float(resources().config_valueforkey('FORECAST','Training_percent')))
+		self.assertEqual(resources.forecast().test_percent, float(resources().config_valueforkey('FORECAST','Test_percent')))
 
 	def tearDown(self):
 		super().tearDown()
@@ -57,13 +57,13 @@ if __name__ == '__main__':
 	result = unittest.TextTestRunner(verbosity=2).run(suite)
 	if six.PY2:
 		if result.wasSuccessful():
-			print("tests OK")
+			print('tests OK')
 		for (test, error) in result.errors:
-			print("=========Error in: %s===========" % test)
+			print('=========Error in: %s===========' % test)
 			print(error)
-			print("======================================")
+			print('======================================')
 
 		for (test, failures) in result.failures:
-			print("=========Error in: %s===========" % test)
+			print('=========Error in: %s===========' % test)
 			print(failures)
-			print("======================================")
+			print('======================================')

@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 from nseta.scanner.intradayStockScanner import intradayStockScanner
 
 __all__ = ['topPickStockScanner']

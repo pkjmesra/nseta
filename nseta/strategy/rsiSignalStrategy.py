@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 import logging
 import pandas as pd
 
@@ -143,14 +144,14 @@ class rsiSignalStrategy(basesignalstrategy):
 		# Last request was honoured
 		if holding_size != self.order_queue.holdings_size:
 			self.update_ledger('BUY')
-		default_logger().debug("\n{}".format(pd.DataFrame(self.ledger)))
+		default_logger().debug('\n{}'.format(pd.DataFrame(self.ledger)))
 
 	def sell_signal(self):
 		holding_size = self.order_queue.holdings_size
 		self.order_queue.sell(self.price)
 		if holding_size != self.order_queue.holdings_size:
 			self.update_ledger('SELL')
-		default_logger().debug("\n{}".format(pd.DataFrame(self.ledger)))
+		default_logger().debug('\n{}'.format(pd.DataFrame(self.ledger)))
 
 	def check_squareoff(self, down=False):
 		if down and self.order_queue.holdings_size >= 0:

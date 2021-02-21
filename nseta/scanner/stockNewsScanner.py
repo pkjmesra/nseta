@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 import pandas as pd
 from bs4 import BeautifulSoup
 
@@ -30,7 +31,7 @@ class stockNewsScanner(baseStockScanner):
 					signalframes.append(df)
 					default_logger().debug(df.to_string(index=False))
 			except Exception as e:
-				default_logger().debug("Exception encountered for " + symbol)
+				default_logger().debug('Exception encountered for ' + symbol)
 				default_logger().debug(e, exc_info=True)
 			except SystemExit:
 				sys.exit(1)

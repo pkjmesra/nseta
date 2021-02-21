@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 import click
 from nseta.common.history import historicaldata
 from nseta.common.log import tracelog, default_logger
@@ -22,8 +23,8 @@ def history(symbol, start, end, file_name, index, clear, format): #, futures, ex
 	if not validate_inputs(start, end, symbol):
 		print_help_msg(history)
 		return
-	sd = datetime.strptime(start, "%Y-%m-%d").date()
-	ed = datetime.strptime(end, "%Y-%m-%d").date()
+	sd = datetime.strptime(start, '%Y-%m-%d').date()
+	ed = datetime.strptime(end, '%Y-%m-%d').date()
 	df = None
 	try:
 		if clear:
@@ -34,7 +35,7 @@ def history(symbol, start, end, file_name, index, clear, format): #, futures, ex
 		df = df.sort_values(by='Date',ascending=True)
 		df = human_readable_df(df)
 		default_logger().debug(df.to_string(index=False))
-		click.echo("\nHistory for symbol:{}\n{}\n".format(symbol, df.to_string(index=False)))
+		click.echo('\nHistory for symbol:{}\n{}\n'.format(symbol, df.to_string(index=False)))
 	except Exception as e:
 		default_logger().debug(e, exc_info=True)
 		click.secho('Failed to fetch history', fg='red', nl=True)
@@ -62,14 +63,14 @@ def pe_history(symbol, start, end, format, file_name):
 	if not validate_inputs(start, end, symbol):
 		print_help_msg(pe_history)
 		return
-	sd = datetime.strptime(start, "%Y-%m-%d").date()
-	ed = datetime.strptime(end, "%Y-%m-%d").date()
+	sd = datetime.strptime(start, '%Y-%m-%d').date()
+	ed = datetime.strptime(end, '%Y-%m-%d').date()
 	try:
 		historyinstance = historicaldata()
 		df = historyinstance.get_index_pe_history(symbol, sd, ed)
 		df = df.sort_values(by='Date',ascending=True)
 		df = human_readable_df(df)
-		click.echo("\nPE History for symbol:{}\n{}\n".format(symbol, df.to_string(index=False)))
+		click.echo('\nPE History for symbol:{}\n{}\n'.format(symbol, df.to_string(index=False)))
 	except Exception as e:
 		default_logger().debug(e, exc_info=True)
 		click.secho('Failed to fetch PE history.', fg='red', nl=True)

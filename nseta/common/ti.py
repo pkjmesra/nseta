@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 from nseta.common.log import default_logger
 import talib as ta
 import pandas as pd

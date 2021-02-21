@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
-"""
+'''
 Created on Thu Nov 19 20:52:33 2015
 
 @author: SW274998
-"""
+'''
 from nseta.common.commons import *
 import datetime
 import unittest
@@ -50,7 +50,7 @@ class TestUrls(baseUnitTest):
 
     def test_nse_intraday_url(self):
         txt = 'date|g1_o|g1_h|g1_l|g1_c|g2|g2_CUMVOL' #'<columns><column>date</column><column>pltp</column><column>nltp</column><column>previousclose</column><column>allltp</column>'
-        resp = nse_intraday_url(CDSymbol='SBIN', Periodicity="1")
+        resp = nse_intraday_url(CDSymbol='SBIN', Periodicity='1')
         self.assertIn(txt, resp.text)
 
     def test_price_list_url(self):
@@ -59,7 +59,7 @@ class TestUrls(baseUnitTest):
         self.assertGreaterEqual(csv.find('SBIN'), 0)
 
     def tests_daily_volatility_url(self):
-        resp = daily_volatility_url("19112015")
+        resp = daily_volatility_url('19112015')
         self.assertGreaterEqual(resp.text.find('SBIN'), 0)
 
     def test_pr_price_list_zipped_url(self):
@@ -67,14 +67,14 @@ class TestUrls(baseUnitTest):
         csv = unzip_str(resp.content)
 
     def test_index_history_url(self):
-        resp = index_history_url(indexType="NIFTY 50",
-                                 fromDate="01-01-2015",
-                                 toDate="10-01-2015")
+        resp = index_history_url(indexType='NIFTY 50',
+                                 fromDate='01-01-2015',
+                                 toDate='10-01-2015')
         self.assertGreaterEqual(resp.text.find('High'), 0)
         self.assertGreaterEqual(resp.text.find('Low'), 0)
 
     def test_index_daily_snapshot_url(self):
-        resp = index_daily_snapshot_url("06012020")
+        resp = index_daily_snapshot_url('06012020')
         csv = str(resp.content)
         self.assertGreaterEqual(csv.find('Nifty 50'), 0)
         self.assertGreaterEqual(csv.find('Nifty IT'), 0)
@@ -82,15 +82,15 @@ class TestUrls(baseUnitTest):
         self.assertGreaterEqual(csv.find('Nifty Next 50'), 0)
 
     def test_index_pe_history_url(self):
-        resp = index_pe_history_url(fromDate="01-01-2015",
-                                    toDate="10-01-2015",
-                                    indexName="NIFTY 50")
+        resp = index_pe_history_url(fromDate='01-01-2015',
+                                    toDate='10-01-2015',
+                                    indexName='NIFTY 50')
         self.assertGreaterEqual(resp.text.find('<th>P/E'), 0)
         self.assertGreaterEqual(resp.text.find('<th>P/B'), 0)
 
     def test_index_vix_history_url(self):
-        resp = index_vix_history_url(fromDate="01-Jan-2015",
-                                     toDate="10-Jan-2015",
+        resp = index_vix_history_url(fromDate='01-Jan-2015',
+                                     toDate='10-Jan-2015',
                                      )
         self.assertGreaterEqual(resp.text.find('VIX'), 0)
         self.assertGreaterEqual(resp.text.find('Change'), 0)
@@ -100,14 +100,14 @@ class TestUrls(baseUnitTest):
         self.assertGreaterEqual(resp.text.find('vixExpryDt'), 0)
 
     def test_derivative_history_url(self):
-        resp = derivative_history_url(instrumentType="FUTIDX",
-                                      symbol="NIFTY",
-                                      expiryDate="26-12-2019",
-                                      optionType="select",
+        resp = derivative_history_url(instrumentType='FUTIDX',
+                                      symbol='NIFTY',
+                                      expiryDate='26-12-2019',
+                                      optionType='select',
                                       strikePrice='',
                                       dateRange='',
                                       fromDate='25-Dec-2019',
-                                      toDate="26-Dec-2019")
+                                      toDate='26-Dec-2019')
         self.assertGreaterEqual(resp.text.find('NIFTY'), 0)
         self.assertGreaterEqual(resp.text.find('Expiry'), 0)
 
@@ -124,13 +124,13 @@ if __name__ == '__main__':
     result = unittest.TextTestRunner(verbosity=2).run(suite)
     if six.PY2:
         if result.wasSuccessful():
-            print("tests OK")
+            print('tests OK')
         for (test, error) in result.errors:
-            print("=========Error in: %s===========" % test)
+            print('=========Error in: %s===========' % test)
             print(error)
-            print("======================================")
+            print('======================================')
 
         for (test, failures) in result.failures:
-            print("=========Error in: %s===========" % test)
+            print('=========Error in: %s===========' % test)
             print(failures)
-            print("======================================")
+            print('======================================')

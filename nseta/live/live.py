@@ -25,7 +25,7 @@ OPTIONS_CHAIN_HEADERS = ["Call Chart", "Call OI", "Call Chng in OI", "Call Volum
 OPTIONS_CHAIN_INDEX = "Strike Price"
 
 FUTURES_SCHEMA = [str, str, StrDate.default_format(
-	format="%d%b%Y"), str, str, float, float, float, float, float, int, float, float]
+	format='%d%b%Y'), str, str, float, float, float, float, float, int, float, float]
 FUTURES_HEADERS = ["Instrument", "Underlying", "Expiry Date", "Option Type", "Strike Price", "Open Price", "High Price", "Low Price", "Prev. Close", "Last Price", "Volume",
 				   "Turnover", "Underlying Value"]
 FUTURES_INDEX = "Expiry Date"
@@ -87,7 +87,7 @@ def get_futures_chain_table(symbol):
 	futuresscrape = get_futures_chain(symbol)
 	html_soup = BeautifulSoup(futuresscrape.text, 'html.parser')
 	spdiv = html_soup.find("div", {"id": "tab26Content"})
-	sptable = spdiv.find("table")
+	sptable = spdiv.find('table')
 	tp = ParseTables(soup=sptable, schema=FUTURES_SCHEMA,
 					 headers=FUTURES_HEADERS, index=FUTURES_INDEX)
 	return tp.get_df()
@@ -109,13 +109,13 @@ def get_holidays_list(fromDate,
 		raise ValueError('Please check start and end dates')
 
 	holidayscrape = holiday_list_url(fromDate.strftime(
-		"%d-%m-%Y"), toDate.strftime("%d-%m-%Y"))
+		'%d-%m-%Y'), toDate.strftime('%d-%m-%Y'))
 	html_soup = BeautifulSoup(holidayscrape.text, 'lxml')
-	sptable = html_soup.find("table")
+	sptable = html_soup.find('table')
 	tp = ParseTables(soup=sptable,
 					 schema=[str, StrDate.default_format(
-						 format="%d-%b-%Y"), str, str],
-					 headers=["Market Segment", "Date", "Day", "Description"], index="Date")
+						 format='%d-%b-%Y'), str, str],
+					 headers=["Market Segment", "Date", "Day", "Description"], index='Date')
 	dfret = tp.get_df()
 	dfret = dfret.drop(["Market Segment"], axis=1)
 	return dfret
@@ -162,7 +162,7 @@ def get_live_quote(symbol, general=True, ohlc=False, wk52=False, volume=False, o
 	# print(result)
 	if len(result['data']) == 0:
 		default_logger().warn('Wrong or invalid inputs.')
-		click.secho("Please check the inputs. Could not fetch the data for {}".format(symbol), fg='red', nl=True)
+		click.secho('Please check the inputs. Could not fetch the data for {}'.format(symbol), fg='red', nl=True)
 		return None, None
 	primary = format_as_dataframe(result, symbol, general, ohlc, wk52, volume, keys= keys)
 	return result, primary
@@ -267,7 +267,7 @@ def get_data_list(orgdata, keys=[]):
 			columns = [buy_qty_key, buy_prc_key, sell_qty_key, sell_prc_key]
 			row = []
 			for column in columns:
-				row.append(data[column] + "  ")
+				row.append(data[column] + '  ')
 			pipeline_data.append(row)
 		row = []
 		row.append('Total Buy Quantity:')

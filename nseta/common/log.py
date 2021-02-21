@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 import logging
 import os
 import time
@@ -174,7 +175,7 @@ def log_to(logger_func):
 					func_description = '{} - {} - {}'.format(filename, components[5],components[6])
 					description = func_description
 					for line in describe_call(func, *args, **kwargs):
-						description = description + "\n" + line
+						description = description + '\n' + line
 					logger_func(description)
 					startTime = time.time()
 					ret_val = func(*args, **kwargs)

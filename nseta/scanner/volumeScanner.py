@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 from nseta.scanner.baseScanner import baseScanner
 from nseta.scanner.topPickScanner import topPickScanner
 from nseta.resources.resources import resources
@@ -30,7 +31,7 @@ class volumeScanner(baseScanner):
 			should_enum = resources.scanner().enumerate_volume_scan_signals
 			csv_signals = str_signal_stocks_list.replace('[','').replace(']','').replace("'",'').replace(' ','') if should_enum else ''
 			if should_enum:
-				print("\nAs of {}, volume Signals: {}\n".format(IST_datetime(), csv_signals))
+				print('\nAs of {}, volume Signals: {}\n'.format(IST_datetime(), csv_signals))
 		super().scan_results(df, signaldf, should_cache)
 
 	def scan_analysis(self, analysis_df):

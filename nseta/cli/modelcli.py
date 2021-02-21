@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 from nseta.analytics.model import *
 from nseta.common.history import historicaldata
 from nseta.common.log import tracelog, default_logger
@@ -24,8 +25,8 @@ def create_cdl_model(symbol, start, end, file_name, steps, clear, format):
 	if not validate_inputs(start, end, symbol):
 		print_help_msg(create_cdl_model)
 		return
-	sd = datetime.strptime(start, "%Y-%m-%d").date()
-	ed = datetime.strptime(end, "%Y-%m-%d").date()
+	sd = datetime.strptime(start, '%Y-%m-%d').date()
+	ed = datetime.strptime(end, '%Y-%m-%d').date()
 
 	try:
 		if clear:

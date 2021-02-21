@@ -20,10 +20,10 @@ import io
 
 __all__ = ['historicaldata', 'EQUITY_HEADERS', 'INTRADAY_EQUITY_HEADERS']
 
-dd_mmm_yyyy = StrDate.default_format(format="%d-%b-%Y")
-dd_mm_yyyy = StrDate.default_format(format="%d-%m-%Y")
-dd_mm_yyyy_H_M_S = StrDate.default_format(format="%d-%m-%Y %H:%M:%S")
-dd_mm_yyyy_H_M = StrDate.default_format(format="%d-%m-%Y %H:%M")
+dd_mmm_yyyy = StrDate.default_format(format='%d-%b-%Y')
+dd_mm_yyyy = StrDate.default_format(format='%d-%m-%Y')
+dd_mm_yyyy_H_M_S = StrDate.default_format(format='%d-%m-%Y %H:%M:%S')
+dd_mm_yyyy_H_M = StrDate.default_format(format='%d-%m-%Y %H:%M')
 
 EQUITY_SCHEMA = [str, str,
 				 dd_mmm_yyyy,
@@ -315,22 +315,22 @@ class historicaldata:
 		bs = BeautifulSoup(resp.text, 'lxml')
 		tp = ParseTables(soup=bs,
 						 schema=INDEX_PE_SCHEMA,
-						 headers=INDEX_PE_HEADERS, index="Date")
+						 headers=INDEX_PE_HEADERS, index='Date')
 		df = tp.get_df()
 		return df
 
 
 	@tracelog
 	def get_price_list(self, dt, series='EQ'):
-		MMM = dt.strftime("%b").upper()
-		yyyy = dt.strftime("%Y")
+		MMM = dt.strftime('%b').upper()
+		yyyy = dt.strftime('%Y')
 
 		"""
 		1. YYYY
 		2. MMM
 		3. ddMMMyyyy
 		"""
-		res = price_list_url(yyyy, MMM, dt.strftime("%d%b%Y").upper())
+		res = price_list_url(yyyy, MMM, dt.strftime('%d%b%Y').upper())
 		txt = unzip_str(res.content)
 		fp = six.StringIO(txt)
 		df = pd.read_csv(fp)
@@ -342,7 +342,7 @@ class historicaldata:
 	"""
 	@tracelog
 	def get_indices_price_list(self, dt):
-		res = index_daily_snapshot_url(dt.strftime("%d%m%Y"))
+		res = index_daily_snapshot_url(dt.strftime('%d%m%Y'))
 		df = pd.read_csv(io.StringIO(res.content.decode('utf-8')))
 		df = df.rename(columns={"Index Name": "NAME",
 								"Index Date": "TIMESTAMP",
@@ -399,7 +399,7 @@ class historicaldata:
 		bs = BeautifulSoup(resp.text, 'lxml')
 		tp = ParseTables(soup=bs,
 						 schema=RBI_REF_RATE_SCHEMA,
-						 headers=RBI_REF_RATE_HEADERS, index="Date")
+						 headers=RBI_REF_RATE_HEADERS, index="Date')
 		df = tp.get_df()
 		return df
 	'''

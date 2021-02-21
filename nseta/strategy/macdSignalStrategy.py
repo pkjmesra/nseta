@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 import pandas as pd
 import numpy as np
 
@@ -37,7 +38,7 @@ class macdSignalStrategy(basesignalstrategy):
 					if self._target_met:
 						break
 				rowindex = rowindex + 1
-			default_logger().debug("\n{}\n".format(self.basereport.to_string(index=False)))
+			default_logger().debug('\n{}\n'.format(self.basereport.to_string(index=False)))
 			if self.order_queue.holdings_size < 0:
 				buy_sell = 'BUY'
 			elif self.order_queue.holdings_size > 0:
@@ -141,7 +142,7 @@ class macdSignalStrategy(basesignalstrategy):
 		# Last request was honoured
 		if holding_size != self.order_queue.holdings_size:
 			self.update_ledger('BUY')
-		default_logger().debug("\n{}".format(pd.DataFrame(self.ledger)))
+		default_logger().debug('\n{}'.format(pd.DataFrame(self.ledger)))
 
 	@tracelog
 	def sell_signal(self):
@@ -149,7 +150,7 @@ class macdSignalStrategy(basesignalstrategy):
 		self.order_queue.sell(self.price)
 		if holding_size != self.order_queue.holdings_size:
 			self.update_ledger('SELL')
-		default_logger().debug("\n{}".format(pd.DataFrame(self.ledger)))
+		default_logger().debug('\n{}'.format(pd.DataFrame(self.ledger)))
 
 	@tracelog
 	def update_ledger(self, signal):

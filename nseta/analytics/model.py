@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 import numpy as np
 from nseta.analytics.candle_rankings import candle_rankings
 from nseta.common.log import *

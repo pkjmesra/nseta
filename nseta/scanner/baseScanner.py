@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 import threading, time
 import click
 import pandas as pd
@@ -147,7 +148,7 @@ class baseScanner:
 	def scan_results(self, df, signaldf, should_cache=True):
 		if df is not None and len(df) > 0:
 			self.save_scan_results_archive(df, signaldf, should_cache)
-			default_logger().debug("\nAs of {}, all Stocks LTP and Signals:\n{}".format(IST_datetime(),df.to_string(index=False)))
+			default_logger().debug('\nAs of {}, all Stocks LTP and Signals:\n{}'.format(IST_datetime(),df.to_string(index=False)))
 		else:
 			print('\nAs of {}, nothing to show here.'.format(IST_datetime()))
 		if signaldf is not None and len(signaldf) > 0:
@@ -196,7 +197,7 @@ class baseScanner:
 		signaldf = signaldf.head(resources.scanner().scan_results_max_count)
 		analysis_df = signaldf.copy(deep=True)
 		user_signaldf = self.configure_user_display(signaldf, columns=self.signal_columns)
-		print("\nAs of {}, {} Signals:\nSymbols marked with (*) have just crossed a crossover point.\n\n{}\n\n".format(IST_datetime(),self.scanner_type.name, self.left_align(user_signaldf, resources.scanner().max_column_length).to_string(index=False)))
+		print('\nAs of {}, {} Signals:\nSymbols marked with (*) have just crossed a crossover point.\n\n{}\n\n'.format(IST_datetime(),self.scanner_type.name, self.left_align(user_signaldf, resources.scanner().max_column_length).to_string(index=False)))
 		if self.analyse:
 			self.scan_analysis(analysis_df)
 		return True

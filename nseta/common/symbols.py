@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 import pandas as pd
 import io
 from nseta.common.urls import equity_symbol_list_url, index_constituents_url

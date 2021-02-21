@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 import enum
 import os
 import pandas as pd
@@ -34,7 +35,7 @@ class archiver:
 					os.chmod(user_data_dir, mode=0o777)
 				self._archival_dir = user_data_dir
 			except OSError as e:
-				default_logger().debug("Exception in archiver while creating user specified DIR:{}.".format(user_data_dir))
+				default_logger().debug('Exception in archiver while creating user specified DIR:{}.'.format(user_data_dir))
 				default_logger().debug(e, exc_info=True)
 				self._archival_dir = os.path.dirname(os.path.realpath(__file__))
 			finally:
@@ -46,42 +47,42 @@ class archiver:
 			if not os.path.exists(self._logs_dir):
 				os.makedirs(self._logs_dir)
 		except OSError as e:
-			default_logger().debug("Exception in archiver while creating DIR:{}.".format(self._logs_dir))
+			default_logger().debug('Exception in archiver while creating DIR:{}.'.format(self._logs_dir))
 			default_logger().debug(e, exc_info=True)
 		try:
 			self._run_dir = os.path.join(self.archival_directory, 'run')
 			if not os.path.exists(self._run_dir):
 				os.makedirs(self._run_dir)
 		except OSError as e:
-			default_logger().debug("Exception in archiver while creating DIR:{}.".format(self._run_dir))
+			default_logger().debug('Exception in archiver while creating DIR:{}.'.format(self._run_dir))
 			default_logger().debug(e, exc_info=True)
 		try:
 			self._intraday_dir = os.path.join(self.run_directory, 'intraday')
 			if not os.path.exists(self._intraday_dir):
 				os.makedirs(self._intraday_dir)
 		except OSError as e:
-			default_logger().debug("Exception in archiver while creating DIR:{}.".format(self._intraday_dir))
+			default_logger().debug('Exception in archiver while creating DIR:{}.'.format(self._intraday_dir))
 			default_logger().debug(e, exc_info=True)
 		try:
 			self._history_dir = os.path.join(self.run_directory, 'history')
 			if not os.path.exists(self._history_dir):
 				os.makedirs(self._history_dir)
 		except OSError as e:
-			default_logger().debug("Exception in archiver while creating DIR:{}.".format(self._history_dir))
+			default_logger().debug('Exception in archiver while creating DIR:{}.'.format(self._history_dir))
 			default_logger().debug(e, exc_info=True)
 		try:
 			self._quote_dir = os.path.join(self.run_directory, 'quote')
 			if not os.path.exists(self._quote_dir):
 				os.makedirs(self._quote_dir)
 		except OSError as e:
-			default_logger().debug("Exception in archiver while creating DIR:{}.".format(self._quote_dir))
+			default_logger().debug('Exception in archiver while creating DIR:{}.'.format(self._quote_dir))
 			default_logger().debug(e, exc_info=True)
 		try:
 			self._volume_dir = os.path.join(self.run_directory, 'volume')
 			if not os.path.exists(self._volume_dir):
 				os.makedirs(self._volume_dir)
 		except OSError as e:
-			default_logger().debug("Exception in archiver while creating DIR:{}.".format(self._volume_dir))
+			default_logger().debug('Exception in archiver while creating DIR:{}.'.format(self._volume_dir))
 			default_logger().debug(e, exc_info=True)
 
 	@property
@@ -149,11 +150,11 @@ class archiver:
 				df = df.reset_index(drop=True)
 				df.to_csv(self.get_path(symbol, response_type), index=False)
 			except Exception as e:
-				default_logger().debug("Exception in archiving for {} in {}.\n{}".format(symbol, response_type,df))
+				default_logger().debug('Exception in archiving for {} in {}.\n{}'.format(symbol, response_type,df))
 				default_logger().debug(e, exc_info=True)
 				return None
 		else:
-			default_logger().debug("Empty DataFrame cannot be saved for symbol:{} and ResponseType:{}".format(symbol, response_type))
+			default_logger().debug('Empty DataFrame cannot be saved for symbol:{} and ResponseType:{}'.format(symbol, response_type))
 
 	@tracelog
 	def restore(self, symbol, response_type=ResponseType.Default):
@@ -165,7 +166,7 @@ class archiver:
 			try:
 				df = pd.read_csv(file_path)
 			except Exception as e:
-				default_logger().debug("Exception in restore for {} in {}.".format(symbol, response_type))
+				default_logger().debug('Exception in restore for {} in {}.'.format(symbol, response_type))
 				default_logger().debug(e, exc_info=True)
 				return None
 			if df is not None and len(df) > 0:
@@ -173,14 +174,14 @@ class archiver:
 				last_modified = self.utc_to_local(self.get_last_modified_datetime(file_path))
 				if current_datetime_in_ist_trading_time_range():
 					cache_warn = 'Last Modified:{}. Fetched {} from the disk cache. You may wish to clear cache (nseta [command] --clear).'.format(str(last_modified), symbol)
-					sys.stdout.write("\r{}".format(cache_warn))
+					sys.stdout.write('\r{}'.format(cache_warn))
 				else:
-					sys.stdout.write("\rLast Modified: {}. Fetched {} from the disk cache.".format(str(last_modified), symbol))
+					sys.stdout.write('\rLast Modified: {}. Fetched {} from the disk cache.'.format(str(last_modified), symbol))
 				sys.stdout.flush()
 			else:
-				default_logger().debug("Empty DataFrame for file:{}".format(file_path))
+				default_logger().debug('Empty DataFrame for file:{}'.format(file_path))
 		else:
-			default_logger().debug("File path does not exist:{}".format(file_path))
+			default_logger().debug('File path does not exist:{}'.format(file_path))
 		return df
 
 	@staticmethod
@@ -190,7 +191,7 @@ class archiver:
 			try:
 				df = pd.read_csv(file_path)
 			except Exception as e:
-				default_logger().debug("Exception in restore for {}.".format(file_path))
+				default_logger().debug('Exception in restore for {}.'.format(file_path))
 				default_logger().debug(e, exc_info=True)
 				return None
 		return df
@@ -216,17 +217,17 @@ class archiver:
 				if os.path.exists(file_path):
 					self.remove_cached_file(file_path, force_clear)
 				else:
-					default_logger().debug("File path does not exist:{}".format(file_path))
+					default_logger().debug('File path does not exist:{}'.format(file_path))
 			else:
 				dir_path = self.get_directory(response_type)
 				if dir_path is None:
 					return
 				# shutil.rmtree(dir_path) # For some reason even if it succeeds, many a time, the directory remains there.
 				# # Let's iterate and remove each individual file.
-				# default_logger().debug("Directory removed:{}".format(dir_path))
+				# default_logger().debug('Directory removed:{}'.format(dir_path))
 				self.remove_dir(dir_path, force_clear)
 		except OSError as e:
-			default_logger().debug("Exception in clearcache.")
+			default_logger().debug('Exception in clearcache.')
 			default_logger().debug(e, exc_info=True)
 
 	def get_last_modified_datetime(self, file_path):
@@ -246,10 +247,10 @@ class archiver:
 				self.remove_dir(file_path, force_clear, prefix=prefix)
 			elif should_clear or force_clear:
 				os.remove(file_path)
-				default_logger().debug("File removed:{}".format(file_path))
+				default_logger().debug('File removed:{}'.format(file_path))
 		else:
-			default_logger().debug("\nFetching from server will get the same data. If you want to force clear, use 'force_clear=True' option.")
-			default_logger().debug("\nFile NOT removed:{}.\n Last Modified:{}".format(file_path, str(last_modified_aware)))
+			default_logger().debug('\nFetching from server will get the same data. If you want to force clear, use `force_clear=True` option.')
+			default_logger().debug('\nFile NOT removed:{}.\n Last Modified:{}'.format(file_path, str(last_modified_aware)))
 
 	def remove_dir(self, dir_path, force_clear=False, prefix=None):
 		directory = os.fsencode(dir_path)
