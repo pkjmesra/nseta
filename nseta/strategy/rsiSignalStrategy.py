@@ -29,6 +29,7 @@ class rsiSignalStrategy(basesignalstrategy):
 	def set_limits(self, lower, upper):
 		self._lower = lower
 		self._upper = upper
+		super().set_limits(lower,upper)
 
 	@tracelog
 	def test_strategy(self, df):

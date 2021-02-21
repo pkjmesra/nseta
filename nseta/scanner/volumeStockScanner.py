@@ -146,36 +146,18 @@ class volumeStockScanner(baseStockScanner):
 				df['S1-R3'].iloc[n-1] = pt
 				break
 		if not crossover_point:
-			if ltp >= pp:
-				df['Remarks'].iloc[n-1]='LTP >= PP'
-				df['S1-R3'].iloc[n-1] = pp
-				if ltp >= r3:
-					df['Remarks'].iloc[n-1]='LTP >= R3'
-					df['S1-R3'].iloc[n-1] = r3
-				elif ltp >= r2:
-					df['Remarks'].iloc[n-1]='LTP >= R2'
-					df['S1-R3'].iloc[n-1] = r2
-				elif ltp >= r1:
-					df['Remarks'].iloc[n-1]='LTP >= R1'
-					df['S1-R3'].iloc[n-1] = r1
-				else:
-					df['Remarks'].iloc[n-1]='PP <= LTP < R1'
-					df['S1-R3'].iloc[n-1] = r1
+			pt_dict = {"R3":r3,"R2":r2,"R1":r1,"PP":pp,"S1":s1,"S2":s2,"S3":s3}
+			if ltp <= s3:
+				df['Remarks'].iloc[n-1]='LTP < S3'
+				df['S1-R3'].iloc[n-1] = s3
 			else:
-				df['Remarks'].iloc[n-1]='LTP < PP'
-				df['S1-R3'].iloc[n-1] = pp
-				if ltp >= s1:
-					df['Remarks'].iloc[n-1]='PP > LTP >= S1'
-					df['S1-R3'].iloc[n-1] = s1
-				elif ltp >= s2:
-					df['Remarks'].iloc[n-1]='LTP >= S2'
-					df['S1-R3'].iloc[n-1] = s2
-				elif ltp >= s3:
-					df['Remarks'].iloc[n-1]='LTP >= S3'
-					df['S1-R3'].iloc[n-1] = s3
-				else:
-					df['Remarks'].iloc[n-1]='LTP < S3'
-					df['S1-R3'].iloc[n-1] = s3
+				keys = pt_dict.keys()
+				for key in keys:
+					pt = pt_dict[key]
+					if ltp >= pt:
+						df['Remarks'].iloc[n-1]='LTP >= {}'.format(key)
+						df['S1-R3'].iloc[n-1] = pt
+						break
 		if current_datetime_in_ist_trading_time_range():
 			df['T0BuySellDiff']= np.nan
 			df['T0BuySellDiff'].iloc[n-1] = df_today['T0BuySellDiff'].iloc[0]

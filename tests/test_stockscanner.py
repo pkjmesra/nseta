@@ -261,8 +261,8 @@ class Teststockscanner(baseUnitTest):
 		df = pd.DataFrame({'Symbol':['Symbol','AnotherSymbol'], 'Date': ['2021-01-15','2021-01-16'], 'Volume':[7777,7777] , '%Deliverable':[0.28,0.28], 'PP': [104,104], 'VWAP': [101.04,101.04],'S1': [103,103], 'S2': [102,102],'S3': [101,101],'R1': [105,105],'R2': [106,106],'R3': [107,107]})
 		df_today = pd.DataFrame({'TotalTradedVolume': ['8888'], 'Updated': ['2021-01-15'], 'pChange': [.25], 'FreeFloat':[20000000],'T0BuySellDiff': [2000.00], 'LTP':['104.5'] , 'Tdy%Del':[0.28]})
 		df_result, df_today_result, signalframes = s.format_scan_volume_df(df, df_today,[])
-		self.assertEqual(df_result['S1-R3'].iloc[0], df['R1'].iloc[0])
-		self.assertEqual(df_result['Remarks'].iloc[0], 'PP <= LTP < R1')
+		self.assertEqual(df_result['S1-R3'].iloc[0], df['PP'].iloc[0])
+		self.assertEqual(df_result['Remarks'].iloc[0], 'LTP >= PP')
 
 	def test_format_scan_volume_df_ltp_S1(self):
 		s = volumeStockScanner()

@@ -28,11 +28,11 @@ CONCURRENT_STRATEGY_COUNT = 3
 
 @tracelog
 def smac_strategy(df,  lower, upper, plot=False):
-	backtest_smac_strategy(df, fast_period=resources.backtest().smac_fast_period, slow_period=resources.backtest().smac_slow_period, plot=plot)
+	backtest_ma_strategy(df, fast_period=resources.backtest().smac_fast_period, slow_period=resources.backtest().smac_slow_period, plot=plot)
 
 @tracelog
 def emac_strategy(df,  lower, upper, plot=False):
-	backtest_emac_strategy(df, fast_period=resources.backtest().emac_fast_period, slow_period=resources.backtest().emac_slow_period, plot=plot)
+	backtest_ma_strategy(df, fast_period=resources.backtest().emac_fast_period, slow_period=resources.backtest().emac_slow_period, plot=plot)
 
 @tracelog
 def bbands_strategy(df,  lower, upper, plot=False):
@@ -280,24 +280,21 @@ class strategyManager:
 		sys.stdout.write('\r{}/{}. Testing {} trading strategy for {}.'.ljust(120).format(__test_counter__, self.total_tests_counter, strategy, symbol))
 		sys.stdout.flush()
 
-		if strategy.lower() == 'rsi':
-			df_rsi_dict = {'Symbol':df['Symbol'], 'Date':df['Date'], 'RSI':df['RSI'], 'Close':df['Close']}
-			df_rsi = pd.DataFrame(df_rsi_dict)
-			rsisignal = rsiSignalStrategy(strict=self.strict, intraday=intraday, requires_ledger=show_detail)
-			rsisignal.set_limits(lower, upper)
-			results, summary = rsisignal.test_strategy(df_rsi)
-			if plot:
-				(plot_rsi(df)).show()
-		elif strategy.lower() == 'bbands':
-			df_bbands_dict = {'Symbol':df['Symbol'], 'Date':df['Date'], 'BBands-U':df['BBands-U'], 'BBands-M':df['BBands-M'], 'BBands-L':df['BBands-L'], 'Close':df['Close']}
-			df_bbands = pd.DataFrame(df_bbands_dict)
-			bbandsSignal = bbandsSignalStrategy(strict=self.strict, intraday=intraday, requires_ledger=show_detail)
-			results, summary = bbandsSignal.test_strategy(df_bbands)
-		elif strategy.lower() == 'macd':
-			df_macd_dict = {'Symbol':df['Symbol'], 'Date':df['Date'], 'macd(12)':df['macd(12)'], 'macdsignal(9)':df['macdsignal(9)'], 'macdhist(26)':df['macdhist(26)'], 'Close':df['Close']}
-			df_macd = pd.DataFrame(df_macd_dict)
-			macdSignal = macdSignalStrategy(strict=self.strict, intraday=intraday, requires_ledger=show_detail)
-			results, summary = macdSignal.test_strategy(df_macd)
+		strgy_dict = {"rsi":{"keys":["Symbol","Date","RSI","Close"],"class":rsiSignalStrategy},
+						"bbands":{"keys":["Symbol","Date","BBands-U","BBands-M", "BBands-L","Close"],"class":bbandsSignalStrategy},
+						"macd":{"keys":["Symbol","Date","macd(12)","macdsignal(9)", "macdhist(26)","Close"],"class":macdSignalStrategy}}
+		keys = strgy_dict.keys()
+		df_dict = {}
+		for key in keys:
+			if strategy.lower() == key:
+				for df_key in strgy_dict[key]["keys"]:
+					df_dict[df_key] = df[df_key]
+				df_strtgy = pd.DataFrame(df_dict)
+				cls_name = strgy_dict[key]["class"]
+				signal = cls_name(strict=self.strict, intraday=intraday, requires_ledger=show_detail)
+				signal.set_limits(lower, upper)
+				results, summary = signal.test_strategy(df_strtgy)
+				break
 		sys.stdout.write('\r{}/{}. Finished testing {} trading strategy for {}.'.ljust(120).format(__test_counter__, self.total_tests_counter, strategy, symbol))
 		sys.stdout.flush()
 		if results is not None and show_detail:

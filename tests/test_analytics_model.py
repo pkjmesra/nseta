@@ -43,14 +43,14 @@ class TestAnalyticsModel(baseUnitTest):
 		self.assertEqual(len(df_pattern_steps.keys()), 73)
 
 	def test_model_candlestick(self):
-		df_pattern = model_candlestick(self.df, False)
+		df_pattern = model_candlestick(self.df, steps=False, beautify=False)
 		self.assertEqual(len(df_pattern.keys()), 17)
 		self.assertIn("candlestick_pattern", df_pattern.columns, str(df_pattern.columns))
 		self.assertIn("candlestick_match_count", df_pattern.columns, str(df_pattern.columns))
 		NO_PATTERN = df_pattern['candlestick_pattern'].iloc[0]
 		self.assertEqual(NO_PATTERN, 'NO_PATTERN')
 		self.assertNotIn("CDLSTICKSANDWICH", df_pattern.columns, str(df_pattern.columns))
-		df_pattern_steps = model_candlestick(self.df, True)
+		df_pattern_steps = model_candlestick(self.df, steps=True, beautify=False)
 		self.assertIn("CDLSTICKSANDWICH", df_pattern_steps.columns, str(df_pattern_steps.columns))
 		self.assertEqual(len(df_pattern_steps.keys()), 73)
 

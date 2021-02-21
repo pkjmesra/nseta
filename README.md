@@ -114,6 +114,8 @@ After installation you can check what version you got installed
   ```
   docker run -it pkjmesra/nseta:latest sh
   ```
+  
+  When in doubt or when you encounter an error on Windows/macOS or Ubuntu/Linux, please see the github workflows under Github actions. If you follow those steps, you won't have any trouble installing all dependencies without fail.
 
 </details>
 

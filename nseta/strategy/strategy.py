@@ -13,30 +13,23 @@ from nseta.resources.resources import *
 import click, logging
 
 __VERBOSE__ = default_logger().level == logging.DEBUG
-__all__ = ['backtest_custom_strategy', 'backtest_smac_strategy', 'backtest_emac_strategy', 'backtest_rsi_strategy', 'backtest_macd_strategy', 'backtest_bbands_strategy', 'backtest_multi_strategy', 'daily_forecast']
+__all__ = ['backtest_custom_strategy', 'backtest_ma_strategy', 'backtest_rsi_strategy', 'backtest_macd_strategy', 'backtest_bbands_strategy', 'backtest_multi_strategy', 'daily_forecast']
 
 @tracelog
-def backtest_smac_strategy(df, fast_period=resources.backtest().smac_fast_period, slow_period=resources.backtest().smac_slow_period, plot=False):
+def backtest_ma_strategy(df, fast_period=resources.backtest().smac_fast_period, slow_period=resources.backtest().smac_slow_period, plot=False, type_name="smac"):
+	bt = resources.backtest()
+	ma_dict = {"smac":{"fast_period":bt.smac_fast_period, "slow_period":bt.smac_slow_period},
+				"emac":{"fast_period":bt.emac_fast_period, "slow_period":bt.emac_slow_period}}
 	if __VERBOSE__:
-		result = backtest('smac', df.dropna(), fast_period=fast_period, slow_period=slow_period, verbose=__VERBOSE__, plot=plot)
+		result = backtest(type_name, df.dropna(), fast_period=ma_dict[type_name]['fast_period'], slow_period=ma_dict[type_name]['slow_period'], verbose=__VERBOSE__, plot=plot)
 	else:
 		with suppress_stdout_stderr():
-			result = backtest('smac', df.dropna(), fast_period=fast_period, slow_period=slow_period, verbose=__VERBOSE__, plot=plot)
+			result = backtest(type_name, df.dropna(), fast_period=ma_dict[type_name]['fast_period'], slow_period=ma_dict[type_name]['slow_period'], verbose=__VERBOSE__, plot=plot)
 	print('\n{}'.format(result[['fast_period', 'slow_period', 'init_cash', 'final_value', 'pnl']].head()))
 	return result
 
 @tracelog
-def backtest_emac_strategy(df, fast_period=resources.backtest().emac_fast_period, slow_period=resources.backtest().emac_slow_period, plot=False):
-	if __VERBOSE__:
-		result = backtest('emac', df.dropna(), fast_period=fast_period, slow_period=slow_period, verbose=__VERBOSE__, plot=plot)
-	else:
-		with suppress_stdout_stderr():
-			result = backtest('emac', df.dropna(), fast_period=fast_period, slow_period=slow_period, verbose=__VERBOSE__, plot=plot)
-	print('\n{}'.format(result[['fast_period', 'slow_period', 'init_cash', 'final_value', 'pnl']].head()))
-	return result
-
-@tracelog
-def backtest_rsi_strategy(df, rsi_period=resources.backtest().rsi_period, rsi_lower=resources.backtest().rsi_lower, rsi_upper=resources.backtest().rsi_upper, plot=False):
+def backtest_rsi_strategy(df, rsi_period=resources.backtest().rsi_period, rsi_lower=resources.backtest().rsi_lower, rsi_upper=resources.backtest().rsi_upper, plot=False, type_name="rsi"):
 	if __VERBOSE__:
 		result = backtest('rsi', df.dropna(), rsi_period=rsi_period, rsi_upper=rsi_upper, rsi_lower=rsi_lower, verbose=__VERBOSE__, plot=plot)
 	else:
@@ -46,7 +39,7 @@ def backtest_rsi_strategy(df, rsi_period=resources.backtest().rsi_period, rsi_lo
 	return result
 
 @tracelog
-def backtest_macd_strategy(df, fast_period=resources.backtest().macd_fast_period, slow_period=resources.backtest().macd_slow_period, plot=False):
+def backtest_macd_strategy(df, fast_period=resources.backtest().macd_fast_period, slow_period=resources.backtest().macd_slow_period, plot=False, type_name="macd"):
 	if __VERBOSE__:
 		result = backtest('macd', df.dropna(), fast_period=fast_period, slow_period=slow_period, signal_period=resources.backtest().macd_signal_period,
 		sma_period=resources.backtest().macd_sma_period, dir_period=resources.backtest().macd_dir_period, verbose=__VERBOSE__, plot=plot)
@@ -58,7 +51,7 @@ def backtest_macd_strategy(df, fast_period=resources.backtest().macd_fast_period
 	return result
 
 @tracelog
-def backtest_bbands_strategy(df, period=resources.backtest().bbands_period, devfactor=resources.backtest().bbands_devfactor, plot=False):
+def backtest_bbands_strategy(df, period=resources.backtest().bbands_period, devfactor=resources.backtest().bbands_devfactor, plot=False, type_name="bbands"):
 	if __VERBOSE__:
 		result = backtest('bbands', df.dropna(), period=period, devfactor=devfactor, verbose=__VERBOSE__, plot=plot)
 	else:
@@ -68,7 +61,7 @@ def backtest_bbands_strategy(df, period=resources.backtest().bbands_period, devf
 	return result
 
 @tracelog
-def backtest_multi_strategy(df, strats=None, plot=False):
+def backtest_multi_strategy(df, strats=None, plot=False, type_name="multi"):
 	if strats is None:
 		strats = {
 			"smac": {"fast_period": resources.backtest().multi_smac_fast_period_range, "slow_period": resources.backtest().multi_smac_slow_period_range},
@@ -83,9 +76,9 @@ def backtest_multi_strategy(df, strats=None, plot=False):
 
 STRATEGY_FORECAST_MAPPING = {
 	"rsi": backtest_rsi_strategy,
-	"smac": backtest_smac_strategy,
+	"smac": backtest_ma_strategy,
 	"macd": backtest_macd_strategy,
-	"emac": backtest_emac_strategy,
+	"emac": backtest_ma_strategy,
 	"bbands": backtest_bbands_strategy,
 	"multi": backtest_multi_strategy,
 }
@@ -259,6 +252,6 @@ def predict_buy_sell_1day_returns(df, forecast, strategy, upper_limit, lower_lim
 		result = backtest(strategy, df, upper_limit=upper_limit, lower_limit=-lower_limit, custom_column=strategy, plot=plot)
 	else:
 		if strategy in STRATEGY_FORECAST_MAPPING_KEYS:
-			result = STRATEGY_FORECAST_MAPPING[strategy](df, plot=plot)
+			result = STRATEGY_FORECAST_MAPPING[strategy](df, plot=plot, type_name=strategy)
 	return result
 

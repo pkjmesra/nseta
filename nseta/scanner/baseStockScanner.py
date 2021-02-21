@@ -190,17 +190,7 @@ class baseStockScanner:
 					deep_df = self.update_confidence_level(deep_df)
 					default_logger().debug('To be added to update_signal_indicator.signalframes:\n{}\n'.format(deep_df.to_string(index=False)))
 					default_logger().debug('update_signal_indicator.signalframes:\n{}\n'.format(signalframes))
-					if len(signalframes) > 0:
-						saved_df = signalframes[len(signalframes) - 1]
-						if saved_df['Symbol'].iloc[0] == deep_df['Symbol'].iloc[0]:
-							saved_df['Remarks'].iloc[0] = '{},{}'.format(saved_df['Remarks'].iloc[0],deep_df['Remarks'].iloc[0])
-							saved_df['Signal'].iloc[0] = '{},{}'.format(saved_df['Signal'].iloc[0],deep_df['Signal'].iloc[0])
-							saved_df['Confidence'].iloc[0] = max(saved_df['Confidence'].iloc[0],deep_df['Confidence'].iloc[0])
-							signalframes[len(signalframes) - 1] = saved_df
-						else:
-							signalframes.append(deep_df)
-					else:
-						signalframes.append(deep_df)
+					signalframes = self.update_max_confidence(signalframes, deep_df)
 			else:
 				if (value is not None) and (abs(value-comparator_value) >= margin):
 					if ltp_label_comparator == '<=':
@@ -212,17 +202,21 @@ class baseStockScanner:
 					deep_df = self.update_confidence_level(deep_df)
 					default_logger().debug('To be added to update_signal_indicator.signalframes:\n{}\n'.format(deep_df.to_string(index=False)))
 					default_logger().debug('update_signal_indicator.signalframes:\n{}\n'.format(signalframes))
-					if len(signalframes) > 0:
-						saved_df = signalframes[len(signalframes) - 1]
-						if saved_df['Symbol'].iloc[0] == deep_df['Symbol'].iloc[0]:
-							saved_df['Remarks'].iloc[0] = '{},{}'.format(saved_df['Remarks'].iloc[0],deep_df['Remarks'].iloc[0])
-							saved_df['Signal'].iloc[0] = '{},{}'.format(saved_df['Signal'].iloc[0],deep_df['Signal'].iloc[0])
-							saved_df['Confidence'].iloc[0] = max(saved_df['Confidence'].iloc[0],deep_df['Confidence'].iloc[0])
-							signalframes[len(signalframes) - 1] = saved_df
-						else:
-							signalframes.append(deep_df)
-					else:
-						signalframes.append(deep_df)
+					signalframes = self.update_max_confidence(signalframes, deep_df)
+		return signalframes
+
+	def update_max_confidence(self, signalframes, deep_df):
+		if len(signalframes) > 0:
+			saved_df = signalframes[len(signalframes) - 1]
+			if saved_df['Symbol'].iloc[0] == deep_df['Symbol'].iloc[0]:
+				saved_df['Remarks'].iloc[0] = '{},{}'.format(saved_df['Remarks'].iloc[0],deep_df['Remarks'].iloc[0])
+				saved_df['Signal'].iloc[0] = '{},{}'.format(saved_df['Signal'].iloc[0],deep_df['Signal'].iloc[0])
+				saved_df['Confidence'].iloc[0] = max(saved_df['Confidence'].iloc[0],deep_df['Confidence'].iloc[0])
+				signalframes[len(signalframes) - 1] = saved_df
+			else:
+				signalframes.append(deep_df)
+		else:
+			signalframes.append(deep_df)
 		return signalframes
 
 	def get_quick_recommendation(self, df, indicator):

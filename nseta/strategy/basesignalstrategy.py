@@ -191,6 +191,10 @@ class basesignalstrategy:
 		self._reco = reco
 
 	@tracelog
+	def set_limits(self, lower, upper):
+		default_logger().debug('\nLimits set to lower:{}, upper:{}'.format(str(lower), str(upper)))
+
+	@tracelog
 	def update_direction(self):
 		if self.requires_ledger:
 			(self.baseledger['DateTime']).append(self.timestamp)

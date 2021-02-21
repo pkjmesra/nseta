@@ -101,7 +101,7 @@ We will rank them based on the “Overall performance rank” and select the bes
 pattern for each candle.
 '''
 @tracelog
-def recognize_candlestick_pattern(data_frame, steps):
+def recognize_candlestick_pattern(data_frame, steps=False):
 	"""
 	Recognizes candlestick patterns and appends 2 additional columns to df;
 	1st - Best Performance candlestick pattern matched by www.thepatternsite.com
@@ -119,8 +119,9 @@ def recognize_candlestick_pattern(data_frame, steps):
 	return df
 
 @tracelog
-def model_candlestick(df, steps):
-	model_df = recognize_candlestick_pattern(df, steps)
-	model_df = human_readable_df(model_df)
+def model_candlestick(df, steps=False, beautify=True):
+	model_df = recognize_candlestick_pattern(df, steps=steps)
+	if beautify:
+		model_df = human_readable_df(model_df)
 	return model_df
 
