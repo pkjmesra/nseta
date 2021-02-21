@@ -197,7 +197,14 @@ class baseScanner:
 		signaldf = signaldf.head(resources.scanner().scan_results_max_count)
 		analysis_df = signaldf.copy(deep=True)
 		user_signaldf = self.configure_user_display(signaldf, columns=self.signal_columns)
-		print('\nAs of {}, {} Signals:\nSymbols marked with (*) have just crossed a crossover point.\n\n{}\n\n'.format(IST_datetime(),self.scanner_type.name, self.left_align(user_signaldf, resources.scanner().max_column_length).to_string(index=False)))
+		btf_df = self.left_align(user_signaldf, resources.scanner().max_column_length).to_string(index=False)
+		try:
+			print('\nAs of {}, {} Signals:\nSymbols marked with (*) have just crossed a crossover point.\n\n{}\n\n'.format(IST_datetime(),self.scanner_type.name, btf_df))
+		except Exception as e:
+			default_logger().debug(e, exc_info=True)
+			temp = str.maketrans('₹', 'Rs') 
+			btf_df = btf_df.translate(temp) 
+			print('\nAs of {}, {} Signals:\nSymbols marked with (*) have just crossed a crossover point.\n\n{}\n\n'.format(IST_datetime(),self.scanner_type.name, btf_df))
 		if self.analyse:
 			self.scan_analysis(analysis_df)
 		return True
