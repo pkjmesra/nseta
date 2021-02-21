@@ -91,7 +91,3 @@ jobs:
         coverage xml
         curl -Ls https://coverage.codacy.com/get.sh --output codacy.sh
         bash codacy.sh report -l Python -r coverage.xml
-    - name: clean up
-      run: |
-        rm -rf build
-        rm -rf dist
