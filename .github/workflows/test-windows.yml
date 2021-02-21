@@ -71,7 +71,7 @@ jobs:
         coverage report -m
         coverage html
         coverage xml
-        bash <(curl -s https://codecov.io/bash)
+        curl -s https://codecov.io/bash | bash
     - name: "Upload test coverage to Codecov"
       uses: codecov/codecov-action@v1
       with:
@@ -89,7 +89,7 @@ jobs:
         CODACY_PROJECT_TOKEN: ${{ secrets.CODACY_PROJECT_TOKEN }}
       run: |
         coverage xml
-        bash <(curl -Ls https://coverage.codacy.com/get.sh) report -l Python -r coverage.xml
+        curl -Ls https://coverage.codacy.com/get.sh report -l Python -r coverage.xml | bash
     - name: clean up
       run: |
         rm -rf build
