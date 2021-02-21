@@ -7,12 +7,6 @@ os: osx
 env:
 	global:
 		secure: KV15IbbpAVZKfKocByinC9lmyQ2eZHi1IplS4V/UKe5mv4ubAnifB1vprofxA8ESj2hitMXwpuENcsRLhZNNCTKd2U78a8Se0zd05YngsvP+oYbtor8M3psmFiZuZ6opl+1WWDuvYQSYBebkfPHyyw54kPb+5LIHtI8FdAYY6X0jroYaBNCPc1IBP2DLKf2uzHuQTE90PXwwVU0HRs8j5kFuqvVZ9X4p+rUHhvU4tF/CTs05PJfRWx5LM2hyQrXPEVl3AFGHtk5lu7fdRHiLTIpLy3CA+fWW09fXgFCjuYu1oBlrvf9A9oc+VmboL+slOD6V/Yiv/UblQteppEz/WQfR/bhsfSMRusWWr1CtL+lX46ClcGLXXB9/OBjm2aJItYCDv/kKJMCKHjKpdTZ1u4kHnJkFAHWHgY+jt/ENm+3Hi3lsLcMyfeoNNotRBTLi1+zYZLTEnc9ZI2dDw254klyQVh2dB3xtXuPsS+9eifYRg1nZIpUSaCIjKMZ9hL/MSQB8vNFsjOeONm8EdqELEXGP+kgOWwB5OxKpfhS4Hkh6USRObiQPs5vLFwC9GJOON3z3Xi6P2B55RIt58ivo5bEjyFe2lA19al/R9t/YodaadH+A3MGrmXdzdurE6dQcOFeTUnyI3mv0V8IPLRZ+tZU3bO6W/DQKuGx7+G7Kr38=
-		- GIT_COMMITTED_AT=$(if [ "$TRAVIS_PULL_REQUEST" == "false" ]; then git log -1 --pretty=format:%ct; else git log -1 --skip 1 --pretty=format:%ct; fi)
-		- CC_TEST_REPORTER_ID=1c7ab50666fe0ffc95a69fdd0c6782100e8125f1b33ece6d641b0104449c6998
-before_script:
-- curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
-- chmod +x ./cc-test-reporter
-- ./cc-test-reporter before-build
 before_install:
 - git config --global http.postBuffer 524288000
 - which brew || /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install.sh)"
@@ -34,8 +28,6 @@ script:
 - coverage html
 - coverage xml
 - nseta --help
-after_script:
-- if [[ "$TRAVIS_PULL_REQUEST" == "false" ]]; then ./cc-test-reporter after-build --exit-code $TRAVIS_TEST_RESULT; fi
 after_success:
 - bash <(curl -s https://codecov.io/bash)
 - bash <(curl -Ls https://coverage.codacy.com/get.sh) report -l Python -r coverage.xml

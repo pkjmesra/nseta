@@ -71,6 +71,19 @@ jobs:
         python3 setup.py clean build install sdist bdist_wheel
         pip3 install numpy==1.20.0
         python3 -c "from nseta.scanner.volumeScanner import volumeScanner; from nseta.scanner.baseStockScanner import ScannerType; s=volumeScanner(ScannerType.Volume,['HDFC']); s.scan();"
+    - name: Declare env variables for codeclimate
+      id: vars
+      shell: bash
+      run: |
+        echo "::set-output name=sha_short::$(git rev-parse --short HEAD)"
+    - name: Code climate before-build
+      env:
+        CC_TEST_REPORTER_ID: ${{ secrets.CC_TEST_REPORTER_ID }}
+        GIT_COMMITTED_AT: ${{ steps.vars.outputs.sha_short }}
+      run: |
+        curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
+        chmod +x ./cc-test-reporter
+        ./cc-test-reporter before-build
     - name: Generate test coverage report
       run: |
         pip3 install timeout-decorator
@@ -81,7 +94,7 @@ jobs:
         coverage html
         coverage xml
         bash <(curl -s https://codecov.io/bash)
-    - name: "Upload test coverage to Codecov"
+    - name: Upload test coverage to Codecov
       uses: codecov/codecov-action@v1
       with:
         token: ${{ secrets.CODECOV_TOKEN }}
@@ -93,12 +106,18 @@ jobs:
         fail_ci_if_error: false
         # path_to_write_report: ./coverage/codecov_report.txt
         verbose: true
-    - name: "Upload test coverage to Codacy"
+    - name: Upload test coverage to Codacy
       env:
         CODACY_PROJECT_TOKEN: ${{ secrets.CODACY_PROJECT_TOKEN }}
       run: |
         coverage xml
         bash <(curl -Ls https://coverage.codacy.com/get.sh) report -l Python -r coverage.xml
+    - name: Upload test coverage to code climate
+      env:
+        CC_TEST_REPORTER_ID: ${{ secrets.CC_TEST_REPORTER_ID }}
+        GIT_COMMITTED_AT: ${{ steps.vars.outputs.sha_short }}
+      run: |
+        ./cc-test-reporter after-build --exit-code 0
     - name: clean up
       run: |
         sudo rm -rf build
