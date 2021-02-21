@@ -42,6 +42,7 @@ class topPickScanner(intradayScanner):
 			default_logger().debug('Period_1_signals:\n{}\n'.format(self.period_1_signals))
 			default_logger().debug('Period_5_signals:\n{}\n'.format(signaldf))
 			intersected_rows = []
+			intersected_df = None
 			for index, row in signaldf.iterrows():
 				symbol_period_5 = row['Symbol']
 				signal_period_5 = row['Signal']
@@ -51,5 +52,6 @@ class topPickScanner(intradayScanner):
 					if abs(abs(df['macd(12)'].iloc[0]) - abs(df['macdsignal(9)'].iloc[0])) <= 0.15:
 						df['Confidence'].iloc[0] = 100
 					intersected_rows.append(df)
-			intersected_df= pd.concat(intersected_rows)
+			if len(intersected_rows) > 0:
+				intersected_df= pd.concat(intersected_rows)
 			return super().flush_signals(intersected_df)

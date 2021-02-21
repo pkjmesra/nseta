@@ -192,6 +192,9 @@ class baseScanner:
 		return df
 
 	def flush_signals(self, signaldf):
+		if signaldf is None or len(signaldf) < 1:
+			print('\nAs of {}, no signals to show here.'.format(IST_datetime()))
+			return True
 		if self.option is not None and len(self.option) > 0:
 			signaldf = signaldf.sort_values(by=self.option, ascending=self.sortAscending)
 		signaldf = signaldf.head(resources.scanner().scan_results_max_count)
@@ -202,8 +205,9 @@ class baseScanner:
 			print('\nAs of {}, {} Signals:\nSymbols marked with (*) have just crossed a crossover point.\n\n{}\n\n'.format(IST_datetime(),self.scanner_type.name, btf_df))
 		except Exception as e:
 			default_logger().debug(e, exc_info=True)
-			temp = str.maketrans('₹', 'Rs') 
-			btf_df = btf_df.translate(temp) 
+			# temp = str.maketrans('₹', 'Rs')
+			# btf_df = btf_df.translate(temp)
+			btf_df = btf_df.replace('₹', 'Rs')
 			print('\nAs of {}, {} Signals:\nSymbols marked with (*) have just crossed a crossover point.\n\n{}\n\n'.format(IST_datetime(),self.scanner_type.name, btf_df))
 		if self.analyse:
 			self.scan_analysis(analysis_df)
