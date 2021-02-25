@@ -136,23 +136,6 @@ class macdSignalStrategy(basesignalstrategy):
 			self.sell_signal()
 
 	@tracelog
-	def buy_signal(self):
-		holding_size = self.order_queue.holdings_size
-		self.order_queue.buy(self.price)
-		# Last request was honoured
-		if holding_size != self.order_queue.holdings_size:
-			self.update_ledger('BUY')
-		default_logger().debug('\n{}'.format(pd.DataFrame(self.ledger)))
-
-	@tracelog
-	def sell_signal(self):
-		holding_size = self.order_queue.holdings_size
-		self.order_queue.sell(self.price)
-		if holding_size != self.order_queue.holdings_size:
-			self.update_ledger('SELL')
-		default_logger().debug('\n{}'.format(pd.DataFrame(self.ledger)))
-
-	@tracelog
 	def update_ledger(self, signal):
 		if not self.requires_ledger:
 			return

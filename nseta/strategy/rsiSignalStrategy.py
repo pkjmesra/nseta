@@ -13,28 +13,28 @@ __all__ = ['rsiSignalStrategy']
 class rsiSignalStrategy(basesignalstrategy):
 	def __init__(self, strict=False, intraday=False, requires_ledger=False):
 		order_queue = simulatedorder(OrderType.MIS if intraday else OrderType.Delivery)
-		self._lower = resources.rsi().lower
-		self._upper = resources.rsi().upper
+		self.lower = resources.rsi().lower
+		self.upper = resources.rsi().upper
 		super().__init__(requires_ledger=requires_ledger, order_queue=order_queue, 
-			crossover_lower = self._lower, crossover_upper = self._upper)
-		self._strict = strict
-		self._prc = 0
+			crossover_lower = self.lower, crossover_upper = self.upper)
+		self.strict = strict
+		self.prc = 0
 		
 		if default_logger().level == logging.DEBUG:
-			self._ledger = {'DateTime':[],'Signal':[],'Price':[],'Pattern':[],'Direction':[], 'Funds':[], 'Order_Size':[], 'Holdings_Size':[], 'Portfolio_Value':[], 'Brokerage':[], 'P3':[], 'P2':[], 'P1':[], 'N1':[], 'N2':[], 'N3':[],'P-delta':[], 'N-delta':[], 'Base-delta':[]}
+			self.ledger = {'DateTime':[],'Signal':[],'Price':[],'Pattern':[],'Direction':[], 'Funds':[], 'Order_Size':[], 'Holdings_Size':[], 'Portfolio_Value':[], 'Brokerage':[], 'P3':[], 'P2':[], 'P1':[], 'N1':[], 'N2':[], 'N3':[],'P-delta':[], 'N-delta':[], 'Base-delta':[]}
 		else:
-			self._ledger = {'DateTime':[],'Signal':[],'Price':[],'Pattern':[],'Direction':[], 'Funds':[], 'Order_Size':[], 'Holdings_Size':[], 'Portfolio_Value':[], 'Brokerage':[]}
+			self.ledger = {'DateTime':[],'Signal':[],'Price':[],'Pattern':[],'Direction':[], 'Funds':[], 'Order_Size':[], 'Holdings_Size':[], 'Portfolio_Value':[], 'Brokerage':[]}
 
 	@tracelog
 	def set_limits(self, lower, upper):
-		self._lower = lower
-		self._upper = upper
+		self.lower = lower
+		self.upper = upper
 		super().set_limits(lower,upper)
 
 	@tracelog
 	def test_strategy(self, df):
 		# TODO: What if keys are in lowercase or dt/datetime is used instead of date/Date
-		self._target_met = False
+		self.target_met_status = False
 		try:
 			rowindex = 0
 			for rsi in (df['RSI']).values:
@@ -42,7 +42,7 @@ class rsiSignalStrategy(basesignalstrategy):
 					price =(df.iloc[rowindex])['Close']
 					ts =(df.iloc[rowindex])['Date']
 					self.index(rsi, price, ts)
-					if self._target_met:
+					if self.target_met_status:
 						break
 				rowindex = rowindex + 1
 			if self.order_queue.holdings_size < 0:
@@ -67,36 +67,8 @@ class rsiSignalStrategy(basesignalstrategy):
 			super().index(rsi, timestamp)
 
 	@property
-	def strict(self):
-		return self._strict
-
-	@property
-	def order_queue(self):
-		return self._order_queue
-
-	@property
-	def ledger(self):
-		return self._ledger
-
-	@property
 	def report(self):
 		return pd.DataFrame(self.ledger)
-
-	@property
-	def lower(self):
-		return self._lower
-
-	@property
-	def upper(self):
-		return self._upper
-
-	@property
-	def price(self):
-		return self._prc
-
-	@price.setter
-	def price(self, prc):
-		self._prc = prc
 
 	def crossedover_lower(self, prev_pattern=Direction.Neutral):
 		if prev_pattern == Direction.Up:
@@ -111,7 +83,7 @@ class rsiSignalStrategy(basesignalstrategy):
 			self.sell_signal()
 
 	def target_met(self, prev_pattern=Direction.Neutral):
-		self._target_met = True
+		self.target_met_status = True
 		self.order_queue.square_off(self.price)
 
 	def v_pattern(self, prev_pattern=Direction.Neutral):
@@ -138,21 +110,6 @@ class rsiSignalStrategy(basesignalstrategy):
 		if not self.strict and self.n1 >= self.upper:
 			self.sell_signal()
 		self.check_squareoff(down=True);
-
-	def buy_signal(self):
-		holding_size = self.order_queue.holdings_size
-		self.order_queue.buy(self.price)
-		# Last request was honoured
-		if holding_size != self.order_queue.holdings_size:
-			self.update_ledger('BUY')
-		default_logger().debug('\n{}'.format(pd.DataFrame(self.ledger)))
-
-	def sell_signal(self):
-		holding_size = self.order_queue.holdings_size
-		self.order_queue.sell(self.price)
-		if holding_size != self.order_queue.holdings_size:
-			self.update_ledger('SELL')
-		default_logger().debug('\n{}'.format(pd.DataFrame(self.ledger)))
 
 	def check_squareoff(self, down=False):
 		if down and self.order_queue.holdings_size >= 0:

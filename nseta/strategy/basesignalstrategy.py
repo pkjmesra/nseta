@@ -276,6 +276,21 @@ class basesignalstrategy:
 			(self.baseledger['N2']).append(str(round(self.n2,2)))
 			(self.baseledger['N3']).append(str(round(self.n3,2)))
 
+	def buy_signal(self):
+		self.execute('BUY')
+
+	def sell_signal(self):
+		self.execute('SELL')
+
+	def execute(self, order_type='BUY'):
+		holding_size = self.order_queue.holdings_size
+		exec_func = self.order_queue.buy if order_type=='BUY' else self.order_queue.sell
+		exec_func(self.price)
+		# Last request was honoured
+		if holding_size != self.order_queue.holdings_size:
+			self.update_ledger(order_type)
+		default_logger().debug('\n{}'.format(pd.DataFrame(self.ledger)))
+
 	def target_met(self, prev_pattern=Direction.Neutral):
 		default_logger().debug('\n{}'.format(self.pattern))
 

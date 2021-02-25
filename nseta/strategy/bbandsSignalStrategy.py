@@ -104,21 +104,6 @@ class bbandsSignalStrategy(basesignalstrategy):
 	def price(self, prc):
 		self._prc = prc
 
-	def buy_signal(self):
-		holding_size = self.order_queue.holdings_size
-		self.order_queue.buy(self.price)
-		# Last request was honoured
-		if holding_size != self.order_queue.holdings_size:
-			self.update_ledger('BUY')
-		default_logger().debug('\n{}'.format(pd.DataFrame(self.ledger)))
-
-	def sell_signal(self):
-		holding_size = self.order_queue.holdings_size
-		self.order_queue.sell(self.price)
-		if holding_size != self.order_queue.holdings_size:
-			self.update_ledger('SELL')
-		default_logger().debug('\n{}'.format(pd.DataFrame(self.ledger)))
-
 	def v_pattern(self, prev_pattern=Direction.Neutral):
 		if not self.strict:
 			self.buy_signal()

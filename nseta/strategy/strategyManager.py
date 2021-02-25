@@ -19,7 +19,6 @@ from nseta.common.multithreadedScanner import multithreaded_scan
 from nseta.strategy.simulatedorder import OrderType
 from nseta.common.ti import ti
 from nseta.common.history import *
-from nseta.plots.plots import plot_rsi
 
 __all__ = ['STRATEGY_MAPPING', 'strategyManager']
 
@@ -268,6 +267,8 @@ class strategyManager:
 			STRATEGY_MAPPING['rsi'](df,  float(upper), float(lower))
 
 	def test_signals(self, df, lower=resources.rsi().lower, upper=resources.rsi().upper, strategy='rsi', intraday = False, plot=False, show_detail=True):
+		if df is None or len(df) < 1:
+			return None
 		tiinstance = ti()
 		df = tiinstance.update_ti(df, rsi=True, bbands=True, macd=True)
 		df = df.sort_values(by='Date',ascending=True)
