@@ -20,7 +20,6 @@ def split_keys(keystrings):
 	return keys
 
 ORDER_BY_KEYS = split_keys(resources.scanner().intraday_scan_columns + resources.scanner().volume_scan_columns + resources.scanner().swing_scan_columns + resources.scanner().live_scan_columns)
-RUN_IN_BACKGROUND = True
 
 @click.command(help='Get live price quote of a security')
 @click.option('--symbol', '-S',  help='Security code.')
@@ -53,32 +52,18 @@ def live_quote(symbol, general, ohlc, wk52, volume, orderbook, background):
 @click.option('--analyse', '-a', default=False, is_flag=True, help='Analyse to check which of the results have the best buy/sell confidence based on MACD (Optional)')
 @tracelog
 def scan(stocks, live, intraday, swing, volume, indicator, orderby, clear, background, analyse):
-	if (live and intraday) or ( live and swing) or (intraday and swing) or (live and volume) or (intraday and volume) or (swing and volume):
-		click.secho('Choose only one of --live, --intraday, --swing or --volume options.', fg='red', nl=True)
-		print_help_msg(scan)
+	args_list = [live, intraday, swing, volume]
+	true_count = sum(args_list)
+	if not validate_options(true_count, '--live, --intraday, --swing or --volume', scan):
 		return
-	elif not live and not intraday and not swing and not volume:
-		click.secho('Choose at least one of the --live, --intraday (recommended) , --volume or --swing options.', fg='red', nl=True)
-		print_help_msg(scan)
-		return
-
-	if stocks is not None and len(stocks) > 0:
-		stocks = [x.strip() for x in stocks.split(',')]
-	else:
-		stocks = []
-	global RUN_IN_BACKGROUND
+	stocks = get_stocks(stocks)
 	try:
 		scanner_type = ScannerType.Volume if volume else (ScannerType.Intraday if intraday else (ScannerType.Swing if swing else ScannerType.Live))
 		scanner = scannerFactory.scanner(scanner_type, stocks, indicator, background)
 		scanner.clear_cache(clear, force_clear = current_datetime_in_ist_trading_time_range())
 		scanner.scan(option=orderby, analyse=analyse)
 	except Exception as e:
-		RUN_IN_BACKGROUND = False
-		default_logger().debug(e, exc_info=True)
-		click.secho('Failed to scan.\n', fg='red', nl=True)
-		return
-	except SystemExit:
-		RUN_IN_BACKGROUND = False
+		log_error(e, scanner_type.name)
 		return
 
 @click.command(help='Scans for price action and signals for intraday or swing recommendations')
@@ -91,50 +76,53 @@ def scan(stocks, live, intraday, swing, volume, indicator, orderby, clear, backg
 @click.option('--background', '-r', default=False, is_flag=True, help='Keep running the process in the background (Optional)')
 @tracelog
 def top_picks(stocks, intraday, swing, indicator, clear, background):
-	if (intraday and swing):
-		click.secho('Choose only one of --intraday or --swing options.', fg='red', nl=True)
-		print_help_msg(top_picks)
-		return
-	elif not intraday and not swing:
-		click.secho('Choose at least one of the --intraday (recommended) or --swing options.', fg='red', nl=True)
-		print_help_msg(top_picks)
+	args_list = [intraday, swing]
+	true_count = sum(args_list)
+	if not validate_options(true_count, '--intraday or --swing', top_picks):
 		return
 
-	if stocks is not None and len(stocks) > 0:
-		stocks = [x.strip() for x in stocks.split(',')]
-	else:
-		stocks = []
-	global RUN_IN_BACKGROUND
+	stocks = get_stocks(stocks)
 	try:
 		scanner = scannerFactory.scanner(ScannerType.TopPick, stocks, indicator, background)
 		scanner.clear_cache(clear, force_clear = current_datetime_in_ist_trading_time_range())
 		scanner.scan()
 	except Exception as e:
-		RUN_IN_BACKGROUND = False
-		default_logger().debug(e, exc_info=True)
-		click.secho('Failed to scan.\n', fg='red', nl=True)
-		return
-	except SystemExit:
-		RUN_IN_BACKGROUND = False
+		log_error(e, 'TopPicks')
 		return
 
 @click.command(help='Scans for news for the given tickers or all tickers from stocks.txt')
 @click.option('--stocks', '-S', default=[], help='Comma separated security codes(Optional). When skipped, all stocks configured in stocks.txt will be scanned.)')
 @tracelog
 def news(stocks):
-	if stocks is not None and len(stocks) > 0:
-		stocks = [x.strip() for x in stocks.split(',')]
-	else:
-		stocks = []
+	stocks = get_stocks(stocks)
 	try:
 		scanner = scannerFactory.scanner(ScannerType.News, stocks, None, False)
 		scanner.clear_cache(True, force_clear = True)
 		scanner.scan()
 	except Exception as e:
-		default_logger().debug(e, exc_info=True)
-		click.secho('Failed to scan for news.\n', fg='red', nl=True)
+		log_error(e, 'News')
 		return
 
+def get_stocks(stocks):
+	if stocks is not None and len(stocks) > 0:
+		return [x.strip() for x in stocks.split(',')]
+	else:
+		return []
+
+def log_error(e, scan_type):
+	default_logger().debug(e, exc_info=True)
+	click.secho('Failed to scan {}.\n'.format(scan_type), fg='red', nl=True)
+
+def validate_options(true_count, options, func):
+	if true_count > 1:
+		click.secho('Choose only one of {} options.'.format(options), fg='red', nl=True)
+		print_help_msg(func)
+		return False
+	elif true_count < 1:
+		click.secho('Choose at least one of the {} options.'.format(options), fg='red', nl=True)
+		print_help_msg(func)
+		return False
+	return True
 '''
 TODO:
 1. Scan for stocks that have 
