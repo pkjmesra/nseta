@@ -241,14 +241,13 @@ class ParseNews:
   def parse_news(self, symbol=None):
     diff_hrs = None
     try:
-      news_text = self.bs.find_all('script')
-      next_all_data = (news_text[1].text).split('__NEXT_DATA__ = ')
-      next_data = next_all_data[1].split(';__NEXT_LOADED_PAGES__')
+      news_dict = self.bs.find('script', {'id': '__NEXT_DATA__'}).get_text()
       false = False
       true = True
       null = None
       default_logger().debug('false:{}:true{}:null:{}'.format(false, true, null))
-      news_dict = eval(next_data[0])
+      news_dict = eval(news_dict)
+      default_logger().debug('news_dict:\n{}\n'.format(news_dict))
       news = news_dict['props']['pageProps']['news'][0]
       headline = news['headline']
       pub_date = datetime.datetime.fromisoformat(news['date'].replace('Z', '+00:00'))
@@ -258,7 +257,7 @@ class ParseNews:
       publisher = news['publisher']
       lst=[symbol, diff_hrs, diff_hrs_str, publisher, headline]
       self.news_list = [lst]
-      default_logger().debug('news_dict:\n{}\n'.format(news_dict))
+      default_logger().debug('news_list:\n{}\n'.format(lst))
     except Exception as e:
       default_logger().debug(e, exc_info=True)
     return '' if diff_hrs is None else '({}){}...'.format(diff_hrs_str, headline[:resources.scanner().max_column_length])
