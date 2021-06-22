@@ -40,7 +40,7 @@ class TestLiveUrls(baseUnitTest):
     self.assertEqual(d['data'][0]['symbol'], 'SBIN')
 
   def test_quote_derivative_url(self):
-    base_expiry_date = datetime(2020,12,31)
+    base_expiry_date = datetime(2021,6,24)
     expiry_date = self.get_next_expiry_date(base_expiry_date).strftime('%d%b%Y').upper()
     resp = quote_derivative_url('NIFTY', 'FUTIDX', expiry_date, '-', '-')
     html_soup = BeautifulSoup(resp.text, 'lxml')
