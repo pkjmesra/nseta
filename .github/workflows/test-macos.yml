@@ -38,19 +38,20 @@ jobs:
         which brew || /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install.sh)"
     - name: Install setuptools
       run: |
-        pip install setuptools wheel twine
+        sudo pip3 install setuptools wheel twine
     - name: Install project dependencies
       run: |
         brew install ta-lib
         pip3 install ta-lib==0.4.19
         pip3 install fastquant
-        pip3 install fbprophet>=0.7.1
         pip3 install -r requirements.txt
+        pip3 install pystan==2.19.1.1
+        pip3 install fbprophet>=0.7.1 --no-cache-dir
     - name: Generate test coverage report
       run: |
         pip3 install timeout-decorator
         pip3 install coverage
-        python setup.py clean build install
+        sudo python3 setup.py clean build install
         coverage run -m unittest discover -s tests -p 'test_*.py'
         coverage report -m
         coverage html

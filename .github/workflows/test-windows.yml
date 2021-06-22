@@ -44,7 +44,7 @@ jobs:
         git config --global http.postBuffer 524288000
     - name: Install setuptools
       run: |
-          pip3 install setuptools wheel twine
+          sudo pip3 install setuptools wheel twine
     - name: Install ta-lib extension
       run: |
           pip3 install numpy
@@ -60,7 +60,8 @@ jobs:
         pip3 install fastquant git+git://github.com/enzoampil/fastquant.git@5f17e7087e1efb534e2db88775dba268d31de4be
     - name: Install fbprophet
       run: |
-        pip3 install fbprophet>=0.7.1
+        pip3 install pystan==2.19.1.1
+        pip3 install fbprophet>=0.7.1 --no-cache-dir
         pip3 install ipython==7.5.0
     - name: Install project dependencies
       run: |
@@ -69,7 +70,7 @@ jobs:
         pip3 install convertdate>=2.3.0
         pip3 install sanic==19.12.2
         pip3 install multidict==4.6
-        python3 setup.py clean build install sdist bdist_wheel
+        sudo python3 setup.py clean build install sdist bdist_wheel
         pip3 install numpy==1.20.0
         python3 -c "from nseta.scanner.volumeScanner import volumeScanner; from nseta.scanner.baseStockScanner import ScannerType; s=volumeScanner(ScannerType.Volume,['HDFC']); s.scan();"
     - name: Generate test coverage report
