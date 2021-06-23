@@ -3,7 +3,7 @@ beautifulsoup4>=4.8.2
 black>=19.10b0
 bs4>=0.0.1
 cachecontrol>=0.12.6
-ccxt>=1.30.59
+ccxt>=1.51.84
 certifi>=2019.11.28
 chardet>=3.0.4
 Click>=7.0
@@ -12,6 +12,7 @@ convertdate>=2.3.0
 croniter>=0.3.35
 Cython>=0.22
 # fastquant # Install separately using pip from git+git://github.com/enzoampil/fastquant.git@5f17e7087e1efb534e2db88775dba268d31de4be
+# fastquant==0.1.4.0
 # fbprophet>=0.7.1 # Install separately using pip
 idna>=2.8
 LunarCalendar>=0.0.9
