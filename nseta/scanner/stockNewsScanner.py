@@ -23,6 +23,7 @@ class stockNewsScanner(baseStockScanner):
       try:
         self.update_progress(symbol)
         resp = TICKERTAPE_NEWS_URL(symbol.upper())
+        default_logger().debug('News Response:\n{}\n'.format(resp.text))
         bs = BeautifulSoup(resp.text, 'lxml')
         news = ParseNews(soup=bs)
         news.parse_news(symbol.upper())

@@ -241,7 +241,10 @@ class ParseNews:
   def parse_news(self, symbol=None):
     diff_hrs = None
     try:
-      news_dict = self.bs.find('script', {'id': '__NEXT_DATA__'}).get_text()
+      news_dict = self.bs.find('script', {'id': '__NEXT_DATA__'})
+      default_logger().debug('news_dict_soup_element:\n{}\n'.format(news_dict))
+      news_dict = news_dict.string
+      default_logger().debug('news_dict_parsed:\n{}\n'.format(news_dict))
       false = False
       true = True
       null = None

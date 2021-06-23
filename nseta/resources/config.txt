@@ -25,7 +25,7 @@ max_column_length = 55
 # Available columns : Symbol,Date,VWAP,LTP,%%Change,TDYVol(%%),7DVol(%%),Remarks,Yst7DVol(%%),Yst%%Del,Tdy%%Del,PPoint,S1-R3,ATR,NATR,TRANGE,Volatility,ATRE-F,ATRE-S,ATRE,Avg7DVol,FreeFloat,TDYVol,News
 # You can also change the order of columns. Put two %% for 1 % to appear in the column name
 # You can provide your own custom names to column heads/keys in the format key1=YourKey1,key2=YourKey2 etc.
-volume_scan_columns = Symbol,FreeFloat,LTP,VWAP,%%Change=%%Chng,ATR,TDYVol(%%)=%%Vol_TDY,7DVol(%%)=%%Vol_7D,TDYVol,Avg7DVol,S1-R3,Remarks,Tdy%%Del=%%Del_TDY,News
+volume_scan_columns = Symbol,FreeFloat,LTP,VWAP,%%Change=%%Chng,ATR,TDYVol(%%)=%%Vol_TDY,Remarks,News
 
 # Available columns: Symbol,Date,RSI,MOM,EMA(9),macd(12),macdsignal(9),macdhist(26),BBands-U,BBands-L,LTP,Signal,Remarks,Confidence
 # You can also change the order of columns.  Put two %% for 1 % to appear in the column name
@@ -33,7 +33,7 @@ swing_scan_columns = Symbol,LTP,RSI,macd(12)=MACD(12),macdsignal(9)=MACD(9),BBan
 
 # Available columns : Symbol,Date,Open,High,Low,LTP,Volume,Cum_Volume,RSI,MOM,OBV,ATR,EMA(9),SMA(10),SMA(50),macd(12),macdsignal(9),macdhist(26),BBands-U,BBands-L,Signal,Remarks,Confidence,R3,R2R1,PP,S1,S2,S3,Cdl,Cnt_Cdl
 # You can also change the order of columns.  Put two %% for 1 % to appear in the column name
-intraday_scan_columns = Symbol,LTP,Cum_Volume,Cdl,Cnt_Cdl,RSI,MOM,OBV,macd(12)=MACD(12),macdsignal(9)=MACD(9),BBands-U,BBands-L,Signal,Confidence
+intraday_scan_columns = Symbol,LTP,Cum_Volume,Cdl,Cnt_Cdl,RSI
 
 # Available columns : Updated,Symbol,Close,LTP,%% Delivery,Buy - Sell,TotalTradedVolume,pChange
 # You can also change the order of columns.  Put two %% for 1 % to appear in the column name
