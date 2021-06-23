@@ -6,6 +6,7 @@ name: Ubuntu
 on: push
 #   release:
 #     types: [created]
+# pip3 install fastquant git+git://github.com/enzoampil/fastquant.git@5f17e7087e1efb534e2db88775dba268d31de4be
 
 jobs:
   tests:
@@ -54,7 +55,7 @@ jobs:
         python3 -c 'import numpy, talib; close = numpy.random.random(100); output = talib.SMA(close); print(output)'
     - name: Install fastquant
       run: |
-        pip3 install fastquant git+git://github.com/enzoampil/fastquant.git@5f17e7087e1efb534e2db88775dba268d31de4be
+        pip3 install fastquant
     - name: Install fbprophet
       run: |
         pip3 install pystan==2.19.1.1
