@@ -48,8 +48,6 @@ jobs:
     - name: Install ta-lib extension
       run: |
           pip3 install numpy
-          CWD=`pwd`
-          echo ${CWD}
           mv d:\a\nseta\nseta\libs\ta-lib-0.4.0-msvc.zip c:\ && unzip -o c:\ta-lib-0.4.0-msvc.zip
     - name: Install ta-lib python lib
       run: |
