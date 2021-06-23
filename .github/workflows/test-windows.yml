@@ -48,7 +48,7 @@ jobs:
     - name: Install ta-lib extension
       run: |
           pip3 install numpy
-          curl https://excellmedia.dl.sourceforge.net/project/ta-lib/ta-lib/0.4.0/ta-lib-0.4.0-msvc.zip --output ta-lib-0.4.0-msvc.zip && mv ta-lib-0.4.0-msvc.zip c:\ && unzip -o c:\ta-lib-0.4.0-msvc.zip
+          curl https://webwerks.dl.sourceforge.net/project/ta-lib/ta-lib/0.4.0/ta-lib-0.4.0.jar --output ta-lib-0.4.0-msvc.jar && mv ta-lib-0.4.0-msvc.jar c:\ && unzip -o c:\ta-lib-0.4.0-msvc.jar
     - name: Install ta-lib python lib
       run: |
         curl https://download.lfd.uci.edu/pythonlibs/w4tscw6k/TA_Lib-0.4.19-cp38-cp38-win_amd64.whl --output TA_Lib-0.4.19-cp38-cp38-win_amd64.whl
