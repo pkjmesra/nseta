@@ -48,7 +48,9 @@ jobs:
     - name: Install ta-lib extension
       run: |
           pip3 install numpy
-          mv d:\a\nseta\nseta\lib\ta-lib-0.4.0-msvc.zip c:\ && unzip -o c:\ta-lib-0.4.0-msvc.zip
+          CWD=`pwd`
+          echo ${CWD}
+          mv d:\a\nseta\nseta\libs\ta-lib-0.4.0-msvc.zip c:\ && unzip -o c:\ta-lib-0.4.0-msvc.zip
     - name: Install ta-lib python lib
       run: |
         curl https://download.lfd.uci.edu/pythonlibs/w4tscw6k/TA_Lib-0.4.19-cp38-cp38-win_amd64.whl --output TA_Lib-0.4.19-cp38-cp38-win_amd64.whl
