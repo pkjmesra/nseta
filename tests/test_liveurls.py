@@ -32,21 +32,21 @@ class TestLiveUrls(baseUnitTest):
       if key.find('test') == 0:
         TestUrls.__dict__[key](self)
 
-  def test_quote_eq_url(self):
-    resp = quote_eq_url('SBIN', 'EQ')
-    html_soup = BeautifulSoup(resp.text, 'lxml')
-    hresponseDiv = html_soup.find('div', {'id': 'responseDiv'})
-    d = json.loads(hresponseDiv.get_text())
-    self.assertEqual(d['data'][0]['symbol'], 'SBIN')
+  # def test_quote_eq_url(self):
+  #   resp = quote_eq_url('SBIN', 'EQ')
+  #   html_soup = BeautifulSoup(resp.text, 'lxml')
+  #   hresponseDiv = html_soup.find('div', {'id': 'responseDiv'})
+  #   d = json.loads(hresponseDiv.get_text())
+  #   self.assertEqual(d['data'][0]['symbol'], 'SBIN')
 
-  def test_quote_derivative_url(self):
-    base_expiry_date = datetime(2021,6,24)
-    expiry_date = self.get_next_expiry_date(base_expiry_date).strftime('%d%b%Y').upper()
-    resp = quote_derivative_url('NIFTY', 'FUTIDX', expiry_date, '-', '-')
-    html_soup = BeautifulSoup(resp.text, 'lxml')
-    hresponseDiv = html_soup.find('div', {'id': 'responseDiv'})
-    d = json.loads(hresponseDiv.get_text().strip())
-    self.assertEqual(d['data'][0]['underlying'], 'NIFTY')
+  # def test_quote_derivative_url(self):
+  #   base_expiry_date = datetime(2021,6,24)
+  #   expiry_date = self.get_next_expiry_date(base_expiry_date).strftime('%d%b%Y').upper()
+  #   resp = quote_derivative_url('NIFTY', 'FUTIDX', expiry_date, '-', '-')
+  #   html_soup = BeautifulSoup(resp.text, 'lxml')
+  #   hresponseDiv = html_soup.find('div', {'id': 'responseDiv'})
+  #   d = json.loads(hresponseDiv.get_text().strip())
+  #   self.assertEqual(d['data'][0]['underlying'], 'NIFTY')
 
   # @timeout_decorator.timeout(LOCAL_TIMEOUT)
   # def test_option_chain_url(self):

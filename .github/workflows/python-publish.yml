@@ -91,11 +91,11 @@ jobs:
         TWINE_PASSWORD: ${{ secrets.TESTPYPI_PASSWORD }}
         repository_url: https://test.pypi.org/legacy/
       run: |
-        rm -rf build
-        rm -rf dist
-        rm -rf nseta/__init__.py
+        sudo rm -rf build
+        sudo rm -rf dist
+        sudo rm -rf nseta/__init__.py
         echo "__version__='${{ steps.vars.outputs.THIS_VERSION }}'" >> nseta/__init__.py
-        python setup.py clean build install sdist bdist_wheel
+        sudo python3 setup.py clean build install sdist bdist_wheel
         twine upload --repository-url https://test.pypi.org/legacy/ dist/*
     - name: Publish distribution 📦 to PyPI
       if: startsWith(github.ref, 'refs/tags')
@@ -104,9 +104,9 @@ jobs:
         TWINE_PASSWORD: ${{ secrets.PYPI_PASSWORD }}
         repository_url: https://upload.pypi.org/legacy/
       run: |
-        rm -rf build
-        rm -rf dist
-        python setup.py clean build install sdist bdist_wheel
+        sudo rm -rf build
+        sudo rm -rf dist
+        sudo python3 setup.py clean build install sdist bdist_wheel
         twine upload dist/*
     - name: Archive artifacts
       uses: actions/upload-artifact@v2
