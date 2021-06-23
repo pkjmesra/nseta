@@ -44,7 +44,7 @@ jobs:
         git config --global http.postBuffer 524288000
     - name: Install setuptools
       run: |
-          sudo pip3 install setuptools wheel twine
+          pip3 install setuptools wheel twine
     - name: Install ta-lib extension
       run: |
           pip3 install numpy
