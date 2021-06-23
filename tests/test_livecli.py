@@ -75,7 +75,7 @@ class TestLivecli(baseUnitTest):
 
   def test_scan_volume(self):
     runner = CliRunner()
-    result = runner.invoke(scan, args=['--stocks', 'BANDHANBNK', '--volume', '--clear', '--orderby', '7DVol(%)', '--analyse'])
+    result = runner.invoke(scan, args=['--stocks', 'BANDHANBNK', '--volume', '--clear', '--orderby', 'TDYVol(%)', '--analyse'])
     self.assertEqual(result.exit_code , 0)
     self.assertIn('Volume scanning finished.', result.output, str(result.output))
 
