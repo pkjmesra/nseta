@@ -121,7 +121,10 @@ After installation you can check what version you got installed
 
 ## Usage
 
+<details>
+<summary>
 - Top level command options that provide you with various features
+</summary>
 
   ```python
 
@@ -153,7 +156,12 @@ After installation you can check what version you got installed
     test-trading-strategy  Measure the performance of your trading strategy
     top-picks              Scans for price action and signals for intraday or swing trading recommendations.
   ```
+  </details>
+
+<details>
+<summary>
 - Sample commands
+</summary>
 
   ```python
 
@@ -181,8 +189,12 @@ After installation you can check what version you got installed
     nseta top-picks -s -c
     nseta top-picks -S HDFCBANK,BANDHANBNK -i -c 
   ```
+</details>
 
+<details>
+<summary>
 - Test your trading strategies
+</summary>
 
   ```python
   nseta test-trading-strategy
@@ -214,7 +226,12 @@ After installation you can check what version you got installed
     --help                          Show this message and exit.
   ```
 
+</details>
+
+<details>
+<summary>
 - Test your trading strategies (for example, using *RSI* as technical indicator)
+</summary>
 
   ```python
   $ nseta test-trading-strategy -S bandhanbnk -s 2020-01-01 -e 2020-10-03 --strategy rsi
@@ -231,7 +248,12 @@ After installation you can check what version you got installed
   ```
   ![](./docs/assets/trading_strategy_rsi.png)
 
+</details>
+
+<details>
+<summary>
 - Check historical data and export to csv file
+</summary>
 
   ```python
   $ nseta history -S bandhanbnk -s 2019-01-01 -e 2020-09-30
@@ -243,7 +265,13 @@ After installation you can check what version you got installed
   4  BANDHANBNK     EQ  2019-01-07      528.90  540.00  542.0  495.55  495.55  498.05  509.49  2684675  1.367813e+14   76816             1160901        0.4324
   Saved to: bandhanbnk.csv
   ```
+
+</details>
+
+<details>
+<summary>
 - Create candlestick model
+</summary>
 
   ```python
   nseta create-cdl-model
@@ -262,7 +290,13 @@ After installation you can check what version you got installed
     --help                  Show this message and exit.
   ```
 
+</details>
+
+<details>
+<summary>
 - Create candlestick models with pattern recognition
+</summary>
+
 
   ```python
   $ nseta create-cdl-model -S bandhanbnk -s 2019-01-01 -e 2020-09-30 --steps
@@ -280,13 +314,25 @@ After installation you can check what version you got installed
   ```
   ![](./docs/assets/cdl_model.png)
 
+</details>
+
+<details>
+<summary>
 - Create various plots for analysis with technical indicators 
+</summary>
+
   ```python
   $ nseta plot-ta -S bandhanbnk -s 2019-01-01 -e 2020-09-30
   ```
   ![](./docs/assets/ti_plots.png)
 
+</details>
+
+<details>
+<summary>
 - Forecast strategies
+</summary>
+
 
   ```python
   nseta forecast-strategy
@@ -309,7 +355,13 @@ After installation you can check what version you got installed
                                     is < -{lower} %
     --help                          Show this message and exit.
   ```
+
+</details>
+
+<details>
+<summary>
 - Create forecast strategies and verify them
+</summary>
 
   ```python
   $ nseta forecast-strategy -S bandhanbnk -s 2019-01-01 -e 2020-09-30 --upper 1.5 --lower 1.5
@@ -320,7 +372,13 @@ After installation you can check what version you got installed
   ![](./docs/assets/forecast.png)
   ![](./docs/assets/forecast-predictions.png)
 
+</details>
+
+<details>
+<summary>
 -  Get live quotes for a security
+</summary>
+
 
   ```python
   nseta live-quote
@@ -341,8 +399,13 @@ After installation you can check what version you got installed
     -r, --background   Keep running the process in the background (Optional)
     --help             Show this message and exit.
   ```
+</details>
 
+<details>
+<summary>
 -  Get live quotes with multiple options along with intraday history
+</summary>
+
 
   ```python
   nseta live-quote -S bandhanbnk -gowvb
@@ -379,7 +442,12 @@ After installation you can check what version you got installed
   4,368           302.60          3,471      303.05
   5,469           302.55            767      303.10
   ```
+</details>
+
+<details>
+<summary>
 - Scan live quotes of securities
+</summary>
 
   ```python
   nseta scan -S HDFC,ABB
@@ -388,7 +456,13 @@ After installation you can check what version you got installed
    30-DEC-2020 16:00:00    ABB  1,203.05  1,205.30
   ```
 
+</details>
+
+<details>
+<summary>
 - Scan live quotes of a bunch of securities listed in a resource file(stocks.txt under scanner folder)
+</summary>
+
 
   ```python
   nseta scan -l
@@ -536,6 +610,7 @@ After installation you can check what version you got installed
   No signals to show here.
   Live scanning finished.
   ```
+</details>
 
 ## Signals and Scanners
 
@@ -549,7 +624,10 @@ After installation you can check what version you got installed
 - When LTP < lower BBand
 - When LTP > higher BBand
 
+<details>
+<summary>
 - Scanning options
+</summary>
 
   ```python
   nseta scan --help
@@ -586,8 +664,12 @@ After installation you can check what version you got installed
     --help                          Show this message and exit.
   ```
 
+</details>
 For example:
+<details>
+<summary>
 - Scanning intraday based on Bollinger bands
+</summary>
 
   ```python
   nseta scan -i -t bbands
@@ -610,7 +692,12 @@ For example:
   2021-01-04 14:30:00        SAIL    77.886024    77.103976    77.85  (SELL) [LTP ~ BBands-U]
   2021-01-04 14:30:00  ULTRACEMCO  5313.098214  5301.341786  5313.15  (SELL) [LTP > BBands-U]
   ```
+</details>
+
+<details>
+<summary>
 - Scanning live-quotes during trading session
+</summary>
 
   ```python
   nseta scan -l
@@ -642,7 +729,12 @@ For example:
    13-JAN-2021 15:30:02   GODREJIND     434.55     434.00       52.45   -101223.0         17,55,353
    13-JAN-2021 15:30:02    GOODYEAR     959.15     955.95       51.76      2937.0            23,649
   ```
+</details>
+
+<details>
+<summary>
 - Scanning for swing trading
+</summary>
 
   ```python
   nseta scan -s
@@ -677,8 +769,12 @@ For example:
   Swing scanning finished.
 
   ```
+</details>
 
+<details>
+<summary>
 - Scanning based on volumes
+</summary>
 
   ```python
   $ nseta scan -v -c
@@ -805,6 +901,7 @@ For example:
        ** ARVIND     1.01B    ₹ 66.25      ₹ 71.7  -6.43 %    4.15    -75.6    -69.0  2.12M    6.83M   66.27              S2     61.79    (6h ago)Info Edge (India) Ltd lea
   Volume scanning finished.
   ```
+</details>
 
 ### Signals
 - SELL : When RSI(14) > 75
@@ -816,7 +913,10 @@ For example:
 - BUY : When LTP < lower BBand
 - SELL : When LTP > higher BBand
 
+<details>
+<summary>
 - Scanning and measuring PnL for a specific trading strategy
+</summary>
 
   ```python
   nseta scan-trading-strategy -s 2020-06-01 -e 2021-01-17 --strategy macd
@@ -965,8 +1065,12 @@ For example:
    WOCKPHARMA     MACD  111416.80
          ZEEL     MACD   42323.85
   ```
+</details>
 
+<details>
+<summary>
 - Scanning and measuring PnL for a specific trading strategy intraday
+</summary>
 
   ```python
   nseta scan-trading-strategy -i --strategy macd
@@ -1118,7 +1222,12 @@ For example:
          ZEEL     MACD -1279.65
   ```
 
+</details>
+
+<details>
+<summary>
 - Scanning for buy/sell signals and measuring those(backtesting) for a specific security
+</summary>
 
   ```python
   nseta test-trading-strategy -S TATAMOTORS -s 2020-06-01 -e 2021-01-17 --strategy macd
@@ -1210,7 +1319,12 @@ For example:
    TATAMOTORS     MACD  7947.12           Sell
   ```
 
+</details>
+
+<details>
+<summary>
 - Compare all trading strategies through backtesting
+</summary>
 
   ```python
   $ nseta scan-trading-strategy -s 2020-06-01 -e 2021-01-22
@@ -1354,7 +1468,12 @@ For example:
    GODREJPROP  -1299.59   3503.52     1736.45     Sell      Sell        Hold
          ZEEL  -1391.88  13927.60     6263.33     Sell      Sell         Buy
   ```
+</details>
+
+<details>
+<summary>
 - Top-picks scanning (scanning for stocks for which 5-min and 1-min MACD are aligned)
+</summary>
 
   ```python
   $ nseta top-picks -i -c
@@ -1399,7 +1518,12 @@ For example:
   This run of TopPick scan took 141.7 sec
   ```
 
+</details>
+
+<details>
+<summary>
 - Filter from the outputs of volume scan, those that are also in top-picks
+</summary>
 
   ```python
   $ nseta scan -v -c -a
@@ -1464,8 +1588,12 @@ For example:
   This run of Volume scan took 36.2 sec
   Volume scanning finished.
   ```
+</details>
 
+<details>
+<summary>
 - View latest news for the stocks
+</summary>
 
   ```python
   $ nseta news
@@ -1641,23 +1769,37 @@ For example:
   This run of News scan took 5.1 sec
   News scanning finished.
   ```
+</details>
+
+<details>
+<summary>
 - To view just the logs of your interest, you can filter those:
+</summary>
 
   ```python
     nseta --debug --filter filter_text_goes_here <command> [command options]
     nseta --debug --trace --filter filter_text_goes_here <command> [command options]
   ```
+</details>
 
+<details>
+<summary>
 - To view the time taken by each method:
+</summary>
 
   ```python
     nseta --debug --filter time_taken <command> [command options]
     nseta --debug --trace --filter time_taken <command> [command options]
   ```
+</details>
 
-- Configuration based display outputs
+<details>
+<summary>
+- Configuration based display outputs or adding your own user defined stocks
+</summary>
  
- You can use the `config.txt` file and make changes as per your wish to view the results in a specific order or add/remove columns.
+ You can use the `config.txt` file and make changes as per your wish to view the results in a specific order or add/remove columns. Use `nseta -r` to view the path where you can make changes to config or add your own custom defined stocks.
+</details>
 
 ### Submit patches
 
