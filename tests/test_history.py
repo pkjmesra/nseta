@@ -87,9 +87,9 @@ class TestHistory(baseUnitTest):
         row1 = result['Symbol'].iloc[0]
         row2 = (result['Symbol']).iloc[1]
         self.assertEqual('DVL', row1 if row1 == 'DVL' else row2)
-        result = self.historicaldata.daily_ohlc_history('GOKUL', start=(date.today()-timedelta(5)), end = date.today(), type=ResponseType.Volume)
-        row1 = result['Symbol'].iloc[0]
-        self.assertEqual('GOKUL', row1)
+        # result = self.historicaldata.daily_ohlc_history('GOKUL', start=(date.today()-timedelta(5)), end = date.today(), type=ResponseType.Volume)
+        # row1 = result['Symbol'].iloc[0]
+        # self.assertEqual('GOKUL', row1)
         result = self.historicaldata.daily_ohlc_history('ICIL', start=(date.today()-timedelta(5)), end = date.today(), type=ResponseType.Volume)
         row1 = result['Symbol'].iloc[0]
         self.assertEqual('ICIL', row1)
