@@ -29,7 +29,7 @@ class TestSymbols(baseUnitTest):
     self.assertEqual(df[_sbi].iloc[0].get(
       'Company Name'), 'State Bank of India')
     self.assertEqual(df[_sbi].iloc[0].get(
-      'Industry'), 'FINANCIAL SERVICES')
+      'Industry').upper(), 'FINANCIAL SERVICES')
 
     df = get_index_constituents_list('NIFTYCPSE')
     # Check popular names are in the list
