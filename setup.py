@@ -38,7 +38,7 @@ setup(
 	name = 'nseta',
 	packages=setuptools.find_packages(where="./", exclude=["docs", "tests"]),
 	include_package_data = True,    # include everything in source control
-	package_data={'nseta.resources': ['config.txt', 'stocks.txt']},
+	package_data={'nseta.resources': ['config.txt', 'stocks.txt', 'userstocks.txt']},
 	# ...but exclude README.txt from all packages
 	exclude_package_data = { '': ['*.yml'] },
 	version = nseta.__version__,

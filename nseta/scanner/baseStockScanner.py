@@ -10,7 +10,7 @@ from time import time
 
 from nseta.common.commons import *
 from nseta.common.multithreadedScanner import multithreaded_scan
-from nseta.common.log import tracelog, default_logger
+from nseta.common.log import tracelog, default_logger, greenForegroundText, redForegroundText
 from nseta.resources.resources import *
 from nseta.strategy.rsiSignalStrategy import rsiSignalStrategy
 from nseta.strategy.bbandsSignalStrategy import bbandsSignalStrategy
@@ -92,7 +92,7 @@ class baseStockScanner:
   def stocks_list(self, stocks=[]):
     global __scan_counter__
     __scan_counter__ = 0
-    # If stocks array is empty, pull stock list from stocks.txt file
+    # If stocks array is empty, pull stock list from stocks.txt or userstocks.txt file
     stocks = stocks if stocks is not None and len(stocks) > 0 else resources.default().stocks
     self.total_counter = len(stocks)
     return stocks
@@ -185,6 +185,15 @@ class baseStockScanner:
       value = round(deep_df[column].iloc[0],3)
       if ltp_label_comparator == '><':
         if (value is not None) and (value > comparator_value or value < margin):
+          # While the scan is going on, let's print the most recent signal on the console
+          symbol = deep_df['Symbol'].iloc[0]
+          text = symbol.ljust(30) + ': ₹ ' + str(deep_df['LTP'].iloc[0])
+          text = text + '\n' + column.ljust(30) + ': ' + str(value)
+          if value > comparator_value:
+            greenForegroundText(text)
+          elif value < margin:
+            redForegroundText(text)
+
           deep_df['Remarks'].iloc[0] = true_remarks if value > comparator_value else false_remarks
           deep_df['Signal'].iloc[0] = true_type if value > comparator_value else false_type
           deep_df = self.update_confidence_level(deep_df)

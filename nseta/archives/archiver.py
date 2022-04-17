@@ -24,7 +24,7 @@ class ResponseType(enum.Enum):
 class archiver:
 
   def __init__(self, data_dir=None):
-    user_data_dir = resources.default().user_data_dir if data_dir is None else data_dir
+    user_data_dir = self.userData_directory if data_dir is None else data_dir
     if user_data_dir is not None:
       try:
         if user_data_dir.startswith('~'):
@@ -34,6 +34,14 @@ class archiver:
           os.makedirs(user_data_dir, mode=0o777)
           os.chmod(user_data_dir, mode=0o777)
         self._archival_dir = user_data_dir
+        userstocksFile = os.path.join(user_data_dir,resources.default().userstocks_filepath)
+        if not os.path.exists(userstocksFile):
+          # Creates a new file
+          lines = ['SBIN','HDFCBANK']
+          with open(userstocksFile, "w") as fhandle:
+            for line in lines:
+              fhandle.write(f'{line}\n')
+          os.chmod(userstocksFile, mode=0o777)
       except OSError as e:
         default_logger().debug('Exception in archiver while creating user specified DIR:{}.'.format(user_data_dir))
         default_logger().debug(e, exc_info=True)
@@ -96,6 +104,14 @@ class archiver:
   @property
   def run_directory(self):
     return self._run_dir
+
+  @property
+  def userData_directory(self):
+    return resources.default().user_data_dir
+
+  @property
+  def resources_directory(self):
+    return resources.default().resources_directory
 
   @property
   def intraday_directory(self):

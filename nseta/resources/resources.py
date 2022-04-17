@@ -13,13 +13,16 @@ def split_into_range_str(str_val):
   return sum((([a]) for a in str_val.split(',')), [])
 
 class Default:
-  def __init__(self, version=0.6, defaultstocks_path='stocks.txt', UserDataDirectory=None,
-    numeric_to_human_format = False):
+  def __init__(self, version=0.7, defaultstocks_path='stocks.txt', UserDataDirectory=None,
+    numeric_to_human_format = False, scannerInstance=None):
     self._version = version
     self._defaultstocks_filepath = defaultstocks_path
     self._resources_dir = os.path.dirname(os.path.realpath(__file__))
     self._user_data_dir = UserDataDirectory if len(UserDataDirectory) > 0 else None
+    if self._user_data_dir.startswith('~'):
+          self._user_data_dir = self._user_data_dir.replace('~',os.path.expanduser('~'))
     self._numeric_to_human_format = numeric_to_human_format.lower() in ('yes', 'true', 't', '1')
+    self._scannerInstance = scannerInstance if scannerInstance is not None else Scanner()
 
   @property
   def version(self):
@@ -28,6 +31,10 @@ class Default:
   @property
   def defaultstocks_filepath(self):
     return self._defaultstocks_filepath
+
+  @property
+  def userstocks_filepath(self):
+    return self._scannerInstance.userstocks_filepath
 
   @property
   def user_data_dir(self):
@@ -39,12 +46,20 @@ class Default:
 
   @property
   def stocks(self):
-    file_path = self.defaultstocks_filepath
+    file_path = self.userstocks_filepath
     if not os.path.exists(file_path):
-      file_path = os.path.join(self.resources_directory, file_path)
+      file_path = os.path.join(self.user_data_dir, file_path)
     with open(file_path, 'r') as f:
       stocks = [line.rstrip() for line in f]
-    return stocks
+    if len(stocks) > 0:
+      return stocks
+    else:
+      file_path = self.defaultstocks_filepath
+      if not os.path.exists(file_path):
+        file_path = os.path.join(self.resources_directory, file_path)
+      with open(file_path, 'r') as f:
+        stocks = [line.rstrip() for line in f]
+      return stocks
 
   @property
   def numeric_to_human_format(self):
@@ -405,12 +420,16 @@ class resources:
   def resources_directory(self):
     return self._resources_dir
 
-  def default_config(self):
+  @property
+  def config_filePath(self):
     file_path = 'config.txt'
     if not os.path.exists(file_path):
       file_path = os.path.join(self.resources_directory, file_path)
+    return file_path
+
+  def default_config(self):
     config = configparser.ConfigParser()
-    config.read(file_path)
+    config.read(self.config_filePath)
     return config
 
   def config_section(self, section_name):
@@ -438,7 +457,7 @@ class resources:
     file_path = r.config_valueforkey('DEFAULT','DefaultStocksFilePath')
     user_dir = r.config_valueforkey('DEFAULT','UserDataDirectory')
     numeric_to_human_format = r.config_valueforkey('DEFAULT','numeric_to_human_format')
-    return Default(version, file_path, user_dir, numeric_to_human_format)
+    return Default(version, file_path, user_dir, numeric_to_human_format, None)
 
   @classmethod
   def rsi(cls):

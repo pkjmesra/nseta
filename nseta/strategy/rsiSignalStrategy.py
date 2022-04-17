@@ -87,16 +87,18 @@ class rsiSignalStrategy(basesignalstrategy):
     self.order_queue.square_off(self.price)
 
   def v_pattern(self, prev_pattern=Direction.Neutral):
-    # if self.n3 >= 55:
-    #   self.recommendation = Recommendation.Buy
-    self.buy_signal()
-    # else:
-    #   self.recommendation = Recommendation.Hold
-    self.check_squareoff(down=False);
+    if not self.strict:
+      # if self.n3 >= 55:
+      #   self.recommendation = Recommendation.Buy
+      self.buy_signal()
+      # else:
+      #   self.recommendation = Recommendation.Hold
+      self.check_squareoff(down=False);
 
   def invertedv_pattern(self, prev_pattern=Direction.Neutral):
-    self.sell_signal()
-    self.check_squareoff(down=True);
+    if not self.strict:
+      self.sell_signal()
+      self.check_squareoff(down=True);
 
   def possible_higherhigh_pattern(self, prev_pattern=Direction.Neutral):
     if not self.strict and self.n1 <= self.lower:

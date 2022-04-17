@@ -17,10 +17,11 @@ __all__ = ['nsetacli']
 
 @click.group(invoke_without_command=True, no_args_is_help=True)
 @click.option('--debug/--no-debug', default=False, help='--debug to turn debugging on. Default is off')
-@click.option('--version', is_flag=True, help='Shows the version of this library')
+@click.option('--resources', '-r', is_flag=True, help='Shows the resources directory path so you can navigate there and make changes to config and stocks list if you want to.')
+@click.option('--version', '-v', is_flag=True, help='Shows the version of this library')
 @click.option('--trace/--no-trace', default=False, help='--trace to turn tracing on (works only with --debug). Default is off.')
 @click.option('--filter','-f', default=None, help='--filter <TEXT> to show only logs that match the filter text. Works only with --debug')
-def nsetacli(debug, version, trace, filter):
+def nsetacli(debug, resources, version, trace, filter):
   signal.signal(signal.SIGINT, sigint_handler)
   arch = archiver()
   log_file_path = os.path.join(arch.logs_directory,'logs.log')
@@ -33,6 +34,12 @@ def nsetacli(debug, version, trace, filter):
     log.setup_custom_logger('nseta', logging.INFO, log_file_path=log_file_path)
   if version:
     click.echo('nseta {}'.format(nseta.__version__))
+  if resources:
+    click.echo('#### nseta {} ####\n'.format(nseta.__version__))
+    click.echo('Please check the default "config.txt" and "stocks.txt" files and edit as per your needs. These are under: \n {}\n'.format(arch.resources_directory))
+    click.echo('If you would instead like to just scan for your own user defined stocks/tickers (as per NSE ticker name), please edit "userStocks.txt" file. This is under: \n {}\n'.format(arch.userData_directory))
+    click.echo('All the log files and stocks data is downloaded under: \n {}\n'.format(arch.userData_directory))
+
 
 @click.command(help='Force clears log files, downloaded contents etc. As good as a fresh install (with --deepclean option.)')
 @click.option('--deepclean','-d', default=False, is_flag=True, help='--deepclean if you want all files removed.')
