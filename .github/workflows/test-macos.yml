@@ -36,6 +36,7 @@ jobs:
         # sudo rm -rf /usr/local/homebrew
         # Check if brew is already installed. If not, update or install it now
         which brew || /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install.sh)"
+        brew install python3
     - name: Install setuptools
       run: |
         sudo pip3 install setuptools wheel twine
