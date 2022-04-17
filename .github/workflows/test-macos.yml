@@ -46,9 +46,9 @@ jobs:
         pip3 install ta-lib==0.4.19
         pip3 install fastquant
         pip3 install -r requirements.txt
-        pip3 install Cython>=0.22
-        pip3 install numpy>=1.18.0
-        pip3 install pystan==2.19.1.1
+        # pip3 install Cython>=0.22
+        # pip3 install numpy>=1.18.0
+        # pip3 install pystan==2.19.1.1
         pip3 install fbprophet>=0.7.1 --no-cache-dir
     - name: Generate test coverage report
       run: |
