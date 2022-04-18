@@ -6,7 +6,6 @@ name: Ubuntu
 on: push
 #   release:
 #     types: [created]
-# pip3 install fastquant git+git://github.com/enzoampil/fastquant.git@5f17e7087e1efb534e2db88775dba268d31de4be
 
 jobs:
   tests:
@@ -54,13 +53,8 @@ jobs:
         export TA_INCLUDE_PATH=/home/linuxbrew/.linuxbrew/Cellar/ta-lib/0.4.0/include
         python3 -m pip install ta-lib>=0.4.19
         python3 -c 'import numpy, talib; close = numpy.random.random(100); output = talib.SMA(close); print(output)'
-    - name: Install fastquant
+    - name: Install ipython
       run: |
-        pip3 install fastquant
-    - name: Install fbprophet
-      run: |
-        pip3 install pystan==2.19.1.1
-        pip3 install fbprophet>=0.7.1 --no-cache-dir
         pip3 install ipython==7.5.0
     - name: Install project dependencies
       run: |

@@ -54,7 +54,7 @@ It takes a lot of time/effort to develop, implement, test and maintain the codeb
 This has been built and tested only on macOS Big Sur (v11+). You may wish to check the `.travis.yml` or the `python-publish.yml` file to understand how to build from source. If you test it on a platform other than macOS and find issues, please do report those in the `issues` tab above.
 
 ## Libraries Required
-- You need to install TA-LIB, fastquant and fbprophet aside from other libraries noted in requirements.txt. TA-LIB will need to be installed not just as a python package but separately as a library as well. See https://github.com/mrjbq7/ta-lib
+- You need to install TA-LIB, aside from other libraries noted in requirements.txt. TA-LIB will need to be installed not just as a python package but separately as a library as well. See https://github.com/mrjbq7/ta-lib
 
 - (See requirements.txt file for more)
 
@@ -1182,10 +1182,6 @@ For example:
 
   ```python
   nseta test-trading-strategy -S TATAMOTORS -s 2020-06-01 -e 2021-01-17 --strategy macd
-  # Using fastquant:
-     fast_period  slow_period  signal_period  init_cash    final_value       pnl
-  0           12           26              9     100000  131719.153375  31719.15
-
   # Using this nseta lib:
 
      DateTime Signal   Price                             Pattern       Direction      Funds Order_Size Holdings_Size Portfolio_Value

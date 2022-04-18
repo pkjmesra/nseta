@@ -13,11 +13,6 @@ pytz>=2019.3
 requests>=2.22.0
 six>=1.13.0
 urllib3>=1.25.7
-yfinance>=0.1.54
 
 setuptools>=50.3.0
-setuptools-git>=1.2
-tqdm>=4.36.1
-tweepy>=3.8.0
-pre-commit
 wheel>=0.35.1

@@ -297,9 +297,8 @@ class Forecast:
     seasonality_period=21, fourier_order=10, daily_seasonality=True,
     weekly_seasonality=False, yearly_seasonality=False, interval_width=0.95,
     holidays_file_path=None, n_changepoints=20,
-    changepoint_prior_scale=2.5, fbprophet_log_level='INFO',
-    country_name='IN', future_period_factor=3,plot_font_size=15,
-    fbprophet_future_dataframe_frequency='D'):
+    changepoint_prior_scale=2.5, 
+    country_name='IN', future_period_factor=3,plot_font_size=15):
     self._lower = float(lower)
     self._upper = float(upper)
     self._training_percent = float(training_percent)
@@ -317,11 +316,9 @@ class Forecast:
     self._holidays_file_path = holidays_file_path
     self._n_changepoints = int(n_changepoints)
     self._changepoint_prior_scale = float(changepoint_prior_scale)
-    self._fbprophet_log_level = fbprophet_log_level
     self._country_name = country_name
     self._future_period_factor = int(future_period_factor)
     self._plot_font_size = int(plot_font_size)
-    self._fbprophet_future_dataframe_frequency = fbprophet_future_dataframe_frequency
   
   @property
   def lower(self):
@@ -392,20 +389,12 @@ class Forecast:
     return self._changepoint_prior_scale
 
   @property
-  def fbprophet_log_level(self):
-    return self._fbprophet_log_level
-
-  @property
   def country_name(self):
     return self._country_name
 
   @property
   def future_period_factor(self):
     return self._future_period_factor
-
-  @property
-  def fbprophet_future_dataframe_frequency(self):
-    return self._fbprophet_future_dataframe_frequency
 
   @property
   def plot_font_size(self):
@@ -487,12 +476,10 @@ class resources:
     hfp = r.config_valueforkey('FORECAST','holidays_file_path')
     nc = r.config_valueforkey('FORECAST','n_changepoints')
     cps = r.config_valueforkey('FORECAST','changepoint_prior_scale')
-    fll = r.config_valueforkey('FORECAST','fbprophet_log_level')
     cn = r.config_valueforkey('FORECAST','country_name')
     fpf = r.config_valueforkey('FORECAST','future_period_factor')
     pfs = r.config_valueforkey('FORECAST','plot_font_size')
-    ffdf = r.config_valueforkey('FORECAST','fbprophet_future_dataframe_frequency')
-    return Forecast(lower, upper, trg_pc, tst_pc, period, growth, sm,sn,sp,fo,ds,ws,ys,iw,hfp,nc,cps,fll,cn,fpf,pfs,ffdf)
+    return Forecast(lower, upper, trg_pc, tst_pc, period, growth, sm,sn,sp,fo,ds,ws,ys,iw,hfp,nc,cps,cn,fpf,pfs)
 
   @classmethod
   def backtest(cls):
