@@ -30,6 +30,6 @@ class swingScanner(baseScanner):
     return 0
 
   def scan_analysis(self, analysis_df):
-    scanner = topPickScanner(scanner_type=ScannerType.TopPick, stocks=analysis_df['Symbol'].tolist(), indicator='macd', background=self.background)
+    scanner = topPickScanner(scanner_type=ScannerType.TopPick, stocks=analysis_df.loc[:,'Symbol'].tolist(), indicator='macd', background=self.background)
     scanner.clear_cache(True, force_clear = True)
     scanner.scan(option=None)

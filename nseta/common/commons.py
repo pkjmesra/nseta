@@ -23,7 +23,7 @@ import six
 
 import numpy as np
 
-from six.moves.urllib.parse import urlparse
+from urllib.parse import urlparse
 
 __all__ = ['human_readable_df','ParseNews','Recommendation','months','Direction','concatenated_dataframe','is_index','is_index_derivative', 'StrDate', 'ParseTables', 'unzip_str', 'ThreadReturns', 'URLFetch']
 
@@ -133,6 +133,7 @@ class ParseTables:
     return self.lists
 
   def get_df(self):
+    pd.set_option('mode.chained_assignment', None)
     if self.index:
       return pd.DataFrame(self.lists, columns=self.headers).set_index(self.index)
     else:
@@ -342,7 +343,7 @@ def human_readable_df(df):
   model_df = df.copy(deep=True)
   keys = model_df.keys()
   for key in keys:
-    model_df[key] = model_df[key].apply(lambda x: human_format(x))
+    model_df.loc[:,key] = model_df.loc[:,key].apply(lambda x: human_format(x))
   model_df = model_df.dropna(axis=1)
   model_df = model_df.reset_index(drop=True)
   return model_df

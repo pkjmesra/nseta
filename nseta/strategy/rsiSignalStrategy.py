@@ -33,11 +33,12 @@ class rsiSignalStrategy(basesignalstrategy):
 
   @tracelog
   def test_strategy(self, df):
+    pd.set_option('mode.chained_assignment', None)
     # TODO: What if keys are in lowercase or dt/datetime is used instead of date/Date
     self.target_met_status = False
     try:
       rowindex = 0
-      for rsi in (df['RSI']).values:
+      for rsi in (df.loc[:,'RSI']).values:
         if rsi is not None:
           price =(df.iloc[rowindex])['Close']
           ts =(df.iloc[rowindex])['Date']
@@ -54,7 +55,7 @@ class rsiSignalStrategy(basesignalstrategy):
       self.order_queue.square_off(self.price)
       self.update_ledger(buy_sell)
       self.pnl = self.order_queue.pnl
-      df_summary_dict = {'Symbol':[df['Symbol'].iloc[0]], 'Strategy':['RSI'], 'PnL':[self.pnl], 'Recommendation': [str(self.recommendation.name)]}
+      df_summary_dict = {'Symbol':[df.loc[:,'Symbol'].iloc[0]], 'Strategy':['RSI'], 'PnL':[self.pnl], 'Recommendation': [str(self.recommendation.name)]}
       df_summary = pd.DataFrame(df_summary_dict)
     except Exception as e:
       default_logger().debug(e, exc_info=True)

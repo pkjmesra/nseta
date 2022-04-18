@@ -10,10 +10,10 @@ class TestSymbols(baseUnitTest):
   def test_symbol_list(self):
     df = get_symbol_list()
     # Check popular names are in the list
-    _ril = df['SYMBOL'] == 'RELIANCE'
+    _ril = df.loc[:,'SYMBOL'] == 'RELIANCE'
     # Expect 1 row
     self.assertEqual(df[_ril].shape[0], 1)
-    _sbi = df['SYMBOL'] == 'SBIN'
+    _sbi = df.loc[:,'SYMBOL'] == 'SBIN'
     # Check company matches the expected value
     self.assertEqual(df[_sbi].iloc[0].get(
       'NAME OF COMPANY'), 'State Bank of India')
@@ -24,7 +24,7 @@ class TestSymbols(baseUnitTest):
     self.assertEqual(df.shape[0], 50)
 
     # Check popular names are in the list
-    _sbi = df['Symbol'] == 'SBIN'
+    _sbi = df.loc[:,'Symbol'] == 'SBIN'
     # Check company matches the expected value
     self.assertEqual(df[_sbi].iloc[0].get(
       'Company Name'), 'State Bank of India')
@@ -33,7 +33,7 @@ class TestSymbols(baseUnitTest):
 
     df = get_index_constituents_list('NIFTYCPSE')
     # Check popular names are in the list
-    _oil = df['Symbol'] == 'OIL'
+    _oil = df.loc[:,'Symbol'] == 'OIL'
     # Check company matches the expected value
     self.assertEqual(df[_oil].iloc[0].get('ISIN Code'), 'INE274J01014')
 

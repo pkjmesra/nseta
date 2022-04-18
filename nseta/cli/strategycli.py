@@ -12,7 +12,7 @@ from nseta.strategy.strategyManager import *
 import click
 from datetime import datetime
 
-__all__ = ['test_trading_strategy', 'forecast_strategy', 'scan_trading_strategy']
+__all__ = ['test_trading_strategy', 'scan_trading_strategy']
 
 STRATEGY_MAPPING_KEYS = list(STRATEGY_MAPPING.keys()) + ['custom']
 
@@ -90,38 +90,6 @@ def scan_trading_strategy(symbol, start, end, strategy, upper, lower, clear, ord
   except Exception as e:
     default_logger().debug(e, exc_info=True)
     click.secho('Failed to scan trading strategy. Please check the inputs.', fg='red', nl=True)
-    return
-  except SystemExit:
-    pass
-
-@click.command(help='Forecast & measure performance of a trading model')
-@click.option('--symbol', '-S',  help='Security code')
-@click.option('--start', '-s', help='Start date in yyyy-mm-dd format')
-@click.option('--end', '-e', help='End date in yyyy-mm-dd format')
-@click.option('--strategy', default='rsi', type=click.Choice(STRATEGY_MAPPING_KEYS),
-  help=', '.join(STRATEGY_MAPPING_KEYS) + '. Choose one.')
-@click.option('--upper', '-u', default=resources.forecast().upper, help='Only when strategy is "custom". Default is {}. We buy the security when the predicted next day return is > + upper %'.format(resources.forecast().upper))
-@click.option('--lower', '-l', default=resources.forecast().lower, help='Only when strategy is "custom". Default is {}. We sell the security when the predicted next day return is < - lower %'.format(resources.forecast().lower))
-@click.option('--clear', '-c', default=False, is_flag=True, help='Clears the cached data for the given options.')
-@click.option('--plot', '-p', default=False, is_flag=True, help='By default(False). --plot, if you would like the results to be plotted.')
-@tracelog
-def forecast_strategy(symbol, start, end, strategy, upper, lower, clear, plot):
-  if not validate_inputs(start, end, symbol, strategy):
-    print_help_msg(forecast_strategy)
-    return
-  sd = datetime.strptime(start, '%Y-%m-%d').date()
-  ed = datetime.strptime(end, '%Y-%m-%d').date()
-  try:
-    clear_cache(clear)
-    sm = strategyManager()
-    df = sm.get_historical_dataframe(symbol, sd, ed)
-    df = sm.prepare_for_historical_strategy(df, symbol)
-    plt, result = daily_forecast(df, symbol, strategy, upper_limit=float(upper), lower_limit=float(lower), periods=resources.forecast().period, plot=plot)
-    if plt is not None:
-      plt.show()
-  except Exception as e:
-    default_logger().debug(e, exc_info=True)
-    click.secho('Failed to forecast trading strategy. Please check the inputs.', fg='red', nl=True)
     return
   except SystemExit:
     pass

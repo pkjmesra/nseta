@@ -65,7 +65,7 @@ setup(
 	'Programming Language :: Python :: 3.8',
 	],
 	install_requires = install_requires,
-	keywords = ['NSE', 'Technical Indicators', 'Backtesting', 'Forecasting'],
+	keywords = ['NSE', 'Technical Indicators', 'Backtesting'],
 	test_suite="tests",
 ),
 python_requires='>=3.6',

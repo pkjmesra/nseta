@@ -45,7 +45,7 @@ def plot_ta(symbol, start, end, clear, plot_type='ALL'):
       arch.clearcache(response_type=ResponseType.History, force_clear=False)
     historyinstance = historicaldata()
     df = historyinstance.daily_ohlc_history(symbol, sd, ed, type=ResponseType.History)
-    df['dt'] = df['Date']
+    df.loc[:,'dt'] = df.loc[:,'Date']
     df.set_index('Date', inplace=True)
     plot_type = plot_type.upper()
     if plot_type in PLOT_KEY_TO_FUNC:

@@ -130,9 +130,9 @@ class intradayStockScanner(baseStockScanner):
       #     df[searchkey] = np.nan
       #   if key in df.keys():
       #     df.drop([key], axis = 1, inplace = True)
-      df['Symbol'] = symbol
-      df['datetime'] = df['Date']
+      df.loc[:,'Symbol'] = symbol
+      df.loc[:,'datetime'] = df.loc[:,'Date']
     except Exception as e:
       default_logger().debug(e, exc_info=True)
-      default_logger().debug('Exception encountered for key: ' + searchkey + '\n')
+      # default_logger().debug('Exception encountered for key: ' + searchkey + '\n')
     return df

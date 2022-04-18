@@ -93,6 +93,7 @@ class quoteScanner(baseScanner):
 
   def formatted_dataframe(self, list_data, column_names, indices=True):
     columns =[]
+    pd.set_option('mode.chained_assignment', None)
     for column in column_names:
       columns.append(self.format_column(column,20))
     if indices:

@@ -15,19 +15,19 @@ class ti:
       return df
     try:
       if rsi:
-        df['RSI'] = self.get_rsi_df(df)
+        df.loc[:,'RSI'] = self.get_rsi_df(df)
       if mom:
-        df['MOM'] = self.get_mom_df(df)
+        df.loc[:,'MOM'] = self.get_mom_df(df)
       if sma:
-        df[['Close','SMA(10)', 'SMA(50)']] = self.get_sma_df(df)
+        df.loc[:,['Close','SMA(10)', 'SMA(50)']] = self.get_sma_df(df)
       if ema:
-        df[['Close','EMA(9)']] = self.get_ema_df(df)
+        df.loc[:,['Close','EMA(9)']] = self.get_ema_df(df)
       if macd:
-        df[['macd(12)','macdsignal(9)', 'macdhist(26)']] = self.get_macd_df(df)
+        df.loc[:,['macd(12)','macdsignal(9)', 'macdhist(26)']] = self.get_macd_df(df)
       if bbands:
-        df[['Close','BBands-U','BBands-M','BBands-L']] = self.get_bbands_df(df)
+        df.loc[:,['Close','BBands-U','BBands-M','BBands-L']] = self.get_bbands_df(df)
       if obv:
-        df['OBV'] = self.get_obv_df(df)
+        df.loc[:,'OBV'] = self.get_obv_df(df)
       can_have_pivots = True
       for key in ['Low', 'High', 'Close']:
         if key not in df.keys():
@@ -37,19 +37,19 @@ class ti:
         if pivots:
           df = self.get_ppsr_df(df)
         if dmi:
-          df['DMI'] = self.get_dmi_df(df)
+          df.loc[:,'DMI'] = self.get_dmi_df(df)
         if atr:
-          df['ATR'] = self.get_atr_df(df)
+          df.loc[:,'ATR'] = self.get_atr_df(df)
         if natr:
-          df['NATR'] = self.get_natr_df(df)
+          df.loc[:,'NATR'] = self.get_natr_df(df)
         if trange:
-          df['TRANGE'] = self.get_trange_df(df)
+          df.loc[:,'TRANGE'] = self.get_trange_df(df)
         if volatility:
-          df['Volatility'] = self.get_atr_ratio(df)
+          df.loc[:,'Volatility'] = self.get_atr_ratio(df)
         if atre:
-          df['ATRE-F'], df['ATRE-S'], df['ATRE'] = self.get_atr_extreme(df)
+          df.loc[:,'ATRE-F'], df.loc[:,'ATRE-S'], df.loc[:,'ATRE'] = self.get_atr_extreme(df)
         if adx:
-          df['ADX'] = self.get_adx_df(df)
+          df.loc[:,'ADX'] = self.get_adx_df(df)
     except Exception as e:
       default_logger().debug(e, exc_info=True)
     except SystemExit:
@@ -57,61 +57,61 @@ class ti:
     return df
 
   def get_rsi_df(self, df):
-    df['RSI'] = ta.RSI(df['Close'],14).apply(lambda x: round(x, 2))
-    return df['RSI']
+    df.loc[:,'RSI'] = ta.RSI(df.loc[:,'Close'],14).apply(lambda x: round(x, 2))
+    return df.loc[:,'RSI']
 
   def get_mom_df(self, df):
-    df['MOM'] = ta.MOM(df['Close'],2).apply(lambda x: round(x, 2))
-    return df['MOM']
+    df.loc[:,'MOM'] = ta.MOM(df.loc[:,'Close'],2).apply(lambda x: round(x, 2))
+    return df.loc[:,'MOM']
 
   def get_dmi_df(self, df):
-    df['DMI'] = ta.DX(df['High'],df['Low'],df['Close'],timeperiod=14)
-    return df['DMI']
+    df.loc[:,'DMI'] = ta.DX(df.loc[:,'High'],df.loc[:,'Low'],df.loc[:,'Close'],timeperiod=14)
+    return df.loc[:,'DMI']
 
   def get_macd_df(self, df):
-    df['macd(12)'], df['macdsignal(9)'], df['macdhist(26)'] = ta.MACD(df['Close'], fastperiod=12, slowperiod=26, signalperiod=9)
-    df['macd(12)'] = df['macd(12)'].apply(lambda x: round(x, 3))
-    df['macdsignal(9)']= df['macdsignal(9)'].apply(lambda x: round(x, 3))
-    df['macdhist(26)'] = df['macdhist(26)'].apply(lambda x: round(x, 3))
-    return df[['macd(12)','macdsignal(9)', 'macdhist(26)']]
+    df.loc[:,'macd(12)'], df.loc[:,'macdsignal(9)'], df.loc[:,'macdhist(26)'] = ta.MACD(df.loc[:,'Close'], fastperiod=12, slowperiod=26, signalperiod=9)
+    df.loc[:,'macd(12)'] = df.loc[:,'macd(12)'].apply(lambda x: round(x, 3))
+    df.loc[:,'macdsignal(9)']= df.loc[:,'macdsignal(9)'].apply(lambda x: round(x, 3))
+    df.loc[:,'macdhist(26)'] = df.loc[:,'macdhist(26)'].apply(lambda x: round(x, 3))
+    return df.loc[:,['macd(12)','macdsignal(9)', 'macdhist(26)']]
 
   def get_sma_df(self, df):
-    df['SMA(10)'] = ta.SMA(df['Close'],10).apply(lambda x: round(x, 2))
-    df['SMA(50)'] = ta.SMA(df['Close'],50).apply(lambda x: round(x, 2))
-    return df[['Close','SMA(10)', 'SMA(50)']]
+    df.loc[:,'SMA(10)'] = ta.SMA(df.loc[:,'Close'],10).apply(lambda x: round(x, 2))
+    df.loc[:,'SMA(50)'] = ta.SMA(df.loc[:,'Close'],50).apply(lambda x: round(x, 2))
+    return df.loc[:,['Close','SMA(10)', 'SMA(50)']]
 
   def get_ema_df(self, df):
-    df['EMA(9)'] = ta.EMA(df['Close'], timeperiod = 9).apply(lambda x: round(x, 2))
-    return df[['Close','EMA(9)']]
+    df.loc[:,'EMA(9)'] = ta.EMA(df.loc[:,'Close'], timeperiod = 9).apply(lambda x: round(x, 2))
+    return df.loc[:,['Close','EMA(9)']]
 
   def get_adx_df(self, df):
-    df['ADX'] = ta.ADX(df['High'],df['Low'], df['Close'], timeperiod=14).apply(lambda x: round(x, 2))
-    return df['ADX']
+    df.loc[:,'ADX'] = ta.ADX(df.loc[:,'High'],df.loc[:,'Low'], df.loc[:,'Close'], timeperiod=14).apply(lambda x: round(x, 2))
+    return df.loc[:,'ADX']
 
   def get_bbands_df(self, df):
-    df['BBands-U'], df['BBands-M'], df['BBands-L'] = ta.BBANDS(df['Close'], timeperiod =20)
-    df['BBands-U'] = df['BBands-U'].apply(lambda x: round(x, 2))
-    df['BBands-M'] = df['BBands-M'].apply(lambda x: round(x, 2))
-    df['BBands-L'] = df['BBands-L'].apply(lambda x: round(x, 2))
+    df.loc[:,'BBands-U'], df.loc[:,'BBands-M'], df.loc[:,'BBands-L'] = ta.BBANDS(df.loc[:,'Close'], timeperiod =20)
+    df.loc[:,'BBands-U'] = df.loc[:,'BBands-U'].apply(lambda x: round(x, 2))
+    df.loc[:,'BBands-M'] = df.loc[:,'BBands-M'].apply(lambda x: round(x, 2))
+    df.loc[:,'BBands-L'] = df.loc[:,'BBands-L'].apply(lambda x: round(x, 2))
     return df[['Close','BBands-U','BBands-M','BBands-L']]
 
   def get_obv_df(self, df):
     if ('Close' not in df.keys()) or ('Volume' not in df.keys()):
       return np.nan
-    df['OBV'] = ta.OBV(df['Close'], df['Volume'])
-    return df['OBV']
+    df.loc[:,'OBV'] = ta.OBV(df.loc[:,'Close'], df.loc[:,'Volume'])
+    return df.loc[:,'OBV']
 
   def get_atr_df(self, df):
-    df['ATR'] = ta.ATR(df['High'], df['Low'], df['Close'], timeperiod=14).apply(lambda x: round(x, 2))
-    return df['ATR']
+    df.loc[:,'ATR'] = ta.ATR(df.loc[:,'High'], df.loc[:,'Low'], df.loc[:,'Close'], timeperiod=14).apply(lambda x: round(x, 2))
+    return df.loc[:,'ATR']
 
   def get_natr_df(self, df):
-    df['NATR'] = ta.NATR(df['High'], df['Low'], df['Close'], timeperiod=14).apply(lambda x: round(x, 2))
-    return df['NATR']
+    df.loc[:,'NATR'] = ta.NATR(df.loc[:,'High'], df.loc[:,'Low'], df.loc[:,'Close'], timeperiod=14).apply(lambda x: round(x, 2))
+    return df.loc[:,'NATR']
 
   def get_trange_df(self, df):
-    df['TRANGE'] = ta.TRANGE(df['High'], df['Low'], df['Close']).apply(lambda x: round(x, 2))
-    return df['TRANGE']
+    df.loc[:,'TRANGE'] = ta.TRANGE(df.loc[:,'High'], df.loc[:,'Low'], df.loc[:,'Close']).apply(lambda x: round(x, 2))
+    return df.loc[:,'TRANGE']
 
   def get_atr_extreme(self, df):
     """
@@ -120,9 +120,9 @@ class ti:
 
       @return: fasts, slows
     """
-    highs = df['High']
-    lows = df['Low']
-    closes = df['Close']
+    highs = df.loc[:,'High']
+    lows = df.loc[:,'Low']
+    closes = df.loc[:,'Close']
     slowPeriod=30
     fastPeriod=3
     atr = self.get_atr_df(df)
@@ -143,7 +143,7 @@ class ti:
     """
       ATR(14)/MA(14)
     """
-    closes = df['Close']
+    closes = df.loc[:,'Close']
 
     atr = self.get_atr_df(df)
     ma = ta.MA(closes, timeperiod=14)
@@ -151,17 +151,19 @@ class ti:
     volatility = atr/ma
 
     s = pd.Series(volatility, index=df.index, name='volatility').dropna()
+    pd.set_option('mode.chained_assignment', None)
     return pd.DataFrame({'volatility':round(s,2)})
 
   def get_ppsr_df(self, df):
-    PP = pd.Series((df['High'] + df['Low'] + df['Close']) / 3)
-    R1 = pd.Series(2 * PP - df['Low'])
-    S1 = pd.Series(2 * PP - df['High'])
-    R2 = pd.Series(PP + df['High'] - df['Low'])
-    S2 = pd.Series(PP - df['High'] + df['Low'])
-    R3 = pd.Series(df['High'] + 2 * (PP - df['Low']))
-    S3 = pd.Series(df['Low'] - 2 * (df['High'] - PP))
+    PP = pd.Series((df.loc[:,'High'] + df.loc[:,'Low'] + df.loc[:,'Close']) / 3)
+    R1 = pd.Series(2 * PP - df.loc[:,'Low'])
+    S1 = pd.Series(2 * PP - df.loc[:,'High'])
+    R2 = pd.Series(PP + df.loc[:,'High'] - df.loc[:,'Low'])
+    S2 = pd.Series(PP - df.loc[:,'High'] + df.loc[:,'Low'])
+    R3 = pd.Series(df.loc[:,'High'] + 2 * (PP - df.loc[:,'Low']))
+    S3 = pd.Series(df.loc[:,'Low'] - 2 * (df.loc[:,'High'] - PP))
     psr = {'PP':round(PP,2), 'R1':round(R1,2), 'S1':round(S1,2), 'R2':round(R2,2), 'S2':round(S2,2), 'R3':round(R3,2), 'S3':round(S3,2)}
+    pd.set_option('mode.chained_assignment', None)
     PSR = pd.DataFrame(psr)
     keys = ['PP','R1','R2','R3','S1','S2','S3']
     for key in keys:

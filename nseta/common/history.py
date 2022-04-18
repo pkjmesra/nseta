@@ -189,7 +189,7 @@ class historicaldata:
       if (df is not None and len(df) > 0) and ('Symbol' in headers and 'Symbol' in df.keys()):
         # Check if we received the correct Symbol in response what we expected
         expected_symbol = symbol
-        received_symbol = df['Symbol'].iloc[0]
+        received_symbol = df.loc[:,'Symbol'].iloc[0]
         if received_symbol.upper() != expected_symbol.upper():
           default_logger().debug(df.to_string(index=False))
           default_logger().debug('Unexpected symbol "{}" received. Retrying...'.format(received_symbol))
@@ -221,7 +221,7 @@ class historicaldata:
         tp.parse_g1_g2(bs.text, params['CDSymbol'])
     df = tp.get_df()
     for key, val in six.iteritems(scaling):
-      df[key] = val * df[key]
+      df.loc[:,key] = val * df.loc[:,key]
     if df is None or len(df) == 0:
       default_logger().debug('\nIncorrect/invalid or no response received from server:\n{}'.format(resp.text))
     return df

@@ -31,7 +31,7 @@ class bbandsSignalStrategy(basesignalstrategy):
     try:
       rowindex = 0
       self._target_met = False
-      for lower_bband, upper_bband, price, ts in zip(df['BBands-L'], df['BBands-U'], df['Close'], df['Date']):
+      for lower_bband, upper_bband, price, ts in zip(df.loc[:,'BBands-L'], df.loc[:,'BBands-U'], df.loc[:,'Close'], df.loc[:,'Date']):
         self.index(lower_bband, upper_bband, price, ts)
         rowindex = rowindex + 1
         if self._target_met:
@@ -45,7 +45,8 @@ class bbandsSignalStrategy(basesignalstrategy):
       self.order_queue.square_off(self.price)
       self.update_ledger(buy_sell)
       self.pnl = self.order_queue.pnl
-      df_summary_dict = {'Symbol':[df['Symbol'].iloc[0]], 'Strategy':['BBands'], 'PnL':[self.pnl], 'Recommendation': [str(self.recommendation.name)]}
+      df_summary_dict = {'Symbol':[df.loc[:,'Symbol'].iloc[0]], 'Strategy':['BBands'], 'PnL':[self.pnl], 'Recommendation': [str(self.recommendation.name)]}
+      pd.set_option('mode.chained_assignment', None)
       df_summary = pd.DataFrame(df_summary_dict)
     except Exception as e:
       default_logger().debug(e, exc_info=True)
@@ -78,6 +79,7 @@ class bbandsSignalStrategy(basesignalstrategy):
 
   @property
   def report(self):
+    pd.set_option('mode.chained_assignment', None)
     return pd.DataFrame(self.ledger)
 
   @property

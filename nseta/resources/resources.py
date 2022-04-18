@@ -13,7 +13,7 @@ def split_into_range_str(str_val):
   return sum((([a]) for a in str_val.split(',')), [])
 
 class Default:
-  def __init__(self, version=0.7, defaultstocks_path='stocks.txt', UserDataDirectory=None,
+  def __init__(self, version=0.8, defaultstocks_path='stocks.txt', UserDataDirectory=None,
     numeric_to_human_format = False, scannerInstance=None):
     self._version = version
     self._defaultstocks_filepath = defaultstocks_path

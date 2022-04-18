@@ -107,6 +107,7 @@ class strategyManager:
       ed = datetime.strptime(end, '%Y-%m-%d').date()
     frames = []
     instance = intradayStockScanner('all') if intraday else historicaldata()
+    pd.set_option('mode.chained_assignment', None)
     for stock in stocks:
       df_summary_dict = {'Symbol':['?'], 'RSI-PnL':[np.nan],'MACD-PnL':[np.nan], 'BBANDS-PnL':[np.nan], 'Reco-RSI':[np.nan], 'Reco-MACD':[np.nan], 'Reco-BBANDS':[np.nan]}
       df_summary = pd.DataFrame(df_summary_dict)
@@ -243,7 +244,7 @@ class strategyManager:
     if df is not None and len(df) > 0:
       default_logger().debug('\n{}\n'.format(df.to_string(index=False)))
       df = df.sort_values(by='Date',ascending=True)
-      df['datetime'] = df['Date']
+      df.loc[:,'datetime'] = df.loc[:,'Date']
     return df
 
   @tracelog
@@ -272,7 +273,7 @@ class strategyManager:
     tiinstance = ti()
     df = tiinstance.update_ti(df, rsi=True, bbands=True, macd=True)
     df = df.sort_values(by='Date',ascending=True)
-    symbol = df['Symbol'].iloc[0]
+    symbol = df.loc[:,'Symbol'].iloc[0]
     results = None
     summary = None
     global __test_counter__
@@ -286,10 +287,11 @@ class strategyManager:
             "macd":{"keys":["Symbol","Date","macd(12)","macdsignal(9)", "macdhist(26)","Close"],"class":macdSignalStrategy}}
     keys = strgy_dict.keys()
     df_dict = {}
+    pd.set_option('mode.chained_assignment', None)
     for key in keys:
       if strategy.lower() == key:
         for df_key in strgy_dict[key]["keys"]:
-          df_dict[df_key] = df[df_key]
+          df_dict[df_key] = df.loc[:,df_key]
         df_strtgy = pd.DataFrame(df_dict)
         cls_name = strgy_dict[key]["class"]
         signal = cls_name(strict=self.strict, intraday=intraday, requires_ledger=show_detail)
@@ -305,9 +307,9 @@ class strategyManager:
     return summary
 
   def prepare_for_historical_strategy(self, df, symbol):
-    df['datetime'] = df['Date']
-    df['dt'] = df['Date']
-    df['close'] = df['Close']
+    df.loc[:,'datetime'] = df.loc[:,'Date']
+    df.loc[:,'dt'] = df.loc[:,'Date']
+    df.loc[:,'close'] = df.loc[:,'Close']
     df = self.reset_date_index(df)
     return df
 

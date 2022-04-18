@@ -27,7 +27,6 @@ Python Library (and console/CLI application) to
 - Pattern recognition and fitment using candlestick charts
 - Backtest trading strategies
 - Scan for test trading strategies for all stocks in one go that will tell you how much you'd have made following a strategy
-- Forecasting with standard as well as custom strategies
 - Get price action, PE-historical data and live-quotes for stocks
 - Create scanners and generate signals for various technical indicators or for BUY/SELL
   - Scan for live, swing, intraday and volume trading strategies
@@ -78,7 +77,7 @@ For Windows systems you can install Anaconda, this will cover many dependancies 
   ```
 - Installing specific version
   ```
-  pip3 install nseta==0.6.202
+  pip3 install nseta>=0.8
   ```
   You can also directly install specific versions from pypi.org:
   ```
@@ -94,9 +93,9 @@ For Windows systems you can install Anaconda, this will cover many dependancies 
   Just go ahead and download the ```.whl``` file from ```https://pypi.org/project/nseta/#files``` and install from the downloaded directory:
 
   ```
-  pip3 install ./nseta-0.6.202-py3-none-any.whl
+  pip3 install ./nseta-0.7.386-py3-none-any.whl
   ```
-  where `0.6.202` is the version of the library.
+  where `0.7.386` is the version of the library.
 
 - Specific test versions(under development) can be installed from test.pypi.org
 
@@ -144,7 +143,6 @@ After installation you can check what version you got installed
   Commands:
     clear                  Force clears log files, downloaded contents etc.
     create-cdl-model       Create candlestick model.Plot uncovered patterns
-    forecast-strategy      Forecast & measure performance of a trading model
     history                Get price history of a security for given dates
     live-quote             Get live price quote of a security
     news                   Scans for news for the given tickers or all
@@ -168,7 +166,6 @@ After installation you can check what version you got installed
     Example:
     nseta clear -d
     nseta create-cdl-model -S bandhanbnk -s 2019-07-30 -e 2020-11-20
-    nseta forecast-strategy -S bandhanbnk -s 2019-07-30 -e 2020-11-20 --strategy rsi -c
     nseta history -S bandhanbnk -s 2019-07-30 -e 2020-11-20
     nseta live-quote -S bandhanbnk -gowvb
     nseta news
@@ -180,11 +177,11 @@ After installation you can check what version you got installed
     nseta scan -l -c
     nseta scan -s -c -a
     nseta scan -v -c -a
-    nseta scan-trading-strategy -S bandhanbnk -s 2019-07-30 -e 2020-11-20 --strategy rsi -c
+    nseta scan-trading-strategy -S bandhanbnk -s 2021-07-30 -e 2022-04-18 --strategy rsi -c
     nseta scan-trading-strategy -s 2019-07-30 -e 2020-11-20 --strategy rsi -c
     nseta scan-trading-strategy -s 2019-07-30 -e 2020-11-20 -c
     nseta scan-trading-strategy -i -c
-    nseta test-trading-strategy -S bandhanbnk -s 2019-07-30 -e 2020-11-20 --strategy rsi -c
+    nseta test-trading-strategy -S bandhanbnk -s 2021-07-30 -e 2022-04-18 --strategy rsi -c
     nseta top-picks -i -c
     nseta top-picks -s -c
     nseta top-picks -S HDFCBANK,BANDHANBNK -i -c 
@@ -325,52 +322,6 @@ After installation you can check what version you got installed
   $ nseta plot-ta -S bandhanbnk -s 2019-01-01 -e 2020-09-30
   ```
   ![](./docs/assets/ti_plots.png)
-
-</details>
-
-<details>
-<summary>
-- Forecast strategies
-</summary>
-
-
-  ```python
-  nseta forecast-strategy
-  Usage:  [OPTIONS]
-
-    Forecast & measure performance of a trading model
-
-  Options:
-    -S, --symbol TEXT               Security code
-    -s, --start TEXT                Start date in yyyy-mm-dd format
-    -e, --end TEXT                  End date in yyyy-mm-dd format
-    --strategy [rsi|smac|macd|emac|bbands|multi|custom]
-                                    rsi, smac, macd, emac, bbands, multi,
-                                    custom. Choose one.
-    -u, --upper FLOAT               Only when strategy is "custom". We buy the
-                                    security when the predicted next day return
-                                    is > +{upper} %
-    -l, --lower FLOAT               Only when strategy is "custom". We sell the
-                                    security when the predicted next day return
-                                    is < -{lower} %
-    --help                          Show this message and exit.
-  ```
-
-</details>
-
-<details>
-<summary>
-- Create forecast strategies and verify them
-</summary>
-
-  ```python
-  $ nseta forecast-strategy -S bandhanbnk -s 2019-01-01 -e 2020-09-30 --upper 1.5 --lower 1.5
-     init_cash   final_value       pnl
-  0     100000  137220.87825  37220.88
-  ```
-  ![](./docs/assets/forecast-closing.png)
-  ![](./docs/assets/forecast.png)
-  ![](./docs/assets/forecast-predictions.png)
 
 </details>
 
@@ -1799,6 +1750,8 @@ For example:
 </summary>
  
  You can use the `config.txt` file and make changes as per your wish to view the results in a specific order or add/remove columns. Use `nseta -r` to view the path where you can make changes to config or add your own custom defined stocks.
+
+ Please note that if you've put stock ticker names into userstocks.txt, the stocks in the default stocks.txt will not be scanned. Only the stocks in userstocks.txt will be scanned. If you'd instead like the stocks in stocks.txt under the resources directory to be scanned, you should just keep the userstocks.txt file as blank (instead of deleting the file). If you delete the userstocks.txt file, the application will create it again with a couple of default tickers.
 </details>
 
 ### Submit patches
@@ -1814,8 +1767,6 @@ Write to pkjmesra@gmail.com with subject line ``` NSETA: Feature Request ```
 
 ## Inspirations (Thank you so much!)
 -  [nsepy](https://github.com/swapniljariwala/nsepy)
--  [fastquant](https://github.com/enzoampil/fastquant)
--  [fbprophet](https://github.com/facebook/prophet)
 -  [nsetools](https://github.com/vsjha18/nsetools)
 -  [ta-lib](https://github.com/mrjbq7/ta-lib)
 -  [medium](https://github.com/CanerIrfanoglu/medium)

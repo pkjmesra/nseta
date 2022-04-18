@@ -35,12 +35,12 @@ class topPickScanner(intradayScanner):
     if self.period_1_signals is None:
       self._period_1_signals = signaldf
       default_logger().debug('Period_1_signals:\n{}\n'.format(signaldf))
-      self.stocks = signaldf['Symbol'].tolist()
+      self.stocks = signaldf.loc[:,'Symbol'].tolist()
       self.scan(self.option, periodicity='2')
       return False
     else:
-      default_logger().debug('Period_1_signals:\n{}\n'.format(self.period_1_signals))
-      default_logger().debug('Period_5_signals:\n{}\n'.format(signaldf))
+      default_logger().debug('Period_1_signals:\n{}\n'.format(self.period_1_signals.to_string(index=False)))
+      default_logger().debug('Period_5_signals:\n{}\n'.format(signaldf.to_string(index=False)))
       intersected_rows = []
       intersected_df = None
       for index, row in signaldf.iterrows():
@@ -49,8 +49,8 @@ class topPickScanner(intradayScanner):
         df = self.period_1_signals[(self.period_1_signals['Symbol'] == symbol_period_5) & (self.period_1_signals['Signal'] == signal_period_5)]
         # Both period 1 and period 5 are aligned in recommendations
         if df is not None and len(df) > 0:
-          if abs(abs(df['macd(12)'].iloc[0]) - abs(df['macdsignal(9)'].iloc[0])) <= 0.15:
-            df['Confidence'].iloc[0] = 100
+          if abs(abs(df.loc[:,'macd(12)'].iloc[0]) - abs(df.loc[:,'macdsignal(9)'].iloc[0])) <= 0.15:
+            df.loc[:,'Confidence'].iloc[0] = 100
           intersected_rows.append(df)
       if len(intersected_rows) > 0:
         intersected_df= pd.concat(intersected_rows)

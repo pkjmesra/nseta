@@ -54,13 +54,8 @@ jobs:
         pip3 install d:\a\nseta\nseta\libs\TA_Lib-0.4.20-cp38-cp38-win_amd64.whl
         python3 -m pip install ta-lib>=0.4.19
         python3 -c 'import numpy, talib; close = numpy.random.random(100); output = talib.SMA(close); print(output)'
-    - name: Install fastquant
+    - name: Install ipython
       run: |
-        pip3 install fastquant
-    - name: Install fbprophet
-      run: |
-        pip3 install pystan==2.19.1.1
-        pip3 install fbprophet>=0.7.1 --no-cache-dir
         pip3 install ipython==7.5.0
     - name: Install project dependencies
       run: |

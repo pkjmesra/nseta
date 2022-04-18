@@ -226,6 +226,7 @@ class baseScanner:
         column_dict[kvp[0]] = kvp[0]
     column_keys = column_dict.keys()
     column_values = column_dict.values()
+    pd.set_option('mode.chained_assignment', None)
     user_df = pd.DataFrame(columns=column_values)
     keys = df.keys()
     for key in keys:

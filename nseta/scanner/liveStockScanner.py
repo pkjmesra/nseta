@@ -26,6 +26,7 @@ class liveStockScanner(baseStockScanner):
     signalframes = []
     df = None
     signaldf = None
+    pd.set_option('mode.chained_assignment', None)
     for stock in stocks:
       try:
         self.update_progress(stock)

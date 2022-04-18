@@ -166,7 +166,7 @@ class archiver:
         df = df.reset_index(drop=True)
         df.to_csv(self.get_path(symbol, response_type), index=False)
       except Exception as e:
-        default_logger().debug('Exception in archiving for {} in {}.\n{}'.format(symbol, response_type,df))
+        default_logger().debug('Exception in archiving for {} in {}.\n{}'.format(symbol, response_type,df.to_string(index=False)))
         default_logger().debug(e, exc_info=True)
         return None
     else:
@@ -180,6 +180,7 @@ class archiver:
       return None
     if os.path.exists(file_path):
       try:
+        pd.set_option('mode.chained_assignment', None)
         df = pd.read_csv(file_path)
       except Exception as e:
         default_logger().debug('Exception in restore for {} in {}.'.format(symbol, response_type))
@@ -205,6 +206,7 @@ class archiver:
     df = None
     if os.path.exists(file_path):
       try:
+        pd.set_option('mode.chained_assignment', None)
         df = pd.read_csv(file_path)
       except Exception as e:
         default_logger().debug('Exception in restore for {}.'.format(file_path))

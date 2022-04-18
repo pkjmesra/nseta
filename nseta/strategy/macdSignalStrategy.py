@@ -21,6 +21,7 @@ class macdSignalStrategy(basesignalstrategy):
 
   @tracelog
   def test_strategy(self, df):
+    pd.set_option('mode.chained_assignment', None)
     # TODO: What if keys are in lowercase or dt/datetime is used instead of date/Date
     try:
       rowindex = 0
@@ -29,7 +30,7 @@ class macdSignalStrategy(basesignalstrategy):
       if df is None or len(df) ==0:
         return self.report, None
       self._target_met = False
-      for macd, macd9 in zip((df['macd(12)']).values, (df['macdsignal(9)']).values):
+      for macd, macd9 in zip((df.loc[:,'macd(12)']).values, (df.loc[:,'macdsignal(9)']).values):
         if macd is not None:
           price =(df.iloc[rowindex])['Close']
           ts =(df.iloc[rowindex])['Date']
@@ -48,7 +49,7 @@ class macdSignalStrategy(basesignalstrategy):
       self.order_queue.square_off(self.price)
       self.update_ledger(buy_sell)
       self.pnl = self.order_queue.pnl
-      df_summary_dict = {'Symbol':[df['Symbol'].iloc[0]], 'Strategy':['MACD'], 'PnL':[self.pnl], 'Recommendation': [str(self.recommendation.name)]}
+      df_summary_dict = {'Symbol':[df.loc[:,'Symbol'].iloc[0]], 'Strategy':['MACD'], 'PnL':[self.pnl], 'Recommendation': [str(self.recommendation.name)]}
       df_summary = pd.DataFrame(df_summary_dict)
     except Exception as e:
       default_logger().debug(e, exc_info=True)

@@ -30,10 +30,10 @@ values represent bearish patterns.
 def create_pattern_data(data_frame):
   df = data_frame
   # extract OHLC
-  O = df['Open'].astype(float)
-  H = df['High'].astype(float)
-  L = df['Low'].astype(float)
-  C = df['Close'].astype(float)
+  O = df.loc[:,('Open')].astype(float)
+  H = df.loc[:,('High')].astype(float)
+  L = df.loc[:,('Low')].astype(float)
+  C = df.loc[:,('Close')].astype(float)
 
   candle_names = get_candle_funcs()
 
@@ -41,7 +41,7 @@ def create_pattern_data(data_frame):
   for candle in candle_names:
     # below is same as;
     # df["CDL3LINESTRIKE"] = talib.CDL3LINESTRIKE(O, H, L, C)
-    df[candle] = getattr(talib, candle)(O, H, L, C)
+    df.loc[:,candle] = getattr(talib, candle)(O, H, L, C)
 
   return df
 
@@ -55,8 +55,8 @@ We basically have 3 cases:
 @tracelog
 def pick_best_rank_from_pattern(data_frame):
   df = data_frame
-  df['candlestick_pattern'] = np.nan
-  df['candlestick_match_count'] = np.nan
+  df.loc[:,'candlestick_pattern'] = np.nan
+  df.loc[:,'candlestick_match_count'] = np.nan
   candle_names = get_candle_funcs()
 
   for index, row in df.iterrows():

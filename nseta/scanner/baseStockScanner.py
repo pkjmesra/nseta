@@ -152,10 +152,10 @@ class baseStockScanner:
       return signalframes, df_main
     try:
       df = df_main.copy(deep=True)
-      df['Signal'] = 'NA'
-      df['Remarks'] = 'NA'
-      df['Confidence'] = np.nan
-      ltp = df['LTP'].iloc[0]
+      df.loc[:,'Signal'] = 'NA'
+      df.loc[:,'Remarks'] = 'NA'
+      df.loc[:,'Confidence'] = np.nan
+      ltp = df.loc[:,'LTP'].iloc[0]
       length_old = len(signalframes)
       bbands_reco = self.get_quick_recommendation(full_df, 'bbands')
       signalframes = self.update_signal_indicator(df, signalframes, 'bbands', 'BBands-L', 0.05, ltp, '<=', 'BUY', '[LTP < BBands-L].{}'.format(bbands_reco), 'BUY', '[LTP ~ BBands-L].{}'.format(bbands_reco))
@@ -163,7 +163,7 @@ class baseStockScanner:
       rsi_reco = self.get_quick_recommendation(full_df, 'rsi')
       signalframes = self.update_signal_indicator(df, signalframes, 'rsi', 'RSI', resources.rsi().lower, resources.rsi().upper, '><', rsi_reco.upper(), '[RSI >= {}].{}'.format(resources.rsi().upper, rsi_reco), rsi_reco.upper(), '[RSI <= {}].{}'.format(resources.rsi().lower,rsi_reco))
       signalframes = self.update_signal_indicator(df, signalframes, 'emac', 'EMA(9)', 0.1, ltp, '>=', 'BUY', '[LTP > EMA(9)]', 'SELL', '[LTP < EMA(9)]')
-      macd12 = df['macd(12)'].iloc[0]
+      macd12 = df.loc[:,'macd(12)'].iloc[0]
       macd_reco = self.get_quick_recommendation(full_df, 'macd')
       signalframes = self.update_signal_indicator(df, signalframes, 'macd', 'macdsignal(9)', 0.05, macd12, '>=', macd_reco.upper(), '[MACD > EMA].{}'.format(macd_reco), macd_reco.upper(), '[MACD < EMA].{}'.format(macd_reco))
       length_new = len(signalframes)
@@ -186,16 +186,16 @@ class baseStockScanner:
       if ltp_label_comparator == '><':
         if (value is not None) and (value > comparator_value or value < margin):
           # While the scan is going on, let's print the most recent signal on the console
-          symbol = deep_df['Symbol'].iloc[0]
-          text = symbol.ljust(30) + ': ₹ ' + str(deep_df['LTP'].iloc[0])
+          symbol = deep_df.loc[:,'Symbol'].iloc[0]
+          text = symbol.ljust(30) + ': ₹ ' + str(deep_df.loc[:,'LTP'].iloc[0])
           text = text + '\n' + column.ljust(30) + ': ' + str(value)
           if value > comparator_value:
             greenForegroundText(text)
           elif value < margin:
             redForegroundText(text)
 
-          deep_df['Remarks'].iloc[0] = true_remarks if value > comparator_value else false_remarks
-          deep_df['Signal'].iloc[0] = true_type if value > comparator_value else false_type
+          deep_df.loc[:,'Remarks'].iloc[0] = true_remarks if value > comparator_value else false_remarks
+          deep_df.loc[:,'Signal'].iloc[0] = true_type if value > comparator_value else false_type
           deep_df = self.update_confidence_level(deep_df)
           default_logger().debug('To be added to update_signal_indicator.signalframes:\n{}\n'.format(deep_df.to_string(index=False)))
           default_logger().debug('update_signal_indicator.signalframes:\n{}\n'.format(signalframes))
@@ -203,11 +203,11 @@ class baseStockScanner:
       else:
         if (value is not None) and (abs(value-comparator_value) >= margin):
           if ltp_label_comparator == '<=':
-            deep_df['Remarks'].iloc[0] = true_remarks if comparator_value - value <=0 else false_remarks
-            deep_df['Signal'].iloc[0] = true_type if comparator_value - value <=0 else false_type
+            deep_df.loc[:,'Remarks'].iloc[0] = true_remarks if comparator_value - value <=0 else false_remarks
+            deep_df.loc[:,'Signal'].iloc[0] = true_type if comparator_value - value <=0 else false_type
           elif ltp_label_comparator == '>=':
-            deep_df['Remarks'].iloc[0] = true_remarks if comparator_value - value >=0 else false_remarks
-            deep_df['Signal'].iloc[0] = true_type if comparator_value - value >=0 else false_type
+            deep_df.loc[:,'Remarks'].iloc[0] = true_remarks if comparator_value - value >=0 else false_remarks
+            deep_df.loc[:,'Signal'].iloc[0] = true_type if comparator_value - value >=0 else false_type
           deep_df = self.update_confidence_level(deep_df)
           default_logger().debug('To be added to update_signal_indicator.signalframes:\n{}\n'.format(deep_df.to_string(index=False)))
           default_logger().debug('update_signal_indicator.signalframes:\n{}\n'.format(signalframes))
@@ -217,10 +217,10 @@ class baseStockScanner:
   def update_max_confidence(self, signalframes, deep_df):
     if len(signalframes) > 0:
       saved_df = signalframes[len(signalframes) - 1]
-      if saved_df['Symbol'].iloc[0] == deep_df['Symbol'].iloc[0]:
-        saved_df['Remarks'].iloc[0] = '{},{}'.format(saved_df['Remarks'].iloc[0],deep_df['Remarks'].iloc[0])
-        saved_df['Signal'].iloc[0] = '{},{}'.format(saved_df['Signal'].iloc[0],deep_df['Signal'].iloc[0])
-        saved_df['Confidence'].iloc[0] = max(saved_df['Confidence'].iloc[0],deep_df['Confidence'].iloc[0])
+      if saved_df.loc[:,'Symbol'].iloc[0] == deep_df.loc[:,'Symbol'].iloc[0]:
+        saved_df.loc[:,'Remarks'].iloc[0] = '{},{}'.format(saved_df.loc[:,'Remarks'].iloc[0],deep_df.loc[:,'Remarks'].iloc[0])
+        saved_df.loc[:,'Signal'].iloc[0] = '{},{}'.format(saved_df.loc[:,'Signal'].iloc[0],deep_df.loc[:,'Signal'].iloc[0])
+        saved_df.loc[:,'Confidence'].iloc[0] = max(saved_df.loc[:,'Confidence'].iloc[0],deep_df.loc[:,'Confidence'].iloc[0])
         signalframes[len(signalframes) - 1] = saved_df
       else:
         signalframes.append(deep_df)
@@ -234,15 +234,16 @@ class baseStockScanner:
     sm = None
     tiny_df = None
     limited_df = df.tail(7)
+    pd.set_option('mode.chained_assignment', None)
     if indicator == 'macd' or indicator == 'all':
-      tiny_df = pd.DataFrame({'Symbol':limited_df['Symbol'],'Date':limited_df['Date'],'macd(12)':limited_df['macd(12)'],'macdsignal(9)':limited_df['macdsignal(9)'], 'Close':limited_df['LTP']})
+      tiny_df = pd.DataFrame({'Symbol':limited_df.loc[:,'Symbol'],'Date':limited_df.loc[:,'Date'],'macd(12)':limited_df.loc[:,'macd(12)'],'macdsignal(9)':limited_df.loc[:,'macdsignal(9)'], 'Close':limited_df.loc[:,'LTP']})
       sm = macdSignalStrategy(strict=True, intraday=False, requires_ledger=False)
     elif indicator == 'rsi' or indicator == 'all':
-      tiny_df = pd.DataFrame({'Symbol':limited_df['Symbol'],'Date':limited_df['Date'],'RSI':limited_df['RSI'],'Close':limited_df['LTP']})
+      tiny_df = pd.DataFrame({'Symbol':limited_df.loc[:,'Symbol'],'Date':limited_df.loc[:,'Date'],'RSI':limited_df.loc[:,'RSI'],'Close':limited_df.loc[:,'LTP']})
       sm = rsiSignalStrategy(strict=True, intraday=False, requires_ledger=False)
       sm.set_limits(resources.rsi().lower, resources.rsi().upper)
     elif indicator == 'bbands' or indicator == 'all':
-      tiny_df = pd.DataFrame({'Symbol':limited_df['Symbol'],'Date':limited_df['Date'],'BBands-L':limited_df['BBands-L'], 'BBands-U':limited_df['BBands-U'], 'Close':limited_df['LTP']})
+      tiny_df = pd.DataFrame({'Symbol':limited_df.loc[:,'Symbol'],'Date':limited_df.loc[:,'Date'],'BBands-L':limited_df.loc[:,'BBands-L'], 'BBands-U':limited_df.loc[:,'BBands-U'], 'Close':limited_df.loc[:,'LTP']})
       sm = bbandsSignalStrategy(strict=True, intraday=False, requires_ledger=False)
 
     default_logger().debug('tiny_df:\n{}'.format(tiny_df.to_string(index=False)))
@@ -250,21 +251,21 @@ class baseStockScanner:
     if summary is not None and len(summary) > 0:
       default_logger().debug(summary.to_string(index=False))
       last_row = summary.tail(1)
-      reco = last_row['Recommendation'].iloc[0]
+      reco = last_row.loc[:,'Recommendation'].iloc[0]
       return '-' if reco == 'Unknown' else reco
     else:
       return '-'
 
   def update_confidence_level(self, df):
-    rsi = round(df['RSI'].iloc[0],2)
-    bbandsl = round(df['BBands-L'].iloc[0],2)
-    bbandsu = round(df['BBands-U'].iloc[0],2)
-    ema = round(df['EMA(9)'].iloc[0],2)
-    macdsignal = round(df['macdsignal(9)'].iloc[0],3)
-    macd12 = round(df['macd(12)'].iloc[0],3)
-    mom = round(df['MOM'].iloc[0],2)
-    signal = df['Signal'].iloc[0]
-    ltp = df['LTP'].iloc[0]
+    rsi = round(df.loc[:,'RSI'].iloc[0],2)
+    bbandsl = round(df.loc[:,'BBands-L'].iloc[0],2)
+    bbandsu = round(df.loc[:,'BBands-U'].iloc[0],2)
+    ema = round(df.loc[:,'EMA(9)'].iloc[0],2)
+    macdsignal = round(df.loc[:,'macdsignal(9)'].iloc[0],3)
+    macd12 = round(df.loc[:,'macd(12)'].iloc[0],3)
+    mom = round(df.loc[:,'MOM'].iloc[0],2)
+    signal = df.loc[:,'Signal'].iloc[0]
+    ltp = df.loc[:,'LTP'].iloc[0]
     confidence = 0
     if signal == 'BUY':
       if rsi >=60:
@@ -304,7 +305,7 @@ class baseStockScanner:
         confidence = confidence + 10
       elif self.indicator == 'emac':
         confidence = confidence + 10
-    df['Confidence'].iloc[0] = confidence
+    df.loc[:,'Confidence'].iloc[0] = confidence
     return df
 
   def trim_columns(self, df):

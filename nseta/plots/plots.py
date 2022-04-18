@@ -27,11 +27,11 @@ for each candle.
 '''
 @tracelog
 def plot_candlestick(df, symbol_name="", plot_title=''):
-  o = df['Open'].astype(float)
-  h = df['High'].astype(float)
-  l = df['Low'].astype(float)
-  c = df['Close'].astype(float)
-  p = df['candlestick_pattern'].astype(str)
+  o = df.loc[:,'Open'].astype(float)
+  h = df.loc[:,'High'].astype(float)
+  l = df.loc[:,'Low'].astype(float)
+  c = df.loc[:,'Close'].astype(float)
+  p = df.loc[:,'candlestick_pattern'].astype(str)
 
   trace = go.Candlestick(
         open=o,
@@ -62,7 +62,7 @@ def plot_technical_indicators(df):
   axs[0,0].legend(['RSI(14)'], loc='upper left', fontsize='x-small')
 
   axs[1,0].plot(tiinstance.get_macd_df(df))
-  axs[1,0].bar(df['dt'], df['macdhist(26)'])
+  axs[1,0].bar(df.loc[:,'dt'], df.loc[:,'macdhist(26)'])
   axs[1,0].legend(['MACD(12,26)', 'EMA(9)', 'Divergence'], loc='upper left', fontsize='x-small')
 
   axs[2,0].plot(tiinstance.get_sma_df(df))
@@ -74,7 +74,7 @@ def plot_technical_indicators(df):
   axs[3,0].set_xlabel('Date')
   axs[3,0].legend(['Close','EMA(10)'], loc='upper left', fontsize='x-small')
 
-  axs[4,0].bar(df['dt'],df['Volume'])
+  axs[4,0].bar(df.loc[:,'dt'],df.loc[:,'Volume'])
   axs[4,0].set_ylabel('Volume')
 
   axs[0,1].plot(tiinstance.get_mom_df(df))
@@ -91,9 +91,9 @@ def plot_technical_indicators(df):
   axs[3,1].axhline(linestyle='--', color='r')
   axs[3,1].legend(['OBV'], loc='upper left', fontsize='x-small')
 
-  axs[4,1].bar(df['dt'],df['Volume'])
+  axs[4,1].bar(df.loc[:,'dt'],df.loc[:,'Volume'])
 
-  fig.suptitle('Technical indicators for ' + df['Symbol'][0])
+  fig.suptitle('Technical indicators for ' + df.loc[:,'Symbol'][0])
   fig.align_labels()
 
   return plt
@@ -140,9 +140,9 @@ def plot_macd(df):
   fig, axs = plt.subplots(1,1, sharex=True)
   tiinstance = ti()
   axs.plot(tiinstance.get_macd_df(df))
-  axs.bar(df['dt'], df['macdhist(26)'])
+  axs.bar(df.loc[:,'dt'], df.loc[:,'macdhist(26)'])
   axs.legend(['MACD(12,26)', 'EMA(9)', 'Divergence'], loc='upper left', fontsize='x-small')
-  fig.suptitle('Moving Average Convergence Divergence for ' + df['Symbol'][0])
+  fig.suptitle('Moving Average Convergence Divergence for ' + df.loc[:,'Symbol'][0])
   fig.align_labels()
   return plt
 
@@ -207,7 +207,7 @@ def plot_obv(df):
 
 @tracelog
 def plot_sstochastic(df):
-  df['SStochastic(14)'], df['SStochastic(3)'] = ta.STOCH(df['High'], df['Low'], df['Close'], fastk_period=14, slowk_period=3, slowk_matype=0, slowd_period=3, slowd_matype=0)
+  df.loc[:,'SStochastic(14)'], df.loc[:,'SStochastic(3)'] = ta.STOCH(df.loc[:,'High'], df.loc[:,'Low'], df.loc[:,'Close'], fastk_period=14, slowk_period=3, slowk_matype=0, slowd_period=3, slowd_matype=0)
   df[['SStochastic(14)','SStochastic(3)']].plot()
   plt.title('Slow Stochastic(k=14, d=3)')
   plt.grid(True)
@@ -215,7 +215,7 @@ def plot_sstochastic(df):
 
 @tracelog
 def plot_fstochastic(df):
-  df['FStochastic(14)'], df['FStochastic(3)'] = ta.STOCHF(df['High'], df['Low'], df['Close'], fastk_period=14, fastd_period=3, fastd_matype=0)
+  df.loc[:,'FStochastic(14)'], df.loc[:,'FStochastic(3)'] = ta.STOCHF(df.loc[:,'High'], df.loc[:,'Low'], df.loc[:,'Close'], fastk_period=14, fastd_period=3, fastd_matype=0)
   df[['FStochastic(14)','FStochastic(3)']].plot()
   plt.title('Fast Stochastic(k=14, d=3)')
   plt.grid(True)

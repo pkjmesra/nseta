@@ -19,6 +19,7 @@ class stockNewsScanner(baseStockScanner):
     signalframes = []
     df = None
     signaldf = None
+    pd.set_option('mode.chained_assignment', None)
     for symbol in stocks:
       try:
         self.update_progress(symbol)

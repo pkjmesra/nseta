@@ -56,6 +56,7 @@ class basesignalstrategy:
 
   @property
   def basereport(self):
+    pd.set_option('mode.chained_assignment', None)
     return pd.DataFrame(self.baseledger)
 
   @tracelog
@@ -289,6 +290,7 @@ class basesignalstrategy:
     # Last request was honoured
     if holding_size != self.order_queue.holdings_size:
       self.update_ledger(order_type)
+    pd.set_option('mode.chained_assignment', None)
     default_logger().debug('\n{}'.format(pd.DataFrame(self.ledger)))
 
   def target_met(self, prev_pattern=Direction.Neutral):

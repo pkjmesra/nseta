@@ -1,4 +1,4 @@
-FROM pkjmesra/nseta:0.6 as nseta-base
+FROM pkjmesra/nseta:latest nseta-base
 ENV PYTHONUNBUFFERED 1
 
 FROM scratch

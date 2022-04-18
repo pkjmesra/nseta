@@ -41,6 +41,7 @@ class volumeStockScanner(baseStockScanner):
     start_date = datetime.datetime.now()-datetime.timedelta(days=self.last_x_days_timedelta())
     arch = archiver()
     end_date = datetime.datetime.now()
+    pd.set_option('mode.chained_assignment', None)
     for symbol in stocks:
       df_today = None
       primary = None
@@ -83,7 +84,7 @@ class volumeStockScanner(baseStockScanner):
     df_today = df_today.tail(1)
     df = df.sort_values(by='Date',ascending=True)
     # Get the 7 day average volume
-    total_7day_volume = df['Volume'].sum()
+    total_7day_volume = df.loc[:,'Volume'].sum()
     avg_volume = round(total_7day_volume/7,2)
     n = 1
     if current_datetime_in_ist_trading_time_range():
@@ -95,72 +96,72 @@ class volumeStockScanner(baseStockScanner):
       n = 2
       df = df.tail(n)
 
-    df['FreeFloat'] = np.nan
-    df['LTP']=np.nan
-    df['%Change'] = np.nan
-    df['TDYVol(%)']= np.nan
-    df['TDYVol']= np.nan
-    df['7DVol(%)'] = np.nan
-    df['Remarks']='NA'
-    df['Yst7DVol(%)']= np.nan
-    df['Avg7DVol'] = np.nan
-    df['Yst%Del'] = df['%Deliverable'].apply(lambda x: round(x*100, 1))
-    df['Tdy%Del']= np.nan
-    df['PPoint']= df['PP']
-    df['S1-R3']= np.nan
+    df.loc[:,'FreeFloat'] = np.nan
+    df.loc[:,'LTP']=np.nan
+    df.loc[:,'%Change'] = np.nan
+    df.loc[:,'TDYVol(%)']= np.nan
+    df.loc[:,'TDYVol']= np.nan
+    df.loc[:,'7DVol(%)'] = np.nan
+    df.loc[:,'Remarks']='NA'
+    df.loc[:,'Yst7DVol(%)']= np.nan
+    df.loc[:,'Avg7DVol'] = np.nan
+    df.loc[:,'Yst%Del'] = df.loc[:,'%Deliverable'].apply(lambda x: round(x*100, 1))
+    df.loc[:,'Tdy%Del']= np.nan
+    df.loc[:,'PPoint']= df.loc[:,'PP']
+    df.loc[:,'S1-R3']= np.nan
     
 
-    volume_yest = df['Volume'].iloc[0]
-    vwap = df['VWAP'].iloc[n-1]
-    df['VWAP'].iloc[n-1] = '₹ {}'.format(vwap)
-    ltp = str(df_today['LTP'].iloc[0]).replace(',','')
+    volume_yest = df.loc[:,'Volume'].iloc[0]
+    vwap = df.loc[:,'VWAP'].iloc[n-1]
+    df.loc[:,'VWAP'].iloc[n-1] = '₹ {}'.format(vwap)
+    ltp = str(df_today.loc[:,'LTP'].iloc[0]).replace(',','')
     ltp = float(ltp)
-    today_volume = float(str(df_today['TotalTradedVolume'].iloc[0]).replace(',',''))
+    today_volume = float(str(df_today.loc[:,'TotalTradedVolume'].iloc[0]).replace(',',''))
     today_vs_yest = round(100* (today_volume - volume_yest)/volume_yest, 1)
-    df['Date'].iloc[n-1] = df_today['Updated'].iloc[0]
-    df['%Change'].iloc[n-1] = '{} %'.format(df_today['pChange'].iloc[0])
-    freeFloat = df_today['FreeFloat'].iloc[0]
-    df['FreeFloat'].iloc[n-1] = freeFloat
-    df['Avg7DVol'].iloc[n-1] = avg_volume
-    df['TDYVol(%)'].iloc[n-1] = today_vs_yest
-    df['7DVol(%)'].iloc[n-1] = round(100* (today_volume - avg_volume)/avg_volume, 1)
-    df['LTP'].iloc[n-1] = '₹ {}'.format(ltp)
-    df['Yst7DVol(%)'].iloc[n-1] = round((100 * (volume_yest - avg_volume)/avg_volume), 1)
-    df['Tdy%Del'].iloc[n-1] = df_today['Tdy%Del'].iloc[0]
-    df['Yst%Del'].iloc[n-1] = df['Yst%Del'].iloc[0]
-    df['TDYVol']= today_volume
-    r3 = df['R3'].iloc[n-1]
-    r2 = df['R2'].iloc[n-1]
-    r1 = df['R1'].iloc[n-1]
-    pp = df['PP'].iloc[n-1]
-    s1 = df['S1'].iloc[n-1]
-    s2 = df['S2'].iloc[n-1]
-    s3 = df['S3'].iloc[n-1]
+    df.loc[:,'Date'].iloc[n-1] = df_today.loc[:,'Updated'].iloc[0]
+    df.loc[:,'%Change'].iloc[n-1] = '{} %'.format(df_today.loc[:,'pChange'].iloc[0])
+    freeFloat = df_today.loc[:,'FreeFloat'].iloc[0]
+    df.loc[:,'FreeFloat'].iloc[n-1] = freeFloat
+    df.loc[:,'Avg7DVol'].iloc[n-1] = avg_volume
+    df.loc[:,'TDYVol(%)'].iloc[n-1] = today_vs_yest
+    df.loc[:,'7DVol(%)'].iloc[n-1] = round(100* (today_volume - avg_volume)/avg_volume, 1)
+    df.loc[:,'LTP'].iloc[n-1] = '₹ {}'.format(ltp)
+    df.loc[:,'Yst7DVol(%)'].iloc[n-1] = round((100 * (volume_yest - avg_volume)/avg_volume), 1)
+    df.loc[:,'Tdy%Del'].iloc[n-1] = df_today.loc[:,'Tdy%Del'].iloc[0]
+    df.loc[:,'Yst%Del'].iloc[n-1] = df.loc[:,'Yst%Del'].iloc[0]
+    df.loc[:,'TDYVol']= today_volume
+    r3 = df.loc[:,'R3'].iloc[n-1]
+    r2 = df.loc[:,'R2'].iloc[n-1]
+    r1 = df.loc[:,'R1'].iloc[n-1]
+    pp = df.loc[:,'PP'].iloc[n-1]
+    s1 = df.loc[:,'S1'].iloc[n-1]
+    s2 = df.loc[:,'S2'].iloc[n-1]
+    s3 = df.loc[:,'S3'].iloc[n-1]
     crossover_point = False
-    symbol = df['Symbol'].iloc[n-1]
+    symbol = df.loc[:,'Symbol'].iloc[n-1]
     for pt, pt_name in zip([r3,r2,r1,pp,s1,s2,s3], ['R3', 'R2', 'R1', 'PP', 'S1', 'S2', 'S3']):
       # Stocks that are within 0.075% of crossover points
       if abs((ltp-pt)*100/ltp) - resources.scanner().crossover_reminder_percent <= 0:
         crossover_point = True
-        df['Remarks'].iloc[n-1]= '** {}'.format(pt_name)
-        df['S1-R3'].iloc[n-1] = pt
+        df.loc[:,'Remarks'].iloc[n-1]= '** {}'.format(pt_name)
+        df.loc[:,'S1-R3'].iloc[n-1] = pt
         break
     if not crossover_point:
       pt_dict = {"R3":r3,"R2":r2,"R1":r1,"PP":pp,"S1":s1,"S2":s2,"S3":s3}
       if ltp <= s3:
-        df['Remarks'].iloc[n-1]='LTP < S3'
-        df['S1-R3'].iloc[n-1] = s3
+        df.loc[:,'Remarks'].iloc[n-1]='LTP < S3'
+        df.loc[:,'S1-R3'].iloc[n-1] = s3
       else:
         keys = pt_dict.keys()
         for key in keys:
           pt = pt_dict[key]
           if ltp >= pt:
-            df['Remarks'].iloc[n-1]='LTP >= {}'.format(key)
-            df['S1-R3'].iloc[n-1] = pt
+            df.loc[:,'Remarks'].iloc[n-1]='LTP >= {}'.format(key)
+            df.loc[:,'S1-R3'].iloc[n-1] = pt
             break
     if current_datetime_in_ist_trading_time_range():
-      df['T0BuySellDiff']= np.nan
-      df['T0BuySellDiff'].iloc[n-1] = df_today['T0BuySellDiff'].iloc[0]
+      df.loc[:,'T0BuySellDiff']= np.nan
+      df.loc[:,'T0BuySellDiff'].iloc[n-1] = df_today.loc[:,'T0BuySellDiff'].iloc[0]
 
     df = df.tail(1)
     default_logger().debug(df.to_string(index=False))
@@ -173,6 +174,6 @@ class volumeStockScanner(baseStockScanner):
       resp = TICKERTAPE_NEWS_URL(symbol.upper())
       bs = BeautifulSoup(resp.text, 'lxml')
       news = ParseNews(soup=bs)
-      df['News'] = news.parse_news().ljust(38)
+      df.loc[:,'News'] = news.parse_news().ljust(38)
       signalframescopy.append(df)
     return df, df_today, signalframescopy

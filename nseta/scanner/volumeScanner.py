@@ -27,7 +27,7 @@ class volumeScanner(baseScanner):
 
   def scan_results(self, df, signaldf, should_cache=True):
     if signaldf is not None and len(signaldf) > 0:
-      str_signal_stocks_list = '{}'.format(signaldf['Symbol'].tolist())
+      str_signal_stocks_list = '{}'.format(signaldf.loc[:,'Symbol'].tolist())
       should_enum = resources.scanner().enumerate_volume_scan_signals
       csv_signals = str_signal_stocks_list.replace('[','').replace(']','').replace("'",'').replace(' ','') if should_enum else ''
       if should_enum:
@@ -35,6 +35,6 @@ class volumeScanner(baseScanner):
     super().scan_results(df, signaldf, should_cache)
 
   def scan_analysis(self, analysis_df):
-    scanner = topPickScanner(scanner_type=ScannerType.TopPick, stocks=analysis_df['Symbol'].tolist(), indicator='macd', background=self.background)
+    scanner = topPickScanner(scanner_type=ScannerType.TopPick, stocks=analysis_df.loc[:,'Symbol'].tolist(), indicator='macd', background=self.background)
     scanner.clear_cache(True, force_clear = True)
     scanner.scan(option='')
