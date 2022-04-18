@@ -8,8 +8,6 @@ COPY --from=base-image ["/", "/"]
 RUN apt-get -y install libc-dev
 RUN apt-get update && apt-get -y install build-essential
 
-RUN pip3 install ipython==7.5.0
-
 WORKDIR /
 
 RUN apt-get -y install unzip
@@ -20,9 +18,6 @@ RUN wget https://github.com/pkjmesra/nseta/archive/main.zip && \
 
 WORKDIR nseta-main
 RUN pip3 install --upgrade pip
-RUN pip3 install convertdate>=2.3.0
-RUN pip3 install sanic==19.12.2
-RUN pip3 install multidict==4.6
 RUN python3 setup.py clean build install
 
 WORKDIR /

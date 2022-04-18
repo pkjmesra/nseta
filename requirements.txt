@@ -3,6 +3,7 @@ bs4>=0.0.1
 cachecontrol>=0.12.6
 Click>=7.0
 convertdate>=2.3.0
+Cython>=0.22
 lxml>=4.6.2
 matplotlib>=3.2.2
 numpy>=1.18.0
