@@ -18,6 +18,7 @@ RUN wget https://github.com/pkjmesra/nseta/archive/main.zip && \
 
 WORKDIR nseta-main
 RUN pip3 install --upgrade pip
+RUN pip3 install -r requirements.txt
 RUN python3 setup.py clean build install
 
 WORKDIR /
