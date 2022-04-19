@@ -53,9 +53,6 @@ jobs:
         export TA_INCLUDE_PATH=/home/linuxbrew/.linuxbrew/Cellar/ta-lib/0.4.0/include
         python3 -m pip install ta-lib>=0.4.19
         python3 -c 'import numpy, talib; close = numpy.random.random(100); output = talib.SMA(close); print(output)'
-    - name: Install ipython
-      run: |
-        pip3 install ipython==7.5.0
     - name: Install project dependencies
       run: |
         pwd

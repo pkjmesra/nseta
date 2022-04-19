@@ -54,9 +54,6 @@ jobs:
         pip3 install d:\a\nseta\nseta\libs\TA_Lib-0.4.20-cp38-cp38-win_amd64.whl
         python3 -m pip install ta-lib>=0.4.19
         python3 -c 'import numpy, talib; close = numpy.random.random(100); output = talib.SMA(close); print(output)'
-    - name: Install ipython
-      run: |
-        pip3 install ipython==7.5.0
     - name: Install project dependencies
       run: |
         pip3 install -r requirements.txt
