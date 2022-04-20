@@ -11,8 +11,9 @@
 # IF SMA(50) > SMA(10) => SELL
 
 import pandas as pd 
+import datetime
 import matplotlib.pyplot as plt 
-import requests
+import matplotlib.dates as mdates
 import math
 from tenacity import retry
 from termcolor import colored as cl 
@@ -157,11 +158,26 @@ def calculate_roi(strategy, symbol):
 
 def plot_strategy(df, symbol):
     # PLOTTING SMA TRADE SIGNALS
+    xAxisFmt = mdates.DateFormatter('%Y-%m-%d')
+    df.set_index('Date', inplace=True)
+    today = datetime.datetime.today().strftime('%Y-%m-%d')
+    intraday_df = df[df.index >= today]
+    if len(intraday_df) > 1:
+        xAxisFmt = mdates.DateFormatter('%H:%M')
+    else:
+        df.index = pd.to_datetime(df.index)
+        plt.gca().xaxis.set_major_locator(mdates.DayLocator(interval=5))
+    plt.gca().xaxis.set_major_formatter(xAxisFmt)
+    
     plt.plot(df['Close'], label = '{} Close Prices'.format(symbol), linewidth = 5, alpha = 0.3)
     plt.plot(df['sma_20'], alpha = 0.6, label = 'SMA 20')
     plt.plot(df['sma_50'], alpha = 0.6, label = 'SMA 50')
     plt.scatter(df.index, df['buy_price'], marker = '^', s = 200, color = 'darkblue', label = 'BUY SIGNAL')
     plt.scatter(df.index, df['sell_price'], marker = 'v', s = 200, color = 'crimson', label = 'SELL SIGNAL')
-    plt.legend(loc = 'upper right')
+    plt.legend(loc = 'lower right')
     plt.title('{} SMA CROSSOVER TRADING SIGNALS'.format(symbol))
+    plt.ylabel('{} Stock Closing Prices'.format(symbol))
+    plt.xlabel('Date/Time')
+    plt.grid(True)
+    plt.gcf().autofmt_xdate()
     plt.show()

@@ -12,6 +12,7 @@
 
 from os import symlink
 import pandas as pd 
+import datetime
 import matplotlib.pyplot as plt
 import matplotlib.dates as mdates
 import math
@@ -158,9 +159,17 @@ def calculate_roi(strategy, symbol):
 def plot_strategy(df, symbol):
     plt.style.use('fivethirtyeight')
     plt.rcParams['figure.figsize'] = (20, 10)
+    xAxisFmt = mdates.DateFormatter('%Y-%m-%d')
     df.set_index('Date', inplace=True)
-    plt.gca().xaxis.set_major_formatter(mdates.DateFormatter('%Y-%m-%d'))
-    plt.gca().xaxis.set_major_locator(mdates.DayLocator(interval=5))
+    today = datetime.datetime.today().strftime('%Y-%m-%d')
+    intraday_df = df[df.index >= today]
+    if len(intraday_df) > 1:
+        xAxisFmt = mdates.DateFormatter('%H:%M')
+    else:
+        df.index = pd.to_datetime(df.index)
+        plt.gca().xaxis.set_major_locator(mdates.DayLocator(interval=5))
+    plt.gca().xaxis.set_major_formatter(xAxisFmt)
+    
     plt.plot(df.index, df['Close'])
     df['Close'].plot(label = '{} CLOSE Prices'.format(symbol), alpha = 0.6, linewidth = 1, color = 'skyblue')
     df['upper_bb'].plot(label = 'UPPER BB 20', linestyle = '--', linewidth = 1, color = 'black')
@@ -169,8 +178,9 @@ def plot_strategy(df, symbol):
     plt.scatter(df.index, df['buy_price'], marker = '^', color = 'green', label = 'BUY', s = 200)
     plt.scatter(df.index, df['sell_price'], marker = 'v', color = 'red', label = 'SELL', s = 200)
     plt.gcf().autofmt_xdate()
-    plt.xlabel('Date')
+    plt.xlabel('Date/Time')
     plt.ylabel('{} Stock Closing Prices'.format(symbol))
     plt.title('{} BB STRATEGY TRADING SIGNALS'.format(symbol))
-    plt.legend(loc = 'upper right')
+    plt.legend(loc = 'lower right')
+    plt.grid(True)
     plt.show()
