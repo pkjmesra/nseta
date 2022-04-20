@@ -13,6 +13,7 @@ python-dateutil>=2.8.0
 pytz>=2019.3
 requests>=2.22.0
 six>=1.13.0
+termcolor
 urllib3>=1.25.7
 
 setuptools>=50.3.0

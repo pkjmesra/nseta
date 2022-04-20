@@ -17,7 +17,7 @@ class TestStrategycli(baseUnitTest):
     runner = CliRunner()
     result = runner.invoke(plot_ta, args=['--start', '2020-08-01', '--end', '2021-01-01'])
     self.assertEqual(result.exit_code , 0)
-    self.assertIn("Please provide security/index code", result.output, str(result.output))
+    self.assertIn("Please provide security", result.output, str(result.output))
 
   @patch('matplotlib.pyplot.show')
   def test_plot_ta_all(self, mock_pyplot):

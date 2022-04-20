@@ -35,7 +35,7 @@ class TestCliInputs(baseUnitTest):
     self.assertTrue(result)
     result = validate_symbol(None)
     self.assertFalse(result)
-    self.assertIn('Please provide security/index code', self.capturedOutput.getvalue())
+    self.assertIn('Please provide security', self.capturedOutput.getvalue())
 
   def tearDown(self):
     super().tearDown()
