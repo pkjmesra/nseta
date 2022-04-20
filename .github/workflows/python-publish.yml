@@ -112,20 +112,17 @@ jobs:
         name: wheel-egg-code-tar-${{ steps.vars.outputs.THIS_VERSION }}-${{ steps.vars.outputs.branch }}-${{ steps.vars.outputs.sha_short }}
         path: |
           dist
-    - name: Login and publish latest image to Docker Hub
+    - name: Login to Docker Hub
       uses: docker/login-action@v1
       with:
         username: ${{ secrets.DOCKERHUB_USERNAME }}
         password: ${{ secrets.DOCKERHUB_TOKEN }}
+    - name: Publish latest image to Docker Hub
       run: |
         docker build . -f Dockerfile -t pkjmesra/nseta:latest
         docker push pkjmesra/nseta:latest
-    - name: Login and publish release to Docker Hub
+    - name: Publish release version image to Docker Hub
       if: startsWith(github.ref, 'refs/tags')
-      uses: docker/login-action@v1
-      with:
-        username: ${{ secrets.DOCKERHUB_USERNAME }}
-        password: ${{ secrets.DOCKERHUB_TOKEN }}
       run: |
         docker build . -f Dockerfile -t pkjmesra/nseta:${{ steps.vars.outputs.THIS_VERSION }}
         docker push pkjmesra/nseta:${{ steps.vars.outputs.THIS_VERSION }}
