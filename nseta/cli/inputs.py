@@ -40,6 +40,6 @@ def print_help_msg(command):
 @tracelog
 def validate_symbol(symbol):
   if not symbol:
-    click.secho('Please provide security/index code', fg='red', nl=True)
+    click.secho('Please provide security/stock ticker', fg='red', nl=True)
     return False
   return True

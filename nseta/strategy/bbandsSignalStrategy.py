@@ -27,6 +27,7 @@ class bbandsSignalStrategy(basesignalstrategy):
 
   @tracelog
   def test_strategy(self, df):
+    default_logger().debug('Testing bbands strategy with data: \n\n{}.'.format(df.to_string(index=False)))
     # TODO: What if keys are in lowercase or dt/datetime is used instead of date/Date
     try:
       rowindex = 0

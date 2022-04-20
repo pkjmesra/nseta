@@ -71,6 +71,11 @@ class filterlogger:
   def level(self):
     return self.logger.level
 
+  @property
+  def isDebugging(self):
+    global __DEBUG__
+    return __DEBUG__
+
   @level.setter
   def level(self, level):
     self.logger.setLevel(level)
@@ -78,10 +83,10 @@ class filterlogger:
   @staticmethod
   def getlogger(logger):
     global __filter__
-    if __filter__ is not None:
-      return filterlogger(logger=logger)
-    else:
-      return logger
+    # if __filter__ is not None:
+    return filterlogger(logger=logger)
+    # else:
+    #   return logger
 
   def debug(self, e, exc_info=False):
     global __filter__
@@ -92,16 +97,26 @@ class filterlogger:
       filename = (frame[0].f_code.co_filename).rsplit('/', 1)[1]
       components = str(frame).split(',')
       line = '{} - {} - {}\n{}'.format(filename, components[5],components[6] , line)
+      if __filter__ is None:
+        self.logger.debug(line, exc_info=exc_info)
+        return
       if __filter__ in line.upper():
         self.logger.debug(line, exc_info=exc_info)
 
   def info(self, line):
     global __filter__
+    if __filter__ is None:
+      self.logger.info(line)
+      return    
     if __filter__ in line.upper():
       self.logger.info(line)
   
   def warn(self, line):
     global __filter__
+    if __filter__ is None:
+      self.logger.warn(line)
+      return    
+
     if __filter__ in line.upper():
       self.logger.warn(line)
 

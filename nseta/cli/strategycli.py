@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 from time import time
 
+from numpy import full
+
 from nseta.strategy.strategy import *
 from nseta.common.history import *
 from nseta.common.log import tracelog, default_logger
@@ -36,6 +38,9 @@ def test_trading_strategy(symbol, start, end, strategy, upper, lower, clear, plo
       return
     sd = datetime.strptime(start, '%Y-%m-%d').date()
     ed = datetime.strptime(end, '%Y-%m-%d').date()
+  if not validate_symbol(symbol):
+    print_help_msg(test_trading_strategy)
+    return
   start_time = time()
   try:
     clear_cache(clear, intraday)
@@ -59,19 +64,19 @@ def test_trading_strategy(symbol, start, end, strategy, upper, lower, clear, plo
 @click.option('--symbol', '-S',  help='Comma separated security codes. Skip/Leave empty for scanning all stocks in stocks.txt.')
 @click.option('--start', '-s', help='Start date in yyyy-mm-dd format')
 @click.option('--end', '-e', help='End date in yyyy-mm-dd format')
-@click.option('--strategy', help=', '.join(STRATEGY_MAPPING_KEYS) + '. Choose one. Leavy empty for scanning through all strategies.')
+@click.option('--strategy', help=', '.join(STRATEGY_MAPPING_KEYS) + '. Choose one. Leave empty for scanning through all strategies.')
 @click.option('--upper', '-u', default=resources.rsi().upper, type=float, help='Used as upper limit, for example, for RSI. Default is {}. Only when strategy is "custom", we buy the security when the predicted next day return is > + upper %'.format(str(resources.rsi().upper)))
 @click.option('--lower', '-l', default=resources.rsi().lower, type=float, help='Used as lower limit, for example, for RSI. Default is {}. Only when strategy is "custom", we sell the security when the predicted next day return is < - lower %'.format(str(resources.rsi().lower)))
 @click.option('--clear', '-c', default=False, is_flag=True, help='Clears the cached data for the given options.')
 @click.option('--intraday', '-i', is_flag=True, help='Test trading strategy for the current intraday price history (Optional)')
 @click.option('--strict', default=False, is_flag=True, help='By default(False). --strict, if you would like the buy/sell to be generated only at top/bottom reversals for the selected strategy.')
-@click.option('--orderby', '-o', default='recommendation', type=click.Choice(['symbol','recommendation']),
-  help='symbol or recommendation. Choose one. Default is orderby recommendation.')
+@click.option('--orderby', '-o', default='symbol', type=click.Choice(['symbol','recommendation']),
+  help='symbol or recommendation. Choose one. Default is orderby symbol.')
 @tracelog
 def scan_trading_strategy(symbol, start, end, strategy, upper, lower, clear, orderby, strict, intraday=False):
   if not intraday:
     if not validate_inputs(start, end, symbol, None, skip_symbol=True):
-      print_help_msg(test_trading_strategy)
+      print_help_msg(scan_trading_strategy)
       return
   start_time = time()
   try:
@@ -83,9 +88,11 @@ def scan_trading_strategy(symbol, start, end, strategy, upper, lower, clear, ord
     time_spent = end_time-start_time
     print('\nThis run of trading strategy scan took {:.1f} sec'.format(time_spent))
     if full_summary is not None and len(full_summary) > 0:
-      full_summary= full_summary.dropna()
+      if strategy is not None:
+        full_summary = full_summary.loc[:,['Symbol','{}-PnL'.format(strategy.upper()), 'Reco-{}'.format(strategy.upper())]]
+      full_summary = full_summary.dropna()
       if orderby == 'recommendation':
-        full_summary = full_summary.sort_values(by='Reco-MACD',ascending=True)
+        full_summary = full_summary.sort_values(by='Reco-{}'.format(strategy.upper()),ascending=True)
       print('\n{}\n'.format(full_summary.to_string(index=False)))
   except Exception as e:
     default_logger().debug(e, exc_info=True)

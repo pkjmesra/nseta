@@ -19,6 +19,8 @@ from nseta.common.multithreadedScanner import multithreaded_scan
 from nseta.strategy.simulatedorder import OrderType
 from nseta.common.ti import ti
 from nseta.common.history import *
+from nseta.strategy.bollingerbandsVolatileStrategy import bbands_range_crossover_strategy
+from nseta.strategy.smaCrossoverStrategy import sma_crossover_strategy
 
 __all__ = ['STRATEGY_MAPPING', 'strategyManager']
 
@@ -27,7 +29,8 @@ CONCURRENT_STRATEGY_COUNT = 3
 
 @tracelog
 def smac_strategy(df,  lower, upper, plot=False):
-  backtest_ma_strategy(df, fast_period=resources.backtest().smac_fast_period, slow_period=resources.backtest().smac_slow_period, plot=plot)
+  sma_crossover_strategy(df)
+  # backtest_ma_strategy(df, fast_period=resources.backtest().smac_fast_period, slow_period=resources.backtest().smac_slow_period, plot=plot)
 
 @tracelog
 def emac_strategy(df,  lower, upper, plot=False):
@@ -35,7 +38,8 @@ def emac_strategy(df,  lower, upper, plot=False):
 
 @tracelog
 def bbands_strategy(df,  lower, upper, plot=False):
-  backtest_bbands_strategy(df, period=resources.backtest().bbands_period, devfactor=resources.backtest().bbands_devfactor)
+  bbands_range_crossover_strategy(df)
+  # backtest_bbands_strategy(df, period=resources.backtest().bbands_period, devfactor=resources.backtest().bbands_devfactor)
 
 @tracelog
 def rsi_strategy(df,  lower=resources.backtest().rsi_lower, upper=resources.backtest().rsi_upper, plot=False):
@@ -114,12 +118,12 @@ class strategyManager:
       for strategy in strategies:
         try:
           df = instance.ohlc_intraday_history(stock) if intraday else instance.daily_ohlc_history(stock, sd, ed, type=ResponseType.History)
-          summary = self.test_signals(df, lower, upper, strategy, intraday= intraday, plot=False, show_detail=False)
+          summary = self.test_signals(df, lower, upper, strategy, intraday= intraday, plot=False, show_detail=default_logger().isDebugging)
           if summary is not None and len(summary) > 0:
-            df_summary['Symbol'].iloc[0] = stock
-            df_summary['{}-PnL'.format(strategy.upper())].iloc[0] = summary['PnL'].iloc[0]
-            reco = summary['Recommendation'].iloc[0]
-            df_summary['Reco-{}'.format(strategy.upper())].iloc[0] = '-' if reco == 'Unknown' else reco
+            df_summary.loc[:,'Symbol'].iloc[0] = stock
+            df_summary.loc[:,'{}-PnL'.format(strategy.upper())].iloc[0] = summary.loc[:,'PnL'].iloc[0]
+            reco = summary.loc[:,'Recommendation'].iloc[0]
+            df_summary.loc[:,'Reco-{}'.format(strategy.upper())].iloc[0] = '-' if reco == 'Unknown' else reco
         except Exception as e:
           default_logger().debug(e, exc_info=True)
           default_logger().debug('Failed to test trading strategy for symbol: {}.'.format(stock))
@@ -127,6 +131,7 @@ class strategyManager:
       if df_summary is not None and len(df_summary) > 0:
         frames.append(df_summary)
     full_summary = pd.concat(frames)
+    default_logger().debug('\nFull_summary for symbol ({}): \n{}\n'.format(stock, full_summary.to_string(index=False)))
     return [full_summary, None]
 
   def scan_trading_strategy(self,symbol, start, end, strategy, upper, lower, clear, orderby, intraday=False):
@@ -213,27 +218,25 @@ class strategyManager:
         continue
     return [None, None]
 
-  def test_historical_trading_strategy(self, symbol, sd, ed, strategy, lower, upper, plot=False, backtest_lib=True):
+  def test_historical_trading_strategy(self, symbol, sd, ed, strategy, lower, upper, plot=False):
     df = self.get_historical_dataframe(symbol, sd, ed)
     global __test_counter__
     __test_counter__ = 0
     self._total_tests_counter = 1
     if df is not None and len(df) > 0:
-      if backtest_lib:
-        self.run_test_strategy(df, symbol, strategy,  lower, upper, plot=plot)
-      return self.test_signals(df, lower, upper, strategy, plot=plot, show_detail=backtest_lib)
+      self.run_test_strategy(df, symbol, strategy,  lower, upper, plot=plot)
+      return self.test_signals(df, lower, upper, strategy, plot=plot, show_detail=True)
     else:
       return None
 
-  def test_intraday_trading_strategy(self, symbol, strategy,lower, upper, plot=False, backtest_lib=True):
+  def test_intraday_trading_strategy(self, symbol, strategy,lower, upper, plot=False):
     df = self.get_intraday_dataframe(symbol, strategy)
     global __test_counter__
     __test_counter__ = 0
     self._total_tests_counter = 1
     if df is not None and len(df) > 0:
-      if backtest_lib:
-        self.run_test_strategy(df, symbol, strategy, lower, upper, plot=plot)
-      return self.test_signals(df, lower, upper, strategy, intraday=True, plot=plot, show_detail=backtest_lib)
+      self.run_test_strategy(df, symbol, strategy,  lower, upper, plot=plot)
+      return self.test_signals(df, lower, upper, strategy, intraday=True, plot=plot, show_detail=True)
     else:
       return None
 
@@ -259,6 +262,7 @@ class strategyManager:
 
   def run_test_strategy(self, df, symbol, strategy,  lower, upper, plot=False):
     strategy = strategy.lower()
+    
     if strategy in STRATEGY_MAPPING:
       STRATEGY_MAPPING[strategy](df,  float(lower), float(upper))
     elif strategy == 'custom':
@@ -294,16 +298,16 @@ class strategyManager:
           df_dict[df_key] = df.loc[:,df_key]
         df_strtgy = pd.DataFrame(df_dict)
         cls_name = strgy_dict[key]["class"]
-        signal = cls_name(strict=self.strict, intraday=intraday, requires_ledger=show_detail)
+        signal = cls_name(strict=self.strict, intraday=intraday, requires_ledger=show_detail or default_logger().isDebugging)
         signal.set_limits(lower, upper)
         results, summary = signal.test_strategy(df_strtgy)
         break
     sys.stdout.write('\r{}/{}. Finished testing {} trading strategy for {}.'.ljust(120).format(__test_counter__, self.total_tests_counter, strategy, symbol))
     sys.stdout.flush()
     if results is not None and show_detail:
-      print('\n{}\n'.format(results.to_string(index=False)))
+      print('\nResults: \n{}\n'.format(results.to_string(index=False)))
     if summary is not None and show_detail:
-      print('\n{}\n'.format(summary.to_string(index=False)))
+      print('\nSummary: \n{}\n'.format(summary.to_string(index=False)))
     return summary
 
   def prepare_for_historical_strategy(self, df, symbol):
