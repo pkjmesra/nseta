@@ -5,6 +5,7 @@
 [![Ubuntu](https://github.com/pkjmesra/nseta/workflows/Ubuntu/badge.svg)](https://github.com/pkjmesra/nseta/actions?query=workflow%3AUbuntu)
 [![macOS](https://github.com/pkjmesra/nseta/workflows/macOS/badge.svg)](https://github.com/pkjmesra/nseta/actions?query=workflow%3AmacOS)
 [![Windows](https://github.com/pkjmesra/nseta/workflows/Windows/badge.svg)](https://github.com/pkjmesra/nseta/actions?query=workflow%3AWindows)
+[![Docker Build](https://github.com/pkjmesra/nseta/workflows/Docker%20Image%20CI/badge.svg)](https://github.com/pkjmesra/nseta/actions/workflows/docker-image.yml?query=workflow%3ADocker)
 [![Docker Status](https://img.shields.io/docker/automated/pkjmesra/nseta.svg)](https://hub.docker.com/repository/docker/pkjmesra/nseta)
 [![Docker Pulls](https://img.shields.io/docker/pulls/pkjmesra/nseta.svg)](https://hub.docker.com/repository/docker/pkjmesra/nseta)
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/pkjmesra/nseta/blob/main/LICENSE)
