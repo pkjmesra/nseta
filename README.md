@@ -22,7 +22,7 @@
 [![Linter: Prospector](https://img.shields.io/badge/Linter-Prospector-green.svg)](http://prospector.landscape.io/en/master/)
 [![Maintainability](https://api.codeclimate.com/v1/badges/6b7b7e68c16ca755de12/maintainability)](https://codeclimate.com/github/pkjmesra/nseta/maintainability)
 [![Donate PayPal](https://img.shields.io/badge/Donate%20%24-PayPal-brightgreen.svg)](https://www.paypal.com/paypalme/pkjmesra/5)
-
+[![Join the chat at https://gitter.im/pkjmesra/nseta](https://badges.gitter.im/pkjmesra/nseta.svg)](https://gitter.im/pkjmesra/nseta?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
 Python Library (and console/CLI application) to 
 -  Get publicly available data from [NSE India website](https://www1.nseindia.com/) <img src="/docs/assets/NSE_Logo.svg" width="118" height="28" alt="NSE India" > ie. stock live-quotes and historical data[ *EQUITY ONLY* AT THIS TIME. No support for Futures/Options/Derivatives yet.]
@@ -51,7 +51,7 @@ Python Library (and console/CLI application) to
 
 It takes a lot of time/effort to develop, implement, test and maintain the codebase. When possible, please donate and buy me a coffee :-)
 [![Otechie](https://api.otechie.com/pkjmes/badge.svg)](https://otechie.com/pkjmes)
-[![Donate PayPal](https://img.shields.io/badge/Donate%20%24-PayPal-brightgreen.svg)](https://www.paypal.com/paypalme/pkjmesra/5) [![Join the chat at https://gitter.im/pkjmesra/nseta](https://badges.gitter.im/pkjmesra/nseta.svg)](https://gitter.im/pkjmesra/nseta?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+[![Donate PayPal](https://img.shields.io/badge/Donate%20%24-PayPal-brightgreen.svg)](https://www.paypal.com/paypalme/pkjmesra/5)
 
 ## Tech Disclaimer
 This has been built and tested only on macOS Big Sur (v11+). You may wish to check the `.travis.yml` or the `python-publish.yml` file to understand how to build from source. If you test it on a platform other than macOS and find issues, please do report those in the `issues` tab above.
