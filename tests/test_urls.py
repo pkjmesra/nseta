@@ -16,7 +16,7 @@ import requests
 import six
 from nseta.common.urls import *
 import nseta.common.urls as urls
-from six.moves.urllib.parse import urlparse
+from urllib.parse import urlparse
 from baseUnitTest import baseUnitTest
 
 class TestUrls(baseUnitTest):

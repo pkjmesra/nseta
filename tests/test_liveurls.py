@@ -69,8 +69,9 @@ class TestLiveUrls(baseUnitTest):
     self.assertGreaterEqual(resp.text.find('Expiry Date'), 0)
 
   def test_holiday_list_url(self):
-    resp = holiday_list_url('01Jan2019', '31Mar2019')
-    self.assertGreaterEqual(resp.text.find('Holi'), 0)
+    n = datetime.now()
+    resp = holiday_list_url('01Jan{}'.format(n.year), '30Mar{}'.format(n.year))
+    self.assertGreaterEqual(resp.text.find('Republic Day'), 0)
 
   def tearDown(self):
     super().tearDown()

@@ -14,10 +14,10 @@ period = 14
 
 [SCANNER]
 UserStocksFilePath = userstocks.txt
-Background_Scan_Frequency_Intraday = 60
-Background_Scan_Frequency_Live = 60
-Background_Scan_Frequency_Quotes = 60
-Background_Scan_Frequency_Volume = 60
+Background_Scan_Frequency_Intraday = 6
+Background_Scan_Frequency_Live = 6
+Background_Scan_Frequency_Quotes = 6
+Background_Scan_Frequency_Volume = 6
 enumerate_volume_scan_signals = no
 scan_results_max_count = 30
 max_column_length = 55

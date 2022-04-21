@@ -142,7 +142,7 @@ class TestLivecli(baseUnitTest):
     b = threading.Thread(name='scan_test_background', 
           target=s.scan, args=['Symbol'], daemon=True)
     b.start()
-    time.sleep(0.5)
+    time.sleep(0.1)
     s.scan_background_interrupt()
     b.join()
     self.assertIn('This run of {} scan took'.format(scanner_type.name), self.capturedOutput.getvalue())
