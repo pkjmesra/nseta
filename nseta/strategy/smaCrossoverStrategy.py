@@ -171,7 +171,7 @@ def plot_strategy(df, symbol):
     plt.plot(df['sma_50'], alpha = 0.6, label = 'SMA 50')
     plt.scatter(df.index, df['buy_price'], marker = '^', s = 200, color = 'darkblue', label = 'BUY SIGNAL')
     plt.scatter(df.index, df['sell_price'], marker = 'v', s = 200, color = 'crimson', label = 'SELL SIGNAL')
-    plt.legend(loc = 'lower right')
+    plt.legend(loc = 'best')
     plt.title('{} SMA CROSSOVER TRADING SIGNALS'.format(symbol))
     plt.ylabel('{} Stock Closing Prices'.format(symbol))
     plt.xlabel('Date/Time')

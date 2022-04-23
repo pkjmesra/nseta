@@ -187,6 +187,6 @@ class bollingerbandsRangeCrossoverStrategy:
         plt.xlabel('Date/Time')
         plt.ylabel('{} Stock Closing Prices'.format(symbol))
         plt.title('{} BB STRATEGY TRADING SIGNALS'.format(symbol))
-        plt.legend(loc = 'lower right')
+        plt.legend(loc = 'best')
         plt.grid(True)
         plt.show()
