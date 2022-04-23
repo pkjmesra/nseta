@@ -15,7 +15,7 @@ import datetime
 import matplotlib.pyplot as plt 
 import matplotlib.dates as mdates
 import math
-from tenacity import retry
+# from tenacity import retry
 from termcolor import colored as cl 
 import numpy as np
 
@@ -139,11 +139,8 @@ def calculate_roi(strategy, symbol):
     investment_value = investment_value_initial
 
     for i in range(len(df_ret)):
-        try:
-            returns = df_ret.loc[:,'returns'].iloc[i]*strategy_copy.loc[:,'sma_position'].iloc[i]
-            strategy_copy.loc[:,'sma_margin'].iloc[i+1] = returns
-        except:
-            pass
+        returns = df_ret.loc[:,'returns'].iloc[i]*strategy_copy.loc[:,'sma_position'].iloc[i]
+        strategy_copy.loc[:,'sma_margin'].iloc[i+1] = returns
         number_of_stocks = math.floor(investment_value/strategy_copy.loc[:,'Close'].iloc[i])
         returns = number_of_stocks*strategy_copy.loc[:,'sma_margin'].iloc[i+1]
         strategy_copy.loc[:,'sma_returns'].iloc[i+1] = returns

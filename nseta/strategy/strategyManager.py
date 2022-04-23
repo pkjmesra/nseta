@@ -19,7 +19,7 @@ from nseta.common.multithreadedScanner import multithreaded_scan
 from nseta.strategy.simulatedorder import OrderType
 from nseta.common.ti import ti
 from nseta.common.history import *
-from nseta.strategy.bollingerbandsVolatileStrategy import bbands_range_crossover_strategy
+from nseta.strategy.bollingerbandsRangeCrossoverStrategy import bollingerbandsRangeCrossoverStrategy
 from nseta.strategy.smaCrossoverStrategy import sma_crossover_strategy
 
 __all__ = ['STRATEGY_MAPPING', 'strategyManager']
@@ -38,7 +38,8 @@ def emac_strategy(df,  lower, upper, plot=False):
 
 @tracelog
 def bbands_strategy(df,  lower, upper, plot=False):
-  bbands_range_crossover_strategy(df)
+  bbandsStrategy = bollingerbandsRangeCrossoverStrategy()
+  bbandsStrategy.bbands_range_crossover_strategy(df)
   # backtest_bbands_strategy(df, period=resources.backtest().bbands_period, devfactor=resources.backtest().bbands_devfactor)
 
 @tracelog
