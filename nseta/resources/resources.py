@@ -439,19 +439,6 @@ class resources:
     else:
       return None
 
-class Jobs:
-  def __init__(self, data_scan_frequency=180, success_notification=False):
-    self._data_scan_frequency = int(data_scan_frequency)
-    self._success_notification = success_notification
-
-  @property
-  def data_scan_frequency(self):
-    return self._data_scan_frequency
-
-  @property
-  def success_notification(self):
-    return self._success_notification
-
   @classmethod #@staticmethod
   def default(cls):
     r = cls()
@@ -549,3 +536,16 @@ class Jobs:
     dsf = r.config_valueforkey('JOBS','Data_Scan_Frequency')
     sn = r.config_valueforkey('JOBS','Success_Notification').lower() in ('yes', 'true', 't', '1')
     return Jobs(dsf, sn)
+
+class Jobs:
+  def __init__(self, data_scan_frequency=180, success_notification=False):
+    self._data_scan_frequency = int(data_scan_frequency)
+    self._success_notification = success_notification
+
+  @property
+  def data_scan_frequency(self):
+    return self._data_scan_frequency
+
+  @property
+  def success_notification(self):
+    return self._success_notification
