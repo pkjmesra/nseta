@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 import pandas as pd
 import datetime
+import sys
 
 from nseta.common.ti import ti
 from nseta.scanner.baseStockScanner import baseStockScanner

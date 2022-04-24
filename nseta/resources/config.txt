@@ -5,6 +5,11 @@ DefaultStocksFilePath = stocks.txt
 UserDataDirectory = ~/Documents/GitHub/nseta/build/userdata/
 numeric_to_human_format = yes
 
+[JOBS]
+# Frequency in seconds at which the job is supposed to scan for all stock's fresh OHLC data
+Data_Scan_Frequency = 180
+Success_Notification = yes
+
 [RSI]
 # Any value between 0 to 100
 Lower = 25

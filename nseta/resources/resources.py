@@ -2,7 +2,7 @@
 import configparser
 import os.path
 
-__all__ = ['resources', 'RSI','Forecast','Backtest','Scanner']
+__all__ = ['resources', 'RSI','Forecast','Backtest','Scanner', 'Jobs']
 
 def split_into_range_int(str_val):
   return sum(((list(range(*[int(b) + c
@@ -439,6 +439,19 @@ class resources:
     else:
       return None
 
+class Jobs:
+  def __init__(self, data_scan_frequency=180, success_notification=False):
+    self._data_scan_frequency = int(data_scan_frequency)
+    self._success_notification = success_notification
+
+  @property
+  def data_scan_frequency(self):
+    return self._data_scan_frequency
+
+  @property
+  def success_notification(self):
+    return self._success_notification
+
   @classmethod #@staticmethod
   def default(cls):
     r = cls()
@@ -529,3 +542,10 @@ class resources:
     srmc = r.config_valueforkey('SCANNER','scan_results_max_count')
     mcl = r.config_valueforkey('SCANNER','max_column_length')
     return Scanner(usfp, bsfi, bsfl,bsfq, bsfv,vsc,ssc, evss,isc,lsc,crp,srmc,mcl)
+
+  @classmethod
+  def jobs(cls):
+    r = cls()
+    dsf = r.config_valueforkey('JOBS','Data_Scan_Frequency')
+    sn = r.config_valueforkey('JOBS','Success_Notification').lower() in ('yes', 'true', 't', '1')
+    return Jobs(dsf, sn)

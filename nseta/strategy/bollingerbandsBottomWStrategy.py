@@ -25,7 +25,7 @@ __all__ = ['bollingerbandsBottomWStrategy']
 class bollingerbandsBottomWStrategy:
 
     @tracelog
-    def bbands_bottom_w_strategy(self, df):
+    def bbands_bottom_w_strategy(self, df, shouldplot=False):
         # df.set_index('Date')
         # df.index = pd.to_datetime(df.index)   
         signals=self.signal_generation(df)
@@ -36,7 +36,8 @@ class bollingerbandsBottomWStrategy:
         default_logger().debug('\nSignal generated:\n{}'.format(signals[signals['bb_signal']!=0]))
         symbol = df.loc[:,'Symbol'].iloc[0]
         if self.calculate_roi(signals, symbol):
-            self.plot_strategy(signals, symbol)
+            if shouldplot:
+                self.plot_strategy(signals, symbol)
         else:
             print('Sufficient signals for bottom W strategy could not be found for the given duration')
     #first step is to calculate moving average and moving standard deviation
