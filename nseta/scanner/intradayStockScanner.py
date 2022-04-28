@@ -104,13 +104,14 @@ class intradayStockScanner(baseStockScanner):
     try:
       historyinstance = historicaldata()
       arch = archiver()
-      df = arch.restore(symbol, ResponseType.Intraday)
+      file_name = '{}_{}'.format(symbol, self.periodicity)
+      df = arch.restore(file_name, ResponseType.Intraday)
       if df is None or len(df) == 0:
         df = historyinstance.daily_ohlc_history(symbol, start=datetime.date.today(), end = datetime.date.today(), intraday=True, type=ResponseType.Intraday, periodicity=self.periodicity)
       if df is not None and len(df) > 0:
         # default_logger().debug('Dataframe for ' + symbol + '\n' + str(df))
         df = self.map_keys(df, symbol)
-        arch.archive(df, symbol, ResponseType.Intraday)
+        arch.archive(df, file_name, ResponseType.Intraday)
       else:
         default_logger().debug('Empty dataframe for ' + symbol)
     except Exception as e:

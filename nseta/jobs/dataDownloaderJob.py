@@ -20,10 +20,10 @@ class dataDownloaderJob:
   def __init__(self):
     self._downloaders = {(ScannerType.Intraday).name:dataDownloaderChild(ScannerType.Intraday),
     (ScannerType.Swing).name:dataDownloaderChild(ScannerType.Swing),
-      (ScannerType.Volume).name:dataDownloaderChild(ScannerType.Volume),}
+      (ScannerType.Volume).name:dataDownloaderChild(ScannerType.Volume),
+      (ScannerType.TopPick).name:dataDownloaderChild(ScannerType.TopPick),}
       # (ScannerType.Live).name:dataDownloaderChild(ScannerType.Live),
       # (ScannerType.Quote).name:dataDownloaderChild(ScannerType.Quote),
-      # (ScannerType.TopPick).name:dataDownloaderChild(ScannerType.TopPick),
       # (ScannerType.News).name:dataDownloaderChild(ScannerType.News)}
   
   @property
@@ -59,12 +59,13 @@ class dataDownloaderJob:
 class dataDownloaderChild:
   def __init__(self, scanner_type=ScannerType.Unknown):
     self._total_counter = 0
-    self._periodicity = 1
+    self._periodicity = 2 if scanner_type == ScannerType.TopPick else 1
     self._time_spent = 0
     self._scanner_type = scanner_type
     self._responseTypeMap = {(ScannerType.Intraday).name:ResponseType.Intraday,
     (ScannerType.Swing).name:ResponseType.History,
-    (ScannerType.Volume).name:ResponseType.Volume,}
+    (ScannerType.Volume).name:ResponseType.Volume,
+    (ScannerType.TopPick).name:ResponseType.Intraday,}
 
   @property
   def time_spent(self):
@@ -179,7 +180,7 @@ class dataDownloaderChild:
     for symbol in stocks:
       try:
         arc = archiver()
-        symbol_format = symbol if self.response_type == ResponseType.Intraday else '{}_{}_{}'.format(symbol, self.start_date.strftime('%d-%m-%Y'), datetime.datetime.now().strftime('%d-%m-%Y'))
+        symbol_format = '{}_{}'.format(symbol, self.periodicity) if self.response_type == ResponseType.Intraday else '{}_{}_{}'.format(symbol, self.start_date.strftime('%d-%m-%Y'), datetime.datetime.now().strftime('%d-%m-%Y'))
         path = os.path.join(arc.get_directory(self.response_type), symbol_format.upper())
         arc.remove_cached_file(path, force_clear=True)
         msg ='( {} ) : {}'.format(self.scanner_type.name, symbol)
@@ -224,21 +225,21 @@ class dataDownloaderChild:
     try:
       historyinstance = historicaldata()
       arch = archiver()
-      df = historyinstance.daily_ohlc_history(symbol, start=self.start_date, end = datetime.datetime.now(), intraday= (self.scanner_type==ScannerType.Intraday), type=self.response_type, periodicity=self.periodicity)
-      if df is not None and len(df) > 0:
-        df = self.map_keys(df, symbol)
-        arch.archive(df, symbol, ResponseType.Intraday)
-      else:
-        default_logger().debug('\nEmpty dataframe for {}\n'.format(symbol))
+      df = historyinstance.daily_ohlc_history(symbol, start=self.start_date, end = datetime.datetime.now(), intraday= (self.scanner_type in [ScannerType.Intraday, ScannerType.TopPick]), type=self.response_type, periodicity=self.periodicity)
+      # if df is not None and len(df) > 0:
+      #   df = self.map_keys(df, symbol)
+      #   arch.archive(df, symbol, ResponseType.Intraday)
+      # else:
+      #   default_logger().debug('\nEmpty dataframe for {}\n'.format(symbol))
     except Exception as e:
       default_logger().debug(e, exc_info=True)
       return None
     return df
 
-  def map_keys(self, df, symbol):
-    try:
-      df.loc[:,'Symbol'] = symbol
-      df.loc[:,'datetime'] = df.loc[:,'Date']
-    except Exception as e:
-      default_logger().debug(e, exc_info=True)
-    return df
+  # def map_keys(self, df, symbol):
+  #   try:
+  #     df.loc[:,'Symbol'] = symbol
+  #     df.loc[:,'datetime'] = df.loc[:,'Date']
+  #   except Exception as e:
+  #     default_logger().debug(e, exc_info=True)
+  #   return df

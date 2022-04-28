@@ -175,7 +175,7 @@ class historicaldata:
     start = kwargs['start']
     end = kwargs['end']
     response_type = kwargs['type']
-    df = self.unarchive_history(symbol, start, end, response_type)
+    df = self.unarchive_history(symbol, start, end, response_type, periodicity=kwargs['periodicity'])
     if df is not None and len (df) > 0:
       return df
     try:
@@ -202,7 +202,7 @@ class historicaldata:
       default_logger().debug('\nEncountered problem for symbol: {}\n'.format(symbol))
       default_logger().debug(e, exc_info=True)
     if df is not None and len(df) > 0:
-      self.archive_history(df, symbol, start, end, response_type)
+      self.archive_history(df, symbol, start, end, response_type, periodicity=kwargs['periodicity'])
     else:
       default_logger().debug('\nEmpty Dataframe. This symbol traded may be traded on BSE instead of NSE. Encountered problem for symbol: {}\n'.format(symbol))
     return df
@@ -405,14 +405,14 @@ class historicaldata:
     return df
   '''
   @tracelog
-  def archive_history(self, df, symbol, start_date, end_date, response_type=ResponseType.Default):
-    symbol = symbol if response_type == ResponseType.Intraday else '{}_{}_{}'.format(symbol, start_date.strftime('%d-%m-%Y'), end_date.strftime('%d-%m-%Y'))
+  def archive_history(self, df, symbol, start_date, end_date, response_type=ResponseType.Default, periodicity=1):
+    symbol = '{}_{}'.format(symbol, periodicity) if response_type == ResponseType.Intraday else '{}_{}_{}'.format(symbol, start_date.strftime('%d-%m-%Y'), end_date.strftime('%d-%m-%Y'))
     arch = archiver()
     arch.archive(df, symbol, response_type)
 
   @tracelog
-  def unarchive_history(self, symbol, start_date, end_date, response_type=ResponseType.Default):
-    symbol = symbol if response_type == ResponseType.Intraday else '{}_{}_{}'.format(symbol, start_date.strftime('%d-%m-%Y'), end_date.strftime('%d-%m-%Y'))
+  def unarchive_history(self, symbol, start_date, end_date, response_type=ResponseType.Default, periodicity=1):
+    symbol = '{}_{}'.format(symbol, periodicity) if response_type == ResponseType.Intraday else '{}_{}_{}'.format(symbol, start_date.strftime('%d-%m-%Y'), end_date.strftime('%d-%m-%Y'))
     arch = archiver()
     df = arch.restore(symbol, response_type)
     return df

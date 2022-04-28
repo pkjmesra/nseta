@@ -18,7 +18,7 @@ class topPickScanner(intradayScanner):
 
   @tracelog
   def scan(self, option=None, periodicity="1", analyse=False):
-    self.clear_cache(True, force_clear = True)
+    self.clear_cache(True, force_clear = False)
     super().scan(option= 'Confidence' if option is None else option, periodicity=periodicity, analyse=analyse)
 
   def scan_background(self, scannerinstance, terminate_after_iter=0, wait_time=resources.scanner().background_scan_frequency_intraday):
