@@ -3,9 +3,10 @@ import pandas as pd
 import numpy as np
 import datetime
 import sys
+from time import sleep
 
 from bs4 import BeautifulSoup
-from nseta.common.commons import ParseNews, last_x_days_timedelta
+from nseta.common.commons import *
 from nseta.common.history import historicaldata
 from nseta.live.live import get_live_quote
 from nseta.common.ti import ti
@@ -116,6 +117,7 @@ class volumeStockScanner(baseStockScanner):
     df.loc[:,'VWAP'].iloc[n-1] = '₹ {}'.format(vwap)
     ltp = str(df_today.loc[:,'LTP'].iloc[0]).replace(',','')
     ltp = float(ltp)
+    symbol = df.loc[:,'Symbol'].iloc[n-1]
     today_volume = float(str(df_today.loc[:,'TotalTradedVolume'].iloc[0]).replace(',',''))
     today_vs_yest = round(100* (today_volume - volume_yest)/volume_yest, 1)
     df.loc[:,'Date'].iloc[n-1] = df_today.loc[:,'Updated'].iloc[0]
@@ -124,6 +126,8 @@ class volumeStockScanner(baseStockScanner):
     df.loc[:,'FreeFloat'].iloc[n-1] = freeFloat
     df.loc[:,'Avg7DVol'].iloc[n-1] = avg_volume
     df.loc[:,'TDYVol(%)'].iloc[n-1] = today_vs_yest
+    if today_vs_yest >= 100:
+      notify(symbol=symbol, title='Volume > Yesterday', message='Volume: {}%'.format(today_vs_yest))
     df.loc[:,'7DVol(%)'].iloc[n-1] = round(100* (today_volume - avg_volume)/avg_volume, 1)
     df.loc[:,'LTP'].iloc[n-1] = '₹ {}'.format(ltp)
     df.loc[:,'Yst7DVol(%)'].iloc[n-1] = round((100 * (volume_yest - avg_volume)/avg_volume), 1)
@@ -138,7 +142,6 @@ class volumeStockScanner(baseStockScanner):
     s2 = df.loc[:,'S2'].iloc[n-1]
     s3 = df.loc[:,'S3'].iloc[n-1]
     crossover_point = False
-    symbol = df.loc[:,'Symbol'].iloc[n-1]
     for pt, pt_name in zip([r3,r2,r1,pp,s1,s2,s3], ['R3', 'R2', 'R1', 'PP', 'S1', 'S2', 'S3']):
       # Stocks that are within 0.075% of crossover points
       if abs((ltp-pt)*100/ltp) - resources.scanner().crossover_reminder_percent <= 0:

@@ -20,6 +20,7 @@ class scanner(baseStockScanner):
       return self.instancedict[scanner_type.name]
     else:
       instance = scanner.stockScanner(scanner_type=scanner_type, indicator=self.indicator)
+      instance.scanner_type = scanner_type
       self.instancedict[scanner_type.name] = instance
       return instance
 

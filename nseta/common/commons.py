@@ -5,6 +5,7 @@ Created on Mon Aug 23 10:10:30 2020.
 @author: SW274998
 """
 import requests
+from plyer import notification
 from nseta.common.constants import NSE_INDICES, INDEX_DERIVATIVES
 from nseta.resources.resources import *
 from nseta.common.log import default_logger
@@ -26,7 +27,7 @@ import numpy as np
 
 from urllib.parse import urlparse
 
-__all__ = ['last_x_days_timedelta','human_readable_df','ParseNews','Recommendation','months','Direction','concatenated_dataframe','is_index','is_index_derivative', 'StrDate', 'ParseTables', 'unzip_str', 'ThreadReturns', 'URLFetch']
+__all__ = ['notify','last_x_days_timedelta','human_readable_df','ParseNews','Recommendation','months','Direction','concatenated_dataframe','is_index','is_index_derivative', 'StrDate', 'ParseTables', 'unzip_str', 'ThreadReturns', 'URLFetch']
 
 class Direction(enum.Enum):
   Down = 1
@@ -370,3 +371,8 @@ def last_x_days_timedelta():
     return resources().jobs().volume_scan_period
   else:
     return resources().jobs().volume_scan_period - 4
+
+def notify(symbol, title, message):
+    notification.notify(app_name='nseta', 
+    title='{} : {}'.format(symbol, title),
+    message='{}\n {}'.format(datetime.datetime.now().strftime("%d-%m-%Y %H:%M:%S"), message))

@@ -81,6 +81,14 @@ class baseStockScanner:
     return self._instancedict
 
   @property
+  def scanner_type(self):
+    return self._scanner_type
+
+  @scanner_type.setter
+  def scanner_type(self, value):
+    self._scanner_type = value
+
+  @property
   def stocksdict(self):
     return self._stocksdict
 
@@ -191,10 +199,11 @@ class baseStockScanner:
           text = symbol.ljust(30) + ': ₹ ' + str(deep_df.loc[:,'LTP'].iloc[0])
           text = text + '\n' + column.ljust(30) + ': ' + str(value)
           if value > comparator_value:
+            notify(symbol=symbol, title='{}: {} Higher Threshold Hit {} / {}'.format(self.scanner_type.name, column, value, comparator_value), message='{}: {}'.format(column, value))
             greenForegroundText(text)
           elif value < margin:
+            notify(symbol=symbol, title='{}: {} Lower Threshold Hit {} / {}'.format(self.scanner_type.name, column, value, comparator_value), message='{}: {}'.format(column, value))
             redForegroundText(text)
-
           deep_df.loc[:,'Remarks'].iloc[0] = true_remarks if value > comparator_value else false_remarks
           deep_df.loc[:,'Signal'].iloc[0] = true_type if value > comparator_value else false_type
           deep_df = self.update_confidence_level(deep_df)

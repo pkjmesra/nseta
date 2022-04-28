@@ -1,7 +1,9 @@
 # -*- coding: utf-8 -*-
+import pandas as pd
+
 from nseta.scanner.intradayScanner import intradayScanner
 from nseta.resources.resources import resources
-import pandas as pd
+from nseta.common.commons import *
 from nseta.common.log import tracelog, default_logger
 
 __all__ = ['topPickScanner']
@@ -49,7 +51,11 @@ class topPickScanner(intradayScanner):
         df = self.period_1_signals[(self.period_1_signals['Symbol'] == symbol_period_5) & (self.period_1_signals['Signal'] == signal_period_5)]
         # Both period 1 and period 5 are aligned in recommendations
         if df is not None and len(df) > 0:
-          if abs(abs(df.loc[:,'macd(12)'].iloc[0]) - abs(df.loc[:,'macdsignal(9)'].iloc[0])) <= 0.15:
+          macd12 = df.loc[:,'macd(12)'].iloc[0]
+          macd9 = df.loc[:,'macdsignal(9)'].iloc[0]
+          notify(symbol=symbol_period_5, title='MACD aligned', message='{}: MACD aligned {} / {}'.format(self.scanner_type.name, macd12, macd9))
+          if abs(abs(macd12) - abs(macd9)) <= 0.15:
+            notify(symbol=symbol_period_5, title='MACD alignment HIT', message='{}: MACD aligned just now: {} / {}'.format(self.scanner_type.name, macd12, macd9))
             df.loc[:,'Confidence'].iloc[0] = 100
           intersected_rows.append(df)
       if len(intersected_rows) > 0:
