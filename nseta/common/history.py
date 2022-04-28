@@ -135,8 +135,6 @@ class historicaldata:
     del(kwargs['self'])
     start = kwargs['start']
     end = kwargs['end']
-    # if intraday:
-    #   get_intraday_history(symbol)
     if (not intraday) and ((end - start) > timedelta(130)):
       kwargs1 = dict(kwargs)
       kwargs2 = dict(kwargs)
@@ -201,9 +199,12 @@ class historicaldata:
             schema=schema,
             headers=headers, scaling=scaling, csvnode=csvnode)
     except Exception as e:
+      default_logger().debug('\nEncountered problem for symbol: {}\n'.format(symbol))
       default_logger().debug(e, exc_info=True)
     if df is not None and len(df) > 0:
       self.archive_history(df, symbol, start, end, response_type)
+    else:
+      default_logger().debug('\nEmpty Dataframe. This symbol traded may be traded on BSE instead of NSE. Encountered problem for symbol: {}\n'.format(symbol))
     return df
 
 
@@ -223,7 +224,7 @@ class historicaldata:
     for key, val in six.iteritems(scaling):
       df.loc[:,key] = val * df.loc[:,key]
     if df is None or len(df) == 0:
-      default_logger().debug('\nIncorrect/invalid or no response received from server:\n{}'.format(resp.text))
+      default_logger().debug('\nFor Symbol:{},URL:{}, incorrect/invalid or no response received from server:\n{}'.format(params['CDSymbol'],url,resp.text))
     return df
 
 

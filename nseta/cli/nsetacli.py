@@ -6,6 +6,7 @@ import warnings
 import click, logging
 import nseta
 from nseta.cli.historycli import history, pe_history
+from nseta.cli.jobscli import jobs
 from nseta.cli.modelcli import create_cdl_model
 from nseta.cli.plotscli import plot_ta
 from nseta.cli.strategycli import test_trading_strategy, scan_trading_strategy
@@ -25,6 +26,8 @@ def nsetacli(debug, resources, version, trace, filter):
   signal.signal(signal.SIGINT, sigint_handler)
   arch = archiver()
   log_file_path = os.path.join(arch.logs_directory,'logs.log')
+  if os.path.exists(log_file_path):
+    os.remove(log_file_path)
   if debug:
     click.echo('Debug mode is %s' % ('on' if debug else 'off'))
     if trace:
@@ -54,6 +57,7 @@ def clear(deepclean):
 nsetacli.add_command(clear)
 nsetacli.add_command(create_cdl_model)
 nsetacli.add_command(history)
+nsetacli.add_command(jobs)
 nsetacli.add_command(live_quote)
 nsetacli.add_command(news)
 nsetacli.add_command(pe_history)

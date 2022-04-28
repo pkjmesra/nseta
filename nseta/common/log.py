@@ -91,17 +91,19 @@ class filterlogger:
   def debug(self, e, exc_info=False):
     global __filter__
     line = str(e)
+    frame = inspect.stack()[1]
+    filename = (frame[0].f_code.co_filename).rsplit('/', 1)[1]
+    components = str(frame).split(',')
+    line = '{} - {} - {}\n{}'.format(filename, components[5],components[6] , line)
     global __DEBUG__
     if __DEBUG__:
-      frame = inspect.stack()[1]
-      filename = (frame[0].f_code.co_filename).rsplit('/', 1)[1]
-      components = str(frame).split(',')
-      line = '{} - {} - {}\n{}'.format(filename, components[5],components[6] , line)
       if __filter__ is None:
         self.logger.debug(line, exc_info=exc_info)
         return
       if __filter__ in line.upper():
         self.logger.debug(line, exc_info=exc_info)
+    elif self.level == logging.INFO:
+      self.info(line)
 
   def info(self, line):
     global __filter__
@@ -137,7 +139,7 @@ class filterlogger:
 
 def setup_custom_logger(name, levelname=logging.DEBUG, trace=False, log_file_path='logs.log', filter=None):
   trace_formatter = logging.Formatter(fmt='\n%(asctime)s - %(name)s - %(levelname)s - %(filename)s - %(module)s - %(funcName)s - %(lineno)d\n%(message)s\n')
-  console_info_formatter = logging.Formatter(fmt='\n%(levelname)s - %(filename)s(%(funcName)s - %(lineno)d)\n%(message)s\n')
+  # console_info_formatter = logging.Formatter(fmt='\n%(levelname)s - %(filename)s(%(funcName)s - %(lineno)d)\n%(message)s\n')
   global __trace__
   __trace__ = trace
 
@@ -147,16 +149,15 @@ def setup_custom_logger(name, levelname=logging.DEBUG, trace=False, log_file_pat
   logger = logging.getLogger(name)
   logger.setLevel(levelname)
 
-  consolehandler = logging.StreamHandler()
-  consolehandler.setFormatter(console_info_formatter if levelname == logging.INFO else trace_formatter)
-  consolehandler.setLevel(levelname)
-  logger.addHandler(consolehandler)
-
+  filehandler = logging.FileHandler(log_file_path)
+  filehandler.setFormatter(trace_formatter)
+  filehandler.setLevel(levelname)
+  logger.addHandler(filehandler)
   if levelname == logging.DEBUG:
-    filehandler = logging.FileHandler(log_file_path)
-    filehandler.setFormatter(trace_formatter)
-    filehandler.setLevel(levelname)
-    logger.addHandler(filehandler)
+    consolehandler = logging.StreamHandler()
+    consolehandler.setFormatter(trace_formatter)
+    consolehandler.setLevel(levelname)
+    logger.addHandler(consolehandler)
     global __DEBUG__
     __DEBUG__ = True
     logger.debug('Logging started. Filter:{}'.format(filter))
