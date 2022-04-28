@@ -104,4 +104,4 @@ def scan_trading_strategy(symbol, start, end, strategy, upper, lower, clear, ord
 def clear_cache(clear, intraday=False):
   if clear:
     arch = archiver()
-    arch.clearcache(response_type=ResponseType.Intraday if intraday else ResponseType.History, force_clear=True)
+    arch.clearcache(response_type=ResponseType.Intraday if intraday else ResponseType.History, force_clear=False)

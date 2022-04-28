@@ -6,9 +6,11 @@ Created on Wed Aug 24 22:01:01 2020
 """
 import click
 import numpy as np
+import pandas as pd
 from nseta.common.commons import *
 from nseta.common.log import tracelog, default_logger
 from nseta.live.liveurls import quote_eq_url, futures_chain_url, holiday_list_url
+from nseta.archives.archiver import *
 
 import json
 from bs4 import BeautifulSoup
@@ -165,6 +167,9 @@ def get_live_quote(symbol, general=True, ohlc=False, wk52=False, volume=False, o
     click.secho('Please check the inputs. Could not fetch the data for {}'.format(symbol), fg='red', nl=True)
     return None, None
   primary = format_as_dataframe(result, symbol, general, ohlc, wk52, volume, keys= keys)
+  df_today = pd.DataFrame(primary, columns = ['Updated', 'Symbol', 'Close', 'LTP', 'Tdy%Del', 'T0BuySellDiff', 'TotalTradedVolume','pChange', 'FreeFloat'], index = [''])
+  arch = archiver()
+  arch.archive(df_today, '{}_live_quote'.format(symbol), ResponseType.Volume)
   return result, primary
 
 def format_as_dataframe(orgdata, symbol, general, ohlc, wk52, volume, keys=[]):

@@ -239,10 +239,10 @@ class baseScanner:
   @tracelog
   def clear_cache(self, clear, force_clear=False):
     if clear or self.background:
-      df_file_name = 'df_Scan_Results.{}'.format(self.indicator)
-      signaldf_file_name = 'signaldf_Scan_Results.{}'.format(self.indicator)
-      self.archiver.clearcache(df_file_name, self.response_type, force_clear=force_clear)
-      self.archiver.clearcache(signaldf_file_name, self.response_type, force_clear=force_clear)
+      df_file_name = 'df_Scan_Results.{}'.format(self.indicator.upper())
+      signaldf_file_name = 'signaldf_Scan_Results.{}'.format(self.indicator.upper())
+      self.archiver.clearcache(df_file_name.upper(), self.response_type, force_clear=True)
+      self.archiver.clearcache(signaldf_file_name.upper(), self.response_type, force_clear=True)
       self.archiver.clearcache(response_type=self.response_type, force_clear=force_clear)
 
   @tracelog
@@ -264,7 +264,7 @@ class baseScanner:
         default_logger().debug('scannerinstance is None. Cannot proceed with background scanning')
         break
       self._scannerinstance = scannerinstance
-      self.clear_cache(True, force_clear=True)
+      self.clear_cache(True, force_clear=False)
       if not current_datetime_in_ist_trading_time_range():
         click.secho('Running the {} scan for one last time because it is outside the trading hours'.format(self.scanner_type.name), fg='red', nl=True)
         terminate_after_iter = iteration

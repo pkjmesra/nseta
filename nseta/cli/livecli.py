@@ -60,7 +60,7 @@ def scan(stocks, live, intraday, swing, volume, indicator, orderby, clear, backg
   try:
     scanner_type = ScannerType.Volume if volume else (ScannerType.Intraday if intraday else (ScannerType.Swing if swing else ScannerType.Live))
     scanner = scannerFactory.scanner(scanner_type, stocks, indicator, background)
-    scanner.clear_cache(clear, force_clear = current_datetime_in_ist_trading_time_range())
+    scanner.clear_cache(clear, force_clear = False)
     scanner.scan(option=orderby, analyse=analyse)
   except Exception as e:
     log_error(e, scanner_type.name)
@@ -84,7 +84,7 @@ def top_picks(stocks, intraday, swing, indicator, clear, background):
   stocks = get_stocks(stocks)
   try:
     scanner = scannerFactory.scanner(ScannerType.TopPick, stocks, indicator, background)
-    scanner.clear_cache(clear, force_clear = current_datetime_in_ist_trading_time_range())
+    scanner.clear_cache(clear, force_clear = False)
     scanner.scan()
   except Exception as e:
     log_error(e, 'TopPicks')
@@ -97,7 +97,7 @@ def news(stocks):
   stocks = get_stocks(stocks)
   try:
     scanner = scannerFactory.scanner(ScannerType.News, stocks, None, False)
-    scanner.clear_cache(True, force_clear = True)
+    scanner.clear_cache(True, force_clear = False)
     scanner.scan()
   except Exception as e:
     log_error(e, 'News')

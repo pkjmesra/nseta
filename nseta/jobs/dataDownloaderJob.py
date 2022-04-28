@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 import datetime
+from email.quoprimime import quote
 import os
 import inspect
 import threading
@@ -9,6 +10,7 @@ from nseta.common.log import *
 from nseta.common.commons import last_x_days_timedelta
 from nseta.common.multithreadedScanner import multithreaded_scan
 from nseta.common.history import historicaldata
+from nseta.live.live import get_live_quote
 from nseta.archives.archiver import *
 from nseta.resources.resources import *
 from nseta.common.tradingtime import *
@@ -21,9 +23,9 @@ class dataDownloaderJob:
     self._downloaders = {(ScannerType.Intraday).name:dataDownloaderChild(ScannerType.Intraday),
     (ScannerType.Swing).name:dataDownloaderChild(ScannerType.Swing),
       (ScannerType.Volume).name:dataDownloaderChild(ScannerType.Volume),
-      (ScannerType.TopPick).name:dataDownloaderChild(ScannerType.TopPick),}
+      (ScannerType.TopPick).name:dataDownloaderChild(ScannerType.TopPick),
+      (ScannerType.Quote).name:dataDownloaderChild(ScannerType.Quote),}
       # (ScannerType.Live).name:dataDownloaderChild(ScannerType.Live),
-      # (ScannerType.Quote).name:dataDownloaderChild(ScannerType.Quote),
       # (ScannerType.News).name:dataDownloaderChild(ScannerType.News)}
   
   @property
@@ -65,7 +67,8 @@ class dataDownloaderChild:
     self._responseTypeMap = {(ScannerType.Intraday).name:ResponseType.Intraday,
     (ScannerType.Swing).name:ResponseType.History,
     (ScannerType.Volume).name:ResponseType.Volume,
-    (ScannerType.TopPick).name:ResponseType.Intraday,}
+    (ScannerType.TopPick).name:ResponseType.Intraday,
+    (ScannerType.Quote).name:ResponseType.Volume,}
 
   @property
   def time_spent(self):
@@ -75,6 +78,10 @@ class dataDownloaderChild:
   def response_type(self):
     return self._responseTypeMap[(self.scanner_type).name]
 
+  @property
+  def quote_keys(self):
+    return ['symbol','previousClose', 'lastPrice', 'deliveryToTradedQuantity', 'BuySellDiffQty', 'totalTradedVolume', 'pChange', 'FreeFloat']
+  
   @property
   def start_date(self):
     sd = datetime.datetime.now()
@@ -180,13 +187,16 @@ class dataDownloaderChild:
     for symbol in stocks:
       try:
         arc = archiver()
-        symbol_format = '{}_{}'.format(symbol, self.periodicity) if self.response_type == ResponseType.Intraday else '{}_{}_{}'.format(symbol, self.start_date.strftime('%d-%m-%Y'), datetime.datetime.now().strftime('%d-%m-%Y'))
+        symbol_format = self.get_archived_filename(symbol)
         path = os.path.join(arc.get_directory(self.response_type), symbol_format.upper())
         arc.remove_cached_file(path, force_clear=True)
         msg ='( {} ) : {}'.format(self.scanner_type.name, symbol)
         set_cursor()
         print(msg)
-        self.ohlc_history(symbol)
+        if self.scanner_type == ScannerType.Quote:
+          self.ohlcv_quote(symbol)
+        else:
+          self.ohlc_history(symbol)
       except Exception as e:
         default_logger().debug('Exception encountered for {} during {} downloafd job.'.format(symbol, self.scanner_type.name))
         default_logger().debug(e, exc_info=True)
@@ -226,20 +236,22 @@ class dataDownloaderChild:
       historyinstance = historicaldata()
       arch = archiver()
       df = historyinstance.daily_ohlc_history(symbol, start=self.start_date, end = datetime.datetime.now(), intraday= (self.scanner_type in [ScannerType.Intraday, ScannerType.TopPick]), type=self.response_type, periodicity=self.periodicity)
-      # if df is not None and len(df) > 0:
-      #   df = self.map_keys(df, symbol)
-      #   arch.archive(df, symbol, ResponseType.Intraday)
-      # else:
-      #   default_logger().debug('\nEmpty dataframe for {}\n'.format(symbol))
     except Exception as e:
       default_logger().debug(e, exc_info=True)
       return None
     return df
 
-  # def map_keys(self, df, symbol):
-  #   try:
-  #     df.loc[:,'Symbol'] = symbol
-  #     df.loc[:,'datetime'] = df.loc[:,'Date']
-  #   except Exception as e:
-  #     default_logger().debug(e, exc_info=True)
-  #   return df
+  @tracelog
+  def ohlcv_quote(self, symbol):
+    try:
+      get_live_quote(symbol, keys = self.quote_keys)
+    except Exception as e:
+      default_logger().debug(e, exc_info=True)
+
+  def get_archived_filename(self, symbol):
+    if self.response_type == ResponseType.Intraday:
+      return '{}_{}'.format(symbol, self.periodicity)  
+    elif self.scanner_type == ScannerType.Quote:
+      return '{}_live_quote'.format(symbol)
+    else:
+      return '{}_{}_{}'.format(symbol, self.start_date.strftime('%d-%m-%Y'), datetime.datetime.now().strftime('%d-%m-%Y'))
