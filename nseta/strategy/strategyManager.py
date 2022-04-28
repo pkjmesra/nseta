@@ -12,7 +12,7 @@ from nseta.strategy.bbandsSignalStrategy import *
 from nseta.strategy.macdSignalStrategy import *
 from nseta.resources.resources import *
 from nseta.archives.archiver import *
-from nseta.common.log import tracelog, default_logger
+from nseta.common.log import *
 from nseta.scanner.stockscanner import scanner
 from nseta.scanner.intradayStockScanner import intradayStockScanner
 from nseta.common.multithreadedScanner import multithreaded_scan
@@ -162,6 +162,7 @@ class strategyManager:
     kwargs1['terminate_after_iter'] = 1
     wait_time = 10
     kwargs1['wait_time'] = wait_time
+    self._total_stocks_counter = len(stocks)
     b = threading.Thread(name='download_background', target=self.download_background, args=[kwargs1], daemon=True)
     b.start()
     kwargs['callbackMethod'] = self.scan_trading_strategy_segmented
@@ -208,13 +209,15 @@ class strategyManager:
     if end is not None:
       ed = datetime.strptime(end, '%Y-%m-%d').date()
     instance = intradayStockScanner('all') if intraday else historicaldata()
+    # self._total_stocks_counter = len(stocks)
     for stock in stocks:
       try:
         global __download_counter__
         with threading.Lock():
           __download_counter__ += 1
-        sys.stdout.write('\r{}/{}. Fetching for {}'.ljust(120).format(__download_counter__, self.total_stocks_counter, stock))
-        sys.stdout.flush()
+        msg ='{}/{}. Fetching for {}'.format(__download_counter__, self.total_stocks_counter, stock)
+        set_cursor()
+        print(msg)
         instance.ohlc_intraday_history(stock) if intraday else instance.daily_ohlc_history(stock, sd, ed, type=ResponseType.History)
       except Exception as e:
         default_logger().debug(e, exc_info=True)
@@ -287,8 +290,9 @@ class strategyManager:
     global __test_counter__
     with threading.Lock():
       __test_counter__ += 1
-    sys.stdout.write('\r{}/{}. Testing {} trading strategy for {}.'.ljust(120).format(__test_counter__, self.total_tests_counter, strategy, symbol))
-    sys.stdout.flush()
+    msg = '{}/{}. Testing {} trading strategy for {}.'.format(__test_counter__, self.total_tests_counter, strategy, symbol)
+    set_cursor()
+    print(msg)
 
     strgy_dict = {"rsi":{"keys":["Symbol","Date","RSI","Close"],"class":rsiSignalStrategy},
             "bbands":{"keys":["Symbol","Date","BBands-U","BBands-M", "BBands-L","Close"],"class":bbandsSignalStrategy},
@@ -306,8 +310,10 @@ class strategyManager:
         signal.set_limits(lower, upper)
         results, summary = signal.test_strategy(df_strtgy)
         break
-    sys.stdout.write('\r{}/{}. Finished testing {} trading strategy for {}.'.ljust(120).format(__test_counter__, self.total_tests_counter, strategy, symbol))
-    sys.stdout.flush()
+    msg = '{}/{}. Finished testing {} trading strategy for {}.'.format(__test_counter__, self.total_tests_counter, strategy, symbol)
+    set_cursor()
+    print(msg)
+    
     if results is not None and show_detail:
       print('\nResults: \n{}\n'.format(results.to_string(index=False)))
     if summary is not None and show_detail:

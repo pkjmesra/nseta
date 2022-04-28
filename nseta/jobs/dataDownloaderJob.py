@@ -5,7 +5,8 @@ import inspect
 import threading
 from time import time, sleep
 
-from nseta.common.log import tracelog, default_logger
+from nseta.common.log import *
+from nseta.common.commons import last_x_days_timedelta
 from nseta.common.multithreadedScanner import multithreaded_scan
 from nseta.common.history import historicaldata
 from nseta.archives.archiver import *
@@ -17,11 +18,11 @@ __all__ = ['dataDownloaderJob']
 
 class dataDownloaderJob:
   def __init__(self):
-    self._downloaders = {(ScannerType.Intraday).name:dataDownloaderChild(ScannerType.Intraday),}
+    self._downloaders = {(ScannerType.Intraday).name:dataDownloaderChild(ScannerType.Intraday),
+    (ScannerType.Swing).name:dataDownloaderChild(ScannerType.Swing),
+      (ScannerType.Volume).name:dataDownloaderChild(ScannerType.Volume),}
       # (ScannerType.Live).name:dataDownloaderChild(ScannerType.Live),
       # (ScannerType.Quote).name:dataDownloaderChild(ScannerType.Quote),
-      # (ScannerType.Swing).name:dataDownloaderChild(ScannerType.Swing),
-      # (ScannerType.Volume).name:dataDownloaderChild(ScannerType.Volume),
       # (ScannerType.TopPick).name:dataDownloaderChild(ScannerType.TopPick),
       # (ScannerType.News).name:dataDownloaderChild(ScannerType.News)}
   
@@ -37,7 +38,7 @@ class dataDownloaderJob:
     del(kwargs['self'])
     kwargs1=dict(kwargs)
     kwargs1['terminate_after_iter'] = 0
-    wait_time = 180
+    wait_time = resources().jobs().data_scan_frequency
     kwargs1['wait_time'] = wait_time
     threads = []
     for key in self.downloaders:
@@ -57,16 +58,30 @@ class dataDownloaderJob:
 
 class dataDownloaderChild:
   def __init__(self, scanner_type=ScannerType.Unknown):
-    self._stocksdict = {}
-    self._instancedict = {}
     self._total_counter = 0
     self._periodicity = 1
     self._time_spent = 0
     self._scanner_type = scanner_type
+    self._responseTypeMap = {(ScannerType.Intraday).name:ResponseType.Intraday,
+    (ScannerType.Swing).name:ResponseType.History,
+    (ScannerType.Volume).name:ResponseType.Volume,}
 
   @property
   def time_spent(self):
     return self._time_spent
+
+  @property
+  def response_type(self):
+    return self._responseTypeMap[(self.scanner_type).name]
+
+  @property
+  def start_date(self):
+    sd = datetime.datetime.now()
+    if self.scanner_type == ScannerType.Swing:
+      return datetime.datetime.now()-datetime.timedelta(days=resources().jobs().swing_scan_period) 
+    elif self.scanner_type == ScannerType.Volume:
+      return datetime.datetime.now()-datetime.timedelta(days=last_x_days_timedelta())
+    return sd
 
   @time_spent.setter
   def time_spent(self, value):
@@ -100,6 +115,17 @@ class dataDownloaderChild:
   def shouldRun(self):
     run = os.path.exists(self.runnerFilePath)
     return run
+
+  @property
+  def max_iterations(self):
+    max_iter = 0
+    if self.scanner_type == ScannerType.Intraday:
+      if not current_datetime_in_ist_trading_time_range():
+          default_logger().debug('Running the {} scan for one last time because it is outside the trading hours'.format(self.scanner_type.name))
+          max_iter = 1
+    else:
+      max_iter = 1
+    return max_iter
 
   @shouldRun.setter
   def shouldRun(self, value):
@@ -145,7 +171,7 @@ class dataDownloaderChild:
       scanner_type = kwargs['scanner_type']
       del(kwargs['scanner_type'])
       self.scan_quanta(**kwargs)
-      return None, None
+      return [None, None]
 
   @tracelog
   def scan_quanta(self, **kwargs):
@@ -153,10 +179,15 @@ class dataDownloaderChild:
     for symbol in stocks:
       try:
         arc = archiver()
-        arc.remove_cached_file(arc.get_path(symbol, ResponseType.Intraday), force_clear=True)
-        self.ohlc_intraday_history(symbol)
+        symbol_format = symbol if self.response_type == ResponseType.Intraday else '{}_{}_{}'.format(symbol, self.start_date.strftime('%d-%m-%Y'), datetime.datetime.now().strftime('%d-%m-%Y'))
+        path = os.path.join(arc.get_directory(self.response_type), symbol_format.upper())
+        arc.remove_cached_file(path, force_clear=True)
+        msg ='( {} ) : {}'.format(self.scanner_type.name, symbol)
+        set_cursor()
+        print(msg)
+        self.ohlc_history(symbol)
       except Exception as e:
-        default_logger().debug('Exception encountered for ' + symbol)
+        default_logger().debug('Exception encountered for {} during {} downloafd job.'.format(symbol, self.scanner_type.name))
         default_logger().debug(e, exc_info=True)
 
   @tracelog
@@ -173,27 +204,27 @@ class dataDownloaderChild:
     iteration = 0
     while self.shouldRun:
       iteration = iteration + 1
-      if terminate_after_iter > 0 and iteration >= terminate_after_iter:
-        self.shouldRun = False
-        break
-      if not current_datetime_in_ist_trading_time_range():
-        default_logger().debug('Running the {} scan for one last time because it is outside the trading hours'.format(self.scanner_type.name))
-        terminate_after_iter = iteration
       try:
         self.scan()
       except Exception as e:
         default_logger().debug(e, exc_info=True)
+      set_cursor()
+      print('Last {} download job was run at:{} ( {:.2f}s )'.format(self.scanner_type.name, datetime.datetime.now().strftime("%d-%m-%Y %H:%M:%S"), self.time_spent))
+      terminate_after_iter = self.max_iterations
+      if terminate_after_iter > 0 and iteration >= terminate_after_iter:
+        self.shouldRun = False
+        break
       sleep(wait_time)
-    default_logger().debug('Finished all iterations of scanning {}.'.format(self.scanner_type.name))
+    default_logger().debug('Finished all iterations of download job {}.'.format(self.scanner_type.name))
 
   
   @tracelog
-  def ohlc_intraday_history(self, symbol):
+  def ohlc_history(self, symbol):
     df = None
     try:
       historyinstance = historicaldata()
       arch = archiver()
-      df = historyinstance.daily_ohlc_history(symbol, start=datetime.date.today(), end = datetime.date.today(), intraday=True, type=ResponseType.Intraday, periodicity=self.periodicity)
+      df = historyinstance.daily_ohlc_history(symbol, start=self.start_date, end = datetime.datetime.now(), intraday= (self.scanner_type==ScannerType.Intraday), type=self.response_type, periodicity=self.periodicity)
       if df is not None and len(df) > 0:
         df = self.map_keys(df, symbol)
         arch.archive(df, symbol, ResponseType.Intraday)

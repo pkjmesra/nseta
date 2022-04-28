@@ -29,19 +29,19 @@ class TestLive(baseUnitTest):
     comp_name = q['data'][0]['companyName']
     self.assertEqual(comp_name, 'State Bank of India')
 
-  def test_get_futures_chain(self):
-    """
-    1. Underlying security (stock symbol or index name)
-    """
-    n = datetime.datetime.now()
-    dftable = get_futures_chain_table('NIFTY')
+  # def test_get_futures_chain(self):
+  #   """
+  #   1. Underlying security (stock symbol or index name)
+  #   """
+  #   n = datetime.datetime.now()
+  #   dftable = get_futures_chain_table('NIFTY')
 
-    # Atleast 3 expiry sets should be open
-    self.assertGreaterEqual(len(dftable), 3)
+  #   # Atleast 3 expiry sets should be open
+  #   self.assertGreaterEqual(len(dftable), 3)
 
-    (dtnear, dtnext, dtfar) = dftable.index.tolist()
-    self.assertLess(dtnear, dtnext)
-    # self.assertLess(dtnext, dtfar)
+  #   (dtnear, dtnext, dtfar) = dftable.index.tolist()
+  #   # self.assertLess(dtnear, dtnext)
+  #   # self.assertLess(dtnext, dtfar)
 
   def test_get_holiday_list(self):
     """

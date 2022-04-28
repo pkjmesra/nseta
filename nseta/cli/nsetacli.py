@@ -12,6 +12,7 @@ from nseta.cli.plotscli import plot_ta
 from nseta.cli.strategycli import test_trading_strategy, scan_trading_strategy
 from nseta.cli.livecli import live_quote, scan, top_picks, news
 from nseta.common import log
+from nseta.common.log import default_logger
 from nseta.archives.archiver import archiver
 
 __all__ = ['nsetacli']
@@ -71,6 +72,7 @@ nsetacli.add_command(scan_trading_strategy)
 def sigint_handler(signum, frame):
   warnings.filterwarnings('ignore')
   warnings.simplefilter('ignore')
+  default_logger().debug('[sigint_handler] Keyboard Interrupt received. Exiting.')
   click.secho('[sigint_handler] Keyboard Interrupt received. Exiting.', fg='red', nl=True)
   signal.signal(signum, signal.SIG_DFL)
   os.kill(os.getpid(), signum)

@@ -9,6 +9,7 @@ from nseta.common.constants import NSE_INDICES, INDEX_DERIVATIVES
 from nseta.resources.resources import *
 from nseta.common.log import default_logger
 from nseta.common.tradingtime import IST_datetime
+from nseta.resources.resources import *
 import datetime
 from functools import partial
 try:
@@ -25,7 +26,7 @@ import numpy as np
 
 from urllib.parse import urlparse
 
-__all__ = ['human_readable_df','ParseNews','Recommendation','months','Direction','concatenated_dataframe','is_index','is_index_derivative', 'StrDate', 'ParseTables', 'unzip_str', 'ThreadReturns', 'URLFetch']
+__all__ = ['last_x_days_timedelta','human_readable_df','ParseNews','Recommendation','months','Direction','concatenated_dataframe','is_index','is_index_derivative', 'StrDate', 'ParseTables', 'unzip_str', 'ThreadReturns', 'URLFetch']
 
 class Direction(enum.Enum):
   Down = 1
@@ -362,3 +363,10 @@ def human_format(num):
     return '{}{}'.format('{:f}'.format(num).rstrip('0').rstrip('.'), ['', 'K', 'M', 'B', 'T'][magnitude])
   except Exception:
     return num
+
+def last_x_days_timedelta():
+  delhi_now = IST_datetime()
+  if delhi_now.weekday() <= 1 or delhi_now.weekday() >= 6:
+    return resources().jobs().volume_scan_period
+  else:
+    return resources().jobs().volume_scan_period - 4

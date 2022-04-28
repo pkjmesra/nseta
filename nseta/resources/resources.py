@@ -535,11 +535,15 @@ class resources:
     r = cls()
     dsf = r.config_valueforkey('JOBS','Data_Scan_Frequency')
     sn = r.config_valueforkey('JOBS','Success_Notification').lower() in ('yes', 'true', 't', '1')
-    return Jobs(dsf, sn)
+    vsp = r.config_valueforkey('JOBS','Volume_Scan_Period')
+    ssp = r.config_valueforkey('JOBS','Swing_Scan_Period')
+    return Jobs(dsf, sn, vsp, ssp)
 
 class Jobs:
-  def __init__(self, data_scan_frequency=180, success_notification=False):
+  def __init__(self, data_scan_frequency=180, success_notification=False, volume_scan_period=40, swing_scan_period=90):
     self._data_scan_frequency = int(data_scan_frequency)
+    self._volume_scan_period = int(volume_scan_period)
+    self._swing_scan_period = int(swing_scan_period)
     self._success_notification = success_notification
 
   @property
@@ -549,3 +553,11 @@ class Jobs:
   @property
   def success_notification(self):
     return self._success_notification
+
+  @property
+  def volume_scan_period(self):
+    return self._volume_scan_period
+
+  @property
+  def swing_scan_period(self):
+    return self._swing_scan_period

@@ -91,10 +91,13 @@ class filterlogger:
   def debug(self, e, exc_info=False):
     global __filter__
     line = str(e)
-    frame = inspect.stack()[1]
-    filename = (frame[0].f_code.co_filename).rsplit('/', 1)[1]
-    components = str(frame).split(',')
-    line = '{} - {} - {}\n{}'.format(filename, components[5],components[6] , line)
+    try:
+      frame = inspect.stack()[1]
+      filename = (frame[0].f_code.co_filename).rsplit('/', 1)[1]
+      components = str(frame).split(',')
+      line = '{} - {} - {}\n{}'.format(filename, components[5],components[6] , line)
+    except:
+      pass
     global __DEBUG__
     if __DEBUG__:
       if __filter__ is None:
@@ -298,7 +301,9 @@ def line_break(): print("-"*25)
 
 def clear_screen(): os.system('clear' if os.name =='posix' else 'cls')
 
-def set_cursor(): sys.stdout.write('\033[F')
+def set_cursor():
+  sys.stdout.write('\033[F')
+  sys.stdout.write("\033[K")
 
 def redForegroundText(text): print('\n'+ colors.fg.red + text + colors.reset)
 

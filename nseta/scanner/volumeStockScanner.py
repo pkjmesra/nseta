@@ -5,7 +5,7 @@ import datetime
 import sys
 
 from bs4 import BeautifulSoup
-from nseta.common.commons import ParseNews
+from nseta.common.commons import ParseNews, last_x_days_timedelta
 from nseta.common.history import historicaldata
 from nseta.live.live import get_live_quote
 from nseta.common.ti import ti
@@ -38,7 +38,7 @@ class volumeStockScanner(baseStockScanner):
     tiinstance = ti()
     historyinstance = historicaldata()
     # Time frame you want to pull data from
-    start_date = datetime.datetime.now()-datetime.timedelta(days=self.last_x_days_timedelta())
+    start_date = datetime.datetime.now()-datetime.timedelta(days=last_x_days_timedelta())
     arch = archiver()
     end_date = datetime.datetime.now()
     pd.set_option('mode.chained_assignment', None)

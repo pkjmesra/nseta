@@ -10,7 +10,7 @@ from time import time
 
 from nseta.common.commons import *
 from nseta.common.multithreadedScanner import multithreaded_scan
-from nseta.common.log import tracelog, default_logger, greenForegroundText, redForegroundText
+from nseta.common.log import *
 from nseta.resources.resources import *
 from nseta.strategy.rsiSignalStrategy import rsiSignalStrategy
 from nseta.strategy.bbandsSignalStrategy import bbandsSignalStrategy
@@ -41,7 +41,7 @@ class baseStockScanner:
     self._stocksdict = {}
     self._instancedict = {}
     self._total_counter = 0
-    self._periodicity = None
+    self._periodicity = 1
     self._time_spent = 0
 
   @property
@@ -136,8 +136,9 @@ class baseStockScanner:
     global __scan_counter__
     with threading.Lock():
       __scan_counter__ += 1
-    sys.stdout.write('\r{}/{}. Fetching for {}'.ljust(120).format(__scan_counter__, self.total_counter, symbol))
-    sys.stdout.flush()
+    msg = '{}/{}. Fetching for {}'.format(__scan_counter__, self.total_counter, symbol)
+    set_cursor()
+    print(msg)
 
   def last_x_days_timedelta(self):
     delhi_now = IST_datetime()

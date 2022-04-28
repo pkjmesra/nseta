@@ -7,7 +7,7 @@ import sys
 from datetime import datetime, timezone
 import pytz
 
-from nseta.common.log import tracelog, default_logger
+from nseta.common.log import *
 from nseta.common.tradingtime import *
 from nseta.resources.resources import *
 
@@ -189,12 +189,13 @@ class archiver:
       if df is not None and len(df) > 0:
         df = df.reset_index(drop=True)
         last_modified = self.utc_to_local(self.get_last_modified_datetime(file_path))
+        cache_warn = ''
         if current_datetime_in_ist_trading_time_range():
           cache_warn = 'Last Modified:{}. Fetched {} from the disk cache. You may wish to clear cache (nseta [command] --clear).'.format(str(last_modified), symbol)
-          sys.stdout.write('\r{}'.format(cache_warn))
         else:
-          sys.stdout.write('\rLast Modified: {}. Fetched {} from the disk cache.'.format(str(last_modified), symbol))
-        sys.stdout.flush()
+          cache_warn = 'Last Modified: {}. Fetched {} from the disk cache.'.format(str(last_modified), symbol)
+        set_cursor()
+        print(cache_warn)
       else:
         default_logger().debug('Empty DataFrame for file:{}'.format(file_path))
     else:
@@ -257,18 +258,21 @@ class archiver:
 
   @tracelog
   def remove_cached_file(self, file_path, force_clear=False, prefix=None):
-    last_modified_unaware = self.get_last_modified_datetime(file_path)
-    last_modified_aware = pytz.utc.localize(last_modified_unaware)
-    should_clear = datetime_in_ist_trading_time_range(last_modified_aware)
-    if should_clear or force_clear or prefix is not None:
-      if os.path.isdir(file_path):
-        self.remove_dir(file_path, force_clear, prefix=prefix)
-      elif should_clear or force_clear:
-        os.remove(file_path)
-        default_logger().debug('File removed:{}'.format(file_path))
-    else:
-      default_logger().debug('\nFetching from server will get the same data. If you want to force clear, use `force_clear=True` option.')
-      default_logger().debug('\nFile NOT removed:{}.\n Last Modified:{}'.format(file_path, str(last_modified_aware)))
+    try:
+      last_modified_unaware = self.get_last_modified_datetime(file_path)
+      last_modified_aware = pytz.utc.localize(last_modified_unaware)
+      should_clear = datetime_in_ist_trading_time_range(last_modified_aware)
+      if should_clear or force_clear or prefix is not None:
+        if os.path.isdir(file_path):
+          self.remove_dir(file_path, force_clear, prefix=prefix)
+        elif (should_clear or force_clear) and os.path.exists(file_path):
+          os.remove(file_path)
+          default_logger().debug('File removed:{}'.format(file_path))
+      else:
+        default_logger().debug('\nFetching from server will get the same data. If you want to force clear, use `force_clear=True` option.')
+        default_logger().debug('\nFile NOT removed:{}.\n Last Modified:{}'.format(file_path, str(last_modified_aware)))
+    except:
+        pass
 
   def remove_dir(self, dir_path, force_clear=False, prefix=None):
     directory = os.fsencode(dir_path)

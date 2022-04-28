@@ -7,7 +7,9 @@ numeric_to_human_format = yes
 
 [JOBS]
 # Frequency in seconds at which the job is supposed to scan for all stock's fresh OHLC data
-Data_Scan_Frequency = 180
+Data_Scan_Frequency = 60
+Volume_Scan_Period = 40
+Swing_Scan_Period = 90
 Success_Notification = yes
 
 [RSI]
