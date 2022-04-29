@@ -373,6 +373,10 @@ def last_x_days_timedelta():
     return resources().jobs().volume_scan_period - 4
 
 def notify(symbol, title, message):
+  try:
     notification.notify(app_name='nseta', 
     title='{} : {}'.format(symbol, title),
     message='{}\n {}'.format(datetime.datetime.now().strftime("%d-%m-%Y %H:%M:%S"), message))
+  except:
+    # Some of the platforms may not have the support for notifications yet
+    pass
