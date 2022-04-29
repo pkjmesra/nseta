@@ -34,9 +34,3 @@ class scanner(baseStockScanner):
       (ScannerType.News).name:stockNewsScanner}
     return scanner_dict[scanner_type.name](indicator=indicator)
 
-  # def buy_solid():
-    # OBV trending upwards
-    # RSI trending upwards. Should be in the range 45+
-    # MACD trending upwards and +ve. MACD > MACD 12
-    # LTP line > EMA9 and LTP > MA50
-    # MOM +ve and trending upwards

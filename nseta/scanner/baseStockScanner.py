@@ -43,6 +43,7 @@ class baseStockScanner:
     self._total_counter = 0
     self._periodicity = 1
     self._time_spent = 0
+    self._scanner_type = ScannerType.Unknown
 
   @property
   def time_spent(self):
@@ -115,6 +116,7 @@ class baseStockScanner:
     return callback_instance.scan_quanta(**kwargs)
 
   def get_instance(self, scanner_type=ScannerType.Unknown):
+    self.scanner_type = scanner_type
     return self
 
   @tracelog

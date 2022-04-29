@@ -106,7 +106,8 @@ class baseScanner:
     self.option = option
     self.analyse = analyse
     if self.scannerinstance is None:
-      self._scannerinstance = scanner(indicator=self.indicator)
+      stk_scanner = scanner(indicator=self.indicator)
+      self._scannerinstance = stk_scanner.get_instance(self.scanner_type)
     if periodicity is not None:
       self.scannerinstance.periodicity = periodicity
     if self.background:
@@ -239,8 +240,8 @@ class baseScanner:
   @tracelog
   def clear_cache(self, clear, force_clear=False):
     if clear or self.background:
-      df_file_name = 'df_Scan_Results.{}'.format(self.indicator.upper())
-      signaldf_file_name = 'signaldf_Scan_Results.{}'.format(self.indicator.upper())
+      df_file_name = 'df_Scan_Results.{}'.format(self.indicator)
+      signaldf_file_name = 'signaldf_Scan_Results.{}'.format(self.indicator)
       self.archiver.clearcache(df_file_name.upper(), self.response_type, force_clear=True)
       self.archiver.clearcache(signaldf_file_name.upper(), self.response_type, force_clear=True)
       self.archiver.clearcache(response_type=self.response_type, force_clear=force_clear)
