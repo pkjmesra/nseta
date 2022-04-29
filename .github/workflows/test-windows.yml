@@ -28,7 +28,7 @@ jobs:
         path: ${{ steps.pip-cache.outputs.dir }}
         # C:\Users\runneradmin\AppData\Local\pip\Cache
         # Look to see if there is a cache hit for the corresponding requirements file
-        key: ${{ runner.os }}-pip-${{ hashFiles('requirements.txt') }}
+        key: ${{ runner.os }}-pip-${{ hashFiles('common-requirements.txt') }}
         restore-keys: |
           ${{ runner.os }}-pip-
           ${{ runner.os }}-
@@ -57,7 +57,7 @@ jobs:
     - name: Install project dependencies
       run: |
         pip3 install --upgrade pip
-        pip3 install -r requirements.txt
+        pip3 install -r common-requirements.txt
         pip3 install convertdate>=2.3.0
         pip3 install sanic==19.12.2
         pip3 install multidict==4.6
