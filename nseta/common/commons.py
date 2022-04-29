@@ -5,7 +5,10 @@ Created on Mon Aug 23 10:10:30 2020.
 @author: SW274998
 """
 import requests
-from plyer import notification
+try:
+  from plyer import notification
+except:
+  pass
 from nseta.common.constants import NSE_INDICES, INDEX_DERIVATIVES
 from nseta.resources.resources import *
 from nseta.common.log import default_logger

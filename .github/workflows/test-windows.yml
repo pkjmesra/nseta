@@ -56,8 +56,8 @@ jobs:
         python3 -c 'import numpy, talib; close = numpy.random.random(100); output = talib.SMA(close); print(output)'
     - name: Install project dependencies
       run: |
-        pip3 install -r requirements.txt
         pip3 install --upgrade pip
+        pip3 install -r requirements.txt
         pip3 install convertdate>=2.3.0
         pip3 install sanic==19.12.2
         pip3 install multidict==4.6
