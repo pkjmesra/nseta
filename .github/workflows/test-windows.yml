@@ -64,6 +64,22 @@ jobs:
         python3 setup.py clean build install sdist bdist_wheel
         pip3 install numpy==1.20.0
         python3 -c "from nseta.scanner.volumeScanner import volumeScanner; from nseta.scanner.baseStockScanner import ScannerType; s=volumeScanner(ScannerType.Volume,['HDFC']); s.scan();"
+    - name: Declare env variables
+      id: vars
+      shell: bash
+      run: |
+        GITHUB_REF=${GITHUB_REF#refs/tags/}
+        echo "##[set-output name=branch;]$(echo ${GITHUB_REF#refs/heads/})"
+        echo "::set-output name=sha_short::$(git rev-parse --short HEAD)"
+        CURRENT_VERSION=`grep -o "'.*'" nseta/__init__.py | sed "s/'//g"`
+        THIS_VERSION=${CURRENT_VERSION}.${{github.run_number}}
+        echo "##[set-output name=THIS_VERSION;]$(echo ${THIS_VERSION})"
+    - name: Archive artifacts
+      uses: actions/upload-artifact@v2
+      with:
+        name: wheel-egg-code-tar-${{ steps.vars.outputs.THIS_VERSION }}-${{ steps.vars.outputs.branch }}-${{ steps.vars.outputs.sha_short }}
+        path: |
+          dist
     - name: Generate test coverage report
       run: |
         pip3 install timeout-decorator
