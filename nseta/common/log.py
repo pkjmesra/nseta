@@ -8,7 +8,12 @@ import inspect
 
 from functools import wraps
 # from inspect import getcallargs, getfullargspec
-from collections import OrderedDict, Iterable
+from collections import OrderedDict
+try:
+    from collections.abc import Iterable
+except ImportError:
+    from collections import Iterable
+    
 from itertools import *
 
 __all__ = ['redForegroundText', 'greenForegroundText', 'line_break','clear_screen','set_cursor','setup_custom_logger', 'default_logger', 'log_to', 'tracelog', 'suppress_stdout_stderr']
