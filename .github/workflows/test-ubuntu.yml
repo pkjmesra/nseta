@@ -47,8 +47,8 @@ jobs:
         brew install python3
     - name: Install ta-lib extension
       run: |
-        brew install ta-lib && \
-        brew info ta-lib
+        /home/linuxbrew/.linuxbrew/bin/brew install ta-lib && \
+        /home/linuxbrew/.linuxbrew/bin/brew info ta-lib
     - name: Install ta-lib python lib
       run: |
         export TA_LIBRARY_PATH=/home/linuxbrew/.linuxbrew/Cellar/ta-lib/0.4.0/lib
