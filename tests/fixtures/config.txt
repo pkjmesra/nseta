@@ -1,5 +1,5 @@
 [DEFAULT]
-version = 0.8
+version = 0.9
 DefaultStocksFilePath = stocks.txt
 UserDataDirectory = ~/Documents/GitHub/nseta/build/userdata/
 

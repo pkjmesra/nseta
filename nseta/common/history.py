@@ -224,12 +224,12 @@ class historicaldata:
     for key, val in six.iteritems(scaling):
       df.loc[:,key] = val * df.loc[:,key]
     if df is None or len(df) == 0:
-      default_logger().debug('\nFor Symbol:{},URL:{}, incorrect/invalid or no response received from server:\n{}'.format(params['CDSymbol'],url,resp.text))
+      default_logger().debug('\nFor Symbol:{},URL:{}, incorrect/invalid or no response received from server:\n{}'.format(params['symbol'],url,resp.text))
     return df
 
 
   @tracelog
-  def validate_params(self, symbol, start, end, periodicity="1", series='EQ', intraday=False, type=ResponseType.Default):
+  def validate_params(self, symbol, start, end, periodicity="1", series='[%22EQ%22]', intraday=False, type=ResponseType.Default):
     """
           symbol = "SBIN" (stock name, index name and VIX)
           start = date(yyyy,mm,dd)
@@ -249,18 +249,16 @@ class historicaldata:
 
     if (not intraday):
       params['symbol'] = symbol
-      params['series'] = series
-      params['symbolCount'] = get_symbol_count(symbol)
-      params['fromDate'] = start.strftime('%d-%m-%Y')
-      params['toDate'] = end.strftime('%d-%m-%Y')
+      params['from'] = start.strftime('%d-%m-%Y')
+      params['to'] = end.strftime('%d-%m-%Y')
       url = equity_history_url
       schema = EQUITY_SCHEMA
       headers = EQUITY_HEADERS
       scaling = EQUITY_SCALING
     elif intraday:
-      params['CDSymbol'] = symbol
-      params['Periodicity'] = periodicity
-      url = nse_intraday_url
+      params['index'] = '{}EQN'.format(symbol.upper())
+      params['preopen'] = 'false'
+      url = nse_intraday_url_new
       schema = INTRADAY_EQUITY_SCHEMA_NEW # INTRADAY_EQUITY_SCHEMA
       headers = INTRADAY_EQUITY_HEADERS_NEW # INTRADAY_EQUITY_HEADERS
       scaling = INTRADAY_EQUITY_SCALING

@@ -4,6 +4,9 @@ Created on Mon Aug 23 10:10:30 2020.
 
 @author: SW274998
 """
+#https://github.com/hi-imcodeman/stock-nse-india/blob/ebc5fe040c28922bdba075227b2724f9d201d632/src/index.ts
+import json
+from pathlib import Path
 import requests
 try:
   from plyer import notification
@@ -15,6 +18,7 @@ from nseta.common.log import default_logger
 from nseta.common.tradingtime import IST_datetime
 from nseta.resources.resources import *
 import datetime
+import os
 from functools import partial
 try:
   import pandas as pd
@@ -282,6 +286,19 @@ class URLFetch:
     self.url = url
     self.method = method
     self.json = json
+    self.baseUrl = 'https://www.nseindia.com'
+    self.legacyBaseUrl = 'https://www1.nseindia.com'
+    self.cookies = ''
+    self.cookieUsedCount = 0
+    self.cookieMaxAge = 60 # should be in seconds
+    self.MaxAgeFactor = 10
+    self.cookieExpiry = datetime.datetime.now() + datetime.timedelta(seconds=(self.cookieMaxAge * self.MaxAgeFactor))
+    self.noOfConnections = 0
+    self.baseHeaders = {
+        'Accept-Language': 'en-US,en;q=0.9',
+        'Accept-Encoding': 'gzip, deflate, br',
+        'Connection': 'keep-alive'
+    }
 
     if not session:
       self.session = requests.Session()
@@ -316,14 +333,69 @@ class URLFetch:
   def __call__(self, *args, **kwargs):
     u = urlparse(self.url)
     self.session.headers.update({'Host': u.hostname})
+    # retrieve cookies:
+    cookies = json.loads(Path("cookies.json").read_text())
+    items=[]
+    for key,value in cookies.items():
+        items.append('{}={}'.format(key, value))
+    self.cookies = '; '.join(items)
+    cookies = requests.utils.cookiejar_from_dict(cookies)
+    self.session.cookies.update(cookies)  # load cookiejar to current session
+    basecookies = self.getNseCookies(kwargs)
+    default_logger().debug('\Cookies being set in Request:{}\n'.format(cookies))
+    self.session.headers.update({'Cookie': basecookies})
     url = self.url%(args)
+    default_logger().debug('\nRequesting for data from: {}\n args:{}\n params:{}\n'.format(url, args, kwargs))
     if self.method == 'get':
-      return self.session.get(url, params=kwargs, proxies = self.proxy )
+      resp = self.session.get(url, params=kwargs, proxies = self.proxy )
+      default_logger().debug('\nReceived Response:{}\n{}\n'.format(resp.text, resp.headers))
+      try:
+        cookie = resp.headers['Set-Cookie']
+        if cookie is not None:
+          response_cookies = requests.utils.dict_from_cookiejar(self.session.cookies)  # turn cookiejar into dict
+          cookies.update(response_cookies)
+          Path("cookies.json").write_text(json.dumps(cookies))  # save them to file as JSON
+      except Exception as e:
+        default_logger().debug('\nReceived Response:{}\n{}\n'.format(resp.text, resp.headers))
+      return resp
     elif self.method == 'post':
       if self.json:
         return self.session.post(url, json=kwargs, proxies = self.proxy )
       else:
         return self.session.post(url, data=kwargs, proxies = self.proxy )
+
+  def getNseCookies(self, params):
+    basecookies = json.loads(Path("cookies.json").read_text())
+    if self.shouldGetFreshCookies():
+      default_logger().debug('\nRetrieving fresh cookies')
+      u = urlparse(self.baseUrl)
+      self.update_headers(self.baseHeaders)
+      self.session.headers.update({'Host': u.hostname, 'Cookie': ''})
+      response = self.session.get(self.baseUrl, params=params, proxies = self.proxy )
+      setCookies = response.headers['set-cookie'].split(';')
+      cookies = []
+      requiredCookies = ['nsit', 'nseappid', 'ak_bmsc', 'AKA_A2']
+      for combinedCookie in setCookies:
+        kvp = combinedCookie.split(',')
+        for cookie in kvp:
+          cookieEntry = cookie.split('=')
+          if cookieEntry[0].strip() in requiredCookies:
+            cookies.append(cookie.strip())
+            default_logger().debug('\Cookie added:{}\n'.format(cookie))
+      self.cookies = '; '.join(cookies)
+      self.cookieExpiry = datetime.datetime.now() + datetime.timedelta(seconds=(self.cookieMaxAge * self.MaxAgeFactor))
+      response_cookies = requests.utils.dict_from_cookiejar(self.session.cookies)  # turn cookiejar into dict
+      basecookies.update(response_cookies)
+      Path("cookies.json").write_text(json.dumps(basecookies))  # save them to file as JSON
+    self.cookieUsedCount = self.cookieUsedCount + 1
+    return self.cookies
+
+  def shouldGetFreshCookies(self):
+    m_time = os.path.getmtime("cookies.json")
+    dt_m = datetime.datetime.fromtimestamp(m_time)
+    self.cookieExpiry = dt_m + datetime.timedelta(seconds=(self.cookieMaxAge * self.MaxAgeFactor))
+    default_logger().debug('\Cookie Expiry:{}\n'.format(self.cookieExpiry))
+    return self.cookies == '' or self.cookieUsedCount > 10 or self.cookieExpiry <= datetime.datetime.now()
 
   def update_proxy(self, proxy):
     self.proxy = proxy

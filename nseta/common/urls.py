@@ -20,17 +20,17 @@ session = CacheControl(Session())
   # 'Host': 'www1.nseindia.com',
   # 'Referer': 'https://www1.nseindia.com/products/content/equities/equities/eq_security.htm'}
 
-headers = {'Accept': '*/*',
+headers = {
+       'Accept': '*/*',
        'Accept-Encoding': 'gzip, deflate, br',
        'Accept-Language': 'en-GB,en-US;q=0.9,en;q=0.8',
-       'Connection': 'keep-alive',
-       'Host': 'www1.nseindia.com',
+       'Host': 'www.nseindia.com',
        'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 11_1_0) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/87.0.4280.88 Safari/537.36',
        'Upgrade-Insecure-Requests': '1',
        'Sec-Fetch-Site': 'none',
        'Sec-Fetch-Mode': 'navigate',
        'Sec-Fetch-Dest': 'document',
-       'X-Requested-With': 'XMLHttpRequest'}
+       'sec-fetch-user': '?1'}
 
 URLFetchSession = partial(URLFetch, session=session,
               headers=headers)
@@ -50,7 +50,7 @@ nse_intraday_url_full = URLFetchSession(
   url= 'https://www1.nseindia.com/ChartApp/install/charts/data/GetHistoricalNew.jsp',method='post')#'https://www1.nseindia.com/charts/webtame/tame_intraday_getQuote_closing_redgreen.jsp')
 """
 New NSE URL: https://www.nseindia.com/api/chart-databyindex?index=SBINEQN
-For Stocks, index={Symbol}NEQN. See https://www.nseindia.com/tcharts/04jan2020?index=NIFTY%2050
+For Stocks, index={Symbol}EQN. See https://www.nseindia.com/tcharts/04jan2020?index=NIFTY%2050
 Segment=CM&Series=EQ&CDExpiryMonth=&FOExpiryMonth=&IRFExpiryMonth=&CDDate1=&CDDate2=&Template=tame_intraday_getQuote_closing_redgreen.jsp&CDSymbol=%s&Periodicity=1&PeriodType=2
 """
 nse_intraday_url = partial(nse_intraday_url_full,
@@ -85,22 +85,19 @@ def fetch_fresh_symbol_count(symbol):
   return cnt
 
 """
-# http://www1.nseindia.com/products/dynaContent/common/productsSymbolMapping.jsp?symbol=SBIN&segmentLink=3&symbolCount=1&series=EQ&dateRange=1month&fromDate=2020-12-01&toDate=2020-12-25&dataType=PRICEVOLUMEDELIVERABLE'
+# https://www.nseindia.com/api/historical/cm/equity?symbol=SBIN&series=[%22EQ%22]&from=01-03-2023&to=12-04-2023
 """
 equity_history_url_full = URLFetchSession(
-  url='http://www1.nseindia.com/products/dynaContent/common/productsSymbolMapping.jsp')
+  url= 'https://www.nseindia.com/api/historical/cm/equity')
 
 """
 symbol="SBIN"
-symbolCount=get_symbol_count(SBIN)
-series="EQ"
-fromDate="dd-mm-yyyy"
-toDate="dd-mm-yyyy"
-dd = equity_history_url(symbol='SBIN', series="EQ", fromDate="01-01-2017", toDate="01-01-2017')
+series="[%22EQ%22]"
+from="dd-mm-yyyy"
+to="dd-mm-yyyy"
+dd = equity_history_url(symbol='SBIN', series="[%22EQ%22]", from="01-01-2017", to="01-01-2017')
 """
-equity_history_url = partial(equity_history_url_full,
-               dataType='PRICEVOLUMEDELIVERABLE',
-               segmentLink=3, dateRange='')
+equity_history_url = partial(equity_history_url_full, series="[%22EQ%22]")
 
 """
 1. YYYY
@@ -195,7 +192,7 @@ symbolCount=
 derivative_history_url = partial(
   URLFetchSession(
     url='http://www1.nseindia.com/products/dynaContent/common/productsSymbolMapping.jsp?',
-    headers = {**headers, **{'Referer': 'https://www1.nseindia.com/products/content/derivatives/equities/historical_fo.htm'}}
+    headers = {**headers, **{'Referer': 'https://www.nseindia.com/'}}
     #headers = (lambda a,b: a.update(b) or a)(headers.copy(),{'Referer': 'https://www1.nseindia.com/products/content/derivatives/equities/historical_fo.htm'})
     ),
   segmentLink=9,

@@ -1,3 +1,2 @@
 -r common-requirements.txt
 plyer>=2.0.0
-pyobjus>=1.2.1
