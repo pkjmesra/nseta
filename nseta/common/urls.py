@@ -61,7 +61,7 @@ nse_intraday_url = partial(nse_intraday_url_full,
               PeriodType="2", ct0='g1|1|1', ct1='g2|2|1',ctcount='2')
 
 nse_intraday_url_new = URLFetchSession(
-  url='https://www.nseindia.com/api/chart-databyindex')
+  url= 'https://www.nseindia.com/get-quotes/equity?symbol=%s#info-intradaychart')#'https://www.nseindia.com/api/chart-databyindex')
 
 """
 ---------------------------------EQUITY--------------------------------------

@@ -32,7 +32,7 @@ class macdSignalStrategy(basesignalstrategy):
       self._target_met = False
       for macd, macd9 in zip((df.loc[:,'macd(12)']).values, (df.loc[:,'macdsignal(9)']).values):
         if macd is not None:
-          price =(df.iloc[rowindex])['Close']
+          price =(df.iloc[rowindex])['close']
           ts =(df.iloc[rowindex])['Date']
           self.macd9 = macd9
           self.index(macd, price, ts)

@@ -27,10 +27,10 @@ for each candle.
 '''
 @tracelog
 def plot_candlestick(df, symbol_name="", plot_title=''):
-  o = df.loc[:,'Open'].astype(float)
-  h = df.loc[:,'High'].astype(float)
-  l = df.loc[:,'Low'].astype(float)
-  c = df.loc[:,'Close'].astype(float)
+  o = df.loc[:,'open'].astype(float)
+  h = df.loc[:,'high'].astype(float)
+  l = df.loc[:,'low'].astype(float)
+  c = df.loc[:,'close'].astype(float)
   p = df.loc[:,'candlestick_pattern'].astype(str)
 
   trace = go.Candlestick(
@@ -67,12 +67,12 @@ def plot_technical_indicators(df):
 
   axs[2,0].plot(tiinstance.get_sma_df(df))
   axs[2,0].set_ylabel('Price')
-  axs[2,0].legend(['Close','SMA(10)', 'SMA(50)'], loc='upper left', fontsize='x-small')
+  axs[2,0].legend(['close','SMA(10)', 'SMA(50)'], loc='upper left', fontsize='x-small')
 
   axs[3,0].plot(tiinstance.get_ema_df(df))
   axs[3,0].set_ylabel('Price')
   axs[3,0].set_xlabel('Date')
-  axs[3,0].legend(['Close','EMA(10)'], loc='upper left', fontsize='x-small')
+  axs[3,0].legend(['close','EMA(10)'], loc='upper left', fontsize='x-small')
 
   axs[4,0].bar(df.loc[:,'dt'],df.loc[:,'Volume'])
   axs[4,0].set_ylabel('Volume')
@@ -85,7 +85,7 @@ def plot_technical_indicators(df):
   axs[1,1].legend(['DMI(14)', 'ADX(14)'], loc='upper left', fontsize='x-small')
 
   axs[2,1].plot(tiinstance.get_bbands_df(df))
-  axs[2,1].legend(['Close','BBands-U(20,2)','BBands-M(20,2)','BBands-L(20,2)'], loc='upper left', fontsize='x-small')
+  axs[2,1].legend(['close','BBands-U(20,2)','BBands-M(20,2)','BBands-L(20,2)'], loc='upper left', fontsize='x-small')
   
   axs[3,1].plot(tiinstance.get_obv_df(df))
   axs[3,1].axhline(linestyle='--', color='r')
@@ -99,7 +99,7 @@ def plot_technical_indicators(df):
   return plt
 
 @tracelog
-def plot_history(df, plot_points=['Close'], secondary_y='Turnover'):
+def plot_history(df, plot_points=['close'], secondary_y='Turnover'):
   df[plot_points].plot(secondary_y=secondary_y)
   plt.title('Price History')
   plt.grid(True)
@@ -207,7 +207,7 @@ def plot_obv(df):
 
 @tracelog
 def plot_sstochastic(df):
-  df.loc[:,'SStochastic(14)'], df.loc[:,'SStochastic(3)'] = ta.STOCH(df.loc[:,'High'], df.loc[:,'Low'], df.loc[:,'Close'], fastk_period=14, slowk_period=3, slowk_matype=0, slowd_period=3, slowd_matype=0)
+  df.loc[:,'SStochastic(14)'], df.loc[:,'SStochastic(3)'] = ta.STOCH(df.loc[:,'high'], df.loc[:,'low'], df.loc[:,'close'], fastk_period=14, slowk_period=3, slowk_matype=0, slowd_period=3, slowd_matype=0)
   df[['SStochastic(14)','SStochastic(3)']].plot()
   plt.title('Slow Stochastic(k=14, d=3)')
   plt.grid(True)
@@ -215,7 +215,7 @@ def plot_sstochastic(df):
 
 @tracelog
 def plot_fstochastic(df):
-  df.loc[:,'FStochastic(14)'], df.loc[:,'FStochastic(3)'] = ta.STOCHF(df.loc[:,'High'], df.loc[:,'Low'], df.loc[:,'Close'], fastk_period=14, fastd_period=3, fastd_matype=0)
+  df.loc[:,'FStochastic(14)'], df.loc[:,'FStochastic(3)'] = ta.STOCHF(df.loc[:,'high'], df.loc[:,'low'], df.loc[:,'close'], fastk_period=14, fastd_period=3, fastd_matype=0)
   df[['FStochastic(14)','FStochastic(3)']].plot()
   plt.title('Fast Stochastic(k=14, d=3)')
   plt.grid(True)

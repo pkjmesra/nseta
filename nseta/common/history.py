@@ -12,8 +12,11 @@ from nseta.common.log import tracelog, default_logger
 from nseta.archives.archiver import *
 
 import six
+import json
+import datetime
 from datetime import date, timedelta
 from bs4 import BeautifulSoup
+from types import SimpleNamespace
 import pandas as pd
 import inspect
 import io
@@ -31,18 +34,18 @@ EQUITY_SCHEMA = [str, str,
          float, float, float, int, float,
          int, int, float]
 EQUITY_HEADERS = ["Symbol", "Series", "Date", "Prev Close",
-          "Open", "High", "Low", "Last", "Close", "VWAP",
+          "open", "high", "low", "Last", "close", "VWAP",
           "Volume", "Turnover", "Trades", "Deliverable Volume",
           "%Deliverable"]
 EQUITY_SCALING = {"Turnover": 100000,
           "%Deliverable": 0.01}
 
 INTRADAY_EQUITY_SCHEMA = [dd_mm_yyyy_H_M_S,float, str, float, float]
-INTRADAY_EQUITY_HEADERS = ["Date", "Open", "High", "Low","Close"] # ["Date", "pltp", "nltp", "previousclose","allltp"]
+INTRADAY_EQUITY_HEADERS = ["Date", "open", "high", "low","close"] # ["Date", "pltp", "nltp", "previousclose","allltp"]
 INTRADAY_EQUITY_SCALING = {}
 
 INTRADAY_EQUITY_SCHEMA_NEW = [dd_mm_yyyy_H_M,float, float, float, float, int, int, int]
-INTRADAY_EQUITY_HEADERS_NEW = ["Date", "Open", "High", "Low","Close", 'Volume', 'Cum_Volume', 'Cdl', 'Cnt_Cdl'] # ["Date", "pltp", "nltp", "previousclose","allltp"]
+INTRADAY_EQUITY_HEADERS_NEW = ["Date", "open", "high", "low","close", 'Volume', 'Cum_Volume', 'Cdl', 'Cnt_Cdl'] # ["Date", "pltp", "nltp", "previousclose","allltp"]
 
 FUTURES_SCHEMA = [str, dd_mmm_yyyy, dd_mmm_yyyy,
           float, float, float, float,
@@ -50,7 +53,7 @@ FUTURES_SCHEMA = [str, dd_mmm_yyyy, dd_mmm_yyyy,
           int, int, float]
 
 FUTURES_HEADERS = ['Symbol', 'Date', 'Expiry',
-           'Open', 'High', 'Low', 'Close',
+           'open', 'high', 'low', 'close',
            'Last', 'Settle Price', 'Number of Contracts', 'Turnover',
            'Open Interest', 'Change in OI', 'Underlying']
 FUTURES_SCALING = {"Turnover": 100000}
@@ -60,7 +63,7 @@ OPTION_SCHEMA = [str, dd_mmm_yyyy, dd_mmm_yyyy, str, float,
          float, float, int, float,
          float, int, int, float]
 OPTION_HEADERS = ['Symbol', 'Date', 'Expiry', 'Option Type', 'Strike Price',
-          'Open', 'High', 'Low', 'Close',
+          'open', 'high', 'low', 'close',
           'Last', 'Settle Price', 'Number of Contracts', 'Turnover',
           'Premium Turnover', 'Open Interest', 'Change in OI', 'Underlying']
 OPTION_SCALING = {"Turnover": 100000,
@@ -71,7 +74,7 @@ INDEX_SCHEMA = [dd_mmm_yyyy,
         float, float, float, float,
         int, float]
 INDEX_HEADERS = ['Date',
-         'Open', 'High', 'Low', 'Close',
+         'open', 'high', 'low', 'close',
          'Volume', 'Turnover']
 INDEX_SCALING = {'Turnover': 10000000}
 
@@ -79,7 +82,7 @@ VIX_INDEX_SCHEMA = [dd_mmm_yyyy,
           float, float, float, float,
           float, float, float]
 VIX_INDEX_HEADERS = ['Date',
-           'Open', 'High', 'Low', 'Close',
+           'open', 'high', 'low', 'close',
            'Previous', 'Change', '%Change']
 VIX_SCALING = {'%Change': 0.01}
 
@@ -210,22 +213,23 @@ class historicaldata:
 
   @tracelog
   def url_to_df(self, url, params, schema, headers, scaling={}, csvnode=None):
-    resp = url(**params)
-    bs = BeautifulSoup(resp.text, 'lxml')
-    tp = ParseTables(soup=bs,
-             schema=schema,
-             headers=headers) # index="Date"
-    if csvnode is not None:
-      if csvnode == 'data':
-        tp.parse_lists(bs.find(csvnode).text)
-      elif csvnode == 'g2_CUMVOL':
-        tp.parse_g1_g2(bs.text, params['CDSymbol'])
-    df = tp.get_df()
-    for key, val in six.iteritems(scaling):
-      df.loc[:,key] = val * df.loc[:,key]
-    if df is None or len(df) == 0:
-      default_logger().debug('\nFor Symbol:{},URL:{}, incorrect/invalid or no response received from server:\n{}'.format(params['symbol'],url,resp.text))
-    return df
+    resp = url(params['symbol'])
+    default_logger().debug(resp.text)
+    # data = resp.json()
+    # prices = data['grapthData']
+    # # Convert the index to datetime
+    # df = pd.DataFrame(prices, columns = ['Date', 'LTP'])
+    # df["Date"] = df["Date"].apply(lambda x: datetime.datetime.utcfromtimestamp(x/1000))
+    # df.set_index('Date', inplace=True)
+    # default_logger().debug(df)
+    # # Resample LTP column to 15 mins bars using resample function from pandas
+    # resample_LTP = df.resample('1Min').ohlc()['LTP']
+    # resample_LTP = resample_LTP.reset_index(drop=False)
+    # # resample_LTP['Open','High','Low','Close'] = resample_LTP['open','high','low','close']
+    # default_logger().debug(resample_LTP)
+    # if resample_LTP is None or len(resample_LTP) == 0:
+    #   default_logger().debug('\nFor Symbol:{},URL:{}, incorrect/invalid or no response received from server:\n{}'.format(params['symbol'],url,resample_LTP))
+    # return resample_LTP
 
 
   @tracelog
@@ -256,6 +260,7 @@ class historicaldata:
       headers = EQUITY_HEADERS
       scaling = EQUITY_SCALING
     elif intraday:
+      params['symbol'] = symbol.upper()
       params['index'] = '{}EQN'.format(symbol.upper())
       params['preopen'] = 'false'
       url = nse_intraday_url_new
@@ -336,72 +341,6 @@ class historicaldata:
     del df['Unnamed: 13']
     return df[df['SERIES'] == series]
 
-  """
-  Get Price range for all Indices
-  """
-  @tracelog
-  def get_indices_price_list(self, dt):
-    res = index_daily_snapshot_url(dt.strftime('%d%m%Y'))
-    df = pd.read_csv(io.StringIO(res.content.decode('utf-8')))
-    df = df.rename(columns={"Index Name": "NAME",
-                "Index Date": "TIMESTAMP",
-                "Open Index Value": "OPEN",
-                "High Index Value": "HIGH",
-                "Low Index Value": "LOW",
-                "Closing Index Value": "CLOSE",
-                "Points Change": "CHANGE",
-                "Change(%)": "CHANGEPCT",
-                "Volume": "TOTTRDQTY",
-                "Turnover (Rs. Cr.)": "TOTTRDVAL",
-                "P/E": "PE",
-                "P/B": "PB",
-                "Div Yield": "DIVYIELD"})
-    return df
-
-  '''
-  @tracelog
-  def get_rbi_ref_history(self, start, end):
-    frame = inspect.currentframe()
-    args, _, _, kwargs = inspect.getargvalues(frame)
-    del(kwargs['frame'])
-    del(kwargs['self'])
-    start = kwargs['start']
-    end = kwargs['end']
-    if (end - start) > timedelta(130):
-      kwargs1 = dict(kwargs)
-      kwargs2 = dict(kwargs)
-      kwargs1['end'] = start + timedelta(130)
-      kwargs2['start'] = kwargs1['end'] + timedelta(1)
-      t1 = ThreadReturns(target=self.get_rbi_ref_history, kwargs=kwargs1)
-      t2 = ThreadReturns(target=self.get_rbi_ref_history, kwargs=kwargs2)
-      t1.start()
-      t2.start()
-      t1.join()
-      t2.join()
-      return concatenated_dataframe(t1.result, t2.result)
-    else:
-      return self.get_rbi_ref_history_quanta(**kwargs)
-
-  @tracelog
-  def get_rbi_ref_history_quanta(self, start, end):
-    """
-      Args:
-        start (datetime.date): start date
-        end (datetime.date): end date
-
-      Returns:
-        pandas.DataFrame : A pandas dataframe object 
-    """
-    resp = rbi_rate_history_url(fromDate=start.strftime('%d-%m-%Y'),
-                  toDate=end.strftime('%d-%m-%Y'))
-
-    bs = BeautifulSoup(resp.text, 'lxml')
-    tp = ParseTables(soup=bs,
-             schema=RBI_REF_RATE_SCHEMA,
-             headers=RBI_REF_RATE_HEADERS, index="Date')
-    df = tp.get_df()
-    return df
-  '''
   @tracelog
   def archive_history(self, df, symbol, start_date, end_date, response_type=ResponseType.Default, periodicity=1):
     symbol = '{}_{}'.format(symbol, periodicity) if response_type == ResponseType.Intraday else '{}_{}_{}'.format(symbol, start_date.strftime('%d-%m-%Y'), end_date.strftime('%d-%m-%Y'))

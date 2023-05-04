@@ -29,7 +29,7 @@ class bollingerbandsBottomWStrategy:
         # df.set_index('Date')
         # df.index = pd.to_datetime(df.index)   
         signals=self.signal_generation(df)
-        signals = signals.loc[:,['Date', 'std', 'Close','mid_band', 'upper_band', 'lower_band', 'bb_signal', 'bb_position', 'coordinates']]
+        signals = signals.loc[:,['Date', 'std', 'close','mid_band', 'upper_band', 'lower_band', 'bb_signal', 'bb_position', 'coordinates']]
         signals = signals.reset_index(drop=True)
         # signals.set_index('Date')
         # signals.index = pd.to_datetime(signals.index) 
@@ -45,8 +45,8 @@ class bollingerbandsBottomWStrategy:
     #we get our upper, mid, lower_bands
     def bollinger_bands(self, df):
         data=copy.deepcopy(df)
-        data['std']=data['Close'].rolling(window=20,min_periods=20).std()
-        data['mid_band']=data['Close'].rolling(window=20,min_periods=20).mean()
+        data['std']=data['close'].rolling(window=20,min_periods=20).std()
+        data['mid_band']=data['close'].rolling(window=20,min_periods=20).mean()
         data['upper_band']=data['mid_band']+2*data['std']
         data['lower_band']=data['mid_band']-2*data['std']
         data = data.dropna(subset=['mid_band', 'upper_band', 'lower_band'], how='all')
@@ -82,7 +82,7 @@ class bollingerbandsBottomWStrategy:
         #beta denotes the scale of bandwidth
         #when bandwidth is larger than beta, it is expansion period
         #when bandwidth is smaller than beta, it is contraction period
-        alpha = data.loc[:,'Close'].iloc[0] * 0.01 # 0.0001 # TODO: Should be a much lower value for alpha?
+        alpha = data.loc[:,'close'].iloc[0] * 0.01 # 0.0001 # TODO: Should be a much lower value for alpha?
         beta = alpha # 0.0001
         default_logger().debug('\nAlpha set to: {}'.format(alpha))
         df=self.bollinger_bands(data)
@@ -111,12 +111,12 @@ class bollingerbandsBottomWStrategy:
             #after confirmation of several breakthroughs
             #maybe its good for stop and reverse
             #condition 4
-            if (df['Close'][i]>df['upper_band'][i]) and \
+            if (df['close'][i]>df['upper_band'][i]) and \
             (df['bb_position'][i]==0):
                 default_logger().debug('\nCondition 4 satisfied for BB Bottom W pattern')
                 for j in range(i,i-period,-1):
                     #condition 2
-                    if (np.abs(df['mid_band'][j]-df['Close'][j])<alpha) and \
+                    if (np.abs(df['mid_band'][j]-df['close'][j])<alpha) and \
                     (np.abs(df['mid_band'][j]-df['upper_band'][i])<alpha):
                         moveon=True
                         default_logger().debug('\nCondition 2 satisfied for BB Bottom W pattern')
@@ -126,8 +126,8 @@ class bollingerbandsBottomWStrategy:
                     moveon=False
                     for k in range(j,i-period,-1):
                         #condition 1
-                        if (np.abs(df['lower_band'][k]-df['Close'][k])<alpha):
-                            threshold=df['Close'][k]
+                        if (np.abs(df['lower_band'][k]-df['close'][k])<alpha):
+                            threshold=df['close'][k]
                             moveon=True
                             default_logger().debug('\nCondition 1 satisfied with threshold: {}'.format(threshold))
                             break
@@ -136,7 +136,7 @@ class bollingerbandsBottomWStrategy:
                     moveon=False
                     for l in range(k,i-period,-1):
                         #this one is for plotting w shape
-                        if (df['mid_band'][l]<df['Close'][l]):
+                        if (df['mid_band'][l]<df['close'][l]):
                             moveon=True
                             default_logger().debug('\nPlot Condition satisfied for BB Bottom W pattern')
                             break
@@ -145,11 +145,11 @@ class bollingerbandsBottomWStrategy:
                     moveon=False
                     default_logger().debug('\nRange from {} - {}'.format(i,j))
                     for m in range(i,j-1,-1): # TODO: Should be (i, j, -1) ?
-                        default_logger().debug('\nClose: {}, lower_band: {}, alpha: {}, threshold: {}'.format(df['Close'][m], df['lower_band'][m], alpha, threshold))
+                        default_logger().debug('\nClose: {}, lower_band: {}, alpha: {}, threshold: {}'.format(df['close'][m], df['lower_band'][m], alpha, threshold))
                         #condition 3
-                        if (df['Close'][m]-df['lower_band'][m]<alpha) and \
-                        (df['Close'][m]>df['lower_band'][m]) and \
-                        (df['Close'][m]<=threshold): # TODO: Should be (df['Close'][m]<=threshold) ?
+                        if (df['close'][m]-df['lower_band'][m]<alpha) and \
+                        (df['close'][m]>df['lower_band'][m]) and \
+                        (df['close'][m]<=threshold): # TODO: Should be (df['close'][m]<=threshold) ?
                             df.loc[:,'bb_signal'].iloc[i]=1
                             df.loc[:,'coordinates'].iloc[i]='%s,%s,%s,%s,%s'%(l,k,j,m,i)
                             df['bb_position']=df['bb_signal'].cumsum()
@@ -181,9 +181,9 @@ class bollingerbandsBottomWStrategy:
             print('Not enough data yet')
             return False
         strategy_copy = strategy_copy[strategy_copy['bb_signal']!=0]
-        strategy_copy = strategy_copy.loc[:,['Date', 'Close', 'bb_signal', 'bb_position']]
+        strategy_copy = strategy_copy.loc[:,['Date', 'close', 'bb_signal', 'bb_position']]
         strategy_copy.loc[:,'Symbol'] = symbol
-        df_ret = pd.DataFrame(np.diff(strategy_copy['Close'])).rename(columns = {0:'returns'})
+        df_ret = pd.DataFrame(np.diff(strategy_copy['close'])).rename(columns = {0:'returns'})
 
         strategy_copy.loc[:,'bb_margin'] = 0
         strategy_copy.loc[:,'bb_returns'] = 0
@@ -194,7 +194,7 @@ class bollingerbandsBottomWStrategy:
         for i in range(len(df_ret)):
             returns = df_ret.loc[:,'returns'].iloc[i]*strategy_copy.loc[:,'bb_position'].iloc[i]
             strategy_copy.loc[:,'bb_margin'].iloc[i+1] = returns
-            number_of_stocks = math.floor(investment_value/strategy_copy.loc[:,'Close'].iloc[i])
+            number_of_stocks = math.floor(investment_value/strategy_copy.loc[:,'close'].iloc[i])
             returns = number_of_stocks*strategy_copy.loc[:,'bb_margin'].iloc[i+1]
             strategy_copy.loc[:,'bb_returns'].iloc[i+1] = returns
             strategy_copy.loc[:,'bb_rolling_returns'].iloc[i+1] = round(sum(strategy_copy['bb_returns']), 2)
@@ -221,19 +221,19 @@ class bollingerbandsBottomWStrategy:
         ax=fig.add_subplot(111)
         
         #plotting positions on price series and bollinger bands
-        ax.plot(newbie['Close'],label='Close')
+        ax.plot(newbie['close'],label='close')
         ax.fill_between(newbie.index,newbie['lower_band'],newbie['upper_band'],alpha=0.2,color='#45ADA8')
         ax.plot(newbie['mid_band'],linestyle='--',label='moving average',c='#132226')
-        ax.plot(newbie['Close'][newbie['bb_signal']==1],marker='^',markersize=12, \
+        ax.plot(newbie['close'][newbie['bb_signal']==1],marker='^',markersize=12, \
                 lw=0,c='g',label='LONG')
-        ax.plot(newbie['Close'][newbie['bb_signal']==-1],marker='v',markersize=12, \
+        ax.plot(newbie['close'][newbie['bb_signal']==-1],marker='v',markersize=12, \
                 lw=0,c='r',label='SHORT')
         
         #plotting w shape
         #we locate the coordinates then find the exact date as index
         temp=newbie['coordinates'][newbie['bb_signal']==1]
         indexlist=list(map(int,temp[temp.index[0]].split(',')))
-        ax.plot(newbie['Close'][pd.to_datetime(new['Date'].iloc[indexlist])], \
+        ax.plot(newbie['close'][pd.to_datetime(new['Date'].iloc[indexlist])], \
                 lw=5,alpha=0.7,c='#FE4365',label='double bottom pattern')
         
         #add some captions
@@ -256,7 +256,7 @@ class bollingerbandsBottomWStrategy:
         
         plt.legend(loc='best')
         plt.title('BB Bottom W Pattern Recognition for {}'.format(symbol))
-        plt.ylabel('Close')
+        plt.ylabel('close')
         plt.grid(True)
         plt.show()
 

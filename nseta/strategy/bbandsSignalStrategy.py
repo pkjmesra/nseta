@@ -32,7 +32,7 @@ class bbandsSignalStrategy(basesignalstrategy):
     try:
       rowindex = 0
       self._target_met = False
-      for lower_bband, upper_bband, price, ts in zip(df.loc[:,'BBands-L'], df.loc[:,'BBands-U'], df.loc[:,'Close'], df.loc[:,'Date']):
+      for lower_bband, upper_bband, price, ts in zip(df.loc[:,'BBands-L'], df.loc[:,'BBands-U'], df.loc[:,'close'], df.loc[:,'Date']):
         self.index(lower_bband, upper_bband, price, ts)
         rowindex = rowindex + 1
         if self._target_met:

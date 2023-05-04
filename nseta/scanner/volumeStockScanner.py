@@ -61,7 +61,7 @@ class volumeStockScanner(baseStockScanner):
             df_today = primary
           if (primary is not None and len(primary) > 0):
             if df_today is None:
-              df_today = pd.DataFrame(primary, columns = ['Updated', 'Symbol', 'Close', 'LTP', 'Tdy%Del', 'T0BuySellDiff', 'TotalTradedVolume','pChange', 'FreeFloat'], index = [''])
+              df_today = pd.DataFrame(primary, columns = ['Updated', 'Symbol', 'close', 'LTP', 'Tdy%Del', 'T0BuySellDiff', 'TotalTradedVolume','pChange', 'FreeFloat'], index = [''])
               arch.archive(df_today, '{}_live_quote'.format(symbol), ResponseType.Volume)
             df, df_today, signalframes = self.format_scan_volume_df(df, df_today, signalframes)
             frames.append(df)

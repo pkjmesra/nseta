@@ -109,7 +109,7 @@ class TestCommons(baseUnitTest):
           float, float, float, int, float,
           int, int, float]
     headers = ["Symbol", "Series", "Date", "Prev Close",
-           "Open", "High", "Low", "Last", "Close", "VWAP",
+           "open", "high", "low", "Last", "close", "VWAP",
            "Volume", "Turnover", "Trades", "Deliverable Volume",
            "%Deliverble"]
     bs = BeautifulSoup(htmls.html_equity, features='lxml')
@@ -126,7 +126,7 @@ class TestCommons(baseUnitTest):
       '07-01-2021 09:17:00,2660.0500,,2638.8500,2660.0500')
     dd_mm_yyyy_H_M_S = StrDate.default_format(format='%d-%m-%Y %H:%M:%S')
     INTRADAY_EQUITY_SCHEMA = [dd_mm_yyyy_H_M_S,float, str, float, float]
-    INTRADAY_EQUITY_HEADERS = ["Date", "Open", "High", "Low","Close"]
+    INTRADAY_EQUITY_HEADERS = ["Date", "open", "high", "low","close"]
     bs = BeautifulSoup(htmls.html_equity, features='lxml')
     t = ParseTables(soup=bs,
             schema=INTRADAY_EQUITY_SCHEMA, 

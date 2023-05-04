@@ -46,8 +46,8 @@ class bollingerbandsRangeCrossoverStrategy:
         return upper_bb, lower_bb
 
     def update_bbands_indicator_values(self, df):
-        df['sma_20'] = self.sma(df['Close'], 20)
-        df['upper_bb'], df['lower_bb'] = self.bb(df['Close'], df['sma_20'], 20)
+        df['sma_20'] = self.sma(df['close'], 20)
+        df['upper_bb'], df['lower_bb'] = self.bb(df['close'], df['sma_20'], 20)
         return df
 
     @tracelog
@@ -87,7 +87,7 @@ class bollingerbandsRangeCrossoverStrategy:
 
     @tracelog
     def update_strategy_position(self, df):
-        buy_price, sell_price, bb_signal = self.run_bbands_range_crossover_strategy(df['Close'], df['lower_bb'], df['upper_bb'])
+        buy_price, sell_price, bb_signal = self.run_bbands_range_crossover_strategy(df['close'], df['lower_bb'], df['upper_bb'])
         position = []
         for i in range(len(bb_signal)):
             if bb_signal[i] > 1:
@@ -95,7 +95,7 @@ class bollingerbandsRangeCrossoverStrategy:
             else:
                 position.append(1)
                 
-        for i in range(len(df['Close'])):
+        for i in range(len(df['close'])):
             if bb_signal[i] == 1:
                 position[i] = 1
             elif bb_signal[i] == -1:
@@ -105,7 +105,7 @@ class bollingerbandsRangeCrossoverStrategy:
                 
         upper_bb = df['upper_bb']
         lower_bb = df['lower_bb']
-        close_price = df['Close']
+        close_price = df['close']
         date = df['Date']
         sma = df['sma_20']
         bb_buy = pd.DataFrame(buy_price).rename(columns = {0:'buy_price'}).set_index(df.index)
@@ -124,7 +124,7 @@ class bollingerbandsRangeCrossoverStrategy:
 
         frames = [date, close_price, upper_bb, sma, lower_bb, bb_buy, bb_sell, bb_signal, position]
         strategy = pd.concat(frames, join = 'inner', axis = 1)
-        strategy = strategy.loc[:,['Date', 'Close', 'upper_bb', 'sma_20', 'lower_bb', 'buy_price', 'sell_price', 'bb_signal', 'bb_position']]
+        strategy = strategy.loc[:,['Date', 'close', 'upper_bb', 'sma_20', 'lower_bb', 'buy_price', 'sell_price', 'bb_signal', 'bb_position']]
         strategy.reset_index(drop=True, inplace=True)
         return strategy
 
@@ -135,9 +135,9 @@ class bollingerbandsRangeCrossoverStrategy:
         if len(strategy_copy) <= 0:
             print('Not enough data yet')
             return False
-        strategy_copy = strategy_copy.loc[:,['Date', 'Close', 'bb_signal', 'bb_position']]
+        strategy_copy = strategy_copy.loc[:,['Date', 'close', 'bb_signal', 'bb_position']]
         strategy_copy.loc[:,'Symbol'] = symbol
-        df_ret = pd.DataFrame(np.diff(strategy_copy['Close'])).rename(columns = {0:'returns'})
+        df_ret = pd.DataFrame(np.diff(strategy_copy['close'])).rename(columns = {0:'returns'})
 
         strategy_copy.loc[:,'bb_margin'] = 0
         strategy_copy.loc[:,'bb_returns'] = 0
@@ -148,7 +148,7 @@ class bollingerbandsRangeCrossoverStrategy:
         for i in range(len(df_ret)):
             returns = df_ret.loc[:,'returns'].iloc[i]*strategy_copy.loc[:,'bb_position'].iloc[i]
             strategy_copy.loc[:,'bb_margin'].iloc[i+1] = returns
-            number_of_stocks = math.floor(investment_value/strategy_copy.loc[:,'Close'].iloc[i])
+            number_of_stocks = math.floor(investment_value/strategy_copy.loc[:,'close'].iloc[i])
             returns = number_of_stocks*strategy_copy.loc[:,'bb_margin'].iloc[i+1]
             strategy_copy.loc[:,'bb_returns'].iloc[i+1] = returns
             strategy_copy.loc[:,'bb_rolling_returns'].iloc[i+1] = round(sum(strategy_copy['bb_returns']), 2)
@@ -176,8 +176,8 @@ class bollingerbandsRangeCrossoverStrategy:
             plt.gca().xaxis.set_major_locator(mdates.DayLocator(interval=5))
         plt.gca().xaxis.set_major_formatter(xAxisFmt)
         
-        plt.plot(df.index, df['Close'])
-        df['Close'].plot(label = '{} CLOSE Prices'.format(symbol), alpha = 0.6, linewidth = 1, color = 'skyblue')
+        plt.plot(df.index, df['close'])
+        df['close'].plot(label = '{} CLOSE Prices'.format(symbol), alpha = 0.6, linewidth = 1, color = 'skyblue')
         df['upper_bb'].plot(label = 'UPPER BB 20', linestyle = '--', linewidth = 1, color = 'black')
         df['sma_20'].plot(label = 'MIDDLE BB 20', linestyle = '--', linewidth = 1, color = 'red')
         df['lower_bb'].plot(label = 'LOWER BB 20', linestyle = '--', linewidth = 1, color = 'black')

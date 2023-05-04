@@ -248,14 +248,14 @@ class baseStockScanner:
     limited_df = df.tail(7)
     pd.set_option('mode.chained_assignment', None)
     if indicator == 'macd' or indicator == 'all':
-      tiny_df = pd.DataFrame({'Symbol':limited_df.loc[:,'Symbol'],'Date':limited_df.loc[:,'Date'],'macd(12)':limited_df.loc[:,'macd(12)'],'macdsignal(9)':limited_df.loc[:,'macdsignal(9)'], 'Close':limited_df.loc[:,'LTP']})
+      tiny_df = pd.DataFrame({'Symbol':limited_df.loc[:,'Symbol'],'Date':limited_df.loc[:,'Date'],'macd(12)':limited_df.loc[:,'macd(12)'],'macdsignal(9)':limited_df.loc[:,'macdsignal(9)'], 'close':limited_df.loc[:,'LTP']})
       sm = macdSignalStrategy(strict=True, intraday=False, requires_ledger=False)
     elif indicator == 'rsi' or indicator == 'all':
-      tiny_df = pd.DataFrame({'Symbol':limited_df.loc[:,'Symbol'],'Date':limited_df.loc[:,'Date'],'RSI':limited_df.loc[:,'RSI'],'Close':limited_df.loc[:,'LTP']})
+      tiny_df = pd.DataFrame({'Symbol':limited_df.loc[:,'Symbol'],'Date':limited_df.loc[:,'Date'],'RSI':limited_df.loc[:,'RSI'],'close':limited_df.loc[:,'LTP']})
       sm = rsiSignalStrategy(strict=True, intraday=False, requires_ledger=False)
       sm.set_limits(resources.rsi().lower, resources.rsi().upper)
     elif indicator == 'bbands' or indicator == 'all':
-      tiny_df = pd.DataFrame({'Symbol':limited_df.loc[:,'Symbol'],'Date':limited_df.loc[:,'Date'],'BBands-L':limited_df.loc[:,'BBands-L'], 'BBands-U':limited_df.loc[:,'BBands-U'], 'Close':limited_df.loc[:,'LTP']})
+      tiny_df = pd.DataFrame({'Symbol':limited_df.loc[:,'Symbol'],'Date':limited_df.loc[:,'Date'],'BBands-L':limited_df.loc[:,'BBands-L'], 'BBands-U':limited_df.loc[:,'BBands-U'], 'close':limited_df.loc[:,'LTP']})
       sm = bbandsSignalStrategy(strict=True, intraday=False, requires_ledger=False)
 
     default_logger().debug('tiny_df:\n{}'.format(tiny_df.to_string(index=False)))

@@ -70,8 +70,8 @@ class TestUrls(baseUnitTest):
     resp = index_history_url(indexType='NIFTY 50',
                  fromDate='01-01-2015',
                  toDate='10-01-2015')
-    self.assertGreaterEqual(resp.text.find('High'), 0)
-    self.assertGreaterEqual(resp.text.find('Low'), 0)
+    self.assertGreaterEqual(resp.text.find('high'), 0)
+    self.assertGreaterEqual(resp.text.find('low'), 0)
 
   def test_index_daily_snapshot_url(self):
     resp = index_daily_snapshot_url('06012020')

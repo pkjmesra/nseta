@@ -32,7 +32,7 @@ class liveStockScanner(baseStockScanner):
         self.update_progress(stock)
         result, primary = get_live_quote(stock, keys = self.keys)
         if primary is not None and len(primary) > 0:
-          row = pd.DataFrame(primary, columns = ['Updated', 'Symbol', 'Close', 'LTP', '% Delivery', 'Buy - Sell', 'TotalTradedVolume', 'pChange', 'FreeFloat'], index = [''])
+          row = pd.DataFrame(primary, columns = ['Updated', 'Symbol', 'close', 'LTP', '% Delivery', 'Buy - Sell', 'TotalTradedVolume', 'pChange', 'FreeFloat'], index = [''])
           value = (row['LTP'][0]).replace(' ','').replace(',','')
           if stock in self.stocksdict:
             (self.stocksdict[stock]).append(float(value))
@@ -40,8 +40,8 @@ class liveStockScanner(baseStockScanner):
             self.stocksdict[stock] = [float(value)]
           index = len(self.stocksdict[stock])
           if index >= 15:
-            dfclose = pd.DataFrame(self.stocksdict[stock], columns = ['Close'])
-            rsi = ta.RSI(dfclose['Close'],resources.rsi().period)
+            dfclose = pd.DataFrame(self.stocksdict[stock], columns = ['close'])
+            rsi = ta.RSI(dfclose['close'],resources.rsi().period)
             rsivalue = rsi[index -1]
             row['RSI'] = rsivalue
             default_logger().debug(stock + ' RSI:' + str(rsi))

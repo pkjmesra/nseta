@@ -54,13 +54,13 @@ class TestHistory(baseUnitTest):
         # Check Stock
         dfpleq = self.historicaldata.get_price_list(testdate, 'EQ')
         stk = dfpleq[dfpleq['SYMBOL'] == 'IDFCFIRSTB'].squeeze()
-        self.assertEqual(stk['CLOSE'], 45.8)
+        self.assertEqual(stk['close'], 45.8)
 
         # Check Bond
         testsymbol = 'NHAI'
         dfpln1 = self.historicaldata.get_price_list(testdate, 'N1')
         bond = dfpln1[dfpln1['SYMBOL'] == testsymbol].squeeze()
-        self.assertEqual(bond['CLOSE'], 1064.34)
+        self.assertEqual(bond['close'], 1064.34)
 
     def test_get_indices_price_list(self):
         testdate = date(2021, 1, 7)
@@ -68,7 +68,7 @@ class TestHistory(baseUnitTest):
         # Check closing for index
         dfplidx = self.historicaldata.get_indices_price_list(testdate)
         idxname = dfplidx[dfplidx['NAME'] == 'Nifty 100'].squeeze()
-        self.assertEqual(idxname['CLOSE'], 14305.5)
+        self.assertEqual(idxname['close'], 14305.5)
 
     # Test for data for problematic symbols BBTC,ALOKINDS,IRB,M&MFIN,POWERINDIA,PVR,SBICARD,SUMICHEM,SUVENPHAR
 

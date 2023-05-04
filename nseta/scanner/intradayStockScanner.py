@@ -12,10 +12,10 @@ from nseta.common.log import tracelog, default_logger
 INTRADAY_KEYS_MAPPING = {
   'Symbol': 'Symbol',
   'Date': 'Date',
-  'Open': 'Open',
-  'High': 'High',
-  'Low': 'Low',
-  'Close': 'LTP',
+  'open': 'open',
+  'high': 'high',
+  'low': 'low',
+  'close': 'LTP',
   'Volume': 'Volume',
   'Cum_Volume': 'Cum_Volume',
   'RSI': 'RSI',
@@ -43,10 +43,10 @@ INTRADAY_KEYS_MAPPING = {
 
 # KEY_MAPPING = {
 #   'dt': 'Date',
-#   'Open': 'Open',
-#   'High': 'High',
-#   'Low': 'Low',
-#   'Close': 'Close',
+#   'open': 'open',
+#   'high': 'high',
+#   'low': 'low',
+#   'close': 'close',
 #   'Volume': 'Volume',
 #   'Cum_Volume': 'Cum_Volume',
 # }

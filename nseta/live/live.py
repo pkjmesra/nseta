@@ -168,7 +168,7 @@ def get_live_quote(symbol, general=True, ohlc=False, wk52=False, volume=False, o
     return None, None
   primary = format_as_dataframe(result, symbol, general, ohlc, wk52, volume, keys= keys)
   if len(keys) > 0:
-    df_today = pd.DataFrame(primary, columns = ['Updated', 'Symbol', 'Close', 'LTP', 'Tdy%Del', 'T0BuySellDiff', 'TotalTradedVolume','pChange', 'FreeFloat'], index = [''])
+    df_today = pd.DataFrame(primary, columns = ['Updated', 'Symbol', 'close', 'LTP', 'Tdy%Del', 'T0BuySellDiff', 'TotalTradedVolume','pChange', 'FreeFloat'], index = [''])
     arch = archiver()
     arch.archive(df_today, '{}_live_quote'.format(symbol), ResponseType.Volume)
   return result, primary

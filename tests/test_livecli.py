@@ -30,7 +30,7 @@ class TestLivecli(baseUnitTest):
     self.assertIn('Change', result.output, str(result.output))
     self.assertIn('% Change', result.output, str(result.output))
     self.assertIn('Avg. Price', result.output, str(result.output))
-    self.assertIn('Open', result.output, str(result.output))
+    self.assertIn('open', result.output, str(result.output))
     self.assertIn('52 Wk High', result.output, str(result.output))
     self.assertIn('Total Traded Volume', result.output, str(result.output))
     self.assertIn('% Delivery', result.output, str(result.output))

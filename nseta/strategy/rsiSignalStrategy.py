@@ -40,7 +40,7 @@ class rsiSignalStrategy(basesignalstrategy):
       rowindex = 0
       for rsi in (df.loc[:,'RSI']).values:
         if rsi is not None:
-          price =(df.iloc[rowindex])['Close']
+          price =(df.iloc[rowindex])['close']
           ts =(df.iloc[rowindex])['Date']
           self.index(rsi, price, ts)
           if self.target_met_status:

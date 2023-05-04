@@ -263,7 +263,7 @@ class strategyManager:
     s.periodicity = "1"
     df = s.ohlc_intraday_history(symbol)
     if df is not None and len(df) > 0:
-      df.drop(['Open'], axis = 1, inplace = True)
+      df.drop(['open'], axis = 1, inplace = True)
       df = df.sort_values(by='Date',ascending=True)
     return df
 
@@ -294,9 +294,9 @@ class strategyManager:
     set_cursor()
     print(msg)
 
-    strgy_dict = {"rsi":{"keys":["Symbol","Date","RSI","Close"],"class":rsiSignalStrategy},
-            "bbands":{"keys":["Symbol","Date","BBands-U","BBands-M", "BBands-L","Close"],"class":bbandsSignalStrategy},
-            "macd":{"keys":["Symbol","Date","macd(12)","macdsignal(9)", "macdhist(26)","Close"],"class":macdSignalStrategy}}
+    strgy_dict = {"rsi":{"keys":["Symbol","Date","RSI","close"],"class":rsiSignalStrategy},
+            "bbands":{"keys":["Symbol","Date","BBands-U","BBands-M", "BBands-L","close"],"class":bbandsSignalStrategy},
+            "macd":{"keys":["Symbol","Date","macd(12)","macdsignal(9)", "macdhist(26)","close"],"class":macdSignalStrategy}}
     keys = strgy_dict.keys()
     df_dict = {}
     pd.set_option('mode.chained_assignment', None)
@@ -323,7 +323,7 @@ class strategyManager:
   def prepare_for_historical_strategy(self, df, symbol):
     df.loc[:,'datetime'] = df.loc[:,'Date']
     df.loc[:,'dt'] = df.loc[:,'Date']
-    df.loc[:,'close'] = df.loc[:,'Close']
+    df.loc[:,'close'] = df.loc[:,'close']
     df = self.reset_date_index(df)
     return df
 

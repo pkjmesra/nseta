@@ -42,7 +42,7 @@ def sma(data, n):
 def update_sma_indicator_values(df):
     n = [20, 50]
     for i in n:
-        df[f'sma_{i}'] = sma(df['Close'], i)
+        df[f'sma_{i}'] = sma(df['close'], i)
     return df
 
 def run_sma_crossover_strategy(data, short_window, long_window):
@@ -83,7 +83,7 @@ def run_sma_crossover_strategy(data, short_window, long_window):
 
 
 def update_strategy_position(df):
-    buy_price, sell_price, signal = run_sma_crossover_strategy(df['Close'], df['sma_20'], df['sma_50'])
+    buy_price, sell_price, signal = run_sma_crossover_strategy(df['close'], df['sma_20'], df['sma_50'])
     position = []
     for i in range(len(signal)):
         if signal[i] > 1:
@@ -91,7 +91,7 @@ def update_strategy_position(df):
         else:
             position.append(1)
             
-    for i in range(len(df['Close'])):
+    for i in range(len(df['close'])):
         if signal[i] == 1:
             position[i] = 1
         elif signal[i] == -1:
@@ -102,7 +102,7 @@ def update_strategy_position(df):
     # CONSOLIDATING LISTS TO DATAFRAME
     sma_20 = pd.DataFrame(df['sma_20']).rename(columns = {0:'sma_20'})
     sma_50 = pd.DataFrame(df['sma_50']).rename(columns = {0:'sma_50'})
-    close_price = df['Close']
+    close_price = df['close']
     date = df['Date']
     buy_price = pd.DataFrame(buy_price).rename(columns = {0:'buy_price'}).set_index(df.index)
     sell_price = pd.DataFrame(sell_price).rename(columns = {0:'sell_price'}).set_index(df.index)
@@ -129,9 +129,9 @@ def calculate_roi(strategy, symbol):
     if len(strategy_copy) <= 0:
         print('Not enough data yet')
         return False
-    strategy_copy = strategy_copy.loc[:,['Date', 'Close', 'sma_signal', 'sma_position']]
+    strategy_copy = strategy_copy.loc[:,['Date', 'close', 'sma_signal', 'sma_position']]
     strategy_copy['Symbol'] = symbol
-    df_ret = pd.DataFrame(np.diff(strategy_copy['Close'])).rename(columns = {0:'returns'})
+    df_ret = pd.DataFrame(np.diff(strategy_copy['close'])).rename(columns = {0:'returns'})
 
     strategy_copy.loc[:,'sma_margin'] = 0
     strategy_copy.loc[:,'sma_returns'] = 0
@@ -141,7 +141,7 @@ def calculate_roi(strategy, symbol):
     for i in range(len(df_ret)):
         returns = df_ret.loc[:,'returns'].iloc[i]*strategy_copy.loc[:,'sma_position'].iloc[i]
         strategy_copy.loc[:,'sma_margin'].iloc[i+1] = returns
-        number_of_stocks = math.floor(investment_value/strategy_copy.loc[:,'Close'].iloc[i])
+        number_of_stocks = math.floor(investment_value/strategy_copy.loc[:,'close'].iloc[i])
         returns = number_of_stocks*strategy_copy.loc[:,'sma_margin'].iloc[i+1]
         strategy_copy.loc[:,'sma_returns'].iloc[i+1] = returns
         investment_value = investment_value + returns
@@ -166,7 +166,7 @@ def plot_strategy(df, symbol):
         plt.gca().xaxis.set_major_locator(mdates.DayLocator(interval=5))
     plt.gca().xaxis.set_major_formatter(xAxisFmt)
     
-    plt.plot(df['Close'], label = '{} Close Prices'.format(symbol), linewidth = 5, alpha = 0.3)
+    plt.plot(df['close'], label = '{} Close Prices'.format(symbol), linewidth = 5, alpha = 0.3)
     plt.plot(df['sma_20'], alpha = 0.6, label = 'SMA 20')
     plt.plot(df['sma_50'], alpha = 0.6, label = 'SMA 50')
     plt.scatter(df.index, df['buy_price'], marker = '^', s = 200, color = 'darkblue', label = 'BUY SIGNAL')

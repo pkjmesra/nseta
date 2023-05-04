@@ -30,10 +30,10 @@ values represent bearish patterns.
 def create_pattern_data(data_frame):
   df = data_frame
   # extract OHLC
-  O = df.loc[:,('Open')].astype(float)
-  H = df.loc[:,('High')].astype(float)
-  L = df.loc[:,('Low')].astype(float)
-  C = df.loc[:,('Close')].astype(float)
+  O = df.loc[:,('open')].astype(float)
+  H = df.loc[:,('high')].astype(float)
+  L = df.loc[:,('low')].astype(float)
+  C = df.loc[:,('close')].astype(float)
 
   candle_names = get_candle_funcs()
 

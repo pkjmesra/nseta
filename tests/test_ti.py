@@ -8,7 +8,7 @@ from baseUnitTest import baseUnitTest
 
 class TestTI(baseUnitTest):
   def setUp(self, redirect_logs=True):
-    self.sample_dict = {'Date':['2021-02-03'],'Open':[100], 'High':[120], 'Low':[80], 'Close':[110], 'Volume':[10000000]}
+    self.sample_dict = {'Date':['2021-02-03'],'open':[100], 'high':[120], 'low':[80], 'close':[110], 'Volume':[10000000]}
     self.sample_row = ['2021-02-03', 100, 120, 80, 110, 10000000]
     super().setUp()
 
@@ -107,7 +107,7 @@ class TestTI(baseUnitTest):
   def test_update_ti_no_pivots(self):
     t = ti()
     df = pd.DataFrame(self.sample_dict)
-    df.drop(['Low'], axis = 1, inplace = True)
+    df.drop(['low'], axis = 1, inplace = True)
     result = t.update_ti(df, pivots=True)
     self.assertFalse('PP' in result.keys())
 
