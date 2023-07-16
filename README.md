@@ -1,5 +1,7 @@
 # nseta :nerd_face:
 
+[NO LONGER MAINTAINED]
+Please use https://github.com/pkjmesra/PKScreener instead
 [![Build Status](https://travis-ci.com/pkjmesra/nseta.svg?branch=main)](https://travis-ci.com/pkjmesra/nseta)
 [![CI/CD](https://github.com/pkjmesra/nseta/workflows/CI%2FCD/badge.svg)](https://github.com/pkjmesra/nseta/actions?query=workflow%3ACI%2FCD)
 [![Ubuntu](https://github.com/pkjmesra/nseta/workflows/Ubuntu/badge.svg)](https://github.com/pkjmesra/nseta/actions?query=workflow%3AUbuntu)
