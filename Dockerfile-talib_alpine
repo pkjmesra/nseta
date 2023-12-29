@@ -1,8 +1,6 @@
+FROM python:3.11.3-alpine as python-builder
 
-FROM python:3.7.3-alpine as python-builder
-
-ENV PYTHON_VERSION 3.7.7-r1
-ENV PYTHON_TA_LIB_VERSION 0.4.19
+ENV PYTHON_VERSION 3.11.6-r0
 ENV PYTHONUNBUFFERED 1
 
 USER root
@@ -17,13 +15,15 @@ RUN apk add --no-cache python3=${PYTHON_VERSION} \
     && curl -L -O http://prdownloads.sourceforge.net/ta-lib/ta-lib-0.4.0-src.tar.gz \
     && tar -xzf ta-lib-0.4.0-src.tar.gz \
     && cd ta-lib/ \
+    && wget 'http://git.savannah.gnu.org/gitweb/?p=config.git;a=blob_plain;f=config.guess;hb=HEAD' -O config.guess \
+    && wget 'http://git.savannah.gnu.org/gitweb/?p=config.git;a=blob_plain;f=config.sub;hb=HEAD' -O config.sub \
     && sed -i 's/^#define TA_IS_ZERO(v).*$/#define TA_IS_ZERO(v) (((-0.000000000000000001)<v)\&\&(v<0.000000000000000001))/' src/ta_func/ta_utility.h \
     && sed -i 's/^#define TA_IS_ZERO_OR_NEG(v).*$/#define TA_IS_ZERO_OR_NEG(v) (v<0.000000000000000001)/' src/ta_func/ta_utility.h \
     && ./configure --prefix=/usr \
     && make \
-    && sudo make install \
+    && make install \
     && pip3 install setuptools numpy \
-    && pip3 install ta-lib==${PYTHON_TA_LIB_VERSION} \ 
+    && pip3 install ta-lib \ 
     && apk del .build-deps \
     && rm -rf /root/.cache \
               /tmp/* \
