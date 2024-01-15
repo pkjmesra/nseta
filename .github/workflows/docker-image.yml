@@ -31,6 +31,9 @@ jobs:
         password: ${{ secrets.DOCKERHUB_TOKEN }}
     - name: Publish latest image to Docker Hub
       run: |
+        docker build . -f Dockerfile_talib_debian_gnu_linux -t pkjmesra/ta-lib-debian_gnu_linux:latest
+        docker push pkjmesra/ta-lib-debian_gnu_linux:latest
+        
         docker build . -f Dockerfile -t pkjmesra/nseta:latest
         docker push pkjmesra/nseta:latest
     - name: Publish release version image to Docker Hub
