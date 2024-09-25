@@ -1,8 +1,12 @@
 # nseta :nerd_face:
 
-[NO LONGER MAINTAINED]
-Please use https://github.com/pkjmesra/PKScreener instead
-[![Build Status](https://travis-ci.com/pkjmesra/nseta.svg?branch=main)](https://travis-ci.com/pkjmesra/nseta)
+[THIS CODE REPO IS NO LONGER BEING MAINTAINED]
+
+**Please use https://github.com/pkjmesra/PKScreener instead
+**
+<img width="641" alt="Logo8_1" src="https://github.com/user-attachments/assets/a8fae2e8-52c3-422f-9e0d-febbdd457f0c">
+
+
 [![CI/CD](https://github.com/pkjmesra/nseta/workflows/CI%2FCD/badge.svg)](https://github.com/pkjmesra/nseta/actions?query=workflow%3ACI%2FCD)
 [![Ubuntu](https://github.com/pkjmesra/nseta/workflows/Ubuntu/badge.svg)](https://github.com/pkjmesra/nseta/actions?query=workflow%3AUbuntu)
 [![macOS](https://github.com/pkjmesra/nseta/workflows/macOS/badge.svg)](https://github.com/pkjmesra/nseta/actions?query=workflow%3AmacOS)
@@ -25,6 +29,7 @@ Please use https://github.com/pkjmesra/PKScreener instead
 [![Maintainability](https://api.codeclimate.com/v1/badges/6b7b7e68c16ca755de12/maintainability)](https://codeclimate.com/github/pkjmesra/nseta/maintainability)
 [![Donate PayPal](https://img.shields.io/badge/Donate%20%24-PayPal-brightgreen.svg)](https://www.paypal.com/paypalme/pkjmesra/5)
 [![Join the chat at https://gitter.im/pkjmesra/nseta](https://badges.gitter.im/pkjmesra/nseta.svg)](https://gitter.im/pkjmesra/nseta?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+[![Build Status](https://travis-ci.com/pkjmesra/nseta.svg?branch=main)](https://travis-ci.com/pkjmesra/nseta)
 
 Python Library (and console/CLI application) to 
 -  Get publicly available data from [NSE India website](https://www1.nseindia.com/) <img src="/docs/assets/NSE_Logo.svg" width="118" height="28" alt="NSE India" > ie. stock live-quotes and historical data[ *EQUITY ONLY* AT THIS TIME. No support for Futures/Options/Derivatives yet.]
